@@ -1,0 +1,31 @@
+﻿@using Abp.Web.Security.AntiForgery
+@using Microsoft.AspNetCore.Http
+@using BanHangBeautify.Authorization
+@using BanHangBeautify.Web.Common
+@model BanHangBeautify.Web.Host.Models.Ui.HomePageModel
+@inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@{
+    AbpAntiForgeryManager.SetCookie(Context, cookieOptions: new CookieOptions()
+            {
+                SameSite = SameSiteMode.Strict,
+                Secure = true
+            });
+}
+<head>
+    <title>AbpZeroTemplate</title>
+
+    <link href="~/view-resources/Views/Ui/Index.css" rel="stylesheet" asp-append-version="true"/>
+</head>
+<div class="main-content">
+    <div>
+        <ul class="content-list">
+            @if (WebConsts.SwaggerUiEnabled)
+            {
+                    <li><a href="@WebConsts.SwaggerUiEndPoint">Swagger UI</a></li>
+            }
+        </ul>
+    </div>
+    <div class="logout">
+        <a href="@Url.Action("Logout", "Ui", new {area = string.Empty})">Logout</a>
+    </div>
+</div>

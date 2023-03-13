@@ -1,0 +1,46 @@
+﻿@using Abp.Web.Security.AntiForgery
+@using BanHangBeautify
+@using Abp.Configuration.Startup
+@model BanHangBeautify.Web.Host.Models.Ui.HomePageModel
+@inject IAbpAntiForgeryManager AbpAntiForgeryManager
+@inject IMultiTenancyConfig MultiTenancyConfig
+@{
+    AbpAntiForgeryManager.SetCookie(Context);
+}
+<head>
+    <title>AbpZeroTemplate</title>
+
+    <link href="~/view-resources/Views/Ui/Login.css" rel="stylesheet" asp-append-version="true" />
+</head>
+<div class="login-form">
+    <h1>LogIn</h1>
+    <form method="post">
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+        @if (MultiTenancyConfig.IsEnabled)
+        {
+            <div class="login-form-row">
+                <label for="TenancyName">TenancyName</label>
+                <input type="text" id="TenancyName" name="TenancyName" placeholder="TenancyName">
+            </div>
+        }
+
+        <div class="login-form-row">
+            <label for="UsernameOrEmailAddress">UserNameOrEmail</label>
+            <input type="text" id="UsernameOrEmailAddress" name="UserNameOrEmailAddress" placeholder="UserNameOrEmail">
+        </div>
+        <div class="login-form-row">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="Password" placeholder="Password">
+        </div>
+        <div class="login-form-row">
+            <label class="checkbox">
+                <input type="checkbox" id="rememberMe" name="RememberMe" value="true">
+                <span></span>
+                RememberMe
+            </label>
+        </div>
+        <button type="submit" class="login-form-button">LogIn</button>
+    </form>
+    <span style="font-size: 0.8em;font-style:italic"> v@(AppVersionHelper.Version) [@AppVersionHelper.ReleaseDate.ToString("yyyyMMdd")]</span>
+</div>
