@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Abp.Authorization;
-using BanHangBeautify.Authorization.Roles;
+﻿using Abp.Authorization;
 using Abp.Domain.Uow;
+using BanHangBeautify.Authorization.Roles;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace BanHangBeautify.Authorization.Users
 {

@@ -1,12 +1,8 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.Entities
 {
@@ -15,9 +11,9 @@ namespace BanHangBeautify.Entities
         public Guid IdCongTy { set; get; }
         [ForeignKey("IdCongTy")]
         public HT_CongTy HT_CongTy { get; set; }
-        public int TenantId { get; set ; }
+        public int TenantId { get; set; }
         [MaxLength(50)]
-        public string MaChiNhanh { get; set ;}
+        public string MaChiNhanh { get; set; }
         [MaxLength(2000)]
         public string TenChiNhanh { get; set; }
         [MaxLength(256)]

@@ -19,14 +19,14 @@ class HorizontalMenuItem extends StatelessWidget {
                   onTap: onTap,
                   onHover: (value){
                     value ?
-                    menuController.onHover(itemName) : menuController.onHover("not hovering");
+                    menuBeautyController.onHover(itemName) : menuBeautyController.onHover("not hovering");
                   },
                   child: Obx(() => Container(
-                    color: menuController.isHovering(itemName) ? lightGrey.withOpacity(.1) : Colors.transparent,
+                    color: menuBeautyController.isHovering(itemName) ? lightGrey.withOpacity(.1) : Colors.transparent,
                     child: Row(
                       children: [
                         Visibility(
-                          visible: menuController.isHovering(itemName) || menuController.isActive(itemName),
+                          visible: menuBeautyController.isHovering(itemName) || menuBeautyController.isActive(itemName),
                           maintainSize: true,
                           maintainAnimation: true,
                           maintainState: true,
@@ -40,10 +40,10 @@ class HorizontalMenuItem extends StatelessWidget {
 
                         Padding(
                           padding: const EdgeInsets.all(16),
-                          child: menuController.returnIconFor(itemName),
+                          child: menuBeautyController.returnIconFor(itemName),
                         ),
-                        if(!menuController.isActive(itemName))
-                        Flexible(child: Text(itemName ,style :GoogleFonts.roboto(color: menuController.isHovering(itemName) ? dark : lightGrey,)) )
+                        if(!menuBeautyController.isActive(itemName))
+                        Flexible(child: Text(itemName ,style :GoogleFonts.roboto(color: menuBeautyController.isHovering(itemName) ? dark : lightGrey,)) )
                         else
                         Flexible(child: Text(itemName ,style: GoogleFonts.roboto( color:  dark ,fontSize : 18, fontWeight: FontWeight.bold,), ))
 

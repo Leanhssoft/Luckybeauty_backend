@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using Abp.Data;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
@@ -11,6 +8,9 @@ using Abp.Runtime.Security;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Seed;
 using BanHangBeautify.MultiTenancy;
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
 
 namespace BanHangBeautify.Migrator
 {

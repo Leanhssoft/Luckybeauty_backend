@@ -1,23 +1,19 @@
-﻿using Abp.AspNetCore.Mvc.Controllers;
-using Abp.Configuration.Startup;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using BanHangBeautify.Authorization.Accounts;
-using BanHangBeautify.Authorization;
-using BanHangBeautify.Controllers;
-using System;
-using BanHangBeautify.Identity;
-using BanHangBeautify.Session;
-using Abp.Auditing;
-using Abp.Authorization.Users;
+﻿using Abp.Auditing;
 using Abp.Authorization;
+using Abp.Authorization.Users;
+using Abp.Configuration.Startup;
 using Abp.UI;
+using BanHangBeautify.Authorization;
+using BanHangBeautify.Authorization.Accounts;
 using BanHangBeautify.Authorization.Accounts.Dto;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Controllers;
+using BanHangBeautify.Identity;
 using BanHangBeautify.MultiTenancy;
-using System.Threading.Tasks;
+using BanHangBeautify.Session;
 using BanHangBeautify.Web.Host.Models.Ui;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Web.Host.Controllers
 {

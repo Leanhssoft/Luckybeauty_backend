@@ -11,14 +11,6 @@ class CalendarWorkingPage extends StatefulWidget {
 class _CalendarWorkingPageState extends State<CalendarWorkingPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children:const [
-         
-               CalendarView(),
-        ],
-      ),
-    );
+    return const CalendarView();
   }
 }

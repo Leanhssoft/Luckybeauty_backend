@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:beautify_app/components/routing/routes.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../Service/LoginService.dart';
@@ -417,7 +418,7 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
                                 ),
                                 TextButton(
                                   onPressed: () => {
-                                    Navigator.pushNamed(context, "/register")
+                                    Navigator.pushNamed(context, registerPageRoute)
                                   },
                                   child: const Text(
                                     "Đăng ký",

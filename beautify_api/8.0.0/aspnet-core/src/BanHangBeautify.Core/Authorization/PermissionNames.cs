@@ -22,7 +22,7 @@
         public const string Pages = "Pages";
         public const string Pages_Users_Activation = "Pages.Users.Activation";
 
-        
+
 
         public const string Pages_Tenants = "Pages.Tenants";
         public const string Pages_Tenants_Create = "Pages.Tenants.Create";

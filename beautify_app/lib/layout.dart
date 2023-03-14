@@ -10,10 +10,8 @@ import 'components/sideMenu.dart';
 
 class SiteLayout extends StatelessWidget {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-  final Widget route;
-  SiteLayout({
+   SiteLayout({
     Key? key,
-    required this.route,
   }) : super(key: key);
 
   @override
@@ -21,11 +19,11 @@ class SiteLayout extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       appBar: TopBarNavigation(context, scaffoldKey),
-      body: ResponsiveWidget(
-        largeScreen: LargeScreen(route: route,),
-        mediumScreen: LargeScreen(route: route,),
-        smallScreen: SmallScreen(route: route,),
-        customScreen: LargeScreen(route: route,),
+      body:const ResponsiveWidget(
+        largeScreen: LargeScreen(),
+        mediumScreen: LargeScreen(),
+        smallScreen: SmallScreen(),
+        customScreen: LargeScreen(),
       ),
       drawer: const SideMenu(),
     );

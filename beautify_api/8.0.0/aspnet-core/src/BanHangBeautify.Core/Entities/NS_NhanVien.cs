@@ -1,15 +1,9 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using BanHangBeautify.Authorization.Users;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
+using BanHangBeautify.Entities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BanHangBeautify.Entities;
 
 namespace BanHangBeautify.Data.Entities
 {
@@ -27,20 +21,20 @@ namespace BanHangBeautify.Data.Entities
         [MaxLength(256)]
         public string CCCD { get; set; }
         public DateTime NgaySinh { get; set; }
-        public int KieuNgaySinh  { get; set; }
+        public int KieuNgaySinh { get; set; }
         public int GioiTinh { get; set; }
         [MaxLength(256)]
         public string NgayCap { get; set; }
         [MaxLength(2000)]
         public string NoiCap { get; set; }
-        public byte[] Avatar { get; set;}
-       
+        public byte[] Avatar { get; set; }
+
         //public Guid PhongBan_Id { get; set; }
         public Guid IdChucVu { set; get; }
         [ForeignKey("IdChucVu")]
         public NS_ChucVu NS_ChucVu { get; set; }
 
-        public int TenantId { get ; set ; }
+        public int TenantId { get; set; }
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }
         public DateTime NgayTao { get; set; }

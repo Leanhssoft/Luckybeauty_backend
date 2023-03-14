@@ -1,42 +1,36 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
-using AutoMapper.Internal.Mappers;
-using BanHangBeautify.AppDanhMuc.AppCuaHang.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.AspNetCore.Mvc;
-using BanHangBeautify.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.DonViQuiDoi
 {
-    public class DonViQuiDoiAppService:SPAAppServiceBase
+    public class DonViQuiDoiAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_DonViQuiDoi, Guid> _repository;
-        public DonViQuiDoiAppService(IRepository<DM_DonViQuiDoi,Guid> repository)
+        public DonViQuiDoiAppService(IRepository<DM_DonViQuiDoi, Guid> repository)
         {
-            _repository= repository;
+            _repository = repository;
         }
-        public async Task CreateOrEdit(CreateOrEditDonViQuiDoiDto dto)
+        public async Task<DonViQuiDoiDto> CreateOrEdit(CreateOrEditDonViQuiDoiDto dto)
         {
             var findHangHoa = await _repository.FirstOrDefaultAsync(h => h.Id == dto.Id);
             if (findHangHoa == null)
             {
-                await Create(dto);
+                return await Create(dto);
             }
             else
             {
-                await Edit(dto, findHangHoa);
+                return await Edit(dto, findHangHoa);
             }
         }
         [NonAction]
-        public async Task Create(CreateOrEditDonViQuiDoiDto dto)
+        public async Task<DonViQuiDoiDto> Create(CreateOrEditDonViQuiDoiDto dto)
         {
             DM_DonViQuiDoi donViQuiDoi = new DM_DonViQuiDoi();
             donViQuiDoi.Id = Guid.NewGuid();
@@ -49,10 +43,12 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             donViQuiDoi.TenantId = AbpSession.TenantId ?? 1;
             donViQuiDoi.CreatorUserId = AbpSession.UserId;
             donViQuiDoi.CreationTime = DateTime.Now;
+            var result = ObjectMapper.Map<DonViQuiDoiDto>(donViQuiDoi);
             await _repository.InsertAsync(donViQuiDoi);
+            return result;
         }
         [NonAction]
-        public async Task Edit(CreateOrEditDonViQuiDoiDto dto, DM_DonViQuiDoi donViQuiDoi)
+        public async Task<DonViQuiDoiDto> Edit(CreateOrEditDonViQuiDoiDto dto, DM_DonViQuiDoi donViQuiDoi)
         {
             donViQuiDoi.IdHangHoa = dto.IdHangHoa;
             donViQuiDoi.MaHangHoa = dto.MaHangHoa;
@@ -62,20 +58,38 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             donViQuiDoi.TyLeChuyenDoi = dto.TyLeChuyenDoi;
             donViQuiDoi.LastModificationTime = DateTime.Now;
             donViQuiDoi.LastModifierUserId = AbpSession.UserId;
+            var result = ObjectMapper.Map<DonViQuiDoiDto>(donViQuiDoi);
             await _repository.UpdateAsync(donViQuiDoi);
+            return result;
         }
-        public async Task<ListResultDto<DM_DonViQuiDoi>> GetAll()
+        public async Task<DM_DonViQuiDoi> GetDetail(Guid id)
         {
+            return await _repository.FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public async Task<ListResultDto<DM_DonViQuiDoi>> GetAll(DonViQuiDoiPagedRequestResultDto input)
+        {
+            var lstDonViQuiDoi = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            if (!string.IsNullOrEmpty(input.Keyword))
+            {
+                lstDonViQuiDoi = lstDonViQuiDoi.
+                    Where(
+                        x => x.TenDonVi.Contains(input.Keyword) || x.MaHangHoa.Contains(input.Keyword) ||
+                        x.GiaBan.ToString().Contains(input.Keyword)
+                    ).OrderByDescending(x => x.CreationTime).ToList();
+            }
+            input.MaxResultCount = 10;
+            if (input.SkipCount > 0)
+            {
+                input.SkipCount *= input.MaxResultCount;
+            }
             ListResultDto<DM_DonViQuiDoi> result = new ListResultDto<DM_DonViQuiDoi>();
-            var getDonViQuiDoi = await _repository.GetAllListAsync();
-            getDonViQuiDoi = getDonViQuiDoi.Where(x=> x.IsDeleted == true).ToList();
-            //var donViQuiDois = ObjectMapper.Map<List<DonViQuiDoiDto>>(getDonViQuiDoi);
+            var getDonViQuiDoi = lstDonViQuiDoi.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = getDonViQuiDoi;
             return result;
         }
-        public async Task<bool> Delete(Guid id)
+        public async Task<DonViQuiDoiDto> Delete(Guid id)
         {
-            bool result = false;
+            DonViQuiDoiDto result = new DonViQuiDoiDto();
             var donViQuiDoi = await _repository.FirstOrDefaultAsync(h => h.Id == id);
             if (donViQuiDoi != null)
             {
@@ -83,7 +97,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
                 donViQuiDoi.DeletionTime = DateTime.Now;
                 donViQuiDoi.DeleterUserId = AbpSession.UserId;
                 _repository.Update(donViQuiDoi);
-                result = true;
+                result = ObjectMapper.Map<DonViQuiDoiDto>(donViQuiDoi);
             }
             return result;
         }

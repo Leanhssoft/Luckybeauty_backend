@@ -57,7 +57,7 @@ class _SideMenuState extends State<SideMenu> {
                         title: "Đăng xuất",
                         icon: Icons.logout,
                         permission: null,
-                        route: "/login")),
+                        route: "/auth")),
               ],
             ),
           )
@@ -78,6 +78,7 @@ List<Widget> buildDrawerItems(
           child: ListTileMenu(
             buildContext: buildContext,
             item: item,
+            selected: item.route.toString()=="/overview"?true:false,
           )));
     } else {
       widgets.add(Padding(

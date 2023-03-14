@@ -1,10 +1,6 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Entities
@@ -15,7 +11,7 @@ namespace BanHangBeautify.Entities
         [MaxLength(50)]
         public string MaNhom { get; set; }
         [MaxLength(256)]
-        public string Tennhom { get; set; }
+        public string TenNhom { get; set; }
         [MaxLength(2000)]
         public string MoTa { get; set; }
         public int TrangThai { get; set; }

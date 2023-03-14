@@ -1,8 +1,8 @@
-﻿using System;
-using Abp;
+﻿using Abp;
 using Abp.Authorization;
 using Abp.Dependency;
 using Abp.UI;
+using System;
 
 namespace BanHangBeautify.Authorization
 {

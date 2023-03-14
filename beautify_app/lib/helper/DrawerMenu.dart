@@ -1,3 +1,4 @@
+import 'package:beautify_app/components/routing/routes.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/PermissionAndMenu/DrawerItem.dart';
@@ -17,64 +18,59 @@ class DrawerMenu {
           title: 'Trang chủ',
           icon: Icons.home_rounded,
           permission: 'Pages',
-          route: '/dashboard'),
+          route: overviewPageRoute),
       DrawerItem(
-          title: 'Lịch hẹn',
+          title: appointmentPageDisplayName,
           icon: Icons.calendar_month_outlined,
           permission: 'Pages',
-          route: '/appointments'),
+          route: appointmentPageRoute),
       DrawerItem(
-          title: 'Bán hàng',
-          icon: Icons.storefront_outlined,
-          permission: 'Pages',
-          route: ''),
-      DrawerItem(
-          title: 'Dịch vụ',
+          title: dichVuPageDisplayName,
           icon: Icons.self_improvement_sharp,
           permission: 'Pages',
-          route: '/dichvus'),
+          route: dichVuPageRoute),
       DrawerItem(
-          title: 'Nhân viên',
+          title: nhanVienPageDisplayName,
           icon: Icons.person_pin_circle_outlined,
           permission: 'Pages.Administration.Users',
-          route: ''),
+          route: nhanVienPageRoute),
       DrawerItem(
-          title: 'Khách hàng',
+          title: customerPageDisplayName,
           icon: Icons.people_alt_outlined,
           permission: 'Pages',
-          route: ''),
+          route: customerPageRoute),
       DrawerItem(
-          title: "Quản trị",
+          title: adminPageDisplayName,
           icon: Icons.admin_panel_settings,
           permission: 'Pages.Administration',
           route: '',
           children: [
             DrawerItem(
-                title: 'Role',
+                title: rolePageDisplayName,
                 icon: Icons.lock_person,
                 permission: 'Pages.Administration.Roles',
-                route: '/role'),
+                route: rolePageRoute),
             DrawerItem(
-                title: 'User',
+                title: userPageDisplayName,
                 icon: Icons.people_alt_outlined,
                 permission: 'Pages.Administration.Users',
-                route: '/user'),
+                route: userPageRoute),
             DrawerItem(
-                title: 'Tenant',
+                title: tenantPageDisplayName,
                 icon: Icons.store,
                 permission: 'Pages.Tenants',
-                route: '/tenant'),
+                route: tenantPageRoute),
           ]),
       DrawerItem(
-          title: 'Báo cáo',
+          title: baoCaoPageDisplayName,
           icon: Icons.bar_chart_outlined,
           permission: 'Pages',
-          route: ''),
+          route: baoCaoPageRoute),
       DrawerItem(
-          title: 'Settings',
+          title: settingsPageDisplayName,
           icon: Icons.settings,
           permission: 'Pages',
-          route: ''),
+          route: settingsPageRoute),
     ];
 
     // filter items based on user permissions

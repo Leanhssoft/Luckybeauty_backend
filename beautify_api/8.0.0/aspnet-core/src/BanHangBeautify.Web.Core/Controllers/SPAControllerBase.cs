@@ -8,7 +8,7 @@ using System;
 
 namespace BanHangBeautify.Controllers
 {
-    public abstract class SPAControllerBase: AbpController
+    public abstract class SPAControllerBase : AbpController
     {
         protected SPAControllerBase()
         {

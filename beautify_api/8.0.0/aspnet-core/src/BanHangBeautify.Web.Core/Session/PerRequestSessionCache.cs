@@ -1,11 +1,7 @@
 ﻿using Abp.Dependency;
-using Microsoft.AspNetCore.Http;
-using BanHangBeautify.Sessions.Dto;
 using BanHangBeautify.Sessions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using BanHangBeautify.Sessions.Dto;
+using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Session

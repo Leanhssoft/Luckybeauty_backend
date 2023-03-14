@@ -59,6 +59,6 @@ class _AuthenWidgetState extends State<AuthenWidget> {
     if (token == "" || token.isEmpty) {
       return const LoginScreen();
     }
-    return SiteLayout(route:const HomeScreen(),);
+    return SiteLayout();
   }
 }

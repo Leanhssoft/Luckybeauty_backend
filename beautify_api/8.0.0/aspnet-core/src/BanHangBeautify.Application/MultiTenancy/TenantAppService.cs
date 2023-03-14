@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
@@ -15,6 +13,8 @@ using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Editions;
 using BanHangBeautify.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.MultiTenancy
 {
@@ -53,7 +53,7 @@ namespace BanHangBeautify.MultiTenancy
             input.ConnectionString = connecStringInServer;
             input.IsActive = true;
             CheckCreatePermission();
-            
+
             // Create tenant
             var tenant = ObjectMapper.Map<Tenant>(input);
             tenant.ConnectionString = input.ConnectionString.IsNullOrEmpty()
@@ -88,7 +88,7 @@ namespace BanHangBeautify.MultiTenancy
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
                 await _userManager.InitializeOptionsAsync(tenant.Id);
                 //CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword));
-                CheckErrors(await _userManager.CreateAsync(adminUser,input.Password));
+                CheckErrors(await _userManager.CreateAsync(adminUser, input.Password));
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get admin user's id
 
                 // Assign admin user to role!

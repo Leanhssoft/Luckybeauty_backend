@@ -1,14 +1,10 @@
 ﻿using Abp.Application.Services.Dto;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.DonViQuiDoi.Dto
 {
-    public class CreateOrEditDonViQuiDoiDto:EntityDto<Guid>
+    public class CreateOrEditDonViQuiDoiDto : EntityDto<Guid>
     {
         public string MaHangHoa { get; set; }
         [MaxLength(50)]

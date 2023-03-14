@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BanHangBeautify.Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    [Migration("20230310035851_add_db")]
+    [Migration("20230314034058_add_db")]
     partial class adddb
     {
         /// <inheritdoc />
@@ -1780,67 +1780,6 @@ namespace BanHangBeautify.Migrations
                     b.ToTable("DM_PhongBans");
                 });
 
-            modelBuilder.Entity("BanHangBeautify.Data.Entities.DatLich_ChiTiet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("IdDatLich")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IdHangHoa")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("MoTa")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ThoiGianBatDau")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ThoiGianKetThuc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TrangThai")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdDatLich");
-
-                    b.HasIndex("IdHangHoa");
-
-                    b.ToTable("DatLich_ChiTiet");
-                });
-
             modelBuilder.Entity("BanHangBeautify.Data.Entities.NS_NhanVien", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2082,7 +2021,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdHangHoa");
 
-                    b.ToTable("DonViQuiDois");
+                    b.ToTable("DM_DonViQuiDois");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_KhachHang", b =>
@@ -2409,109 +2348,6 @@ namespace BanHangBeautify.Migrations
                     b.ToTable("DM_NhomKhachHangs");
                 });
 
-            modelBuilder.Entity("BanHangBeautify.Entities.DatLich", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("GiamGia")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid>("IdKhachHang")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("NgayDatLich")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TongTien")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TrangThai")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdKhachHang");
-
-                    b.ToTable("DatLich");
-                });
-
-            modelBuilder.Entity("BanHangBeautify.Entities.DatLich_DichVu", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("CreatorUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid?>("DM_HangHoaId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<long?>("DeleterUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("IdDatLich")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("IdDatLichChiTiet")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IdHangHoa")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastModifierUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DM_HangHoaId");
-
-                    b.HasIndex("IdDatLichChiTiet");
-
-                    b.ToTable("DatLich_NhanViens");
-                });
-
             modelBuilder.Entity("BanHangBeautify.Entities.DichVu_NhanVien", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2530,7 +2366,10 @@ namespace BanHangBeautify.Migrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("IdHangHoa")
+                    b.Property<Guid>("IdChiNhanh")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("IdDonViQuyDoi")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdNhanVien")
@@ -2550,7 +2389,9 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdHangHoa");
+                    b.HasIndex("IdChiNhanh");
+
+                    b.HasIndex("IdDonViQuyDoi");
 
                     b.HasIndex("IdNhanVien");
 
@@ -3114,25 +2955,6 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("DM_ChiNhanh");
                 });
 
-            modelBuilder.Entity("BanHangBeautify.Data.Entities.DatLich_ChiTiet", b =>
-                {
-                    b.HasOne("BanHangBeautify.Entities.DatLich", "DatLich")
-                        .WithMany()
-                        .HasForeignKey("IdDatLich")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BanHangBeautify.Data.Entities.DM_HangHoa", "DM_HangHoa")
-                        .WithMany()
-                        .HasForeignKey("IdHangHoa")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DM_HangHoa");
-
-                    b.Navigation("DatLich");
-                });
-
             modelBuilder.Entity("BanHangBeautify.Data.Entities.NS_NhanVien", b =>
                 {
                     b.HasOne("BanHangBeautify.Entities.NS_ChucVu", "NS_ChucVu")
@@ -3191,37 +3013,17 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("NhomKhach");
                 });
 
-            modelBuilder.Entity("BanHangBeautify.Entities.DatLich", b =>
+            modelBuilder.Entity("BanHangBeautify.Entities.DichVu_NhanVien", b =>
                 {
-                    b.HasOne("BanHangBeautify.Entities.DM_KhachHang", "DM_KhachHang")
+                    b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
                         .WithMany()
-                        .HasForeignKey("IdKhachHang")
+                        .HasForeignKey("IdChiNhanh")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DM_KhachHang");
-                });
-
-            modelBuilder.Entity("BanHangBeautify.Entities.DatLich_DichVu", b =>
-                {
-                    b.HasOne("BanHangBeautify.Data.Entities.DM_HangHoa", "DM_HangHoa")
+                    b.HasOne("BanHangBeautify.Entities.DM_DonViQuiDoi", "DM_DonViQuiDoi")
                         .WithMany()
-                        .HasForeignKey("DM_HangHoaId");
-
-                    b.HasOne("BanHangBeautify.Data.Entities.DatLich_ChiTiet", "DatLich_ChiTiet")
-                        .WithMany()
-                        .HasForeignKey("IdDatLichChiTiet");
-
-                    b.Navigation("DM_HangHoa");
-
-                    b.Navigation("DatLich_ChiTiet");
-                });
-
-            modelBuilder.Entity("BanHangBeautify.Entities.DichVu_NhanVien", b =>
-                {
-                    b.HasOne("BanHangBeautify.Data.Entities.DM_HangHoa", "DM_HangHoa")
-                        .WithMany()
-                        .HasForeignKey("IdHangHoa")
+                        .HasForeignKey("IdDonViQuyDoi")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3231,7 +3033,9 @@ namespace BanHangBeautify.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DM_HangHoa");
+                    b.Navigation("DM_ChiNhanh");
+
+                    b.Navigation("DM_DonViQuiDoi");
 
                     b.Navigation("NS_NhanVien");
                 });

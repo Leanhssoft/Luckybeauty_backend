@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Abp.MultiTenancy;
+﻿using Abp.MultiTenancy;
 using BanHangBeautify.Editions;
 using BanHangBeautify.MultiTenancy;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace BanHangBeautify.EntityFrameworkCore.Seed.Tenants
 {

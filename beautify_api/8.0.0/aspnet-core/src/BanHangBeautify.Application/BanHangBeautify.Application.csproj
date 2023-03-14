@@ -16,7 +16,7 @@
     <ProjectReference Include="..\BanHangBeautify.EntityFrameworkCore\BanHangBeautify.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NhanSu\QuaTrinhCongTac\" />
-    <Folder Include="PhongBan\" />
+    <Folder Include="Bookings\Booking\" />
+    <Folder Include="Bookings\BookingDetails\" />
   </ItemGroup>
 </Project>

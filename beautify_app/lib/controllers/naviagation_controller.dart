@@ -3,12 +3,11 @@ import 'package:get/get.dart';
 
 class NavigationController extends GetxController {
   static NavigationController instance = Get.find();
-  final GlobalKey<NavigatorState> navigationKey = GlobalKey();
-  Future<dynamic> navigateTo(String routeName) {
-    return navigationKey.currentState!.pushNamed(routeName);
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
+
+  Future<dynamic> navigateTo(String routeName){
+    return navigatorKey.currentState!.pushNamed(routeName);
   }
 
-  goBack() {
-    navigationKey.currentState!.pop();
-  }
+  goBack() => navigatorKey.currentState!.pop();
 }

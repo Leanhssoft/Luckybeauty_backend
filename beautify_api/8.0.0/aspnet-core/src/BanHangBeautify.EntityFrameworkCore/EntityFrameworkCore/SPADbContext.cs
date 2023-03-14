@@ -1,19 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Abp.Zero.EntityFrameworkCore;
+﻿using Abp.Zero.EntityFrameworkCore;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
-using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Data.Entities;
-using Abp.Authorization;
 using BanHangBeautify.Entities;
+using BanHangBeautify.MultiTenancy;
+using Microsoft.EntityFrameworkCore;
 
 namespace BanHangBeautify.EntityFrameworkCore
 {
     public class SPADbContext : AbpZeroDbContext<Tenant, Role, User, SPADbContext>
     {
-        public DbSet<DatLich_ChiTiet> DatLiches { set; get; }
-        public DbSet<DatLich_ChiTiet> DatLich_ChiTiets { set; get; }
-        public DbSet<DatLich_DichVu> DatLich_NhanViens { get; set; }
+        //public DbSet<DatLich_ChiTiet> DatLiches { set; get; }
+        // public DbSet<DatLich_ChiTiet> DatLich_ChiTiets { set; get; }
+        // public DbSet<DatLich_DichVu> DatLich_NhanViens { get; set; }
         public DbSet<DichVu_NhanVien> DichVu_NhanViens { set; get; }
         public DbSet<NS_NhanVien> NS_NhanViens { set; get; }
         public DbSet<NS_CaLamViec> NS_CaLamViecs { get; set; }
@@ -37,5 +36,9 @@ namespace BanHangBeautify.EntityFrameworkCore
         {
 
         }
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<DichVu_NhanVien>().HasKey(key => new { key.IdHangHoa, key.IdNhanVien });
+        //}
     }
 }

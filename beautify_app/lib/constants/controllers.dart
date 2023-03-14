@@ -1,5 +1,7 @@
-import 'package:beautify_app/controllers/menu_controller.dart';
-import 'package:beautify_app/controllers/naviagation_controller.dart';
 
-MenuController menuController = MenuController.instance;
+
+import '../controllers/menu_controller.dart';
+import '../controllers/naviagation_controller.dart';
+
+MenuBeautyController menuBeautyController = MenuBeautyController.instance;
 NavigationController navigationController = NavigationController.instance;

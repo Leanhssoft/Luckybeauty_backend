@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
@@ -17,6 +9,14 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Models.TokenAuth;
 using BanHangBeautify.MultiTenancy;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Controllers
 {
@@ -117,7 +117,7 @@ namespace BanHangBeautify.Controllers
                         }
 
                         var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-                        
+
                         return new ExternalAuthenticateResultModel
                         {
                             AccessToken = accessToken,

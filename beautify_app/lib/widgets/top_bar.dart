@@ -23,4 +23,8 @@ AppBar TopBarNavigation(BuildContext context, GlobalKey<ScaffoldState> key) =>
                 onPressed: () {
                   key.currentState!.openDrawer();
                 },
-                icon: const Icon(Icons.menu,color:Color.fromARGB(99, 0, 0, 0))));
+                icon: const Icon(Icons.menu,color:Color.fromARGB(99, 0, 0, 0))),
+                
+            actions: [
+              
+            ],);

@@ -1,5 +1,6 @@
 import 'package:beautify_app/controllers/naviagation_controller.dart';
 import 'package:beautify_app/layout.dart';
+import 'package:beautify_app/screens/app/account/login/LoginScreen.dart';
 import 'package:beautify_app/screens/app/account/register/RegisterScreen.dart';
 import 'package:beautify_app/screens/app/admin/role/role_screen.dart';
 import 'package:beautify_app/screens/app/admin/tenant/TenantScreen.dart';
@@ -15,9 +16,12 @@ import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
+import 'components/routing/routes.dart';
+import 'controllers/menu_controller.dart';
+
 void main() {
-  // Get.put(MenuController());
-  // Get.put(NavigationController());
+  Get.put(MenuBeautyController());
+  Get.put(NavigationController());
   runApp(const MyApp());
 }
 
@@ -26,7 +30,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      initialRoute: '/auth',
+        unknownRoute: GetPage(name: '/not-found', page: () =>const LoginScreen(), transition: Transition.fadeIn),
+        getPages: [
+        GetPage(name: rootRoute, page: () {
+          return SiteLayout();
+        }),
+        GetPage(name: authenticationPageRoute, page: () =>const AuthenWidget()),
+        GetPage(name: registerPageRoute, page: () =>const RegisterScreen()),
+      ],
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       color: Colors.white,
@@ -52,54 +65,6 @@ class MyApp extends StatelessWidget {
         }),
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => const AuthenWidget(),
-        '/home': (context) => SiteLayout(route:const HomeScreen()),
-        '/register': (context) =>SiteLayout(route: const RegisterScreen()),
-        '/tenant': (context) => SiteLayout(route: const TenantScreen()),
-        '/dashboard': (context) => SiteLayout(route: const HomeScreen()),
-        '/user': (context) => SiteLayout(route: const UserScreen()),
-        '/role': (context) => SiteLayout(route: const RoleScreen()),
-        '/appointments': (context) =>SiteLayout(route: const CalendarWorkingPage()) ,
-        '/dichvus': (context) => SiteLayout(route: const DichVuScreen()),
-      },
-      onGenerateRoute: (RouteSettings settings) {
-        switch (settings.name) {
-          case '/login':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/home':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/register':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/tenant':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/dashboard':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/user':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/role':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/appointments':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          case '/dichvus':
-            MaterialPageRoute(builder: (context) =>const AuthenWidget());
-            break;
-          default:
-            return MaterialPageRoute(builder: (context) =>const AuthenWidget());
-        }
-      },
-      onUnknownRoute: (RouteSettings settings) {
-        return MaterialPageRoute(builder: (context) => const AuthenWidget());
-      },
     );
   }
 }
