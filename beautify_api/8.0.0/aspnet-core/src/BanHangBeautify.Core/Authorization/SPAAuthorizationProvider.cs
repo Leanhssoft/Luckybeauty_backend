@@ -10,9 +10,6 @@ namespace BanHangBeautify.Authorization
         {
             var pages = context.GetPermissionOrNull(PermissionNames.Pages) ?? context.CreatePermission(PermissionNames.Pages, L("Pages"));
 
-
-
-
             //Công ty
             var congTy = pages.CreateChildPermission(PermissionNames.Pages_CongTy, L("Company"));
             congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Create, L("CreateCompany"));
@@ -25,6 +22,44 @@ namespace BanHangBeautify.Authorization
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Edit, L("EditBranch"));
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Delete, L("DeleteBranch"));
 
+            //Loại Hàng Hóa
+            var loaiHangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa, L("Branch"));
+            loaiHangHoa.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa_Create, L("CreateLoaiHangHoa"));
+            loaiHangHoa.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa_Edit, L("EditLoaiHangHoa"));
+            loaiHangHoa.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa_Delete, L("DeleteLoaiHangHoa"));
+
+            //Hàng Hóa
+            var hangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_HangHoa, L("HangHoa"));
+            hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Create, L("CreateHangHoa"));
+            hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Edit, L("EditHangHoa"));
+            hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Delete, L("DeleteHangHoa"));
+            //Đơn Vị Qui Đổi
+            var donViQuiDoi = pages.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi, L("DonViQuiDoi"));
+            donViQuiDoi.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi_Create, L("CreateDonViQuiDoi"));
+            donViQuiDoi.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi_Edit, L("EditDonViQuiDoi"));
+            donViQuiDoi.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi_Delete, L("DeleteDonViQuiDoi"));
+            #region nhân viên
+            var nhanSu = pages.CreateChildPermission(PermissionNames.Pages_NhanSu, L("Pages_NhanSu"));
+            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Create, L("CreatePages_NhanSu"));
+            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Edit, L("EditPages_NhanSu"));
+            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Delete, L("DeleteNhanSu"));
+
+            var phongBan = pages.CreateChildPermission(PermissionNames.Pages_PhongBan, L("PhongBan"));
+            phongBan.CreateChildPermission(PermissionNames.Pages_PhongBan_Create, L("CreatePhongBan"));
+            phongBan.CreateChildPermission(PermissionNames.Pages_PhongBan_Edit, L("EditPhongBan"));
+            phongBan.CreateChildPermission(PermissionNames.Pages_PhongBan_Delete, L("DeletePhongBan"));
+
+            var chucVu = pages.CreateChildPermission(PermissionNames.Pages_ChucVu, L("ChucVu"));
+            chucVu.CreateChildPermission(PermissionNames.Pages_ChucVu_Create, L("CreateChucVu"));
+            chucVu.CreateChildPermission(PermissionNames.Pages_ChucVu_Edit, L("EditChucVu"));
+            chucVu.CreateChildPermission(PermissionNames.Pages_ChucVu_Delete, L("DeleteChucVu"));
+
+            var quaTrinhCongTac = pages.CreateChildPermission(PermissionNames.Pages_QuaTrinhCongTac, L("QuaTrinhCongTac"));
+            quaTrinhCongTac.CreateChildPermission(PermissionNames.Pages_QuaTrinhCongTac_Create, L("CreateQuaTrinhCongTac"));
+            quaTrinhCongTac.CreateChildPermission(PermissionNames.Pages_QuaTrinhCongTac_Edit, L("EditQuaTrinhCongTac"));
+            quaTrinhCongTac.CreateChildPermission(PermissionNames.Pages_QuaTrinhCongTac_Delete, L("DeleteQuaTrinhCongTac"));
+
+            #endregion
 
             //adminsitrantion
             var administration = pages.CreateChildPermission(PermissionNames.Pages_Administration, L("Administration"));

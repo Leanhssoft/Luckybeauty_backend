@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.DonViQuiDoi
 {
+    [AbpAuthorize(PermissionNames.Pages_DonViQuiDoi)]
     public class DonViQuiDoiAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_DonViQuiDoi, Guid> _repository;
@@ -68,7 +71,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
         }
         public async Task<ListResultDto<DM_DonViQuiDoi>> GetAll(DonViQuiDoiPagedRequestResultDto input)
         {
-            var lstDonViQuiDoi = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstDonViQuiDoi = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstDonViQuiDoi = lstDonViQuiDoi.

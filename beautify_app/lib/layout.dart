@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 //import 'package:beautify_app/components/sideMenu.dart';
 import 'package:flutter/material.dart';
+
 import 'package:beautify_app/helper/responsivesLayout.dart';
 import 'package:beautify_app/widgets/large_screen.dart';
 import 'package:beautify_app/widgets/small_screen.dart';
@@ -9,9 +10,11 @@ import 'package:beautify_app/widgets/top_bar.dart';
 import 'components/sideMenu.dart';
 
 class SiteLayout extends StatelessWidget {
+  Widget child;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-   SiteLayout({
+  SiteLayout({
     Key? key,
+    required this.child,
   }) : super(key: key);
 
   @override
@@ -19,11 +22,11 @@ class SiteLayout extends StatelessWidget {
     return Scaffold(
       key: scaffoldKey,
       appBar: TopBarNavigation(context, scaffoldKey),
-      body:const ResponsiveWidget(
-        largeScreen: LargeScreen(),
-        mediumScreen: LargeScreen(),
-        smallScreen: SmallScreen(),
-        customScreen: LargeScreen(),
+      body: ResponsiveWidget(
+        largeScreen: LargeScreen(child: child,),
+        mediumScreen: LargeScreen(child: child),
+        smallScreen: SmallScreen(child: child),
+        customScreen: LargeScreen(child: child),
       ),
       drawer: const SideMenu(),
     );

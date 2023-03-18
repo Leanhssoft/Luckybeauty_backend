@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using BanHangBeautify.Entities;
 
 namespace BanHangBeautify.AppDanhMuc.AppCuaHang.Dto
 {
-    internal class CuaHangMapProfile
+    public class CuaHangMapProfile : Profile
     {
+        public CuaHangMapProfile()
+        {
+            CreateMap<CuaHangDto, HT_CongTy>().ReverseMap();
+            CreateMap<HT_CongTy, CreateOrEditCuaHangDto>().ReverseMap();
+        }
     }
 }

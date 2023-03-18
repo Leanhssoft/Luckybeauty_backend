@@ -18,5 +18,6 @@
   <ItemGroup>
     <Folder Include="Bookings\Booking\" />
     <Folder Include="Bookings\BookingDetails\" />
+    <Folder Include="NhanSu\LichLamViec\" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.ChucVu.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.ChucVu
 {
+    [AbpAuthorize(PermissionNames.Pages_ChucVu)]
     public class ChucVuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_ChucVu, Guid> _repository;

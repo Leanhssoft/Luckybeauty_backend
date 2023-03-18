@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.CaLamViec.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.CaLamViec
 {
+    [AbpAuthorize(PermissionNames.Pages_CaLamViec)]
     public class CaLamViecAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_CaLamViec, Guid> _repository;

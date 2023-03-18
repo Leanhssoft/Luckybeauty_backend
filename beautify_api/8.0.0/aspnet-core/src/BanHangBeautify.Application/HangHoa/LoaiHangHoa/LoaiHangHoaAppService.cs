@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.HangHoa.LoaiHangHoa.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -11,17 +13,20 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.LoaiHangHoa
 {
+    [AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa)]
     public class LoaiHangHoaAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_LoaiHangHoa, Guid> _repository;
-        public LoaiHangHoaAppService(IRepository<DM_LoaiHangHoa, Guid> repository)
+        private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
+        public LoaiHangHoaAppService(IRepository<DM_LoaiHangHoa, Guid> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository)
         {
             _repository = repository;
+            _hangHoaRepository = hangHoaRepository;
         }
         public async Task<ListResultDto<LoaiHangHoaDto>> GetAll(LoaiHangHoaPagedResultRequestDto input)
         {
             ListResultDto<LoaiHangHoaDto> result = new ListResultDto<LoaiHangHoaDto>();
-            var loaiHangHoas = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var loaiHangHoas = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 loaiHangHoas = loaiHangHoas.Where(x => x.TenLoai.Contains(input.Keyword) || x.MaLoai.Contains(input.Keyword)).ToList();
@@ -65,6 +70,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             data.TrangThai = 0;
             data.TenLoai = dto.TenLoai;
             data.MaLoai = dto.MaLoai;
+            data.IsDeleted = false;
             var result = ObjectMapper.Map<LoaiHangHoaDto>(data);
             await _repository.InsertAsync(data);
             return result;
@@ -78,6 +84,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             data.TrangThai = dto.TrangThai;
             data.TenLoai = dto.TenLoai;
             data.MaLoai = dto.MaLoai;
+            data.IsDeleted = false;
             var result = ObjectMapper.Map<LoaiHangHoaDto>(data);
             await _repository.UpdateAsync(data);
             return result;
@@ -97,6 +104,27 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
                 result = ObjectMapper.Map<LoaiHangHoaDto>(checkExist);
 
             }
+            return result;
+        }
+        public async Task<ListResultDto<LoaiHangHoaInfoDto>> GetAllLoaiHangHoaInfo()
+        {
+            var result = new ListResultDto<LoaiHangHoaInfoDto>();
+            List<LoaiHangHoaInfoDto> lstData =new List<LoaiHangHoaInfoDto>();
+            var loaiDichVus = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)&&x.IsDeleted==false).ToListAsync();
+            if (loaiDichVus!=null||loaiDichVus.Count>0)
+            {
+                foreach (var item in loaiDichVus)
+                {
+                    LoaiHangHoaInfoDto rdo = new LoaiHangHoaInfoDto();
+                    rdo.Id = item.Id;
+                    rdo.MaLoai = item.MaLoai;
+                    rdo.TenLoai = item.TenLoai;
+                    var dichVus = _hangHoaRepository.GetAll().Where(x=>x.IdLoaiHangHoa==item.Id && x.TenantId ==(AbpSession.TenantId??1)&& x.IsDeleted==false).Select(x=>x.TenHangHoa).ToList();
+                    rdo.DichVus = dichVus;
+                    lstData.Add(rdo);    
+                }
+            }
+            result.Items = lstData;
             return result;
         }
     }

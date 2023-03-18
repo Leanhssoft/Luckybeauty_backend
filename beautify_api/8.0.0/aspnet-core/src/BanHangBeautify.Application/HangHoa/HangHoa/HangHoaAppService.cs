@@ -1,7 +1,9 @@
 ﻿
 
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
+    [AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa)]
     public class HangHoaAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_HangHoa, Guid> _repository;
@@ -69,7 +72,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
         public async Task<ListResultDto<DM_HangHoa>> GetAll(HangHoaPagedResultRequestDto input)
         {
             ListResultDto<DM_HangHoa> result = new ListResultDto<DM_HangHoa>();
-            var lstHangHoa = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstHangHoa = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstHangHoa = lstHangHoa.Where(x => x.MaHangHoa.Contains(input.Keyword) || x.TenHangHoa.Contains(input.Keyword)).ToList();

@@ -2,6 +2,7 @@ import 'package:beautify_app/Models/PermissionAndMenu/UserPermission.dart';
 import 'package:beautify_app/Service/permissionService.dart';
 import 'package:beautify_app/components/ExpansionTileMenu.dart';
 import 'package:beautify_app/components/SignOut.dart';
+import 'package:beautify_app/routing/routes.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/PermissionAndMenu/DrawerItem.dart';
@@ -37,31 +38,32 @@ class _SideMenuState extends State<SideMenu> {
     return Drawer(
       backgroundColor: const Color(0xFFFFFFFF),
       child: SingleChildScrollView(
-        child:
-          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Column(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ...buildDrawerItems(drawerMenu.items, context),
-            ],
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                 const Divider(),
-                SignOut(
-                    buildContext: context,
-                    item: DrawerItem(
-                        title: "Đăng xuất",
-                        icon: Icons.logout,
-                        permission: null,
-                        route: "/auth")),
-              ],
-            ),
-          )
-        ]),
+              Column(
+                children: [
+                  ...buildDrawerItems(drawerMenu.items, context),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 8, bottom: 8, left: 16, right: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Divider(),
+                    SignOut(
+                        buildContext: context,
+                        item: DrawerItem(
+                            title: "Đăng xuất",
+                            icon: Icons.logout,
+                            permission: null,
+                            route: "/auth")),
+                  ],
+                ),
+              )
+            ]),
       ),
     );
   }
@@ -78,7 +80,6 @@ List<Widget> buildDrawerItems(
           child: ListTileMenu(
             buildContext: buildContext,
             item: item,
-            selected: item.route.toString()=="/overview"?true:false,
           )));
     } else {
       widgets.add(Padding(

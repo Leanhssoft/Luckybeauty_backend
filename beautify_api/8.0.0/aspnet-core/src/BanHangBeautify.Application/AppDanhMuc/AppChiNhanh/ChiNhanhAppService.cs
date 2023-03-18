@@ -5,6 +5,7 @@ using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,25 +21,35 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             _chiNhanhRepository = chiNhanhRepository;
         }
         [HttpGet]
-        public async Task<ListResultDto<DM_ChiNhanh>> GetAllChiNhanh()
+        public async Task<ListResultDto<DM_ChiNhanh>> GetAllChiNhanh(PagedResultRequestDto input, string keyWord)
         {
             ListResultDto<DM_ChiNhanh> result = new ListResultDto<DM_ChiNhanh>();
-            var chiNhanhs = await _chiNhanhRepository.GetAllListAsync();
-            result.Items = chiNhanhs.Where(x => x.IsDeleted == false).ToList();
+            var chiNhanhs = await _chiNhanhRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            if (!string.IsNullOrEmpty(keyWord))
+            {
+                chiNhanhs = chiNhanhs.Where(x => x.MaSoThue.Contains(keyWord) || x.TenChiNhanh.Contains(keyWord) || x.DiaChi.Contains(keyWord) || x.SoDienThoai.Contains(keyWord)).ToList();
+            }
+            input.MaxResultCount = 10;
+            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * 10 : 0;
+            result.Items = chiNhanhs.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return result;
         }
+        public async Task<DM_ChiNhanh> GetChiNhanh(Guid id)
+        {
+            return await _chiNhanhRepository.GetAsync(id);
+        }
         [HttpPost]
-        public async Task CreateOrEditChiNhanh(CreateChiNhanhDto dto)
+        public async Task<ChiNhanhDto> CreateOrEditChiNhanh(CreateChiNhanhDto dto)
         {
             var exits = await _chiNhanhRepository.FirstOrDefaultAsync(dto.Id);
             if (exits == null)
             {
-                await Create(dto);
+                return await Create(dto);
             }
-            else await Edit(dto, exits);
+            else return await Edit(dto, exits);
         }
         [NonAction]
-        public async Task Create(CreateChiNhanhDto dto)
+        public async Task<ChiNhanhDto> Create(CreateChiNhanhDto dto)
         {
             DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
             chiNhanh.Id = Guid.NewGuid();
@@ -55,11 +66,13 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             chiNhanh.NgayTao = DateTime.Now;
             chiNhanh.IdCongTy = dto.IdCongTy;
             chiNhanh.CreationTime = DateTime.Now;
+            var result = ObjectMapper.Map<ChiNhanhDto>(chiNhanh);
             await _chiNhanhRepository.InsertAsync(chiNhanh);
+            return result;
             //return ObjectMapper.Map<ChiNhanhDto>(dto);
         }
         [NonAction]
-        public async Task Edit(CreateChiNhanhDto dto, DM_ChiNhanh chiNhanh)
+        public async Task<ChiNhanhDto> Edit(CreateChiNhanhDto dto, DM_ChiNhanh chiNhanh)
         {
             chiNhanh.MaChiNhanh = dto.MaChiNhanh;
             chiNhanh.TenChiNhanh = dto.TenChiNhanh;
@@ -72,8 +85,9 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             chiNhanh.TenantId = AbpSession.TenantId ?? 1;
             chiNhanh.LastModifierUserId = AbpSession.UserId;
             chiNhanh.NgaySua = DateTime.Now;
+            var result = ObjectMapper.Map<ChiNhanhDto>(chiNhanh);
             await _chiNhanhRepository.UpdateAsync(chiNhanh);
-            //return ObjectMapper.Map<ChiNhanhDto>(dto);
+            return result;
         }
         [HttpPost]
         public async Task<bool> DeleteChiNhanh(Guid Id)

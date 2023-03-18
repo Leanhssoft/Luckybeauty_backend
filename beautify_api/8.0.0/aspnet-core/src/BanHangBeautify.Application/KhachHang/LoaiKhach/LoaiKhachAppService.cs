@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.LoaiKhach.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.LoaiKhach
 {
+    [AbpAuthorize(PermissionNames.Pages_LoaiKhach)]
     public class LoaiKhachAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_LoaiKhach, Guid> _repository;
@@ -67,7 +70,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         public async Task<ListResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input)
         {
             ListResultDto<DM_LoaiKhach> ListResultDto = new ListResultDto<DM_LoaiKhach>();
-            var lstData = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstData = lstData.Where(x => x.TenLoai.Contains(input.Keyword) || x.MaLoai.Contains(input.Keyword)).ToList();

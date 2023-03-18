@@ -1,12 +1,10 @@
-import 'package:beautify_app/controllers/naviagation_controller.dart';
-import 'package:beautify_app/layout.dart';
-import 'package:beautify_app/screens/app/account/login/LoginScreen.dart';
 import 'package:beautify_app/screens/app/account/register/RegisterScreen.dart';
 import 'package:beautify_app/screens/app/admin/role/role_screen.dart';
 import 'package:beautify_app/screens/app/admin/tenant/TenantScreen.dart';
 import 'package:beautify_app/screens/app/admin/user/user_screen.dart';
 import 'package:beautify_app/screens/app/dich_vu/dichVuScreen.dart';
 import 'package:beautify_app/screens/app/lich_hen/lichHenScreen.dart';
+import 'package:beautify_app/screens/app/nhan_vien/nhanhVienScreen.dart';
 import 'package:beautify_app/screens/main/HomeScreen.dart';
 import 'package:beautify_app/widgets/AuthenWidget.dart';
 import 'package:flutter/material.dart';
@@ -15,13 +13,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_localizations/syncfusion_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:month_year_picker/month_year_picker.dart';
-
-import 'components/routing/routes.dart';
-import 'controllers/menu_controller.dart';
+import 'routing/routes.dart';
 
 void main() {
-  Get.put(MenuBeautyController());
-  Get.put(NavigationController());
   runApp(const MyApp());
 }
 
@@ -32,15 +26,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       initialRoute: '/auth',
-        unknownRoute: GetPage(name: '/not-found', page: () =>const LoginScreen(), transition: Transition.fadeIn),
-        getPages: [
-        GetPage(name: rootRoute, page: () {
-          return SiteLayout();
-        }),
-        GetPage(name: authenticationPageRoute, page: () =>const AuthenWidget()),
-        GetPage(name: registerPageRoute, page: () =>const RegisterScreen()),
-      ],
-      title: 'Flutter Demo',
+      routes: {
+        rootRoute: (context) => const AuthenWidget(),
+        "/home": (context) => const HomeScreen(),
+        overviewPageRoute: (context) => const HomeScreen(),
+        nhanVienPageRoute: (context) => const NhanVienScreen(),
+        userPageRoute: (context) => const UserScreen(),
+        rolePageRoute: (context) => const RoleScreen(),
+        tenantPageRoute: (context) => const TenantScreen(),
+        appointmentPageRoute: (context) => const CalendarWorkingPage(),
+        settingsPageRoute: (context) => const HomeScreen(),
+        baoCaoPageRoute: (context) => const HomeScreen(),
+        '/auth': (context) => const AuthenWidget(),
+        registerPageRoute: (context) => const RegisterScreen(),
+        dichVuPageRoute: (context) => const DichVuScreen(),
+      },
       debugShowCheckedModeBanner: false,
       color: Colors.white,
       localizationsDelegates: const [

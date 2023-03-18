@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.KhachHang
 {
+    [AbpAuthorize(PermissionNames.Pages_KhachHang)]
     public class KhachHangAppService : SPAAppServiceBase
     {
         private IRepository<DM_KhachHang, Guid> _repository;
@@ -67,7 +70,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<ListResultDto<DM_KhachHang>> GetAll(PagedKhachHangResultRequestDto input)
         {
             ListResultDto<DM_KhachHang> ListResultDto = new ListResultDto<DM_KhachHang>();
-            var lstData = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstData = lstData.Where(

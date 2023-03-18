@@ -1,4 +1,4 @@
-import 'package:beautify_app/components/routing/routes.dart';
+import 'package:beautify_app/routing/routes.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/PermissionAndMenu/DrawerItem.dart';

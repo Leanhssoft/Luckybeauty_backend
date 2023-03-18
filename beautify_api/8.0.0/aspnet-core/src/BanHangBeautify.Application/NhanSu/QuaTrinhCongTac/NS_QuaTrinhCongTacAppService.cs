@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.QuaTrinhCongTac.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
 {
+    [AbpAuthorize(PermissionNames.Pages_QuaTrinhCongTac)]
     public class NS_QuaTrinhCongTacAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _repository;
