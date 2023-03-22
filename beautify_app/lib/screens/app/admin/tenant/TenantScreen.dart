@@ -3,7 +3,6 @@ import 'package:beautify_app/layout.dart';
 import 'package:beautify_app/screens/app/admin/tenant/CreateOrUpdateTenantModal.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_table/responsive_table.dart';
-import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class TenantScreen extends StatefulWidget {
   const TenantScreen({super.key});

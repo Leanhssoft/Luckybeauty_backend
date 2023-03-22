@@ -1,7 +1,6 @@
+
 import 'package:beautify_app/routing/routes.dart';
 import 'package:flutter/material.dart';
-
-import '../Models/PermissionAndMenu/DrawerItem.dart';
 import '../Models/PermissionAndMenu/DrawerItem.dart';
 import '../Models/PermissionAndMenu/UserPermission.dart';
 
@@ -75,14 +74,19 @@ class DrawerMenu {
 
     // filter items based on user permissions
     final filteredItems = allItems
-        .where((item) => allowedPermissions.contains(item.permission))
+        .where((item) => allowedPermissions.contains(item.permission)||
+                item.permission == '' ||
+                item.permission == 'Pages')
         .toList();
 
     // recursively filter children of items with children
     return filteredItems.map((item) {
       if (item.children != null) {
         final List<DrawerItem> filteredChildren = item.children!
-            .where((child) => allowedPermissions.contains(child.permission))
+            .where((child) =>
+                allowedPermissions.contains(child.permission) ||
+                child.permission == '' ||
+                child.permission == 'Pages')
             .toList();
 
         return item.copyWith(children: filteredChildren);

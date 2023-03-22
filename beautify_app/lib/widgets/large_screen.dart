@@ -1,12 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
+import 'package:beautify_app/Models/PermissionAndMenu/UserPermission.dart';
+
 import '../components/sideMenu.dart';
 
 class LargeScreen extends StatefulWidget {
+  UserPermission user;
   Widget child;
   LargeScreen({
     Key? key,
+    required this.user,
     required this.child,
   }) : super(key: key);
 
@@ -19,7 +23,7 @@ class _LargeScreenState extends State<LargeScreen> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: SideMenu()),
+        Expanded(child: SideMenu(user: widget.user,)),
         Expanded(flex: 5, child: widget.child)
       ],
     );

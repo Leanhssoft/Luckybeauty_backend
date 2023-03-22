@@ -1,13 +1,17 @@
-import 'package:beautify_app/screens/app/admin/role/models/permissionViewModel.dart';
-import 'package:beautify_app/screens/app/admin/role/roleService.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:beautify_app/screens/app/admin/role/models/permissionViewModel.dart';
+import 'package:beautify_app/screens/app/admin/role/roleService.dart';
+
 import 'models/createRoleDto.dart';
 
 class MyAlertDialog extends StatefulWidget {
-  const MyAlertDialog({Key? key}) : super(key: key);
+  const MyAlertDialog({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _MyAlertDialogState createState() => _MyAlertDialogState();

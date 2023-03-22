@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:beautify_app/BASE_CONFIG.dart';
 
 class DichVuService {
-  Future<List<dynamic>> getDichVu() async {
+  Future<List<DichVuViewModel>> getDichVu() async {
     String token = await SessionManager().get("accessToken");
     final response = await http.get(
         Uri.parse('${Constants.BASE_URL}/api/services/app/HangHoa/GetAll'),

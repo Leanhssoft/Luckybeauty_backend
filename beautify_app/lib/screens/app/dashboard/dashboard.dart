@@ -23,7 +23,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const SizedBox(width: 300,child: SideMenu()),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
