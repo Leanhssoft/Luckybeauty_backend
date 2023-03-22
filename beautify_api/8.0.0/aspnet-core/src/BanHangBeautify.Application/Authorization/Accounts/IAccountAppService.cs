@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using BanHangBeautify.Authorization.Accounts.Dto;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Authorization.Accounts
 {

@@ -7,7 +7,7 @@ using BanHangBeautify.EntityFrameworkCore.Seed;
 namespace BanHangBeautify.EntityFrameworkCore
 {
     [DependsOn(
-        typeof(SPACoreModule), 
+        typeof(SPACoreModule),
         typeof(AbpZeroCoreEntityFrameworkCoreModule))]
     public class SPAEntityFrameworkModule : AbpModule
     {

@@ -1,12 +1,6 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BanHangBeautify.Data.Entities;
-using System.Reflection.PortableExecutable;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
@@ -15,10 +9,11 @@ namespace BanHangBeautify.Entities
     {
         public int TenantId { get; set; }
 
-        public Guid IdHangHoa { get; set; }
-        public DM_HangHoa DM_HangHoa { get; set; }
+        public Guid IdDonViQuiDoi { get; set; }
+        [ForeignKey("IdDonViQuiDoi")]
+        public DM_DonViQuiDoi DM_DonViQuiDoi { get; set; }
         public Guid IdDatLich { get; set; }
-        [ForeignKey("IdDatLichChiTiet")]
-        public DatLich_ChiTiet DatLich_ChiTiet { get; set; }
+        [ForeignKey("IdDatLich")]
+        public DatLich DatLich { get; set; }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Abp.MultiTenancy;
+﻿using Abp.MultiTenancy;
+using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Authorization.Accounts.Dto
 {

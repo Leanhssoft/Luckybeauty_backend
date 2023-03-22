@@ -1,28 +1,25 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using Abp.AspNetCore;
+using Abp.AspNetCore.Mvc.Antiforgery;
+using Abp.AspNetCore.SignalR.Hubs;
+using Abp.Castle.Logging.Log4Net;
+using Abp.Dependency;
+using Abp.Extensions;
+using Abp.Json;
+using BanHangBeautify.Configuration;
+using BanHangBeautify.Identity;
+using Castle.Facilities.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Castle.Facilities.Logging;
-using Abp.AspNetCore;
-using Abp.AspNetCore.Mvc.Antiforgery;
-using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
-using BanHangBeautify.Configuration;
-using BanHangBeautify.Identity;
-using Abp.AspNetCore.SignalR.Hubs;
-using Abp.Dependency;
-using Abp.Json;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.IO;
-using BanHangBeautify.Permissions;
-using Microsoft.AspNetCore.Identity;
-using IdentityServer4.AspNetIdentity;
+using System.Linq;
+using System.Reflection;
 
 namespace BanHangBeautify.Web.Host.Startup
 {
@@ -59,33 +56,33 @@ namespace BanHangBeautify.Web.Host.Startup
 
             services.AddSignalR();
 
-           // Configure CORS for angular2 UI
+            // Configure CORS for angular2 UI
 
-           services.AddCors(
-               options => options.AddPolicy(
-                   _defaultCorsPolicyName,
-                   builder => builder
-                       .WithOrigins(
-                           //App: CorsOrigins in appsettings.json can contain more than one address separated by comma.
-                           _appConfiguration["App:CorsOrigins"]
-                               .Split(",", StringSplitOptions.RemoveEmptyEntries)
-                               .Select(o => o.RemovePostFix("/"))
-                               .ToArray()
-                       )
-                       .AllowAnyHeader()
-                       .AllowAnyMethod()
-                       .AllowCredentials()
-               )
-           );
-           //services.AddCors(options =>
-           // {
-           //     options.AddPolicy(_defaultCorsPolicyName, builder =>
-           //     {
-           //         builder.AllowAnyOrigin()
-           //             .AllowAnyHeader()
-           //             .AllowAnyMethod();
-           //     });
-           // });
+            //services.AddCors(
+            //    options => options.AddPolicy(
+            //        _defaultCorsPolicyName,
+            //        builder => builder
+            //            .WithOrigins(
+            //                //App: CorsOrigins in appsettings.json can contain more than one address separated by comma.
+            //                _appConfiguration["App:CorsOrigins"]
+            //                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
+            //                    .Select(o => o.RemovePostFix("/"))
+            //                    .ToArray()
+            //            )
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod()
+            //            .AllowCredentials()
+            //    )
+            //);
+            services.AddCors(options =>
+             {
+                 options.AddPolicy(_defaultCorsPolicyName, builder =>
+                 {
+                     builder.AllowAnyOrigin()
+                         .AllowAnyHeader()
+                         .AllowAnyMethod();
+                 });
+             });
 
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             ConfigureSwagger(services);
@@ -116,7 +113,7 @@ namespace BanHangBeautify.Web.Host.Startup
             app.UseAuthorization();
 
             app.UseAbpRequestLocalization();
-            
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
@@ -137,7 +134,7 @@ namespace BanHangBeautify.Web.Host.Startup
                 options.DisplayRequestDuration(); // Controls the display of the request duration (in milliseconds) for "Try it out" requests.  
             }); // URL: /swagger
         }
-        
+
         private void ConfigureSwagger(IServiceCollection services)
         {
             services.AddSwaggerGen(options =>

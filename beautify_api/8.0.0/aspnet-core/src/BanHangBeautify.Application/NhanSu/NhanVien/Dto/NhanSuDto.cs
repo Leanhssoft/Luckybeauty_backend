@@ -1,16 +1,10 @@
 ﻿using Abp.Application.Services.Dto;
-using BanHangBeautify.Entities;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.NhanVien.Dto
 {
-    public class NhanSuDto :EntityDto<Guid>
+    public class NhanSuDto : EntityDto<Guid>
     {
         public string MaNhanVien { get; set; }
         public string TenNhanVien { get; set; }

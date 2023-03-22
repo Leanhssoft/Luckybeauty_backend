@@ -1,67 +1,60 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+
 import 'package:beautify_app/Models/PermissionAndMenu/UserPermission.dart';
 import 'package:beautify_app/Service/permissionService.dart';
 import 'package:beautify_app/components/ExpansionTileMenu.dart';
 import 'package:beautify_app/components/SignOut.dart';
-import 'package:flutter/material.dart';
+import 'package:beautify_app/routing/routes.dart';
 
 import '../Models/PermissionAndMenu/DrawerItem.dart';
 import '../helper/DrawerMenu.dart';
 import 'ListTitleMenu.dart';
 
 class SideMenu extends StatefulWidget {
-  const SideMenu({super.key});
+  UserPermission user;
+   SideMenu({
+    Key? key,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<SideMenu> createState() => _SideMenuState();
 }
 
 class _SideMenuState extends State<SideMenu> {
-  UserPermission user = UserPermission(user: '', permissions: []);
-
-  @override
-  void initState() {
-    super.initState();
-    getUserPermissions();
-  }
-
-  Future<void> getUserPermissions() async {
-    final user = await UserPermissionServices().getUserPermission();
-    setState(() {
-      this.user = user;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final drawerMenu = DrawerMenu(user);
+    final drawerMenu = DrawerMenu(widget.user);
     return Drawer(
       backgroundColor: const Color(0xFFFFFFFF),
       child: SingleChildScrollView(
-        child:
-          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Column(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ...buildDrawerItems(drawerMenu.items, context),
-            ],
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                 const Divider(),
-                SignOut(
-                    buildContext: context,
-                    item: DrawerItem(
-                        title: "Đăng xuất",
-                        icon: Icons.logout,
-                        permission: null,
-                        route: "/login")),
-              ],
-            ),
-          )
-        ]),
+              Column(
+                children: [
+                  ...buildDrawerItems(drawerMenu.items, context),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 8, bottom: 8, left: 16, right: 16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Divider(),
+                    SignOut(
+                        buildContext: context,
+                        item: DrawerItem(
+                            title: "Đăng xuất",
+                            icon: Icons.logout,
+                            permission: null,
+                            route: "/auth")),
+                  ],
+                ),
+              )
+            ]),
       ),
     );
   }

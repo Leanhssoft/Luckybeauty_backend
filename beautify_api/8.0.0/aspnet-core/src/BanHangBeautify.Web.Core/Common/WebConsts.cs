@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace BanHangBeautify.Web.Common
+﻿namespace BanHangBeautify.Web.Common
 {
     public static class WebConsts
     {
@@ -8,6 +6,6 @@ namespace BanHangBeautify.Web.Common
 
         public static bool SwaggerUiEnabled = true;
         public static bool HangfireDashboardEnabled = true;
-        
+
     }
 }

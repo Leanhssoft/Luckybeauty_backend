@@ -50,6 +50,10 @@ dependencies:
   month_year_picker: ^0.2.0+3
   responsive_table: ^0.2.0+2
   get: ^4.6.5
+  data_table_2: ^2.4.1
+  pager: ^0.0.5
+  number_paginator: ^0.2.3
+  #flutter_datetime_picker: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

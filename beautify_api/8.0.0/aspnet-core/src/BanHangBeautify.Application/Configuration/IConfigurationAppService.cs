@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using BanHangBeautify.Configuration.Dto;
+﻿using BanHangBeautify.Configuration.Dto;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Configuration
 {

@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Abp.Authorization.Roles;
+﻿using Abp.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
+using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Authorization.Roles
 {
@@ -23,6 +23,6 @@ namespace BanHangBeautify.Authorization.Roles
         }
 
         [StringLength(MaxDescriptionLength)]
-        public string Description {get; set;}
+        public string Description { get; set; }
     }
 }

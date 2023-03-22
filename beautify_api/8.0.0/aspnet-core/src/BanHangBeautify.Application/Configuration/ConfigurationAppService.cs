@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Runtime.Session;
 using BanHangBeautify.Configuration.Dto;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Configuration
 {

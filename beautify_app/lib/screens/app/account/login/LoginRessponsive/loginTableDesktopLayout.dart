@@ -25,6 +25,37 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
   double? heightTenantId = 45;
   double? heightPassword = 45;
   final _loginService = LoginService();
+
+  void _login() async {
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      var result = await LoginService().login(_tenantNameController.text,
+          _userNameController.text, _passwordController.text, rememberMe);
+
+      if (result == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                'Đăng nhập thành công !',
+                textAlign: TextAlign.center,
+              ),
+              backgroundColor: Color(0xFF64B5F6)),
+        );
+        Navigator.pushNamed(context, "/home");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                'Tài khoản hoặc mật khẩu không chính xác !',
+                textAlign: TextAlign.center,
+              ),
+              backgroundColor: Color(0xFFA80707)),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,21 +148,6 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
                                           borderRadius:
                                               BorderRadius.circular(15)),
                                     ),
-                                    // onTapOutside: (event) async {
-                                    //   var result =
-                                    //       await _loginService.isTenantAvailable(
-                                    //           _tenantNameController.text);
-                                    //   if (result == 0) {
-                                    //     setState(() {
-                                    //       findTenantResult =
-                                    //           "Id cửa hàng không tồn tại";
-                                    //     });
-                                    //   } else {
-                                    //     setState(() {
-                                    //       findTenantResult = "";
-                                    //     });
-                                    //   }
-                                    // },
                                     validator: (value) {
                                       if (findTenantResult.isNotEmpty) {
                                         setState(() {
@@ -141,6 +157,7 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
                                       }
                                       return null;
                                     },
+                                    onEditingComplete: _login,
                                   ),
                                 ),
                               ),
@@ -202,6 +219,7 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
                                       }
                                       return null;
                                     },
+                                    onEditingComplete: _login,
                                   ),
                                 ),
                               ),
@@ -278,6 +296,7 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
                                       }
                                       return null;
                                     },
+                                    onEditingComplete: _login,
                                   ),
                                 ),
                               ),
@@ -334,43 +353,7 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
                                       MediaQuery.of(context).size.width * 0.35,
                                   height: 45,
                                   child: OutlinedButton(
-                                    onPressed: () async {
-                                      // Validate returns true if the form is valid, or false otherwise.
-                                      if (_formKey.currentState!.validate()) {
-                                        // If the form is valid, display a snackbar. In the real world,
-                                        // you'd often call a server or save the information in a database.
-                                        var result = await LoginService().login(
-                                            _tenantNameController.text,
-                                            _userNameController.text,
-                                            _passwordController.text,
-                                            rememberMe);
-
-                                        if (result == true) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                  'Đăng nhập thành công !',
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                backgroundColor:
-                                                    Color(0xFF64B5F6)),
-                                          );
-                                          Navigator.pushNamed(context, "/home");
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content: Text(
-                                                  'Tài khoản hoặc mật khẩu không chính xác !',
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                backgroundColor:
-                                                    Color(0xFFA80707)),
-                                          );
-                                        }
-                                      }
-                                    },
+                                    onPressed: _login,
                                     style: ButtonStyle(
                                       shape: MaterialStateProperty.all<
                                           RoundedRectangleBorder>(

@@ -2,6 +2,6 @@
 {
     public class TenantConfig
     {
-        public int? TenantId { get; set; }  
+        public int? TenantId { get; set; }
     }
 }

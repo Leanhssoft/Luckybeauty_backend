@@ -1,15 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+
+import 'package:beautify_app/Models/PermissionAndMenu/UserPermission.dart';
 
 import '../components/sideMenu.dart';
 
 class LargeScreen extends StatefulWidget {
-  final Widget route;
-  const LargeScreen({
+  UserPermission user;
+  Widget child;
+  LargeScreen({
     Key? key,
-    required this.route,
+    required this.user,
+    required this.child,
   }) : super(key: key);
 
   @override
@@ -21,8 +23,8 @@ class _LargeScreenState extends State<LargeScreen> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: SideMenu()),
-        Expanded(flex: 5,child: widget.route)
+        Expanded(child: SideMenu(user: widget.user,)),
+        Expanded(flex: 5, child: widget.child)
       ],
     );
   }

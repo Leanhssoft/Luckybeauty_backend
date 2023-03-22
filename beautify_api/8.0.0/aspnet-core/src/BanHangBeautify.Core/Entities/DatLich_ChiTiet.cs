@@ -1,13 +1,8 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using BanHangBeautify.Entities;
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Data.Entities
 {
@@ -16,16 +11,12 @@ namespace BanHangBeautify.Data.Entities
         public Guid IdDatLich { set; get; }
         [ForeignKey("IdDatLich")]
         public DatLich DatLich { get; set; }
-        public Guid IdHangHoa { get; set; }
-        [ForeignKey("IdHangHoa")]
-        public DM_HangHoa DM_HangHoa { get; set; }
-       
-        [MaxLength(2000)]
-        public string MoTa { get; set; }
-        public DateTime ThoiGianBatDau { get; set; }
-        public DateTime? ThoiGianKetThuc { get; set; }
-        public int TrangThai { get; set; }
-        public bool IsDelete { get; set; }
+        public Guid IdDonViQuiDoi { get; set; }
+        [ForeignKey("IdDonViQuiDoi")]
+        public DM_DonViQuiDoi DM_DonViQuiDoi { get; set; }
+        public Guid? IdNhanVien { get; set; }
+        //[ForeignKey("IdNhanVien")]
+        //public NS_NhanVien NS_NhanVien { get; set; }
         public int TenantId { get; set; }
     }
 }

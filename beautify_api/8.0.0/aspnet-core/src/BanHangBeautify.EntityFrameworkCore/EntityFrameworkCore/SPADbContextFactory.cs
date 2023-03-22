@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BanHangBeautify.Configuration;
+using BanHangBeautify.Web;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using BanHangBeautify.Configuration;
-using BanHangBeautify.Web;
 
 namespace BanHangBeautify.EntityFrameworkCore
 {
@@ -12,7 +12,7 @@ namespace BanHangBeautify.EntityFrameworkCore
         public SPADbContext CreateDbContext(string[] args)
         {
             var builder = new DbContextOptionsBuilder<SPADbContext>();
-            
+
             /*
              You can provide an environmentName parameter to the AppConfigurations.Get method. 
              In this case, AppConfigurations will try to read appsettings.{environmentName}.json.

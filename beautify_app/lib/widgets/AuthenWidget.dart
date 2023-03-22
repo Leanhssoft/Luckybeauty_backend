@@ -1,10 +1,9 @@
 import 'package:beautify_app/layout.dart';
+import 'package:beautify_app/screens/main/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
-
 import '../Models/PermissionAndMenu/UserPermission.dart';
 import '../screens/app/account/login/LoginScreen.dart';
-import '../screens/main/HomeScreen.dart';
 
 class AuthenWidget extends StatefulWidget {
   const AuthenWidget({super.key});
@@ -59,6 +58,6 @@ class _AuthenWidgetState extends State<AuthenWidget> {
     if (token == "" || token.isEmpty) {
       return const LoginScreen();
     }
-    return SiteLayout(route:const HomeScreen(),);
+    return SiteLayout(child:const HomeScreen(),);
   }
 }

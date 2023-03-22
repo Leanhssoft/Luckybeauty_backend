@@ -1,4 +1,4 @@
-
+import 'package:beautify_app/components/sideMenu.dart';
 import 'package:flutter/material.dart';
 import 'dashboardContent.dart';
 import '../../../components/header.dart';
@@ -28,9 +28,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              HeaderOfPage(openDrawerCallback: _openDrawer),
-              const DashboardContent(),
+            children: const [
+              //HeaderOfPage(openDrawerCallback: _openDrawer),
+              DashboardContent(),
             ],
           ),
         ),

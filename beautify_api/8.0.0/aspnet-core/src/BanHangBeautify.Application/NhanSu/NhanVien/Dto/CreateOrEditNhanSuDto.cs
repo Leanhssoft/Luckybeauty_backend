@@ -1,12 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
-using BanHangBeautify.Entities;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.NhanVien.Dto
 {
@@ -33,6 +27,6 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
 
         //public Guid PhongBan_Id { get; set; }
         public Guid IdChucVu { set; get; }
-        
+
     }
 }
