@@ -1,4 +1,3 @@
-import 'package:beautify_app/components/createOrUpdateModal.dart';
 import 'package:beautify_app/layout.dart';
 import 'package:beautify_app/screens/app/admin/role/models/PagedRoleResultRequestDto.dart';
 import 'package:beautify_app/screens/app/admin/role/roleService.dart';
@@ -29,7 +28,7 @@ class _RoleScreenState extends State<RoleScreen> {
     var maxResult = _rowsPerPage;
     PagedRoleResultRequestDto input = PagedRoleResultRequestDto(
         keyWord: _searchText, skipCount: skipCount, maxResultCount: maxResult);
-    var data = await RoleService().getRoles(input);
+    var data = await RoleService().getAll(input);
     setState(() {
       _data = data;
     });
@@ -77,12 +76,25 @@ class _RoleScreenState extends State<RoleScreen> {
                   child: Align(
                     alignment: Alignment.topRight,
                     child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return const MyAlertDialog();
-                            });
+                      onPressed: () async {
+                        // showDialog(
+                        //     context: context,
+                        //     builder: (BuildContext context) {
+                        //       return const MyAlertDialog();
+                        //     });
+                        var result = await showDialog<RoleDto>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const MyAlertDialog();
+                          },
+                        );
+
+                        // If the result is not null, add the new role to the data list
+                        if (result != null) {
+                          setState(() {
+                            _data.add(result);
+                          });
+                        }
                       },
                       child: const Text("Thêm mới"),
                     ),

@@ -93,7 +93,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             ListResultDto<NS_ChucVu> result = new ListResultDto<NS_ChucVu>();
             try
             {
-                var lstChucVu = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+                var lstChucVu = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
                 if (!string.IsNullOrEmpty(keyWord))
                 {
                     lstChucVu = lstChucVu.Where(x => x.TenChucVu.Contains(keyWord) || x.MaChucVu.Contains(keyWord)).ToList();

@@ -6,6 +6,7 @@ import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:http/http.dart' as http;
 import 'models/PagedRoleResultRequestDto.dart';
 import 'models/RoleDto.dart';
+import 'models/RoleListDto.dart';
 import 'models/permissionViewModel.dart';
 
 class RoleService {
@@ -57,7 +58,7 @@ class RoleService {
     }
   }
 
-  Future<List<RoleDto>> getRoles(
+  Future<List<RoleDto>> getAll(
       PagedRoleResultRequestDto model) async {
     try {
       final token = await SessionManager().get("accessToken");
@@ -75,6 +76,31 @@ class RoleService {
 
         final result =
             items.map((json) => RoleDto.fromJson(json)).toList();
+        return result;
+      } else {
+        throw Exception('Failed to get roles');
+      }
+    } catch (e) {
+      throw Exception('Failed to get roles: $e');
+    }
+  }
+  Future<List<RoleListDto>> getRoles()async{
+    try {
+      final token = await SessionManager().get("accessToken");
+      final response = await http.get(
+        Uri.parse(
+            '${Constants.BASE_URL}/api/services/app/Role/GetRoles'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final items = List<Map<String, dynamic>>.from(data['result']['items']);
+
+        final result =
+            items.map((json) => RoleListDto.fromJson(json)).toList();
         return result;
       } else {
         throw Exception('Failed to get roles');

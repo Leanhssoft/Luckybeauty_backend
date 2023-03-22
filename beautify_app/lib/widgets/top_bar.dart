@@ -7,27 +7,29 @@ import '../constants/styles.dart';
 AppBar TopBarNavigation(BuildContext context, GlobalKey<ScaffoldState> key) =>
     AppBar(
       leading: !ResponsiveWidget.isSmallScreen(context)
-          ? Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Image.asset(
-                    "assets/images/Lucky_beauty.jpg",
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Text(
-                    "Lucky Beauty",
-                    style: GoogleFonts.roboto(
-                      color: const Color(0xFF1F0D1A),
-                      fontSize: 18,
+          ? Container(
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child: Image.asset(
+                      "assets/images/Lucky_beauty.jpg",
+                      width: 24,
+                      height: 24,
                     ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Text(
+                      "Lucky Beauty",
+                      style: GoogleFonts.roboto(
+                        color: const Color(0xFF1F0D1A),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             )
           : IconButton(
               icon: const Icon(Icons.menu),
@@ -63,7 +65,7 @@ AppBar TopBarNavigation(BuildContext context, GlobalKey<ScaffoldState> key) =>
                   ),
                   Expanded(
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       SizedBox(
                         width: 40,
@@ -110,20 +112,24 @@ AppBar TopBarNavigation(BuildContext context, GlobalKey<ScaffoldState> key) =>
                         height: 30,
                         color: lightGrey,
                       ),
-                      if (!ResponsiveWidget.isSmallScreen(context)) Padding(
-                        padding: const EdgeInsets.only(right: 4,left: 4),
-                        child: Text(
-                          "Admin",
-                          style: GoogleFonts.roboto(
-                            color: lightGrey,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                      if (!ResponsiveWidget.isSmallScreen(context))
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4, left: 4),
+                          child: Text(
+                            "Admin",
+                            style: GoogleFonts.roboto(
+                              color: lightGrey,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                        )
+                      else
+                        const SizedBox(
+                          width: 1,
                         ),
-                      ) else const SizedBox(width: 1,),
-                      
                       Padding(
-                        padding: const EdgeInsets.only(left: 4,right: 4),
+                        padding: const EdgeInsets.only(left: 4, right: 4),
                         child: Container(
                           width: 40,
                           height: 40,
