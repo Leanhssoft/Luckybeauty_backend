@@ -58,6 +58,7 @@ namespace BanHangBeautify.PhongBan
             await _phongBanRepository.UpdateAsync(data);
             return result;
         }
+        [HttpPost]
         public async Task<PhongBanDto> Delete(Guid id)
         {
             PhongBanDto result = new PhongBanDto();

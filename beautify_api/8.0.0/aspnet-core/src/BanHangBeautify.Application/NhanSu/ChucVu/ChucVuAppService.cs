@@ -69,6 +69,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             await _repository.InsertAsync(chucVu);
             return result;
         }
+        [HttpPost]
         public async Task<ChucVuDto> Delete(Guid Id)
         {
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == Id);

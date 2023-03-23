@@ -12,7 +12,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public string TenNhanVien { get; set; }
         [MaxLength(2000)]
         public string DiaChi { get; set; }
-        [MaxLength(256)]
+        [MaxLength(256)]     
         public string SoDienThoai { get; set; }
         [MaxLength(256)]
         public string CCCD { get; set; }

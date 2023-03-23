@@ -1,12 +1,12 @@
 import 'package:beautify_app/layout.dart';
 import 'package:beautify_app/screens/app/admin/role/models/PagedRoleResultRequestDto.dart';
+import 'package:beautify_app/screens/app/admin/role/roleDialog.dart';
 import 'package:beautify_app/screens/app/admin/role/roleService.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
+import '../models/RoleDto.dart';
 import 'RoleDataSource.dart';
-import 'models/RoleDto.dart';
-import 'roleDialog.dart';
 
 class RoleScreen extends StatefulWidget {
   const RoleScreen({super.key});
@@ -85,7 +85,7 @@ class _RoleScreenState extends State<RoleScreen> {
                         var result = await showDialog<RoleDto>(
                           context: context,
                           builder: (BuildContext context) {
-                            return const MyAlertDialog();
+                            return CreateOrUpdateRoleModal();
                           },
                         );
 

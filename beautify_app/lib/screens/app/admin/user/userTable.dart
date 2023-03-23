@@ -1,29 +1,48 @@
 import 'package:beautify_app/components/CustomPagination.dart';
-import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
+import 'package:beautify_app/screens/app/admin/role/models/RoleDto.dart';
+import 'package:beautify_app/screens/app/admin/role/roleService.dart';
+import 'package:beautify_app/screens/app/admin/user/models/userDto.dart';
+import 'package:beautify_app/screens/app/admin/user/service/userServices.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class KhachHangTable extends StatefulWidget {
-  const KhachHangTable({super.key});
+import 'models/PagedResultRequestDto.dart';
+
+class UserTable extends StatefulWidget {
+  const UserTable({super.key});
 
   @override
-  State<KhachHangTable> createState() => _KhachHangTableState();
+  State<UserTable> createState() => _UserTableState();
 }
 
-class _KhachHangTableState extends State<KhachHangTable> {
-  bool checkAll = false;
-  List<String> khachHang = ["", "", "", "", "", "", "", "", "", "", "", ""];
+class _UserTableState extends State<UserTable> {
+  List<UserDto> _data = [];
   int _currentPage = 1;
   int perPage = 10;
+  String _searchText = '';
+
+  Future<void> _getUser() async {
+    var skipCount = _currentPage == 1 ? 0 : _currentPage * perPage;
+    var maxResult = perPage;
+    PagedUserResultRequestDto input = PagedUserResultRequestDto(
+        keyWord: _searchText, skipCount: skipCount, maxResultCount: maxResult);
+    var data = await UserServices().GetAllUser(input);
+    print(data);
+    setState(() {
+      _data = data;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _currentPage = 1;
+    _getUser();
   }
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = ScrollController();
+    final ScrollController _scrollController = ScrollController();
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -140,67 +159,68 @@ class _KhachHangTableState extends State<KhachHangTable> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(2),
             height: MediaQuery.of(context).size.height - 270,
-            child: Scrollbar(
-              controller: scrollController,
-              thumbVisibility: true,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
               child: SingleChildScrollView(
-                controller: scrollController,
-                scrollDirection: Axis.horizontal,
-                child: Row(
+                scrollDirection: Axis.vertical,
+                child: Column(
                   children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: [
-                          DataTable(
-                            dividerThickness: 1,
-                            headingTextStyle: const TextStyle(
-                              color: Color(0xFFB2AFB2),
-                            ),
-                            columns: viewColumn,
-                            rows: dataRows(khachHang),
-                          ),
-                        ],
+                    DataTable(
+                      dividerThickness: 1,
+                      headingTextStyle: const TextStyle(
+                        color: Color(0xFFB2AFB2),
                       ),
+                      columns: viewColumn,
+                      rows: dataRows(_data),
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Spacer(),
-              Expanded(
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                          "Hiển thị ${(_currentPage * perPage) - 9}-${_currentPage * perPage} của ${khachHang.length} mục",
-                          style: GoogleFonts.roboto(
-                              color: const Color(0xFF666466), fontSize: 14)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomPaginator(
-                        itemCount: khachHang.length,
-                        perPage: 10,
-                        pagesVisible: 5,
-                        onPageChanged: (curentPage) {
-                          setState(() {
-                            _currentPage = curentPage;
-                          });
-                        },
+          Container(
+            height: 48,
+            decoration: BoxDecoration(
+                color: const Color(0xFFF2EBF0),
+                borderRadius: BorderRadius.circular(2)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Spacer(),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              "Hiển thị ${(_currentPage * perPage) - 9}-${_currentPage * perPage} của ${_data.length} mục",
+                              style: GoogleFonts.roboto(
+                                  color: const Color(0xFF666466),
+                                  fontSize: 14)),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CustomPaginator(
+                            itemCount: _data.length,
+                            perPage: 10,
+                            pagesVisible: 5,
+                            onPageChanged: (curentPage) {
+                              setState(() {
+                                _currentPage = curentPage;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           )
         ],
       ),
@@ -220,7 +240,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
       const DataColumn(
         label: Center(
           child: Text(
-            'Tên khách hàng',
+            'Tên truy cập',
             textAlign: TextAlign.center,
           ),
         ),
@@ -229,64 +249,38 @@ class _KhachHangTableState extends State<KhachHangTable> {
         label: Container(
           alignment: Alignment.center,
           child: const Text(
-            'Số điện thoại',
+            'Họ và tên',
             textAlign: TextAlign.center,
           ),
         ),
       ),
       DataColumn(
-        label: Container(
-          alignment: Alignment.center,
-          child: const Text(
-            'Nhóm khách',
-            textAlign: TextAlign.center,
+          label: Container(
+            alignment: Alignment.center,
+            child: const Text(
+              'Vai trò',
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-      ),
+          numeric: true),
       DataColumn(
-        label: Container(
-          alignment: Alignment.center,
-          child: const Text(
-            'Giới tính',
-            textAlign: TextAlign.center,
+          label: Container(
+            alignment: Alignment.center,
+            child: const Text(
+              'Địa chỉ email',
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-      ),
+          numeric: true),
       DataColumn(
-        label: Container(
-          alignment: Alignment.center,
-          child: const Text(
-            'Nhân viên phục vụ',
-            textAlign: TextAlign.center,
+          label: Container(
+            alignment: Alignment.center,
+            child: const Text(
+              'Trạng thái',
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-      ),
-      DataColumn(
-        label: Container(
-          alignment: Alignment.center,
-          child: const Text(
-            'Tổng chi tiêu',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      DataColumn(
-        label: Container(
-          alignment: Alignment.center,
-          child: const Text(
-            'Cuộc hẹn gần nhất',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      const DataColumn(
-        label: Center(
-          child: Text(
-            'Nguồn',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
+          numeric: true),
       const DataColumn(
         label: Center(
           child: Text(
@@ -299,7 +293,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
   }
 }
 
-List<DataRow> dataRows(List<dynamic> items) {
+List<DataRow> dataRows(List<UserDto> items) {
   int i = 0;
   List<DataRow> dataRow = [];
   for (var item in items) {
@@ -318,53 +312,36 @@ List<DataRow> dataRows(List<dynamic> items) {
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Lương đức mạnh'),
+            child: Text(item.name),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('0348016446'),
+            child: Text(item.fullName),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('VIP'),
+            child: Text(item.roleNames.toString()),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Nam'),
+            child: Text(item.emailAddress.toString()),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Lương đức mạnh'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('5.000.000'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('22-03-2023'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Online',
-              style: GoogleFonts.roboto(
-                  color: const Color(0xFF009EF7), fontSize: 12),
-            ),
+            child: Text(item.isActive == true ? "Hoạt động" : "Đã khóa",
+                style: GoogleFonts.roboto(
+                    color: item.isActive == true
+                        ? const Color(0xFF009EF7)
+                        : Colors.red[200],
+                    fontSize: 12)),
           ),
         ),
         DataCell(

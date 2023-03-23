@@ -42,7 +42,7 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
               ),
               backgroundColor: Color(0xFF64B5F6)),
         );
-        Navigator.pushNamed(context, "/home");
+        Navigator.popAndPushNamed(context, "/home");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

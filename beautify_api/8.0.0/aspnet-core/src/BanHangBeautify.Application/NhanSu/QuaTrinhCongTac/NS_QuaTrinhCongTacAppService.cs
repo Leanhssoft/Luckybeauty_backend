@@ -65,6 +65,7 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             await _repository.UpdateAsync(data);
             return result;
         }
+        [HttpPost]
         public async Task<QuaTrinhConTacDto> Delete(Guid Id)
         {
             var quaTrinhCongTac = await _repository.FirstOrDefaultAsync(x => x.Id == Id);
@@ -79,6 +80,7 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             }
             return new QuaTrinhConTacDto();
         }
+        [HttpPost]
         public async Task DeleteByUser(Guid IdNhanSu)
         {
             var lstQuaTrinhCongTac = await _repository.GetAllListAsync();

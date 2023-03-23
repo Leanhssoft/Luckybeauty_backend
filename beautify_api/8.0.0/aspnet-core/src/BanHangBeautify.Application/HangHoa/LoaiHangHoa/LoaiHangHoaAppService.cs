@@ -89,6 +89,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             await _repository.UpdateAsync(data);
             return result;
         }
+        [HttpPost]
         public async Task<LoaiHangHoaDto> Delete(Guid id)
         {
             LoaiHangHoaDto result = new LoaiHangHoaDto();

@@ -92,6 +92,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
         }
 
         [AbpAuthorize(PermissionNames.Pages_CongTy_Delete)]
+        [HttpPost]
         public async Task<bool> DeleteCongTy(Guid id)
         {
             bool result = false;

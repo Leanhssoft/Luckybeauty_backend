@@ -47,6 +47,7 @@ namespace BanHangBeautify.KhachHang.NhomKhach
 
             return result;
         }
+        [HttpPost]
         public async Task<NhomKhachDto> Delete(Guid id)
         {
             NhomKhachDto result = new NhomKhachDto();
