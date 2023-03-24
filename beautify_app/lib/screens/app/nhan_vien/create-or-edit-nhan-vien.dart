@@ -1,12 +1,16 @@
-import 'package:beautify_app/components/CustomTextFormFieldValidate.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'package:beautify_app/components/CustomTextFormFieldValidate.dart';
 
 import '../../../components/CustomTextFormField.dart';
 
 class CreateOrEditNhanVienModal extends StatefulWidget {
-  const CreateOrEditNhanVienModal({
+  String? idNhanVien;
+  CreateOrEditNhanVienModal({
     Key? key,
+    this.idNhanVien,
   }) : super(key: key);
 
   @override
@@ -360,70 +364,23 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 24),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                      child: Padding(
-                                    padding: const EdgeInsets.only(right: 3),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Chức vụ",
-                                            style: GoogleFonts.roboto(
-                                                fontSize: 14,
-                                                color: const Color(0xFF53545C),
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          CustomTextFormField(
-                                            controller: TextEditingController(),
-                                          ),
-                                        ]),
-                                  )),
-                                  Expanded(
-                                      child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      right: 1,
-                                      left: 1,
-                                    ),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Tỉnh thành",
-                                            style: GoogleFonts.roboto(
-                                                fontSize: 14,
-                                                color: const Color(0xFF53545C),
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          CustomTextFormField(
-                                            controller: TextEditingController(),
-                                          ),
-                                        ]),
-                                  )),
-                                  Expanded(
-                                      child: Padding(
-                                    padding: const EdgeInsets.only(left: 3),
-                                    child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Quận huyện",
-                                            style: GoogleFonts.roboto(
-                                                fontSize: 14,
-                                                color: const Color(0xFF53545C),
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          CustomTextFormField(
-                                            controller: TextEditingController(),
-                                          ),
-                                        ]),
-                                  )),
-                                ],
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 3),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Chức vụ",
+                                        style: GoogleFonts.roboto(
+                                            fontSize: 14,
+                                            color: const Color(0xFF53545C),
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      CustomTextFormField(
+                                        controller: TextEditingController(),
+                                      ),
+                                    ]),
                               ),
                             ),
                             Padding(

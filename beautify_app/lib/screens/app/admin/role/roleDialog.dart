@@ -3,22 +3,37 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:beautify_app/components/CustomTextFormField.dart';
+import 'package:beautify_app/components/CustomTextFormFieldValidate.dart';
+import 'package:beautify_app/screens/app/admin/role/models/RoleDto.dart';
 import 'package:beautify_app/screens/app/admin/role/models/permissionViewModel.dart';
 import 'package:beautify_app/screens/app/admin/role/roleService.dart';
 
 import 'models/createRoleDto.dart';
 
-class MyAlertDialog extends StatefulWidget {
-  const MyAlertDialog({
+class CreateOrUpdateRoleModal extends StatefulWidget {
+  String? id;
+  Function? reload;
+  CreateOrUpdateRoleModal({
     Key? key,
+    this.id,
+    this.reload,
   }) : super(key: key);
 
   @override
-  _MyAlertDialogState createState() => _MyAlertDialogState();
+  _CreateOrUpdateRoleModalState createState() =>
+      _CreateOrUpdateRoleModalState();
 }
 
-class _MyAlertDialogState extends State<MyAlertDialog>
+class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
     with SingleTickerProviderStateMixin {
+  RoleDto roleEdit = RoleDto(
+      id: 0,
+      name: '',
+      displayName: '',
+      normalizedName: '',
+      description: '',
+      grantedPermissions: []);
   Map<String, dynamic> roleData = {
     'roleName': '',
     'displayName': '',
@@ -26,19 +41,33 @@ class _MyAlertDialogState extends State<MyAlertDialog>
     'description': '',
     'grantedPermissions': []
   };
+  double _heightDialog = 380;
   List<String> _permissionsCurent = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Future<void> _saveData() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      // Lưu trữ dữ liệu của tab 'Role'
-      CreateRoleDto role = CreateRoleDto(
-          name: roleData['roleName'],
-          displayName: roleData['displayName'],
-          description: roleData['description'],
-          normalizedName: roleData['roleName'].toString().toUpperCase(),
-          grantedPermissions: _permissionsCurent);
-      await RoleService().createRole(role); // add await here
+
+      if (widget.id == '') {
+        // Lưu trữ dữ liệu của tab 'Role'
+        CreateRoleDto role = CreateRoleDto(
+            name: roleData['roleName'],
+            displayName: roleData['displayName'],
+            description: roleData['description'],
+            normalizedName: roleData['roleName'].toString().toUpperCase(),
+            grantedPermissions: _permissionsCurent);
+        await RoleService().createRole(role); // add await here
+      } else {
+        // Lưu trữ dữ liệu của tab 'Role'
+        RoleDto role = RoleDto(
+            id: int.parse(widget.id.toString()),
+            name: roleData['roleName'],
+            displayName: roleData['displayName'],
+            description: roleData['description'],
+            normalizedName: roleData['roleName'].toString().toUpperCase(),
+            grantedPermissions: _permissionsCurent);
+        await RoleService().updateRole(role); // add await here
+      }
     }
   }
 
@@ -54,9 +83,22 @@ class _MyAlertDialogState extends State<MyAlertDialog>
     });
   }
 
+  Future<RoleDto> getRole(int id) async {
+    var role = await RoleService().getRole(id);
+    setState(() {
+      roleEdit = role;
+      _permissionsCurent = role.grantedPermissions!.cast<String>();
+      if (kDebugMode) {
+        print(_fullPermissions);
+      }
+    });
+    return role;
+  }
+
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
+    getRole(int.parse(widget.id.toString()));
     getFullPermission();
     super.initState();
   }
@@ -72,9 +114,10 @@ class _MyAlertDialogState extends State<MyAlertDialog>
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return AlertDialog(
-          title: const Text('Permissions'),
+          title:
+              Text(widget.id == '' ? 'Thêm mới vai trò' : 'Chỉnh sửa vai trò'),
           content: SizedBox(
-            height: constraints.maxHeight * 0.6, // set height
+            height: _heightDialog,
             width: 560,
             child: Column(
               children: [
@@ -82,15 +125,28 @@ class _MyAlertDialogState extends State<MyAlertDialog>
                   controller: _tabController,
                   tabs: [
                     Tab(
+                        child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _heightDialog = 380;
+                        });
+                      },
                       child: Text("Tên vai trò",
                           style: GoogleFonts.roboto(
                               color: Colors.black.withOpacity(.7))),
+                    )),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _heightDialog = 800;
+                        });
+                      },
+                      child: Tab(
+                        child: Text("Quyền",
+                            style: GoogleFonts.roboto(
+                                color: Colors.black.withOpacity(.7))),
+                      ),
                     ),
-                    Tab(
-                      child: Text("Quyền",
-                          style: GoogleFonts.roboto(
-                              color: Colors.black.withOpacity(.7))),
-                    )
                   ],
                   indicatorColor: Colors.blue,
                   // Set the label style for the active tab
@@ -101,6 +157,7 @@ class _MyAlertDialogState extends State<MyAlertDialog>
                     controller: _tabController,
                     children: [
                       RoleForm(
+                        role: roleEdit,
                         formKey: _formKey,
                         onRoleSave: (Map<String, dynamic> data) {
                           roleData.addAll(data);
@@ -109,8 +166,9 @@ class _MyAlertDialogState extends State<MyAlertDialog>
                       PermissionList(
                         fullPermissions: _fullPermissions,
                         selectedPermissions: _permissionsCurent,
-                        onSelectedPermissionsChanged: (p0) =>
-                            {_permissionsCurent = p0},
+                        onSelectedPermissionsChanged: (p0) => {
+                          _permissionsCurent = p0,
+                        },
                       )
                     ],
                   ),
@@ -256,11 +314,13 @@ class _PermissionListState extends State<PermissionList>
 
 class RoleForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
+  final RoleDto? role;
   final Function(Map<String, dynamic> roleData) onRoleSave;
 
-  RoleForm({
+  const RoleForm({
     Key? key,
     required this.formKey,
+    this.role,
     required this.onRoleSave,
   }) : super(key: key);
 
@@ -276,41 +336,66 @@ class _RoleFormState extends State<RoleForm>
   @override
   Widget build(BuildContext context) {
     return AutomaticKeepAlive(
-      child: Form(
-        key: widget.formKey,
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Role Name',
+      child: Center(
+        child: Form(
+          key: widget.formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Text(
+                  "Vai trò",
+                  style: GoogleFonts.roboto(
+                      fontSize: 14,
+                      color: const Color(0xFF53545C),
+                      fontWeight: FontWeight.bold),
+                ),
               ),
-              onSaved: (value) {
-                widget.onRoleSave({'roleName': value});
-              },
-              validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Please enter role name';
-                }
-                return null;
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Display Name',
+              CustomTextFormFieldValidate(
+                controller: TextEditingController(text: widget.role!.name),
+                textValidate: 'Tên vai trò không được để trống',
+                onSave: (value) {
+                  widget.onRoleSave({'roleName': value});
+                },
               ),
-              onSaved: (value) {
-                widget.onRoleSave({'displayName': value});
-              },
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Description',
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Text(
+                  "Tên hiển thị",
+                  style: GoogleFonts.roboto(
+                      fontSize: 14,
+                      color: const Color(0xFF53545C),
+                      fontWeight: FontWeight.bold),
+                ),
               ),
-              onSaved: (value) {
-                widget.onRoleSave({'description': value}); // change to this
-              },
-            ),
-          ],
+              CustomTextFormFieldValidate(
+                controller:
+                    TextEditingController(text: widget.role!.displayName),
+                textValidate: 'Tên vai trò không được để trống',
+                onSave: (value) {
+                  widget.onRoleSave({'displayName': value});
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Text(
+                  "Mô tả",
+                  style: GoogleFonts.roboto(
+                      fontSize: 14,
+                      color: const Color(0xFF53545C),
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              CustomTextFormField(
+                controller:
+                    TextEditingController(text: widget.role!.description),
+                onSaved: (value) {
+                  widget.onRoleSave({'description': value}); // change to this
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

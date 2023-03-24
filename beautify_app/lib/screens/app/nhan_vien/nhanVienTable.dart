@@ -1,29 +1,36 @@
 import 'package:beautify_app/components/CustomPagination.dart';
+import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_model.dart';
+import 'package:beautify_app/screens/app/dich_vu/service/dichVuService.dart';
 import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class KhachHangTable extends StatefulWidget {
-  const KhachHangTable({super.key});
+class NhanVienTable extends StatefulWidget {
+  const NhanVienTable({super.key});
 
   @override
-  State<KhachHangTable> createState() => _KhachHangTableState();
+  State<NhanVienTable> createState() => _NhanVienTableState();
 }
 
-class _KhachHangTableState extends State<KhachHangTable> {
+class _NhanVienTableState extends State<NhanVienTable> {
   bool checkAll = false;
-  List<String> khachHang = ["", "", "", "", "", "", "", "", "", "", "", ""];
   int _currentPage = 1;
   int perPage = 10;
+  final List<dynamic> _data = ["", "", "", "", "", "", ""];
+  Future<void> _loadData() async {
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _currentPage = 1;
+    _loadData();
   }
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = ScrollController();
+    final ScrollController _scrollController = ScrollController();
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -140,67 +147,73 @@ class _KhachHangTableState extends State<KhachHangTable> {
             ),
           ),
           Container(
+            alignment: Alignment.topCenter,
             padding: const EdgeInsets.all(2),
             height: MediaQuery.of(context).size.height - 270,
-            child: Scrollbar(
-              controller: scrollController,
-              thumbVisibility: true,
-              child: SingleChildScrollView(
-                controller: scrollController,
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: [
-                          DataTable(
-                            dividerThickness: 1,
-                            headingTextStyle: const TextStyle(
-                              color: Color(0xFFB2AFB2),
-                            ),
-                            columns: viewColumn,
-                            rows: dataRows(khachHang),
+            width: MediaQuery.of(context).size.width,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: [
+                        DataTable(
+                          dividerThickness: 1,
+                          headingTextStyle: const TextStyle(
+                            color: Color(0xFFB2AFB2),
                           ),
-                        ],
-                      ),
+                          columns: viewColumn,
+                          rows: dataRows(_data),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Spacer(),
-              Expanded(
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                          "Hiển thị ${(_currentPage * perPage) - 9}-${_currentPage * perPage} của ${khachHang.length} mục",
-                          style: GoogleFonts.roboto(
-                              color: const Color(0xFF666466), fontSize: 14)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CustomPaginator(
-                        itemCount: khachHang.length,
-                        perPage: 10,
-                        pagesVisible: 5,
-                        onPageChanged: (curentPage) {
-                          setState(() {
-                            _currentPage = curentPage;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
+          Container(
+            height: 48,
+            decoration: BoxDecoration(
+                color: const Color(0xFFF2EBF0),
+                borderRadius: BorderRadius.circular(2)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Spacer(
+                  flex: 2,
                 ),
-              )
-            ],
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            "Hiển thị ${(_currentPage * perPage) - 9}-${_currentPage * perPage} của ${_data.length} mục",
+                            style: GoogleFonts.roboto(
+                                color: const Color(0xFF666466), fontSize: 14)),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: CustomPaginator(
+                          itemCount: _data.length,
+                          perPage: 10,
+                          pagesVisible: 5,
+                          onPageChanged: (curentPage) {
+                            setState(() {
+                              _currentPage = curentPage;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           )
         ],
       ),
@@ -220,7 +233,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
       const DataColumn(
         label: Center(
           child: Text(
-            'Tên khách hàng',
+            'Tên nhân viên',
             textAlign: TextAlign.center,
           ),
         ),
@@ -235,10 +248,19 @@ class _KhachHangTableState extends State<KhachHangTable> {
         ),
       ),
       DataColumn(
+          label: Container(
+            alignment: Alignment.center,
+            child: const Text(
+              'Giới tính',
+              textAlign: TextAlign.center,
+            ),
+          ),
+          numeric: true),
+      DataColumn(
         label: Container(
           alignment: Alignment.center,
           child: const Text(
-            'Nhóm khách',
+            'Vị trí',
             textAlign: TextAlign.center,
           ),
         ),
@@ -247,7 +269,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
         label: Container(
           alignment: Alignment.center,
           child: const Text(
-            'Giới tính',
+            'Ngày vào làm',
             textAlign: TextAlign.center,
           ),
         ),
@@ -256,33 +278,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
         label: Container(
           alignment: Alignment.center,
           child: const Text(
-            'Nhân viên phục vụ',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      DataColumn(
-        label: Container(
-          alignment: Alignment.center,
-          child: const Text(
-            'Tổng chi tiêu',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      DataColumn(
-        label: Container(
-          alignment: Alignment.center,
-          child: const Text(
-            'Cuộc hẹn gần nhất',
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-      const DataColumn(
-        label: Center(
-          child: Text(
-            'Nguồn',
+            'Trạng thái',
             textAlign: TextAlign.center,
           ),
         ),
@@ -330,41 +326,25 @@ List<DataRow> dataRows(List<dynamic> items) {
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('VIP'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
             child: const Text('Nam'),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Lương đức mạnh'),
+            child: const Text('Admin'),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('5.000.000'),
+            child: const Text('23/03/2023'),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('22-03-2023'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Online',
-              style: GoogleFonts.roboto(
-                  color: const Color(0xFF009EF7), fontSize: 12),
-            ),
+            child: const Text('Hoạt động'),
           ),
         ),
         DataCell(

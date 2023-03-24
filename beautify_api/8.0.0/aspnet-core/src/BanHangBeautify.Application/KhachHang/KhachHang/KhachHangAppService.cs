@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -45,6 +46,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
 
             return result;
         }
+        [HttpPost]
         public async Task<KhachHangDto> Delete(Guid id)
         {
             KhachHangDto result = new KhachHangDto();

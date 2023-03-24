@@ -87,6 +87,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             await _repository.UpdateAsync(nhanSu);
             return result;
         }
+        [HttpPost]
         public async Task<NhanSuDto> Delete(Guid id)
         {
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == id);

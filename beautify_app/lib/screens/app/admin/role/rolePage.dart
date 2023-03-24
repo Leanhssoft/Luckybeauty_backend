@@ -2,52 +2,22 @@
 
 import 'package:beautify_app/components/CustomPagination.dart';
 import 'package:beautify_app/layout.dart';
+import 'package:beautify_app/screens/app/admin/role/roleHeader.dart';
+import 'package:beautify_app/screens/app/admin/role/roleTable.dart';
 import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
 import 'package:beautify_app/screens/app/nhan_vien/nhanVienHeader.dart';
 import 'package:beautify_app/screens/app/nhan_vien/nhanVienTable.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class NhanVienScreen extends StatefulWidget {
-  const NhanVienScreen({super.key});
+class RolePage extends StatefulWidget {
+  const RolePage({super.key});
 
   @override
-  State<NhanVienScreen> createState() => _NhanVienScreenState();
+  State<RolePage> createState() => _RolePageScreenState();
 }
 
-class _NhanVienScreenState extends State<NhanVienScreen> {
-  bool checkAll = false;
-  List<String> nhanVien = [
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
-  ];
-  int _currentPage = 1;
-  int perPage = 10;
-  @override
-  void initState() {
-    super.initState();
-    _currentPage = 1;
-  }
-
-  void _handlePageChanged(int page) {
-    setState(() {
-      _currentPage = page;
-    });
-  }
-
+class _RolePageScreenState extends State<RolePage> {
   @override
   Widget build(BuildContext context) {
     return SiteLayout(
@@ -56,9 +26,9 @@ class _NhanVienScreenState extends State<NhanVienScreen> {
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
-              children: const [
-                NhanVienHeader(),
-                NhanVienTable(),
+              children: [
+                RoleHeader(),
+                RoleTable(parentContext: context),
               ],
             ),
           ),

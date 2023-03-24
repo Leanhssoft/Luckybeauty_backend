@@ -1,50 +1,105 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:beautify_app/screens/app/account/login/LoginScreen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:month_year_picker/month_year_picker.dart';
+import 'package:syncfusion_localizations/syncfusion_localizations.dart';
+
 import 'package:beautify_app/screens/app/account/register/RegisterScreen.dart';
-import 'package:beautify_app/screens/app/admin/role/role_screen.dart';
+import 'package:beautify_app/screens/app/admin/role/rolePage.dart';
 import 'package:beautify_app/screens/app/admin/tenant/TenantScreen.dart';
-import 'package:beautify_app/screens/app/admin/user/user_screen.dart';
+import 'package:beautify_app/screens/app/admin/user/userPage.dart';
 import 'package:beautify_app/screens/app/customer/customerScreen.dart';
 import 'package:beautify_app/screens/app/dich_vu/dichVuPage.dart';
-import 'package:beautify_app/screens/app/dich_vu/dichVuScreen.dart';
 import 'package:beautify_app/screens/app/lich_hen/lichHenScreen.dart';
 import 'package:beautify_app/screens/app/nhan_vien/nhanhVienScreen.dart';
 import 'package:beautify_app/screens/main/HomeScreen.dart';
 import 'package:beautify_app/widgets/AuthenWidget.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:syncfusion_localizations/syncfusion_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:month_year_picker/month_year_picker.dart';
+
 import 'routing/routes.dart';
 
-void main() {
-  runApp(const MyApp());
+final storage = SessionManager();
+
+bool isLoggedIn = false;
+
+void main() async {
+  // Kiểm tra xem người dùng đã đăng nhập hay chưa
+  final token = await storage.get('accessToken');
+  if (token != null) {
+    isLoggedIn = true;
+  }
+  runApp(MyApp(
+    token: token,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? token;
+  const MyApp({
+    Key? key,
+    this.token,
+  }) : super(key: key);
   // This widget is the root of your application.
+
+  Route<dynamic> _onGenerateRoute(RouteSettings settings) {
+    if (token != null && token!.isNotEmpty) {
+      switch (settings.name) {
+        case overviewPageRoute:
+          return MaterialPageRoute(builder: (context) => const HomeScreen());
+        case nhanVienPageRoute:
+          return MaterialPageRoute(
+              builder: (context) => const NhanVienScreen());
+        case userPageRoute:
+          return MaterialPageRoute(builder: (context) => const UserPage());
+        case rolePageRoute:
+          return MaterialPageRoute(builder: (context) => const RolePage());
+        case tenantPageRoute:
+          return MaterialPageRoute(builder: (context) => const TenantScreen());
+        case appointmentPageRoute:
+          return MaterialPageRoute(
+              builder: (context) => const CalendarWorkingPage());
+        case customerPageRoute:
+          return MaterialPageRoute(
+              builder: (context) => const KhachHangScreen());
+        case settingsPageRoute:
+          return MaterialPageRoute(
+              builder: (context) => const KhachHangScreen());
+        case baoCaoPageRoute:
+          return MaterialPageRoute(builder: (context) => const HomeScreen());
+        case dichVuPageRoute:
+          return MaterialPageRoute(builder: (context) => const DichVuPage());
+        default:
+          return MaterialPageRoute(builder: (context) => const HomeScreen());
+      }
+    } else {
+      return MaterialPageRoute(builder: (context) => const AuthenWidget());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: '/auth',
+      initialRoute: isLoggedIn ? overviewPageRoute : authenticationPageRoute,
       routes: {
         rootRoute: (context) => const AuthenWidget(),
-        "/home": (context) => const HomeScreen(),
-        overviewPageRoute: (context) => const HomeScreen(),
-        nhanVienPageRoute: (context) => const NhanVienScreen(),
-        userPageRoute: (context) => const UserScreen(),
-        rolePageRoute: (context) => const RoleScreen(),
-        tenantPageRoute: (context) => const TenantScreen(),
-        appointmentPageRoute: (context) => const CalendarWorkingPage(),
-        customerPageRoute: (context) => const KhachHangScreen(),
-        settingsPageRoute: (context) => const HomeScreen(),
-        baoCaoPageRoute: (context) => const HomeScreen(),
-
+        // "/home": (context) => isLoggedIn ? const HomeScreen():const AuthenWidget(),
+        // overviewPageRoute: (context) => isLoggedIn ? const HomeScreen():const LoginScreen(),
+        // nhanVienPageRoute: (context) =>isLoggedIn ? const NhanVienScreen():const LoginScreen(),
+        // userPageRoute: (context) => isLoggedIn ? const UserPage():const LoginScreen(),
+        // rolePageRoute: (context) =>isLoggedIn ? const RolePage():const LoginScreen(),
+        // tenantPageRoute: (context) => isLoggedIn ?const TenantScreen():const LoginScreen(),
+        // appointmentPageRoute: (context) =>isLoggedIn ?const CalendarWorkingPage():const LoginScreen(),
+        // customerPageRoute: (context) =>isLoggedIn ? const KhachHangScreen():const LoginScreen(),
+        // settingsPageRoute: (context) => isLoggedIn ? const HomeScreen():const AuthenWidget(),
+        // baoCaoPageRoute: (context) => isLoggedIn ? const HomeScreen():const AuthenWidget(),
         '/auth': (context) => const AuthenWidget(),
         registerPageRoute: (context) => const RegisterScreen(),
-        dichVuPageRoute: (context) => const DichVuPage(),
+        //dichVuPageRoute: (context) =>isLoggedIn ? const DichVuPage():const LoginScreen(),
       },
+      onGenerateRoute: _onGenerateRoute,
       debugShowCheckedModeBanner: false,
       color: Colors.white,
       localizationsDelegates: const [

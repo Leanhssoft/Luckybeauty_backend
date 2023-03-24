@@ -10,6 +10,7 @@ using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Roles.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,27 @@ namespace BanHangBeautify.Roles
         }
 
         public override async Task<RoleDto> UpdateAsync(RoleDto input)
+        {
+            CheckUpdatePermission();
+
+            var role = await _roleManager.GetRoleByIdAsync(input.Id);
+
+            ObjectMapper.Map(input, role);
+
+            CheckErrors(await _roleManager.UpdateAsync(role));
+
+            var grantedPermissions = PermissionManager
+                .GetAllPermissions()
+                .Where(p => input.GrantedPermissions.Contains(p.Name))
+                .ToList();
+
+            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
+
+            return MapToEntityDto(role);
+        }
+        [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Create)]
+        [HttpPost]
+        public async Task<RoleDto> UpdateRole(RoleDto input)
         {
             CheckUpdatePermission();
 

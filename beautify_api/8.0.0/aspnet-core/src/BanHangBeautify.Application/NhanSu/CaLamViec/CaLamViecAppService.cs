@@ -62,6 +62,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             await _repository.UpdateAsync(data);
             return result;
         }
+        [HttpPost]
         public async Task<CaLamViecDto> Delete(Guid Id)
         {
             var caLamViec = await _repository.FirstOrDefaultAsync(x => x.Id == Id);

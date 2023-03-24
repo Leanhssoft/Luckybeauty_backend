@@ -15,6 +15,7 @@ using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -105,6 +106,18 @@ namespace BanHangBeautify.Users
             var user = await _userManager.GetUserByIdAsync(input.Id);
             await _userManager.DeleteAsync(user);
         }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Delete)]
+        public async Task DeleteUser(EntityDto<long> input)
+        {
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            user.IsActive = false;
+            user.IsDeleted = true;
+            user.DeleterUserId = AbpSession.UserId;
+            user.DeletionTime = DateTime.Now;
+            await _userManager.UpdateAsync(user);
+        }
+
 
         [AbpAuthorize(PermissionNames.Pages_Users_Activation)]
         public async Task Activate(EntityDto<long> user)

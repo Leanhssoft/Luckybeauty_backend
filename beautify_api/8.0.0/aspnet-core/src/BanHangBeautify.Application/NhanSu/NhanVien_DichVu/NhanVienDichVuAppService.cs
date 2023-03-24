@@ -21,7 +21,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
         {
             return base.CreateAsync(input);
         }
-        [HttpDelete]
+        [HttpPost]
         public override Task DeleteAsync(EntityDto<Guid> input)
         {
             return base.DeleteAsync(input);

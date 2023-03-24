@@ -84,6 +84,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             result.Items = lstHangHoa.Skip(input.SkipCount).Take(input.SkipCount).ToList();
             return result;
         }
+        [HttpPost]
         public async Task<HangHoaDto> Delete(Guid id)
         {
             HangHoaDto result = new HangHoaDto();
