@@ -3,28 +3,41 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.Entities;
+using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
+using BanHangBeautify.HangHoa.HangHoa.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
-    [AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa)]
-    public class HangHoaAppService : SPAAppServiceBase
+    //[AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa)]
+    public class HangHoaAppService : SPAAppServiceBase, IHangHoaAppService
     {
-        private readonly IRepository<DM_HangHoa, Guid> _repository;
-        public HangHoaAppService(IRepository<DM_HangHoa, Guid> repository)
+        private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
+        private readonly IRepository<DM_DonViQuiDoi, Guid> _dmDonViQuiDoi;
+        private readonly IHangHoaRepository _repository;
+        public HangHoaAppService(IRepository<DM_HangHoa, Guid> repository,
+            IHangHoaRepository productRepo,
+            IRepository<DM_DonViQuiDoi, Guid> dvqd
+            )
         {
-            _repository = repository;
+            _dmHangHoa = repository;
+            _dmDonViQuiDoi = dvqd;
+            _repository = productRepo;
         }
-        public async Task<HangHoaDto> CreateOrEdit(CreateOrEditHangHoaDto dto)
+        public async Task<CreateOrEditHangHoaDto> CreateOrEdit(CreateOrEditHangHoaDto dto)
         {
-            var findHangHoa = await _repository.FirstOrDefaultAsync(h => h.Id == dto.Id);
+            var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == dto.Id);
             if (findHangHoa == null)
             {
                 return await Create(dto);
@@ -35,43 +48,72 @@ namespace BanHangBeautify.HangHoa.HangHoa
             }
         }
         [NonAction]
-        public async Task<HangHoaDto> Create(CreateOrEditHangHoaDto dto)
+        public async Task<CreateOrEditHangHoaDto> Create(CreateOrEditHangHoaDto dto)
         {
-            DM_HangHoa hangHoa = new DM_HangHoa();
-            hangHoa.Id = Guid.NewGuid();
-            hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
-            hangHoa.TenHangHoa = dto.TenHangHoa;
-            hangHoa.TrangThai = 0;
+            List<DM_DonViQuiDoi> lstDVT = new();
+            DM_HangHoa hangHoa = ObjectMapper.Map<DM_HangHoa>(dto);
+            Guid productId = Guid.NewGuid();
+            hangHoa.Id = productId;
             hangHoa.TenantId = AbpSession.TenantId ?? 1;
             hangHoa.CreatorUserId = AbpSession.UserId;
             hangHoa.CreationTime = DateTime.Now;
-            var result = ObjectMapper.Map<HangHoaDto>(hangHoa);
-            await _repository.InsertAsync(hangHoa);
+
+            if (dto.DonViQuiDois != null && dto.DonViQuiDois.Count > 0)
+            {
+                foreach (var item in dto.DonViQuiDois)
+                {
+                    DM_DonViQuiDoi dvt = ObjectMapper.Map<DM_DonViQuiDoi>(item);
+                    dvt.Id = Guid.NewGuid();
+                    dvt.TenantId = hangHoa.TenantId;
+                    dvt.IdHangHoa = productId;
+                    dvt.MaHangHoa = await _repository.GetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                    lstDVT.Add(dvt);
+                }
+            }
+            else
+            {
+                DM_DonViQuiDoi dvt = new()
+                {
+                    Id = Guid.NewGuid(),
+                    IdHangHoa = productId,
+                    TenantId = hangHoa.TenantId,
+                    MaHangHoa = await _repository.GetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId),
+                    TenDonViTinh = string.Empty,
+                };
+                lstDVT.Add(dvt);
+            }
+
+            await _dmHangHoa.InsertAsync(hangHoa);
+            await _dmDonViQuiDoi.InsertRangeAsync(lstDVT);
+
+            hangHoa.DonViQuiDois = lstDVT;
+            var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
         }
+
         [NonAction]
-        public async Task<HangHoaDto> Edit(CreateOrEditHangHoaDto dto, DM_HangHoa hangHoa)
+        public async Task<CreateOrEditHangHoaDto> Edit(CreateOrEditHangHoaDto dto, DM_HangHoa hangHoa)
         {
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TrangThai = dto.TrangThai;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
-            var result = ObjectMapper.Map<HangHoaDto>(hangHoa);
-            await _repository.UpdateAsync(hangHoa);
+            var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
+            await _dmHangHoa.UpdateAsync(hangHoa);
             return result;
         }
         public async Task<DM_HangHoa> getDetail(Guid id)
         {
-            return await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            return await _dmHangHoa.FirstOrDefaultAsync(x => x.Id == id);
         }
         public async Task<ListResultDto<DM_HangHoa>> GetAll(HangHoaPagedResultRequestDto input)
         {
             ListResultDto<DM_HangHoa> result = new ListResultDto<DM_HangHoa>();
-            var lstHangHoa = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
-            if (!string.IsNullOrEmpty(input.Keyword))
+            var lstHangHoa = await _dmHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            if (!string.IsNullOrEmpty(input.CommonParam.TextSearch))
             {
-                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.Keyword) || x.TenHangHoa.Contains(input.Keyword)).ToList();
+                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.CommonParam.TextSearch) || x.TenHangHoa.Contains(input.CommonParam.TextSearch)).ToList();
             }
             if (input.SkipCount > 0)
             {
@@ -80,19 +122,23 @@ namespace BanHangBeautify.HangHoa.HangHoa
             result.Items = lstHangHoa.Skip(input.SkipCount).Take(input.SkipCount).ToList();
             return result;
         }
-        [HttpPost]
-        public async Task<HangHoaDto> Delete(Guid id)
+        public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input)
         {
-            HangHoaDto result = new HangHoaDto();
-            var findHangHoa = await _repository.FirstOrDefaultAsync(h => h.Id == id);
+            return await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
+        }
+        [HttpPost]
+        public async Task<CreateOrEditHangHoaDto> Delete(Guid id)
+        {
+            CreateOrEditHangHoaDto result = new();
+            var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == id);
             if (findHangHoa != null)
             {
                 findHangHoa.IsDeleted = true;
                 findHangHoa.TrangThai = 0;
                 findHangHoa.DeletionTime = DateTime.Now;
                 findHangHoa.DeleterUserId = AbpSession.UserId;
-                _repository.Update(findHangHoa);
-                result = ObjectMapper.Map<HangHoaDto>(findHangHoa);
+                _dmHangHoa.Update(findHangHoa);
+                result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
         }
