@@ -1,12 +1,12 @@
 import 'package:beautify_app/layout.dart';
 import 'package:beautify_app/screens/app/admin/user/models/userDto.dart';
+import 'package:beautify_app/screens/app/admin/user/remove/userDataTableSource.dart';
 import 'package:beautify_app/screens/app/admin/user/service/userServices.dart';
-import 'package:beautify_app/screens/app/admin/user/userDataTableSource.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 
-import 'create_or_update_user_modal.dart';
-import 'models/PagedResultRequestDto.dart';
+import '../create_or_update_user_modal.dart';
+import '../models/PagedResultRequestDto.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({Key? key}) : super(key: key);

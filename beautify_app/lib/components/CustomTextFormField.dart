@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final String? hintText;
+  final TextInputType? keyBoardType;
   final Function(String?)? onSaved;
   const CustomTextFormField({
     Key? key,
     required this.controller,
     this.hintText,
+    this.keyBoardType,
     this.onSaved,
   }) : super(key: key);
 
@@ -18,6 +20,7 @@ class CustomTextFormField extends StatelessWidget {
       height: 48,
       child: TextFormField(
         controller: controller,
+        keyboardType: keyBoardType,
         decoration: InputDecoration(
           hintText: hintText,
           contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),

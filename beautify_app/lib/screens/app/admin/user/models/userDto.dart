@@ -8,7 +8,7 @@ class UserDto {
   late String emailAddress;
   late bool isActive;
   late String fullName;
-  late DateTime? lastLoginTime;
+  late String? lastLoginTime;
   late String creationTime;
   late List<dynamic> roleNames;
   late String? nhanSuId;
@@ -50,7 +50,7 @@ class UserDto {
       'emailAddress': emailAddress,
       'isActive': isActive,
       'fullName': fullName,
-      'lastLoginTime': lastLoginTime?.millisecondsSinceEpoch,
+      'lastLoginTime': lastLoginTime,
       'creationTime': creationTime,
       'roleNames': roleNames,
       'nhanSuId': nhanSuId,
@@ -66,9 +66,7 @@ class UserDto {
       emailAddress: map['emailAddress'] as String,
       isActive: map['isActive'] as bool,
       fullName: map['fullName'] as String,
-      lastLoginTime: map['lastLoginTime'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['lastLoginTime'] as int)
-          : null,
+      lastLoginTime: map['lastLoginTime'],
       creationTime: map['creationTime'],
       roleNames: map['roleNames'],
       nhanSuId: map['nhanSuId'],

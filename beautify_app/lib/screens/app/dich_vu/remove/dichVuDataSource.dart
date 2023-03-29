@@ -1,7 +1,5 @@
-import 'package:beautify_app/screens/app/dich_vu/service/dichVuService.dart';
+import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_model.dart';
 import 'package:flutter/material.dart';
-
-import 'Models/dich_vu_model.dart';
 
 class DichVuTableSource extends DataTableSource {
   final List<dynamic> data;

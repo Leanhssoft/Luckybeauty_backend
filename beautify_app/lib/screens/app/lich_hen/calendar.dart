@@ -1,6 +1,7 @@
 import 'package:beautify_app/components/header.dart';
 import 'package:beautify_app/screens/app/lich_hen/SfCalendarView.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_calendar/src/calendar/common/enums.dart';
 
@@ -46,11 +47,16 @@ class _CalendarViewState extends State<CalendarView> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text("Lịch hẹn", style: TextStyle(fontSize: 20)),
+                          children: [
                             Text(
                               "Lịch hẹn",
-                              style: TextStyle(fontSize: 28),
+                              style: GoogleFonts.roboto(
+                                  color: const Color(0xFF4C4B4C), fontSize: 14),
+                            ),
+                            Text(
+                              "Lịch hẹn",
+                              style: GoogleFonts.roboto(
+                                  color: const Color(0xFF4C4B4C), fontSize: 32),
                             ),
                           ],
                         ),

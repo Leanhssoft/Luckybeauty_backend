@@ -59,6 +59,32 @@ namespace BanHangBeautify.Authorization
             quaTrinhCongTac.CreateChildPermission(PermissionNames.Pages_QuaTrinhCongTac_Edit, L("EditQuaTrinhCongTac"));
             quaTrinhCongTac.CreateChildPermission(PermissionNames.Pages_QuaTrinhCongTac_Delete, L("DeleteQuaTrinhCongTac"));
 
+
+            var khachHang = pages.CreateChildPermission(PermissionNames.Pages_KhachHang, L("KhachHang"));
+            khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Create, L("CreateKhahHang"));
+            khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Edit, L("EditKhachHang"));
+            khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Delete, L("DeleteKhachHang"));
+
+
+            var loaiKhachHang = pages.CreateChildPermission(PermissionNames.Pages_LoaiKhach, L("LoaiKhachHang"));
+            loaiKhachHang.CreateChildPermission(PermissionNames.Pages_LoaiKhach_Create, L("CreateLoaiKhahHang"));
+            loaiKhachHang.CreateChildPermission(PermissionNames.Pages_LoaiKhach_Edit, L("EditLoaiKhachHang"));
+            loaiKhachHang.CreateChildPermission(PermissionNames.Pages_LoaiKhach_Delete, L("DeleteLoaiKhachHang"));
+
+            var nguonKhach = pages.CreateChildPermission(PermissionNames.Pages_NguonKhach, L("NguonKhachHang"));
+            nguonKhach.CreateChildPermission(PermissionNames.Pages_NguonKhach_Create, L("CreateNguonKhachHang"));
+            nguonKhach.CreateChildPermission(PermissionNames.Pages_NguonKhach_Edit, L("EditNguonKhachHang"));
+            nguonKhach.CreateChildPermission(PermissionNames.Pages_NguonKhach_Delete, L("DeleteNguonKhachHang"));
+
+            var nhomKhach = pages.CreateChildPermission(PermissionNames.Pages_NhomKhach, L("NhomKhachHang"));
+            nhomKhach.CreateChildPermission(PermissionNames.Pages_NhomKhach_Create, L("CreateNhomKhahHang"));
+            nhomKhach.CreateChildPermission(PermissionNames.Pages_NhomKhach_Edit, L("EditNhomKhachHang"));
+            nhomKhach.CreateChildPermission(PermissionNames.Pages_NhomKhach_Delete, L("DeleteNhomKhachHang"));
+
+            var booking = pages.CreateChildPermission(PermissionNames.Pages_Booking, L("Booking"));
+            booking.CreateChildPermission(PermissionNames.Pages_Booking_Create, L("CreateBooking"));
+            booking.CreateChildPermission(PermissionNames.Pages_Booking_Edit, L("EditBooking"));
+            booking.CreateChildPermission(PermissionNames.Pages_Booking_Delete, L("DeleteBooking"));
             #endregion
 
             //adminsitrantion

@@ -12,23 +12,7 @@ class KhachHangTable extends StatefulWidget {
 
 class _KhachHangTableState extends State<KhachHangTable> {
   bool checkAll = false;
-  List<String> khachHang = [
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
-  ];
+  List<String> khachHang = ["", "", "", "", "", "", "", "", "", "", "", ""];
   int _currentPage = 1;
   int perPage = 10;
   @override
@@ -39,7 +23,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
 
   @override
   Widget build(BuildContext context) {
-    final ScrollController _scrollController = ScrollController();
+    final scrollController = ScrollController();
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
       child: Column(
@@ -54,10 +38,12 @@ class _KhachHangTableState extends State<KhachHangTable> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
+                  flex: 1,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
                     child: SizedBox(
                       height: 32,
+                      width: 194,
                       child: TextField(
                         decoration: InputDecoration(
                             hintText: "Tìm kiếm...",
@@ -70,92 +56,114 @@ class _KhachHangTableState extends State<KhachHangTable> {
                 ),
                 const Spacer(),
                 Expanded(
+                    flex: 2,
                     child: Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: ElevatedButton.icon(
-                            style: const ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll(
-                                    Color(0xFFFFFFFF))),
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.filter_alt_outlined,
-                              color: Color(0xFF666466),
+                        padding: const EdgeInsets.only(right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Container(
+                                decoration:
+                                    const BoxDecoration(color: Colors.white),
+                                width: 32,
+                                height: 32,
+                                child: IconButton(
+                                  style: const ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStatePropertyAll(Colors.white),
+                                  ),
+                                  onPressed: () {},
+                                  iconSize: 16,
+                                  icon: const Icon(
+                                    Icons.filter_alt_rounded,
+                                    color: Color(0xFF666466),
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
                             ),
-                            label: const Text("")),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return const CreateOrEditNhanVienModal();
-                                  });
-                            },
-                            child: const Text("Thêm mới"),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: ElevatedButton.icon(
-                            style: const ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll(
-                                    Color(0xFFFFFFFF))),
-                            onPressed: () {},
-                            icon: const Icon(Icons.download_rounded,
-                                color: Color(0xFF666466)),
-                            label: Text(
-                              "Nhập",
-                              style: GoogleFonts.roboto(
-                                  color: const Color(0xFF666466), fontSize: 12),
-                            )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: ElevatedButton.icon(
-                            style: const ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll(
-                                    Color(0xFFFFFFFF))),
-                            onPressed: () {},
-                            icon: const Icon(Icons.upload,
-                                color: Color(0xFF666466)),
-                            label: Text(
-                              "Xuất",
-                              style: GoogleFonts.roboto(
-                                  color: const Color(0xFF666466), fontSize: 12),
-                            )),
-                      )
-                    ],
-                  ),
-                ))
+                            Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Container(
+                                height: 32,
+                                width: 85,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.download_rounded,
+                                    color: Color(0xFF666466),
+                                    size: 16,
+                                  ),
+                                  label: Text(
+                                    "Nhập",
+                                    style: GoogleFonts.roboto(
+                                      color: const Color(0xFF666466),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: Container(
+                                height: 32,
+                                width: 85,
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                  ),
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.upload,
+                                    color: Color(0xFF666466),
+                                    size: 16,
+                                  ),
+                                  label: Text(
+                                    "Xuất",
+                                    style: GoogleFonts.roboto(
+                                      color: const Color(0xFF666466),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )))
               ],
             ),
           ),
           Container(
+            padding: const EdgeInsets.all(2),
             height: MediaQuery.of(context).size.height - 270,
-            width: MediaQuery.of(context).size.width,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+            child: Scrollbar(
+              controller: scrollController,
+              thumbVisibility: true,
               child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
+                controller: scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Row(
                   children: [
-                    DataTable(
-                      dividerThickness: 1,
-                      headingTextStyle: const TextStyle(
-                        color: Color(0xFFB2AFB2),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: [
+                          DataTable(
+                            dividerThickness: 1,
+                            headingTextStyle: const TextStyle(
+                              color: Color(0xFFB2AFB2),
+                            ),
+                            columns: viewColumn,
+                            rows: dataRows(khachHang),
+                          ),
+                        ],
                       ),
-                      columns: viewColumn,
-                      rows: dataRows(khachHang),
                     ),
                   ],
                 ),
@@ -179,7 +187,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CustomPaginator(
-                        itemCount: 500,
+                        itemCount: khachHang.length,
                         perPage: 10,
                         pagesVisible: 5,
                         onPageChanged: (curentPage) {
@@ -292,15 +300,17 @@ class _KhachHangTableState extends State<KhachHangTable> {
 }
 
 List<DataRow> dataRows(List<dynamic> items) {
+  int i = 0;
   List<DataRow> dataRow = [];
   for (var item in items) {
+    i += 1;
     DataRow row = DataRow(
       cells: [
         DataCell(
           Container(
             alignment: Alignment.center,
-            child: const Text(
-              '1',
+            child: Text(
+              i.toString(),
               textAlign: TextAlign.center,
             ),
           ),

@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.LoaiKhach.Dto;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.KhachHang.LoaiKhach
 {
     [AbpAuthorize(PermissionNames.Pages_LoaiKhach)]
-    public class LoaiKhachAppService : SPAAppServiceBase
+    public class LoaiKhachAppService : SPAAppServiceBase, ILoaiKhachAppService
     {
         private readonly IRepository<DM_LoaiKhach, Guid> _repository;
         public LoaiKhachAppService(IRepository<DM_LoaiKhach, Guid> repository)
@@ -45,6 +46,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
 
             return result;
         }
+        [HttpPost]
         public async Task<LoaiKhachDto> Delete(Guid id)
         {
             LoaiKhachDto result = new LoaiKhachDto();

@@ -90,6 +90,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             result.Items = getDonViQuiDoi;
             return result;
         }
+        [HttpPost]
         public async Task<DonViQuiDoiDto> Delete(Guid id)
         {
             DonViQuiDoiDto result = new DonViQuiDoiDto();

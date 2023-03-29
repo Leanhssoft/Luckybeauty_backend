@@ -1,8 +1,4 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:month_year_picker/month_year_picker.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 class SfCalendarView extends StatelessWidget {
@@ -10,24 +6,34 @@ class SfCalendarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<CalendarView> _allowedViews = <CalendarView>[
+      CalendarView.day,
+      CalendarView.week,
+      CalendarView.month,
+    ];
     return Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(0)),
       child: SfCalendar(
-        allowedViews: const [
-          CalendarView.timelineDay,
-          CalendarView.timelineWeek,
-          CalendarView.timelineWorkWeek,
-          CalendarView.timelineMonth
-        ],
-        monthViewSettings: const MonthViewSettings(showAgenda: true,appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+        allowedViews: _allowedViews,
+        monthViewSettings: const MonthViewSettings(
+            showAgenda: true,
+            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+            showTrailingAndLeadingDates: true),
+        allowDragAndDrop: true,
         showNavigationArrow: true,
         initialSelectedDate: DateTime.now(),
         initialDisplayDate: DateTime.now(),
-        view: CalendarView.month,
+        view: CalendarView.week,
         allowViewNavigation: true,
         showDatePickerButton: true,
+        blackoutDatesTextStyle: const TextStyle(
+            decoration: TextDecoration.lineThrough, color: Colors.red),
+        viewNavigationMode: ViewNavigationMode.snap,
+        timeSlotViewSettings: const TimeSlotViewSettings(
+            numberOfDaysInView: 7,
+            minimumAppointmentDuration: Duration(minutes: 60)),
         firstDayOfWeek: 1,
         timeZone: 'SE Asia Standard Time',
         todayHighlightColor: Colors.blue,

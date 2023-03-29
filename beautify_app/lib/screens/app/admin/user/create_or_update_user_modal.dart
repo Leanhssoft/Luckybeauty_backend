@@ -1,20 +1,23 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:beautify_app/screens/app/admin/role/models/RoleListDto.dart';
-import 'package:beautify_app/screens/app/admin/user/ListRole.dart';
-import 'package:beautify_app/screens/app/admin/user/UserForm.dart';
-import 'package:beautify_app/screens/app/admin/user/service/userServices.dart';
+import 'package:beautify_app/screens/app/admin/user/models/userDto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:beautify_app/screens/app/admin/role/models/RoleListDto.dart';
 import 'package:beautify_app/screens/app/admin/role/models/permissionViewModel.dart';
 import 'package:beautify_app/screens/app/admin/role/roleService.dart';
+import 'package:beautify_app/screens/app/admin/user/CreateUpdateUserForm.dart';
+import 'package:beautify_app/screens/app/admin/user/SelectedListRole.dart';
+import 'package:beautify_app/screens/app/admin/user/service/userServices.dart';
 
 import 'models/CreateUserDto.dart';
 
 class CreateOrUpdateUserModal extends StatefulWidget {
+  final int? id;
   const CreateOrUpdateUserModal({
     Key? key,
+    this.id,
   }) : super(key: key);
 
   @override
@@ -34,25 +37,46 @@ class _CreateOrUpdateUserModalState extends State<CreateOrUpdateUserModal>
     'password': '',
     'nhanSuId': ''
   };
+  late UserDto _user = UserDto(
+      userName: "",
+      name: "",
+      surname: "",
+      emailAddress: "",
+      isActive: false,
+      fullName: "",
+      creationTime: "",
+      roleNames: [],
+      id: 0);
   List<String> _roleNames = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Future<void> _saveData() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
-      //Lưu trữ dữ liệu của tab 'Role'
-      print(userData);
-      CreateUserDto user = CreateUserDto(
-          isActive: true,
-          name: userData['name'],
-          password: userData['password'],
-          surname: userData['surname'],
-          userName: userData['userName'],
-          emailAddress: userData['emailAddress'],
-          roleNames: _roleNames,
-          nhanSuId: userData['nhanSuId']);
-      print(user);
-      await UserServices().createUser(user);
+      if (widget.id == null) {
+        CreateUserDto user = CreateUserDto(
+            isActive: true,
+            name: userData['name'],
+            password: userData['password'],
+            surname: userData['surname'],
+            userName: userData['userName'],
+            emailAddress: userData['emailAddress'],
+            roleNames: _roleNames,
+            nhanSuId: userData['nhanSuId']);
+        await UserServices().createUser(user);
+      } else {
+        _user.id = _user.id;
+        _user.userName = _user.userName;
+        _user.surname = userData['surname'];
+        _user.name = userData['name'];
+        _user.emailAddress = userData['emailAddress'];
+        _user.creationTime = _user.creationTime;
+        _user.isActive = true;
+        _user.fullName = userData['name'] + userData['surname'];
+        _user.lastLoginTime = null;
+        _user.roleNames = _roleNames;
+        _user.nhanSuId = _user.nhanSuId;
+        await UserServices().updateUser(_user);
+      }
     }
   }
 
@@ -70,9 +94,30 @@ class _CreateOrUpdateUserModalState extends State<CreateOrUpdateUserModal>
 
   @override
   void initState() {
+    super.initState();
     _tabController = TabController(length: 2, vsync: this);
     getFullPermission();
-    super.initState();
+    getUser();
+  }
+
+  Future<void> getUser() async {
+    if (widget.id != null) {
+      var user = await UserServices().GetUser(widget.id ?? 1);
+      userData = {
+        'userName': user.userName,
+        'name': user.name,
+        'surname': user.surname,
+        'emailAddress': user.emailAddress,
+        'isActive': user.isActive,
+        'roleNames': user.roleNames,
+        'password': '',
+        'nhanSuId': user.nhanSuId
+      };
+      setState(() {
+        _user = user;
+        _roleNames = _user.roleNames.map((e) => e as String).toList();
+      });
+    }
   }
 
   @override
@@ -86,7 +131,9 @@ class _CreateOrUpdateUserModalState extends State<CreateOrUpdateUserModal>
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return AlertDialog(
-          title: const Text('Tạo tài khoản người dùng'),
+          title: Text(widget.id == null
+              ? 'Tạo tài khoản người dùng'
+              : "Sửa thông tin người dùng"),
           content: SizedBox(
             height: constraints.maxHeight * 0.8, // set height
             width: 640,
@@ -118,6 +165,8 @@ class _CreateOrUpdateUserModalState extends State<CreateOrUpdateUserModal>
                       children: [
                         UserForm(
                           formKey: _formKey,
+                          user: _user,
+                          id: widget.id,
                           onUserSave: (Map<String, dynamic> data) {
                             userData.addAll(data);
                           },
