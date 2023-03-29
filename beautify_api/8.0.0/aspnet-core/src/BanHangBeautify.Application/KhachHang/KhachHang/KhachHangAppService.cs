@@ -26,7 +26,6 @@ namespace BanHangBeautify.KhachHang.KhachHang
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.Id = Guid.NewGuid();
             khachHang.CreationTime = DateTime.Now;
-            khachHang.NgayTao = DateTime.Now;
             khachHang.CreatorUserId = AbpSession.UserId;
             khachHang.TenantId = AbpSession.TenantId ?? 1;
             khachHang.IsDeleted = false;
@@ -39,7 +38,6 @@ namespace BanHangBeautify.KhachHang.KhachHang
             KhachHangDto result = new KhachHangDto();
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.LastModificationTime = DateTime.Now;
-            khachHang.NgaySua = DateTime.Now;
             khachHang.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(khachHang);
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
@@ -56,8 +54,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 delete.IsDeleted = true;
                 delete.DeletionTime = DateTime.Now;
                 delete.DeleterUserId = AbpSession.UserId;
-                delete.NgayXoa = DateTime.Now;
-                delete.TrangThai = 1;
+                delete.TrangThai = 0;
                 _repository.Update(delete);
                 result = ObjectMapper.Map<KhachHangDto>(delete);
             }

@@ -25,7 +25,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
             {
                 new DM_LoaiHangHoa()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = 1,
                     IsDeleted= false,
                     MaLoai = "HH",
                     TenLoai = "Hàng Hóa",
@@ -33,7 +33,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 },
                 new DM_LoaiHangHoa()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = 2,
                     IsDeleted= false,
                     MaLoai = "DV",
                     TenLoai = "Dịch Vụ",
@@ -41,14 +41,14 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 },
                 new DM_LoaiHangHoa()
                 {
-                    Id = Guid.NewGuid(),
+                    Id = 3,
                     IsDeleted= false,
                     MaLoai = "CB",
                     TenLoai = "Combo",
                     TenantId = 1
                 },
             };
-            _context.DM_LoaiHangHoas.AddRange(lstLoaiHangHoa);
+            _context.DM_LoaiHangHoa.AddRange(lstLoaiHangHoa);
             _context.SaveChanges();
         }
     }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.KhachHang.LoaiKhach.Dto
 {
-    public class LoaiKhachDto : EntityDto<Guid>
+    public class LoaiKhachDto : EntityDto<int>
     {
         [MaxLength(10)]
         public string MaLoai { get; set; }

@@ -38,7 +38,6 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             data.TuNgay = dto.TuNgay;
             data.DenNgay = dto.DenNgay;
             data.IdNhanVien = dto.IdNhanVien;
-            data.IdChiNhanh = dto.IdChiNhanh;
             data.IdPhongBan = dto.IdPhongBan;
             data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
@@ -55,7 +54,6 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             data.TuNgay = dto.TuNgay;
             data.DenNgay = dto.DenNgay;
             data.IdNhanVien = dto.IdNhanVien;
-            data.IdChiNhanh = dto.IdChiNhanh;
             data.IdPhongBan = dto.IdPhongBan;
             data.LastModifierUserId = AbpSession.UserId;
             data.TrangThai = 0;
