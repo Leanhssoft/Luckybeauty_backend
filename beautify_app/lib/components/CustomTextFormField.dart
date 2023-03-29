@@ -5,23 +5,33 @@ class CustomTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final String? hintText;
   final TextInputType? keyBoardType;
+  final double? heightForm;
   final Function(String?)? onSaved;
+  final Function()? onTab;
+  final Icon? leftIcon;
+  final Icon? rightIcon;
   const CustomTextFormField({
     Key? key,
     required this.controller,
     this.hintText,
     this.keyBoardType,
+    this.heightForm,
     this.onSaved,
+    this.onTab,
+    this.leftIcon,
+    this.rightIcon,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,
+      height: heightForm ?? 48,
       child: TextFormField(
         controller: controller,
         keyboardType: keyBoardType,
         decoration: InputDecoration(
+          prefixIcon: leftIcon,
+          suffixIcon: rightIcon,
           hintText: hintText,
           contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           labelStyle: const TextStyle(
@@ -38,6 +48,7 @@ class CustomTextFormField extends StatelessWidget {
               borderSide: const BorderSide(color: Colors.black)),
         ),
         onSaved: onSaved,
+        onTap: onTab,
       ),
     );
   }

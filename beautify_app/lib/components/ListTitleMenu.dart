@@ -23,44 +23,46 @@ class _ListTileMenuState extends State<ListTileMenu> {
   String routeSelected = overviewPageRoute;
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onHover: (value) {
-        setState(() {
-          _isHovering = value;
-        });
-      },
-      child: ListTile(
-        leading: Icon(
-          widget.item.icon,
-          color: (routeSelected == widget.item.route || _isHovering)
-              ? const Color(0xFF7C3367)
-              : const Color(0xFF666466),
-        ),
-        title: (MediaQuery.of(widget.buildContext).size.width >= 1100 ||
-                MediaQuery.of(widget.buildContext).size.width <= 850)
-            ? Text(
-                widget.item.title.toString(),
-                style: TextStyle(
-                    color: (routeSelected == widget.item.route || _isHovering)
-                        ? const Color(0xFF7C3367)
-                        : const Color(0xFF344054),
-                    fontWeight: FontWeight.w600),
-              )
-            : null,
-        onTap: () {
-          if (kDebugMode) {
-            print(routeSelected);
-          }
-          Navigator.pushNamed(context, widget.item.route.toString());
+    return SizedBox(
+      child: InkWell(
+        onHover: (value) {
           setState(() {
-            routeSelected = widget.item.route.toString();
+            _isHovering = value;
           });
-
-          if (kDebugMode) {
-            print(routeSelected);
-          }
         },
-        hoverColor: const Color(0xFFF2EBF0),
+        child: ListTile(
+          leading: Icon(
+            widget.item.icon,
+            color: (routeSelected == widget.item.route || _isHovering)
+                ? const Color(0xFF7C3367)
+                : const Color(0xFF666466),
+          ),
+          title: (MediaQuery.of(widget.buildContext).size.width >= 1100 ||
+                  MediaQuery.of(widget.buildContext).size.width <= 850)
+              ? Text(
+                  widget.item.title.toString(),
+                  style: TextStyle(
+                      color: (routeSelected == widget.item.route || _isHovering)
+                          ? const Color(0xFF7C3367)
+                          : const Color(0xFF344054),
+                      fontWeight: FontWeight.w600),
+                )
+              : null,
+          onTap: () {
+            if (kDebugMode) {
+              print(routeSelected);
+            }
+            Navigator.pushNamed(context, widget.item.route.toString());
+            setState(() {
+              routeSelected = widget.item.route.toString();
+            });
+    
+            if (kDebugMode) {
+              print(routeSelected);
+            }
+          },
+          hoverColor: const Color(0xFFF2EBF0),
+        ),
       ),
     );
   }

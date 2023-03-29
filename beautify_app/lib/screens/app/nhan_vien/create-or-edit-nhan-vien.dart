@@ -41,7 +41,7 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
     "ngayCap": "",
     "noiCap": "",
     "avatar": null,
-    "idChucVu": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    "idChucVu": "3fa85f64-5858-4562-b3fc-2c963f66afa6"
   };
 
   void suggestChucVu() async {
@@ -101,7 +101,7 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
         }
         createNhanSu.avatar = null;
         createNhanSu.kieuNgaySinh = 0;
-        createNhanSu.maNhanVien = "NS000001";
+        createNhanSu.maNhanVien = "NS000002";
         createNhanSu.tenNhanVien = nhanSuData['tenNhanVien'];
         createNhanSu.diaChi = nhanSuData['diaChi'];
         createNhanSu.soDienThoai = nhanSuData['soDienThoai'];
@@ -110,7 +110,7 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
         createNhanSu.gioiTinh = nhanSuData['gioiTinh'];
         createNhanSu.ngayCap = nhanSuData['ngayCap'];
         createNhanSu.noiCap = nhanSuData['noiCap'];
-        createNhanSu.idChucVu = nhanSuData['idChucVu'];
+        createNhanSu.idChucVu = nhanSuData['idChucVu'].toString();
         print(createNhanSu.toJson());
         var kq = await NhanVienService().createOrEditNhanVien(createNhanSu);
         if (kq == true) {
@@ -569,8 +569,10 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                           }).toList(),
                                           onSaved: (value) {
                                             setState(() {
-                                              nhanSuData
-                                                  .addAll({'chucVu': value});
+                                              nhanSuData.addAll({
+                                                'idChucVu':
+                                                    value!.idChucVu.toString()
+                                              });
                                             });
                                           },
                                           onChanged: (value) {},
