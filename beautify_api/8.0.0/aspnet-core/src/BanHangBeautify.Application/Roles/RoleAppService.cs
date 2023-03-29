@@ -12,6 +12,7 @@ using BanHangBeautify.Roles.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -117,6 +118,32 @@ namespace BanHangBeautify.Roles
             }
 
             CheckErrors(await _roleManager.DeleteAsync(role));
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Delete)]
+        public async Task<bool> DeleteRole(EntityDto<int> input)
+        {
+            bool result = false;
+            try
+            {
+                var role = await _roleManager.FindByIdAsync(input.Id.ToString());
+                var users = await _userManager.GetUsersInRoleAsync(role.NormalizedName);
+                foreach (var user in users)
+                {
+                    CheckErrors(await _userManager.RemoveFromRoleAsync(user, role.NormalizedName));
+                }
+                role.IsDeleted = true;
+                role.DeletionTime = DateTime.Now;
+                role.DeleterUserId = AbpSession.UserId;
+                await _roleManager.UpdateAsync(role);
+                result= true;
+            }
+            catch (System.Exception)
+            {
+                result = false;
+            }
+            return result;
+           
         }
 
         public Task<ListResultDto<PermissionDto>> GetAllPermissions()

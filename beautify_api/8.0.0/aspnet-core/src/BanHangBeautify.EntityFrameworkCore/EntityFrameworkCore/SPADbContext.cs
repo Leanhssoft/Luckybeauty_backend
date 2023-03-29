@@ -10,9 +10,9 @@ namespace BanHangBeautify.EntityFrameworkCore
 {
     public class SPADbContext : AbpZeroDbContext<Tenant, Role, User, SPADbContext>
     {
-        //public DbSet<DatLich_ChiTiet> DatLiches { set; get; }
-        // public DbSet<DatLich_ChiTiet> DatLich_ChiTiets { set; get; }
-        // public DbSet<DatLich_DichVu> DatLich_NhanViens { get; set; }
+        public DbSet<Booking> Bookings { set; get; }
+        public DbSet<BookingNhanVien> BookingNhanViens { set; get; }
+        public DbSet<BookingService> BookingServices { get; set; }
         public DbSet<DichVu_NhanVien> DichVu_NhanViens { set; get; }
         
         public DbSet<DM_HangHoa> DM_HangHoas { set; get; }

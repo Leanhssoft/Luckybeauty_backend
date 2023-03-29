@@ -51,10 +51,11 @@ class _ListTileMenuState extends State<ListTileMenu> {
           if (kDebugMode) {
             print(routeSelected);
           }
+          Navigator.pushNamed(context, widget.item.route.toString());
           setState(() {
             routeSelected = widget.item.route.toString();
           });
-          Navigator.popAndPushNamed(context, widget.item.route.toString());
+
           if (kDebugMode) {
             print(routeSelected);
           }

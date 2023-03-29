@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
       initialRoute: isLoggedIn ? overviewPageRoute : authenticationPageRoute,
       routes: {
         rootRoute: (context) => const AuthenWidget(),
-        // "/home": (context) => isLoggedIn ? const HomeScreen():const AuthenWidget(),
+        // "/home": (context) => const HomeScreen(),
         // overviewPageRoute: (context) => isLoggedIn ? const HomeScreen():const LoginScreen(),
         // nhanVienPageRoute: (context) =>isLoggedIn ? const NhanVienScreen():const LoginScreen(),
         // userPageRoute: (context) => isLoggedIn ? const UserPage():const LoginScreen(),

@@ -17,37 +17,6 @@ class NhanVienScreen extends StatefulWidget {
 
 class _NhanVienScreenState extends State<NhanVienScreen> {
   bool checkAll = false;
-  List<String> nhanVien = [
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    ""
-  ];
-  int _currentPage = 1;
-  int perPage = 10;
-  @override
-  void initState() {
-    super.initState();
-    _currentPage = 1;
-  }
-
-  void _handlePageChanged(int page) {
-    setState(() {
-      _currentPage = page;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return SiteLayout(

@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:beautify_app/screens/app/admin/role/deleteRoleDialog.dart';
 import 'package:beautify_app/screens/app/admin/role/roleDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -178,6 +179,7 @@ class _RoleTableState extends State<RoleTable> {
                 child: Column(
                   children: [
                     DataTable(
+                        columnSpacing: 170,
                         dividerThickness: 1,
                         headingTextStyle: const TextStyle(
                           color: Color(0xFFB2AFB2),
@@ -190,7 +192,7 @@ class _RoleTableState extends State<RoleTable> {
                                 Container(
                                   alignment: Alignment.center,
                                   child: Text(
-                                    i.toString(),
+                                    (i + 1).toString(),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -248,7 +250,19 @@ class _RoleTableState extends State<RoleTable> {
                                       Padding(
                                         padding: const EdgeInsets.all(2.0),
                                         child: ElevatedButton(
-                                          onPressed: () {},
+                                          style: const ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStatePropertyAll(
+                                                      Color(0xFFFF5252))),
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return DeleteRoleDialog(
+                                                      id: _data[i].id);
+                                                });
+                                          },
                                           child: const Icon(Icons.delete),
                                         ),
                                       ),
@@ -292,7 +306,6 @@ class _RoleTableState extends State<RoleTable> {
                             itemCount: _data.length,
                             perPage: perPage,
                             pagesVisible: 5,
-                            
                             onPageChanged: (curentPage) {
                               setState(() {
                                 _currentPage = curentPage;
@@ -370,6 +383,7 @@ List<DataRow> dataRows(List<RoleDto> items, BuildContext context) {
       cells: [
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 30),
             alignment: Alignment.center,
             child: Text(
               i.toString(),
@@ -379,18 +393,24 @@ List<DataRow> dataRows(List<RoleDto> items, BuildContext context) {
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 300),
+            width: 300,
             alignment: Alignment.centerLeft,
             child: Text(item.name),
           ),
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 300),
+            width: 300,
             alignment: Alignment.centerLeft,
             child: Text(item.displayName),
           ),
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 300),
+            width: 300,
             alignment: Alignment.centerLeft,
             child: Text(item.description.toString()),
           ),
@@ -426,7 +446,16 @@ List<DataRow> dataRows(List<RoleDto> items, BuildContext context) {
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    style: const ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(Color(0xFFFF5252))),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return DeleteRoleDialog(id: item.id);
+                          });
+                    },
                     child: const Icon(Icons.delete),
                   ),
                 ),

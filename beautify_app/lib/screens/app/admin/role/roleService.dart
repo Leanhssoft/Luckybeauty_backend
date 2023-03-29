@@ -87,6 +87,36 @@ class RoleService {
     return result;
   }
 
+  Future<bool> deleteRole(int id) async {
+    bool result = false;
+    try {
+      final token = await SessionManager().get("accessToken");
+      final response = await http.post(
+          Uri.parse('${Constants.BASE_URL}/api/services/app/Role/DeleteRole'),
+          headers: {
+            'accept': 'text/plain',
+            'Content-Type': 'application/json-patch+json',
+            'Authorization': 'Bearer $token',
+          },
+          body: json.encode({'id': id}));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final kq = data['result'];
+        if (kq == true) {
+          result = true;
+        }
+      } else {
+        result = false;
+        throw Exception('Failed to delete role: ${response.statusCode}');
+      }
+    } catch (e) {
+      result = false;
+      throw Exception('Failed to delete role: $e');
+    }
+    return result;
+  }
+
   Future<List<RoleDto>> getAll(PagedRoleResultRequestDto model) async {
     try {
       final token = await SessionManager().get("accessToken");

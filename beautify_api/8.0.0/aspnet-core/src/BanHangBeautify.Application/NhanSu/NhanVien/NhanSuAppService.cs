@@ -3,10 +3,12 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,9 +18,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
     public class NhanSuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_NhanVien, Guid> _repository;
-        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository)
+        private readonly IRepository<NS_ChucVu, Guid> _chucVuRepository;
+        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository, IRepository<NS_ChucVu, Guid> chucVuRepository)
         {
             _repository = repository;
+            _chucVuRepository= chucVuRepository;
         }
         public async Task<NhanSuDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
@@ -61,6 +65,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.CreationTime = DateTime.Now;
             nhanSu.CreatorUserId = AbpSession.UserId;
             nhanSu.NgayTao = DateTime.Now;
+            nhanSu.IsDeleted = false;
             var result = ObjectMapper.Map<NhanSuDto>(nhanSu);
             await _repository.InsertAsync(nhanSu);
             return result;
@@ -105,17 +110,31 @@ namespace BanHangBeautify.NhanSu.NhanVien
         {
             return await _repository.GetAsync(id);
         }
-        public async Task<ListResultDto<NS_NhanVien>> GetAll(PagedResultRequestDto input, string keyWord)
+        public async Task<ListResultDto<NhanSuDto>> GetAll(PagedResultRequestDto input, string keyWord)
         {
-            ListResultDto<NS_NhanVien> result = new ListResultDto<NS_NhanVien>();
-            var lstNhanSu = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            ListResultDto<NhanSuDto> result = new ListResultDto<NhanSuDto>();
+            var lstNhanSu =await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(keyWord))
             {
                 lstNhanSu = lstNhanSu.Where(x => x.TenNhanVien.Contains(keyWord) || x.MaNhanVien.Contains(keyWord) || x.NoiCap.Contains(keyWord)).ToList();
             }
             input.MaxResultCount = 10;
             input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
-            result.Items = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            lstNhanSu = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var items = ObjectMapper.Map<List<NhanSuDto>>(lstNhanSu);
+            result.Items = items;  
+            return result;
+        }
+        public async Task<List<SuggestChucVu>> SuggestChucVus(){
+            List<SuggestChucVu> result = new List<SuggestChucVu>();
+            var lstChucVu = _chucVuRepository.GetAll();
+            foreach (var item in lstChucVu)
+            {
+                SuggestChucVu rdo = new SuggestChucVu();
+                rdo.TenChucVu = item.TenChucVu;
+                rdo.IdChucVu = item.Id;
+                result.Add(rdo);
+            }
             return result;
         }
     }

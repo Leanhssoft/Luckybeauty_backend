@@ -32,15 +32,18 @@ class _PermissionListState extends State<RoleList>
           return Row(
             children: [
               Checkbox(
-                value: widget.roleNames.contains(filterAllRole[index].name)
+                value: widget.roleNames
+                        .contains(filterAllRole[index].name.toUpperCase())
                     ? true
                     : false,
                 onChanged: (bool? value) {
                   setState(() {
                     if (value == true) {
-                      widget.roleNames.add(filterAllRole[index].name);
+                      widget.roleNames
+                          .add(filterAllRole[index].name.toUpperCase());
                     } else {
-                      widget.roleNames.remove(filterAllRole[index].name);
+                      widget.roleNames
+                          .remove(filterAllRole[index].name.toUpperCase());
                       isSelectAll = false;
                     }
                   });

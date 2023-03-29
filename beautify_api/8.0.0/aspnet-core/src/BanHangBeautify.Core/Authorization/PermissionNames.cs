@@ -32,6 +32,14 @@
         public const string Pages_DonViQuiDoi_Edit = "Pages.DonViQuiDoi.Edit";
         public const string Pages_DonViQuiDoi_Delete = "Pages.DonViQuiDoi.Delete";
         #endregion
+        #region Đặt lịch
+        public const string Pages_Booking = "Pages.Booking";
+        public const string Pages_Booking_Create = "Pages.Booking.Create";
+        public const string Pages_Booking_Edit = "Pages.Booking.Edit";
+        public const string Pages_Booking_Delete = "Pages.Booking.Delete";
+
+       
+        #endregion
 
         #region Khách Hàng
         public const string Pages_LoaiKhach = "Pages.LoaiKhach";

@@ -5,12 +5,14 @@ class CustomTextFormFieldValidate extends StatelessWidget {
   final TextEditingController controller;
   final String textValidate;
   final String? hintText;
+  final TextInputType? keyboardType;
   final Function(String?)? onSave;
   const CustomTextFormFieldValidate({
     Key? key,
     required this.controller,
     required this.textValidate,
     this.hintText,
+    this.keyboardType,
     this.onSave,
   }) : super(key: key);
 
@@ -20,6 +22,7 @@ class CustomTextFormFieldValidate extends StatelessWidget {
       height: 48,
       child: TextFormField(
         controller: controller,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hintText,
           contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),

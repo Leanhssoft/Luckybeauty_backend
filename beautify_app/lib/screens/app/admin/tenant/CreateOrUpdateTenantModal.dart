@@ -3,7 +3,7 @@
 import 'package:beautify_app/Models/TenanlModels/CreateTenantDto.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../Service/TenantService.dart';
+import 'TenantService.dart';
 
 class CreateTenantModal extends StatefulWidget {
   final String headerModel;

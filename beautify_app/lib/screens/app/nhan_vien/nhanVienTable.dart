@@ -1,7 +1,7 @@
 import 'package:beautify_app/components/CustomPagination.dart';
-import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_model.dart';
-import 'package:beautify_app/screens/app/dich_vu/service/dichVuService.dart';
-import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
+import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuDto.dart';
+import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuFilter.dart';
+import 'package:beautify_app/screens/app/nhan_vien/services/nhanVienServices.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,9 +16,17 @@ class _NhanVienTableState extends State<NhanVienTable> {
   bool checkAll = false;
   int _currentPage = 1;
   int perPage = 10;
-  final List<dynamic> _data = ["", "", "", "", "", "", ""];
+  String searchText = '';
+  List<NhanSuDto> _data = [];
   Future<void> _loadData() async {
-    setState(() {});
+    NhanSuFilter input = NhanSuFilter(
+        keyWord: searchText,
+        skipCount: _currentPage == 1 ? 0 : _currentPage * perPage,
+        maxResultCount: perPage);
+    var data = await NhanVienService().getAll(input);
+    setState(() {
+      _data = data;
+    });
   }
 
   @override
@@ -151,26 +159,31 @@ class _NhanVienTableState extends State<NhanVienTable> {
             padding: const EdgeInsets.all(2),
             height: MediaQuery.of(context).size.height - 270,
             width: MediaQuery.of(context).size.width,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      children: [
-                        DataTable(
-                          dividerThickness: 1,
-                          headingTextStyle: const TextStyle(
-                            color: Color(0xFFB2AFB2),
+            child: Scrollbar(
+              thumbVisibility: true,
+              controller: _scrollController,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                child: Row(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: [
+                          DataTable(
+                            dividerThickness: 1,
+                            headingTextStyle: const TextStyle(
+                              color: Color(0xFFB2AFB2),
+                            ),
+                            columns: viewColumn,
+                            rows: dataRows(_data),
                           ),
-                          columns: viewColumn,
-                          rows: dataRows(_data),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -295,7 +308,7 @@ class _NhanVienTableState extends State<NhanVienTable> {
   }
 }
 
-List<DataRow> dataRows(List<dynamic> items) {
+List<DataRow> dataRows(List<NhanSuDto> items) {
   int i = 0;
   List<DataRow> dataRow = [];
   for (var item in items) {
@@ -314,31 +327,35 @@ List<DataRow> dataRows(List<dynamic> items) {
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Lương đức mạnh'),
+            child: Text(item.tenNhanVien.toString()),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('0348016446'),
+            child: Text(item.soDienThoai.toString()),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Nam'),
+            child: Text(item.gioiTinh == 0
+                ? 'Nam'
+                : item.gioiTinh == 1
+                    ? 'Nữ'
+                    : 'Khác'),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Admin'),
+            child: Text(item.idChucVu),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('23/03/2023'),
+            child: Text(item.ngaySinh),
           ),
         ),
         DataCell(

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.KhachHang.LoaiKhach
 {
     [AbpAuthorize(PermissionNames.Pages_LoaiKhach)]
-    public class LoaiKhachAppService : SPAAppServiceBase
+    public class LoaiKhachAppService : SPAAppServiceBase, ILoaiKhachAppService
     {
         private readonly IRepository<DM_LoaiKhach, Guid> _repository;
         public LoaiKhachAppService(IRepository<DM_LoaiKhach, Guid> repository)

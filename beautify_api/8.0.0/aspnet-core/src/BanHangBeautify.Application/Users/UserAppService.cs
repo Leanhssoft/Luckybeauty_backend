@@ -12,6 +12,7 @@ using Abp.UI;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +34,7 @@ namespace BanHangBeautify.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
+        private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -41,7 +43,8 @@ namespace BanHangBeautify.Users
             IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
-            LogInManager logInManager)
+            LogInManager logInManager,
+            IRepository<NS_NhanVien,Guid> nhanVienRepository)
             : base(repository)
         {
             _userManager = userManager;
@@ -50,8 +53,26 @@ namespace BanHangBeautify.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
+            _nhanVienRepository = nhanVienRepository;
         }
-
+        public async Task<List<SuggestNhanSu>> SuggestNhanSus()
+        {
+            List<SuggestNhanSu> result = new List<SuggestNhanSu>();
+            var lstNhanSu = await _nhanVienRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+            if (lstNhanSu!=null || lstNhanSu.Count>0)
+            {
+                foreach (var item in lstNhanSu)
+                {
+                    SuggestNhanSu rdo = new SuggestNhanSu();
+                    rdo.Id=item.Id;
+                    rdo.TenNhanVien = item.TenNhanVien;
+                    rdo.SoDienThoai = item.SoDienThoai;
+                    result.Add(rdo);
+                }
+            }
+            return result;
+            
+        }
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -108,14 +129,24 @@ namespace BanHangBeautify.Users
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_Administration_Users_Delete)]
-        public async Task DeleteUser(EntityDto<long> input)
+        public async Task<bool> DeleteUser(EntityDto<long> input)
         {
-            var user = await _userManager.GetUserByIdAsync(input.Id);
-            user.IsActive = false;
-            user.IsDeleted = true;
-            user.DeleterUserId = AbpSession.UserId;
-            user.DeletionTime = DateTime.Now;
-            await _userManager.UpdateAsync(user);
+            bool result = false;
+            try
+            {
+                var user = await _userManager.GetUserByIdAsync(input.Id);
+                user.IsActive = false;
+                user.IsDeleted = true;
+                user.DeleterUserId = AbpSession.UserId;
+                user.DeletionTime = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+                result = true;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            return result;
         }
 
 

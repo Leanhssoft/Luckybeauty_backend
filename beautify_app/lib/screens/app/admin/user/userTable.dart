@@ -1,8 +1,10 @@
 import 'package:beautify_app/components/CustomPagination.dart';
 import 'package:beautify_app/screens/app/admin/role/models/RoleDto.dart';
 import 'package:beautify_app/screens/app/admin/role/roleService.dart';
+import 'package:beautify_app/screens/app/admin/user/create_or_update_user_modal.dart';
 import 'package:beautify_app/screens/app/admin/user/models/userDto.dart';
 import 'package:beautify_app/screens/app/admin/user/service/userServices.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -160,19 +162,30 @@ class _UserTableState extends State<UserTable> {
           ),
           Container(
             height: MediaQuery.of(context).size.height - 270,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+            child: Scrollbar(
+              thumbVisibility: true,
+              controller: _scrollController,
               child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
+                scrollDirection: Axis.horizontal,
+                controller: _scrollController,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DataTable(
-                      dividerThickness: 1,
-                      headingTextStyle: const TextStyle(
-                        color: Color(0xFFB2AFB2),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          DataTable(
+                            dividerThickness: 1,
+                            headingTextStyle: const TextStyle(
+                              color: Color(0xFFB2AFB2),
+                            ),
+                            columns: viewColumn,
+                            rows: dataRows(_data, context),
+                          ),
+                        ],
                       ),
-                      columns: viewColumn,
-                      rows: dataRows(_data),
                     ),
                   ],
                 ),
@@ -293,7 +306,7 @@ class _UserTableState extends State<UserTable> {
   }
 }
 
-List<DataRow> dataRows(List<UserDto> items) {
+List<DataRow> dataRows(List<UserDto> items, BuildContext parentContext) {
   int i = 0;
   List<DataRow> dataRow = [];
   for (var item in items) {
@@ -302,6 +315,7 @@ List<DataRow> dataRows(List<UserDto> items) {
       cells: [
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 50),
             alignment: Alignment.center,
             child: Text(
               i.toString(),
@@ -311,30 +325,35 @@ List<DataRow> dataRows(List<UserDto> items) {
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 120),
             alignment: Alignment.centerLeft,
-            child: Text(item.name),
+            child: Text(item.userName),
           ),
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 150),
             alignment: Alignment.centerLeft,
             child: Text(item.fullName),
           ),
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 200),
             alignment: Alignment.centerLeft,
             child: Text(item.roleNames.toString()),
           ),
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 200),
             alignment: Alignment.centerLeft,
             child: Text(item.emailAddress.toString()),
           ),
         ),
         DataCell(
           Container(
+            constraints: const BoxConstraints(maxWidth: 120),
             alignment: Alignment.centerLeft,
             child: Text(item.isActive == true ? "Hoạt động" : "Đã khóa",
                 style: GoogleFonts.roboto(
@@ -359,14 +378,31 @@ List<DataRow> dataRows(List<UserDto> items) {
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                          context: parentContext,
+                          builder: (BuildContext context) {
+                            return CreateOrUpdateUserModal(
+                              id: item.id,
+                            );
+                          });
+                    },
                     child: const Icon(Icons.edit),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    style: const ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(Color(0xFFFF5252))),
+                    onPressed: () {
+                      showDialog(
+                          context: parentContext,
+                          builder: (BuildContext context) {
+                            return DeleteUserDialog(id: item.id);
+                          });
+                    },
                     child: const Icon(Icons.delete),
                   ),
                 ),
@@ -380,4 +416,79 @@ List<DataRow> dataRows(List<UserDto> items) {
     dataRow.add(row);
   }
   return dataRow;
+}
+
+class DeleteUserDialog extends StatelessWidget {
+  const DeleteUserDialog({
+    super.key,
+    required this.id,
+  });
+
+  final int id;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return AlertDialog(
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        title: const Text("Bạn có chắc muốn xóa bản ghi này"),
+        content: const SizedBox(
+          width: 450,
+          height: 200,
+          child: Center(
+            child: Text("Bạn có chắc muốn xóa bản ghi này"),
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(
+                  color: Color(0xFFC41A3B), fontWeight: FontWeight.bold),
+            ),
+          ),
+          ElevatedButton(
+            style: const ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(Color(0xFFFF5252))),
+            onPressed: () async {
+              bool delete = await UserServices().deleteUser(id);
+              if (delete == true) {
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text(
+                        'Delete success !',
+                        textAlign: TextAlign.center,
+                      ),
+                      backgroundColor: Color.fromARGB(255, 241, 68, 68)),
+                );
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).pop();
+              } else {
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text(
+                        'Have error for delete !',
+                        textAlign: TextAlign.center,
+                      ),
+                      backgroundColor: Color.fromARGB(255, 241, 68, 68)),
+                );
+                // ignore: use_build_context_synchronously
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text(
+              'Confirm',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
+          )
+        ],
+      );
+    });
+  }
 }
