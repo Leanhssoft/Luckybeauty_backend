@@ -3,7 +3,7 @@ using System;
 
 namespace BanHangBeautify.HangHoa.LoaiHangHoa.Dto
 {
-    public class CreateOrEditLoaiHangHoaDto : EntityDto<Guid>
+    public class CreateOrEditLoaiHangHoaDto : EntityDto<int>
     {
         public string MaLoai { get; set; }
         public string TenLoai { get; set; }

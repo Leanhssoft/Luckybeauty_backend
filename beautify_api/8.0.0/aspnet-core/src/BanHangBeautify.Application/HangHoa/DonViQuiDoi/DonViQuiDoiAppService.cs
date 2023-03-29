@@ -40,7 +40,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             donViQuiDoi.IdHangHoa = dto.IdHangHoa;
             donViQuiDoi.MaHangHoa = dto.MaHangHoa;
             donViQuiDoi.GiaBan = dto.GiaBan;
-            donViQuiDoi.TenDonVi = dto.TenDonVi;
+            donViQuiDoi.TenDonViTinh = dto.TenDonViTinh;
             donViQuiDoi.LaDonViTinhChuan = dto.LaDonViTinhChuan;
             donViQuiDoi.TyLeChuyenDoi = dto.TyLeChuyenDoi;
             donViQuiDoi.TenantId = AbpSession.TenantId ?? 1;
@@ -56,7 +56,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             donViQuiDoi.IdHangHoa = dto.IdHangHoa;
             donViQuiDoi.MaHangHoa = dto.MaHangHoa;
             donViQuiDoi.GiaBan = dto.GiaBan;
-            donViQuiDoi.TenDonVi = dto.TenDonVi;
+            donViQuiDoi.TenDonViTinh = dto.TenDonViTinh;
             donViQuiDoi.LaDonViTinhChuan = dto.LaDonViTinhChuan;
             donViQuiDoi.TyLeChuyenDoi = dto.TyLeChuyenDoi;
             donViQuiDoi.LastModificationTime = DateTime.Now;
@@ -76,7 +76,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             {
                 lstDonViQuiDoi = lstDonViQuiDoi.
                     Where(
-                        x => x.TenDonVi.Contains(input.Keyword) || x.MaHangHoa.Contains(input.Keyword) ||
+                        x => x.TenDonViTinh.Contains(input.Keyword) || x.MaHangHoa.Contains(input.Keyword) ||
                         x.GiaBan.ToString().Contains(input.Keyword)
                     ).OrderByDescending(x => x.CreationTime).ToList();
             }

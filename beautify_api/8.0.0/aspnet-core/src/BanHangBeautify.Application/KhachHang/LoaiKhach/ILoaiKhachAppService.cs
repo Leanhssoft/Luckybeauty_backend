@@ -9,9 +9,9 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
     public interface ILoaiKhachAppService
     {
         Task<LoaiKhachDto> CreateLoaiKhach(CreateOrEditLoaiKhachDto dto);
-        Task<LoaiKhachDto> Delete(Guid id);
+        Task<LoaiKhachDto> Delete(int id);
         Task<LoaiKhachDto> EditLoaiKhach(CreateOrEditLoaiKhachDto dto);
         Task<ListResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input);
-        Task<DM_LoaiKhach> GetLoaiKhachDetail(Guid Id);
+        Task<DM_LoaiKhach> GetLoaiKhachDetail(int Id);
     }
 }

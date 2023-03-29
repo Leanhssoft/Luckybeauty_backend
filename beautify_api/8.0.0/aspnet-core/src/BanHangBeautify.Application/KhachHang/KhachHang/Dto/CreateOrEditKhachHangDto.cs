@@ -17,21 +17,19 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public bool GioiTinh { get; set; }
         [MaxLength(2000)]
         public string Email { get; set; }
-        [MaxLength(256)]
-        public string XungHo { get; set; }
         [MaxLength(2000)]
         public string MoTa { get; set; }
         public int TrangThai { get; set; }
-        public decimal TongTichDiem { get; set; }
+        public float? TongTichDiem { get; set; } = 0;
         [MaxLength(256)]
         public string MaSoThue { get; set; }
         [MaxLength(2000)]
         public string Avatar { get; set; }
-        public DateTime NgaySinh { get; set; }
-        public int KieuNgaySinh { get; set; }
-        public Guid IdLoaiKhach { get; set; }
-        public Guid IdNhomKhach { get; set; }
-        public Guid IdNguonKhach { get; set; }
+        public DateTime? NgaySinh { get; set; }
+        public int? KieuNgaySinh { get; set; } = 0;
+        public int IdLoaiKhach { get; set; } = 1;
+        public Guid? IdNhomKhach { get; set; }
+        public Guid? IdNguonKhach { get; set; }
         public Guid? IdTinhThanh { get; set; }
         public Guid? IdQuanHuyen { get; set; }
     }

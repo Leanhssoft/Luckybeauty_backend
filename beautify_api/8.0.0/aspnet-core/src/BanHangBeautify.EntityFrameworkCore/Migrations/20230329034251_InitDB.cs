@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace BanHangBeautify.Migrations
 {
     /// <inheritdoc />
-    public partial class adddb : Migration
+    public partial class InitDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -448,20 +448,17 @@ namespace BanHangBeautify.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_LoaiHangHoas",
+                name: "DM_LoaiHangHoa",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     MaLoai = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenLoai = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NgaySua = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayXoa = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -472,24 +469,21 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_LoaiHangHoas", x => x.Id);
+                    table.PrimaryKey("PK_DM_LoaiHangHoa", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_LoaiKhaches",
+                name: "DM_LoaiKhach",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     MaLoai = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     TenLoai = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NgaySua = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayXoa = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -500,11 +494,35 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_LoaiKhaches", x => x.Id);
+                    table.PrimaryKey("PK_DM_LoaiKhach", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_NguonKhaches",
+                name: "DM_NgayNghiLe",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    TenNgayLe = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    TuNgay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DenNgay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TongSoNgay = table.Column<int>(type: "int", nullable: false),
+                    TrangThai = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DM_NgayNghiLe", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DM_NguonKhach",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -528,25 +546,24 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_NguonKhaches", x => x.Id);
+                    table.PrimaryKey("PK_DM_NguonKhach", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_NhomKhachHangs",
+                name: "DM_NhomHangHoa",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<int>(type: "int", nullable: false),
-                    MaNhom = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    Tennhom = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    MoTa = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    TrangThai = table.Column<int>(type: "int", nullable: false),
+                    MaNhomHang = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TenNhomHang = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    TenNhomHangKhongDau = table.Column<string>(name: "TenNhomHang_KhongDau", type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    LaNhomHangHoa = table.Column<bool>(type: "bit", nullable: true),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NgaySua = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayXoa = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -557,11 +574,40 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_NhomKhachHangs", x => x.Id);
+                    table.PrimaryKey("PK_DM_NhomHangHoa", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "HT_CongTys",
+                name: "DM_NhomKhachHang",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    MaNhomKhach = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TenNhomKhach = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    GiamGia = table.Column<float>(type: "real", nullable: true),
+                    LaPhamTram = table.Column<bool>(type: "bit", nullable: true),
+                    TuDongCapNhat = table.Column<bool>(type: "bit", nullable: true),
+                    MoTa = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    TrangThai = table.Column<int>(type: "int", nullable: true),
+                    NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DM_NhomKhachHang", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HT_CongTy",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -584,11 +630,11 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HT_CongTys", x => x.Id);
+                    table.PrimaryKey("PK_HT_CongTy", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "NS_CaLamViecs",
+                name: "NS_CaLamViec",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -609,11 +655,11 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NS_CaLamViecs", x => x.Id);
+                    table.PrimaryKey("PK_NS_CaLamViec", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "NS_ChucVus",
+                name: "NS_ChucVu",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -636,7 +682,29 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NS_ChucVus", x => x.Id);
+                    table.PrimaryKey("PK_NS_ChucVu", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NS_NhanVien_TimeOff",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    TuNgay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DenNgay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TongNgayNghi = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NS_NhanVien_TimeOff", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -959,22 +1027,21 @@ namespace BanHangBeautify.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_HangHoas",
+                name: "DM_HangHoa",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    MaHangHoa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TenHangHoa = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    TenHangHoaKhongDau = table.Column<string>(name: "TenHangHoa_KhongDau", type: "nvarchar(256)", maxLength: 256, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
-                    IdLoaiHangHoa = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SoPhutThucHien = table.Column<float>(type: "real", nullable: true),
+                    IdLoaiHangHoa = table.Column<int>(type: "int", nullable: false),
+                    IdNhomHangHoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     MoTa = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    NgaySua = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayXoa = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -985,47 +1052,48 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_HangHoas", x => x.Id);
+                    table.PrimaryKey("PK_DM_HangHoa", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DM_HangHoas_DM_LoaiHangHoas_IdLoaiHangHoa",
+                        name: "FK_DM_HangHoa_DM_LoaiHangHoa_IdLoaiHangHoa",
                         column: x => x.IdLoaiHangHoa,
-                        principalTable: "DM_LoaiHangHoas",
+                        principalTable: "DM_LoaiHangHoa",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DM_HangHoa_DM_NhomHangHoa_IdNhomHangHoa",
+                        column: x => x.IdNhomHangHoa,
+                        principalTable: "DM_NhomHangHoa",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_KhachHangs",
+                name: "DM_KhachHang",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     MaKhachHang = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TenKhachHang = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    TenKhachHangKhongDau = table.Column<string>(name: "TenKhachHang_KhongDau", type: "nvarchar(256)", maxLength: 256, nullable: true),
                     SoDienThoai = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     DiaChi = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    GioiTinh = table.Column<bool>(type: "bit", nullable: false),
+                    GioiTinhNam = table.Column<bool>(type: "bit", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    XungHo = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     MoTa = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    TrangThai = table.Column<int>(type: "int", nullable: false),
-                    TongTichDiem = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TrangThai = table.Column<int>(type: "int", nullable: true),
+                    TongTichDiem = table.Column<float>(type: "real", nullable: true),
                     MaSoThue = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Avatar = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    NgaySinh = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    KieuNgaySinh = table.Column<int>(type: "int", nullable: false),
-                    IdLoaiKhach = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdNhomKhach = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdNguonKhach = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NgaySinh = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    KieuNgaySinh = table.Column<int>(type: "int", nullable: true),
+                    IdLoaiKhach = table.Column<int>(type: "int", nullable: false),
+                    IdNhomKhach = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IdNguonKhach = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdTinhThanh = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdQuanHuyen = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NguonKhachId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NgaySua = table.Column<DateTime>(type: "datetime2", nullable: true),
                     NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NgayXoa = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1036,28 +1104,27 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_KhachHangs", x => x.Id);
+                    table.PrimaryKey("PK_DM_KhachHang", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DM_KhachHangs_DM_LoaiKhaches_IdLoaiKhach",
+                        name: "FK_DM_KhachHang_DM_LoaiKhach_IdLoaiKhach",
                         column: x => x.IdLoaiKhach,
-                        principalTable: "DM_LoaiKhaches",
+                        principalTable: "DM_LoaiKhach",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DM_KhachHangs_DM_NguonKhaches_NguonKhachId",
-                        column: x => x.NguonKhachId,
-                        principalTable: "DM_NguonKhaches",
+                        name: "FK_DM_KhachHang_DM_NguonKhach_IdNguonKhach",
+                        column: x => x.IdNguonKhach,
+                        principalTable: "DM_NguonKhach",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_DM_KhachHangs_DM_NhomKhachHangs_IdNhomKhach",
+                        name: "FK_DM_KhachHang_DM_NhomKhachHang_IdNhomKhach",
                         column: x => x.IdNhomKhach,
-                        principalTable: "DM_NhomKhachHangs",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalTable: "DM_NhomKhachHang",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_ChiNhanhs",
+                name: "DM_ChiNhanh",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -1087,11 +1154,11 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_ChiNhanhs", x => x.Id);
+                    table.PrimaryKey("PK_DM_ChiNhanh", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DM_ChiNhanhs_HT_CongTys_IdCongTy",
+                        name: "FK_DM_ChiNhanh_HT_CongTy_IdCongTy",
                         column: x => x.IdCongTy,
-                        principalTable: "HT_CongTys",
+                        principalTable: "HT_CongTy",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1132,9 +1199,9 @@ namespace BanHangBeautify.Migrations
                 {
                     table.PrimaryKey("PK_NS_NhanViens", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_NS_NhanViens_NS_ChucVus_IdChucVu",
+                        name: "FK_NS_NhanViens_NS_ChucVu_IdChucVu",
                         column: x => x.IdChucVu,
-                        principalTable: "NS_ChucVus",
+                        principalTable: "NS_ChucVu",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1244,16 +1311,16 @@ namespace BanHangBeautify.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_DonViQuiDois",
+                name: "DM_DonViQuiDoi",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     MaHangHoa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    TenDonVi = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    TyLeChuyenDoi = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    GiaBan = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    LaDonViTinhChuan = table.Column<int>(type: "int", nullable: false),
+                    TenDonViTinh = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TyLeChuyenDoi = table.Column<float>(type: "real", nullable: true),
+                    GiaBan = table.Column<float>(type: "real", nullable: true),
+                    LaDonViTinhChuan = table.Column<int>(type: "int", nullable: true),
                     IdHangHoa = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
@@ -1265,17 +1332,55 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_DonViQuiDois", x => x.Id);
+                    table.PrimaryKey("PK_DM_DonViQuiDoi", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DM_DonViQuiDois_DM_HangHoas_IdHangHoa",
+                        name: "FK_DM_DonViQuiDoi_DM_HangHoa_IdHangHoa",
                         column: x => x.IdHangHoa,
-                        principalTable: "DM_HangHoas",
+                        principalTable: "DM_HangHoa",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DM_PhongBans",
+                name: "Booking",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    IdKhachHang = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdChiNhanh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenKhachHang = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SoDienThoai = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LoaiBooking = table.Column<byte>(type: "tinyint", nullable: false),
+                    TrangThai = table.Column<int>(type: "int", nullable: false),
+                    GhiChu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserXuLy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NgayXuLy = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Booking", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Booking_DM_ChiNhanh_IdChiNhanh",
+                        column: x => x.IdChiNhanh,
+                        principalTable: "DM_ChiNhanh",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DM_PhongBan",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -1299,17 +1404,57 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DM_PhongBans", x => x.Id);
+                    table.PrimaryKey("PK_DM_PhongBan", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DM_PhongBans_DM_ChiNhanhs_IdChiNhanh",
+                        name: "FK_DM_PhongBan_DM_ChiNhanh_IdChiNhanh",
                         column: x => x.IdChiNhanh,
-                        principalTable: "DM_ChiNhanhs",
+                        principalTable: "DM_ChiNhanh",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DichVu_NhanViens",
+                name: "NS_LichLamViec",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    IdChiNhanh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdNhanVien = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TuNgay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DenNgay = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    GhiChu = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    TrangThai = table.Column<int>(type: "int", nullable: false),
+                    LapLai = table.Column<bool>(type: "bit", nullable: false),
+                    KieuLapLai = table.Column<int>(type: "int", nullable: false),
+                    GiaTriLap = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NS_LichLamViec", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NS_LichLamViec_DM_ChiNhanh_IdChiNhanh",
+                        column: x => x.IdChiNhanh,
+                        principalTable: "DM_ChiNhanh",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_NS_LichLamViec_NS_NhanViens_IdNhanVien",
+                        column: x => x.IdNhanVien,
+                        principalTable: "NS_NhanViens",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DichVu_NhanVien",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -1327,21 +1472,21 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DichVu_NhanViens", x => x.Id);
+                    table.PrimaryKey("PK_DichVu_NhanVien", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DichVu_NhanViens_DM_ChiNhanhs_IdChiNhanh",
+                        name: "FK_DichVu_NhanVien_DM_ChiNhanh_IdChiNhanh",
                         column: x => x.IdChiNhanh,
-                        principalTable: "DM_ChiNhanhs",
+                        principalTable: "DM_ChiNhanh",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DichVu_NhanViens_DM_DonViQuiDois_IdDonViQuyDoi",
+                        name: "FK_DichVu_NhanVien_DM_DonViQuiDoi_IdDonViQuyDoi",
                         column: x => x.IdDonViQuyDoi,
-                        principalTable: "DM_DonViQuiDois",
+                        principalTable: "DM_DonViQuiDoi",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_DichVu_NhanViens_NS_NhanViens_IdNhanVien",
+                        name: "FK_DichVu_NhanVien_NS_NhanViens_IdNhanVien",
                         column: x => x.IdNhanVien,
                         principalTable: "NS_NhanViens",
                         principalColumn: "Id",
@@ -1349,16 +1494,81 @@ namespace BanHangBeautify.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NS_QuaTrinh_CongTacs",
+                name: "BookingNhanVien",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     IdNhanVien = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdChiNhanh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdBooking = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingNhanVien", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookingNhanVien_Booking_IdBooking",
+                        column: x => x.IdBooking,
+                        principalTable: "Booking",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookingNhanVien_NS_NhanViens_IdNhanVien",
+                        column: x => x.IdNhanVien,
+                        principalTable: "NS_NhanViens",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookingService",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    IdDonViQuiDoi = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdBooking = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookingService", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookingService_Booking_IdBooking",
+                        column: x => x.IdBooking,
+                        principalTable: "Booking",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookingService_DM_DonViQuiDoi_IdDonViQuiDoi",
+                        column: x => x.IdDonViQuiDoi,
+                        principalTable: "DM_DonViQuiDoi",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NS_QuaTrinh_CongTac",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    IdNhanVien = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdPhongBan = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TuNgay = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DenNgay = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TuNgay = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DenNgay = table.Column<DateTime>(type: "datetime2", nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     NgayTao = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -1374,22 +1584,53 @@ namespace BanHangBeautify.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NS_QuaTrinh_CongTacs", x => x.Id);
+                    table.PrimaryKey("PK_NS_QuaTrinh_CongTac", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_NS_QuaTrinh_CongTacs_DM_ChiNhanhs_IdChiNhanh",
-                        column: x => x.IdChiNhanh,
-                        principalTable: "DM_ChiNhanhs",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_NS_QuaTrinh_CongTacs_DM_PhongBans_IdPhongBan",
+                        name: "FK_NS_QuaTrinh_CongTac_DM_PhongBan_IdPhongBan",
                         column: x => x.IdPhongBan,
-                        principalTable: "DM_PhongBans",
-                        principalColumn: "Id");
+                        principalTable: "DM_PhongBan",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_NS_QuaTrinh_CongTacs_NS_NhanViens_IdNhanVien",
+                        name: "FK_NS_QuaTrinh_CongTac_NS_NhanViens_IdNhanVien",
                         column: x => x.IdNhanVien,
                         principalTable: "NS_NhanViens",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "NS_LichLamViec_Ca",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    IdLichLam = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdCaLamViec = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdLichLamViec = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    GiaTri = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NS_LichLamViec_Ca", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NS_LichLamViec_Ca_NS_CaLamViec_IdLichLamViec",
+                        column: x => x.IdLichLamViec,
+                        principalTable: "NS_CaLamViec",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_NS_LichLamViec_Ca_NS_LichLamViec_IdCaLamViec",
+                        column: x => x.IdCaLamViec,
+                        principalTable: "NS_LichLamViec",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -1745,54 +1986,104 @@ namespace BanHangBeautify.Migrations
                 column: "WebhookEventId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DichVu_NhanViens_IdChiNhanh",
-                table: "DichVu_NhanViens",
+                name: "IX_Booking_IdChiNhanh",
+                table: "Booking",
                 column: "IdChiNhanh");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DichVu_NhanViens_IdDonViQuyDoi",
-                table: "DichVu_NhanViens",
-                column: "IdDonViQuyDoi");
+                name: "IX_BookingNhanVien_IdBooking",
+                table: "BookingNhanVien",
+                column: "IdBooking");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DichVu_NhanViens_IdNhanVien",
-                table: "DichVu_NhanViens",
+                name: "IX_BookingNhanVien_IdNhanVien",
+                table: "BookingNhanVien",
                 column: "IdNhanVien");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DM_ChiNhanhs_IdCongTy",
-                table: "DM_ChiNhanhs",
+                name: "IX_BookingService_IdBooking",
+                table: "BookingService",
+                column: "IdBooking");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookingService_IdDonViQuiDoi",
+                table: "BookingService",
+                column: "IdDonViQuiDoi");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DichVu_NhanVien_IdChiNhanh",
+                table: "DichVu_NhanVien",
+                column: "IdChiNhanh");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DichVu_NhanVien_IdDonViQuyDoi",
+                table: "DichVu_NhanVien",
+                column: "IdDonViQuyDoi");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DichVu_NhanVien_IdNhanVien",
+                table: "DichVu_NhanVien",
+                column: "IdNhanVien");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DM_ChiNhanh_IdCongTy",
+                table: "DM_ChiNhanh",
                 column: "IdCongTy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DM_DonViQuiDois_IdHangHoa",
-                table: "DM_DonViQuiDois",
+                name: "IX_DM_DonViQuiDoi_IdHangHoa",
+                table: "DM_DonViQuiDoi",
                 column: "IdHangHoa");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DM_HangHoas_IdLoaiHangHoa",
-                table: "DM_HangHoas",
+                name: "IX_DM_HangHoa_IdLoaiHangHoa",
+                table: "DM_HangHoa",
                 column: "IdLoaiHangHoa");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DM_KhachHangs_IdLoaiKhach",
-                table: "DM_KhachHangs",
+                name: "IX_DM_HangHoa_IdNhomHangHoa",
+                table: "DM_HangHoa",
+                column: "IdNhomHangHoa");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DM_KhachHang_IdLoaiKhach",
+                table: "DM_KhachHang",
                 column: "IdLoaiKhach");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DM_KhachHangs_IdNhomKhach",
-                table: "DM_KhachHangs",
+                name: "IX_DM_KhachHang_IdNguonKhach",
+                table: "DM_KhachHang",
+                column: "IdNguonKhach");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DM_KhachHang_IdNhomKhach",
+                table: "DM_KhachHang",
                 column: "IdNhomKhach");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DM_KhachHangs_NguonKhachId",
-                table: "DM_KhachHangs",
-                column: "NguonKhachId");
+                name: "IX_DM_PhongBan_IdChiNhanh",
+                table: "DM_PhongBan",
+                column: "IdChiNhanh");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DM_PhongBans_IdChiNhanh",
-                table: "DM_PhongBans",
+                name: "IX_NS_LichLamViec_IdChiNhanh",
+                table: "NS_LichLamViec",
                 column: "IdChiNhanh");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NS_LichLamViec_IdNhanVien",
+                table: "NS_LichLamViec",
+                column: "IdNhanVien");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NS_LichLamViec_Ca_IdCaLamViec",
+                table: "NS_LichLamViec_Ca",
+                column: "IdCaLamViec");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NS_LichLamViec_Ca_IdLichLamViec",
+                table: "NS_LichLamViec_Ca",
+                column: "IdLichLamViec");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NS_NhanViens_IdChucVu",
@@ -1800,18 +2091,13 @@ namespace BanHangBeautify.Migrations
                 column: "IdChucVu");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NS_QuaTrinh_CongTacs_IdChiNhanh",
-                table: "NS_QuaTrinh_CongTacs",
-                column: "IdChiNhanh");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_NS_QuaTrinh_CongTacs_IdNhanVien",
-                table: "NS_QuaTrinh_CongTacs",
+                name: "IX_NS_QuaTrinh_CongTac_IdNhanVien",
+                table: "NS_QuaTrinh_CongTac",
                 column: "IdNhanVien");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NS_QuaTrinh_CongTacs_IdPhongBan",
-                table: "NS_QuaTrinh_CongTacs",
+                name: "IX_NS_QuaTrinh_CongTac_IdPhongBan",
+                table: "NS_QuaTrinh_CongTac",
                 column: "IdPhongBan");
         }
 
@@ -1900,16 +2186,28 @@ namespace BanHangBeautify.Migrations
                 name: "AbpWebhookSubscriptions");
 
             migrationBuilder.DropTable(
-                name: "DichVu_NhanViens");
+                name: "BookingNhanVien");
 
             migrationBuilder.DropTable(
-                name: "DM_KhachHangs");
+                name: "BookingService");
 
             migrationBuilder.DropTable(
-                name: "NS_CaLamViecs");
+                name: "DichVu_NhanVien");
 
             migrationBuilder.DropTable(
-                name: "NS_QuaTrinh_CongTacs");
+                name: "DM_KhachHang");
+
+            migrationBuilder.DropTable(
+                name: "DM_NgayNghiLe");
+
+            migrationBuilder.DropTable(
+                name: "NS_LichLamViec_Ca");
+
+            migrationBuilder.DropTable(
+                name: "NS_NhanVien_TimeOff");
+
+            migrationBuilder.DropTable(
+                name: "NS_QuaTrinh_CongTac");
 
             migrationBuilder.DropTable(
                 name: "AbpDynamicEntityProperties");
@@ -1927,22 +2225,28 @@ namespace BanHangBeautify.Migrations
                 name: "AbpWebhookEvents");
 
             migrationBuilder.DropTable(
-                name: "DM_DonViQuiDois");
+                name: "Booking");
 
             migrationBuilder.DropTable(
-                name: "DM_LoaiKhaches");
+                name: "DM_DonViQuiDoi");
 
             migrationBuilder.DropTable(
-                name: "DM_NguonKhaches");
+                name: "DM_LoaiKhach");
 
             migrationBuilder.DropTable(
-                name: "DM_NhomKhachHangs");
+                name: "DM_NguonKhach");
 
             migrationBuilder.DropTable(
-                name: "DM_PhongBans");
+                name: "DM_NhomKhachHang");
 
             migrationBuilder.DropTable(
-                name: "NS_NhanViens");
+                name: "NS_CaLamViec");
+
+            migrationBuilder.DropTable(
+                name: "NS_LichLamViec");
+
+            migrationBuilder.DropTable(
+                name: "DM_PhongBan");
 
             migrationBuilder.DropTable(
                 name: "AbpDynamicProperties");
@@ -1954,19 +2258,25 @@ namespace BanHangBeautify.Migrations
                 name: "AbpUsers");
 
             migrationBuilder.DropTable(
-                name: "DM_HangHoas");
+                name: "DM_HangHoa");
 
             migrationBuilder.DropTable(
-                name: "DM_ChiNhanhs");
+                name: "NS_NhanViens");
 
             migrationBuilder.DropTable(
-                name: "NS_ChucVus");
+                name: "DM_ChiNhanh");
 
             migrationBuilder.DropTable(
-                name: "DM_LoaiHangHoas");
+                name: "DM_LoaiHangHoa");
 
             migrationBuilder.DropTable(
-                name: "HT_CongTys");
+                name: "DM_NhomHangHoa");
+
+            migrationBuilder.DropTable(
+                name: "NS_ChucVu");
+
+            migrationBuilder.DropTable(
+                name: "HT_CongTy");
         }
     }
 }

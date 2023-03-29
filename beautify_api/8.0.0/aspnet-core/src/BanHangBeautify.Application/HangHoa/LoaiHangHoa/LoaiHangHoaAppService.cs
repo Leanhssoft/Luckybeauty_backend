@@ -16,9 +16,9 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
     [AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa)]
     public class LoaiHangHoaAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_LoaiHangHoa, Guid> _repository;
+        private readonly IRepository<DM_LoaiHangHoa, int> _repository;
         private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
-        public LoaiHangHoaAppService(IRepository<DM_LoaiHangHoa, Guid> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository)
+        public LoaiHangHoaAppService(IRepository<DM_LoaiHangHoa, int> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository)
         {
             _repository = repository;
             _hangHoaRepository = hangHoaRepository;
@@ -40,7 +40,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             result.Items = data;
             return result;
         }
-        public async Task<DM_LoaiHangHoa> GetDetail(Guid id)
+        public async Task<DM_LoaiHangHoa> GetDetail(int id)
         {
             return await _repository.GetAsync(id);
         }
@@ -62,9 +62,8 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
         public async Task<LoaiHangHoaDto> Create(CreateOrEditLoaiHangHoaDto dto)
         {
             DM_LoaiHangHoa data = new DM_LoaiHangHoa();
-            data.Id = Guid.NewGuid();
+            data.Id = 1;
             data.CreationTime = DateTime.Now;
-            data.NgayTao = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
             data.TrangThai = 0;
@@ -79,7 +78,6 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
         public async Task<LoaiHangHoaDto> Edit(CreateOrEditLoaiHangHoaDto dto, DM_LoaiHangHoa data)
         {
             data.LastModificationTime = DateTime.Now;
-            data.NgaySua = DateTime.Now;
             data.LastModifierUserId = AbpSession.UserId;
             data.TrangThai = dto.TrangThai;
             data.TenLoai = dto.TenLoai;
@@ -90,14 +88,13 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             return result;
         }
         [HttpPost]
-        public async Task<LoaiHangHoaDto> Delete(Guid id)
+        public async Task<LoaiHangHoaDto> Delete(int id)
         {
             LoaiHangHoaDto result = new LoaiHangHoaDto();
             var checkExist = await _repository.FirstOrDefaultAsync(id);
             if (checkExist != null)
             {
                 checkExist.IsDeleted = true;
-                checkExist.NgayXoa = DateTime.Now;
                 checkExist.DeleterUserId = AbpSession.UserId;
                 checkExist.TrangThai = 1;
                 checkExist.DeletionTime = DateTime.Now;

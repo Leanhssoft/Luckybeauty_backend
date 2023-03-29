@@ -15,8 +15,8 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
     [AbpAuthorize(PermissionNames.Pages_LoaiKhach)]
     public class LoaiKhachAppService : SPAAppServiceBase, ILoaiKhachAppService
     {
-        private readonly IRepository<DM_LoaiKhach, Guid> _repository;
-        public LoaiKhachAppService(IRepository<DM_LoaiKhach, Guid> repository)
+        private readonly IRepository<DM_LoaiKhach, int> _repository;
+        public LoaiKhachAppService(IRepository<DM_LoaiKhach, int> repository)
         {
             _repository = repository;
         }
@@ -24,9 +24,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         {
             LoaiKhachDto result = new LoaiKhachDto();
             var loaiKhach = ObjectMapper.Map<DM_LoaiKhach>(dto);
-            loaiKhach.Id = Guid.NewGuid();
             loaiKhach.CreationTime = DateTime.Now;
-            loaiKhach.NgayTao = DateTime.Now;
             loaiKhach.CreatorUserId = AbpSession.UserId;
             loaiKhach.TenantId = AbpSession.TenantId ?? 1;
             loaiKhach.IsDeleted = false;
@@ -39,7 +37,6 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             LoaiKhachDto result = new LoaiKhachDto();
             var loaiKhach = ObjectMapper.Map<DM_LoaiKhach>(dto);
             loaiKhach.LastModificationTime = DateTime.Now;
-            loaiKhach.NgaySua = DateTime.Now;
             loaiKhach.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(loaiKhach);
             result = ObjectMapper.Map<LoaiKhachDto>(loaiKhach);
@@ -47,7 +44,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             return result;
         }
         [HttpPost]
-        public async Task<LoaiKhachDto> Delete(Guid id)
+        public async Task<LoaiKhachDto> Delete(int id)
         {
             LoaiKhachDto result = new LoaiKhachDto();
             var delete = await _repository.FirstOrDefaultAsync(x => x.Id == id);
@@ -56,14 +53,13 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
                 delete.IsDeleted = true;
                 delete.DeletionTime = DateTime.Now;
                 delete.DeleterUserId = AbpSession.UserId;
-                delete.NgayXoa = DateTime.Now;
                 delete.TrangThai = 1;
                 _repository.Update(delete);
                 result = ObjectMapper.Map<LoaiKhachDto>(delete);
             }
             return result;
         }
-        public async Task<DM_LoaiKhach> GetLoaiKhachDetail(Guid Id)
+        public async Task<DM_LoaiKhach> GetLoaiKhachDetail(int Id)
         {
             var loaiKhach = await _repository.GetAsync(Id);
             return loaiKhach;
