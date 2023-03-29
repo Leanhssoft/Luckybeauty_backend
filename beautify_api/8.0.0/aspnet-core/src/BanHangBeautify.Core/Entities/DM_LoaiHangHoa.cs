@@ -14,7 +14,7 @@ namespace BanHangBeautify.Data.Entities
         public string MaLoai { get; set; }
         public string TenLoai { get; set; }
         public int TenantId { get; set; }
-        public int TrangThai { get; set; }
+        public int TrangThai { get; set; } = 1;
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }
         public Guid? NguoiXoa { get; set; }
