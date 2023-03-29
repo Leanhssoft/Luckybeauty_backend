@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
         private readonly SPADbContext _context;
         public LoaiHangHoaBuilder(SPADbContext context)
         {
-            _context = context; 
+            _context = context;
         }
         public void Create()
         {
@@ -21,33 +22,47 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
         }
         private void CreateDMLoaiHangHoa()
         {
-            List<DM_LoaiHangHoa> lstLoaiHangHoa = new List<DM_LoaiHangHoa>()
+            // check exists
+            List<DM_LoaiHangHoa> lstLoaiHangHoa = new();
+            var hh = _context.DM_LoaiHangHoa.Where(x => x.Id == 1);
+            if (hh == null)
             {
-                new DM_LoaiHangHoa()
+                lstLoaiHangHoa.Add(new DM_LoaiHangHoa()
                 {
                     Id = 1,
-                    IsDeleted= false,
+                    IsDeleted = false,
                     MaLoai = "HH",
                     TenLoai = "Hàng Hóa",
-                    TenantId = 1
-                },
-                new DM_LoaiHangHoa()
+                    TenantId = 1,
+                    TrangThai = 1
+                });
+            }
+            var dv = _context.DM_LoaiHangHoa.Where(x => x.Id == 2);
+            if (dv == null)
+            {
+                lstLoaiHangHoa.Add(new DM_LoaiHangHoa()
                 {
                     Id = 2,
-                    IsDeleted= false,
+                    IsDeleted = false,
                     MaLoai = "DV",
                     TenLoai = "Dịch Vụ",
-                    TenantId = 1
-                },
-                new DM_LoaiHangHoa()
+                    TenantId = 1,
+                    TrangThai = 1
+                });
+            }
+            var cb = _context.DM_LoaiHangHoa.Where(x => x.Id == 3);
+            if (cb == null)
+            {
+                lstLoaiHangHoa.Add(new DM_LoaiHangHoa()
                 {
                     Id = 3,
-                    IsDeleted= false,
+                    IsDeleted = false,
                     MaLoai = "CB",
                     TenLoai = "Combo",
-                    TenantId = 1
-                },
-            };
+                    TenantId = 1,
+                    TrangThai = 1
+                });
+            }
             _context.DM_LoaiHangHoa.AddRange(lstLoaiHangHoa);
             _context.SaveChanges();
         }
