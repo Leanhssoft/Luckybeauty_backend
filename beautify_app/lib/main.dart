@@ -112,6 +112,8 @@ class MyApp extends StatelessWidget {
         Locale('vi', 'VN'),
         Locale('en'),
         Locale('ja'),
+        Locale('en', 'US'), // American English
+        Locale('he', 'IL')
       ],
       locale: const Locale('vi', 'VN'),
       theme: ThemeData(

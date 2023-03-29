@@ -6,7 +6,7 @@ class SfCalendarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<CalendarView> _allowedViews = <CalendarView>[
+    final List<CalendarView> allowedViews = <CalendarView>[
       CalendarView.day,
       CalendarView.week,
       CalendarView.month,
@@ -16,7 +16,7 @@ class SfCalendarView extends StatelessWidget {
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(0)),
       child: SfCalendar(
-        allowedViews: _allowedViews,
+        allowedViews: allowedViews,
         monthViewSettings: const MonthViewSettings(
             showAgenda: true,
             appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,

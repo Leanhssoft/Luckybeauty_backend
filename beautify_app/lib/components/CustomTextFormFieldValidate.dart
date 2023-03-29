@@ -6,25 +6,35 @@ class CustomTextFormFieldValidate extends StatelessWidget {
   final String textValidate;
   final String? hintText;
   final TextInputType? keyboardType;
+  final double? heightForm;
   final Function(String?)? onSave;
+  final Function()? onTab;
+  final Icon? leftIcon;
+  final Icon? rightIcon;
   const CustomTextFormFieldValidate({
     Key? key,
     required this.controller,
     required this.textValidate,
     this.hintText,
     this.keyboardType,
+    this.heightForm,
     this.onSave,
+    this.onTab,
+    this.leftIcon,
+    this.rightIcon,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,
+      height: heightForm ?? 48,
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hintText,
+          prefixIcon: leftIcon,
+          suffixIcon: rightIcon,
           contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           labelStyle: const TextStyle(
               color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
@@ -46,6 +56,7 @@ class CustomTextFormFieldValidate extends StatelessWidget {
           return null;
         },
         onSaved: onSave,
+        onTap: onTab,
       ),
     );
   }

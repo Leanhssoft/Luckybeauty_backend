@@ -13,7 +13,7 @@ import 'ListTitleMenu.dart';
 
 class SideMenu extends StatefulWidget {
   UserPermission user;
-   SideMenu({
+  SideMenu({
     Key? key,
     required this.user,
   }) : super(key: key);
@@ -28,30 +28,39 @@ class _SideMenuState extends State<SideMenu> {
     final drawerMenu = DrawerMenu(widget.user);
     return Drawer(
       backgroundColor: const Color(0xFFFFFFFF),
-      child: SingleChildScrollView(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height - 120,
         child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                children: [
-                  ...buildDrawerItems(drawerMenu.items, context),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 8, bottom: 8, left: 16, right: 16),
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Divider(),
-                    SignOut(
-                        buildContext: context,
-                        item: DrawerItem(
-                            title: "Đăng xuất",
-                            icon: Icons.logout,
-                            permission: null,
-                            route: "/auth")),
+                    ...buildDrawerItems(drawerMenu.items, context),
                   ],
+                ),
+              ),
+              SizedBox(
+                height: 120,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: 8, bottom: 8, left: 16, right: 16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Divider(),
+                      const Spacer(),
+                      SignOut(
+                          buildContext: context,
+                          item: DrawerItem(
+                              title: "Đăng xuất",
+                              icon: Icons.logout,
+                              permission: null,
+                              route: "/auth")),
+                      const Spacer()
+                    ],
+                  ),
                 ),
               )
             ]),
@@ -67,14 +76,14 @@ List<Widget> buildDrawerItems(
     if (item.children == null) {
       widgets.add(Padding(
           padding:
-              const EdgeInsets.only(top: 4, bottom: 4, left: 16, right: 16),
+              const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
           child: ListTileMenu(
             buildContext: buildContext,
             item: item,
           )));
     } else {
       widgets.add(Padding(
-        padding: const EdgeInsets.only(top: 4, bottom: 4, left: 16, right: 16),
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
         child: ExpansionTileMenu(buildContext: buildContext, item: item),
       ));
     }
