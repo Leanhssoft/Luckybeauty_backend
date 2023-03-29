@@ -2,6 +2,7 @@
 using Abp.Domain.Entities.Auditing;
 using BanHangBeautify.Entities;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,5 +28,6 @@ namespace BanHangBeautify.Data.Entities
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }
         public Guid? NguoiXoa { get; set; }
+        public virtual ICollection<DM_DonViQuiDoi> DonViQuiDois { get; set; }
     }
 }
