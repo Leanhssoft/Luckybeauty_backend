@@ -1,10 +1,11 @@
 ﻿using Abp.Application.Services.Dto;
+using BanHangBeautify.Common;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Dto
 {
     public class HangHoaPagedResultRequestDto : PagedResultRequestDto
     {
-        public string Keyword { get; set; }
-        public int? TenantId { set; get; }
+        public string IdNhomHangHoas { set; get; }
+        public CommonClass.ParamSearch CommonParam { set; get; }
     }
 }
