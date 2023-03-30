@@ -18,5 +18,11 @@ namespace BanHangBeautify.Common
             public DateTime? DateFrom { get; set; }
             public DateTime? DateTo { get; set; }
         }
+
+        public class MaxCodeDto
+        {
+            public string FirstStr { get; set; } = string.Empty;
+            public float? MaxVal { get; set; } = 1;
+        }
     }
 }
