@@ -29,8 +29,8 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id= 1,
                     IsDeleted= false,
-                    MaLoai = "KH",
-                    TenLoai = "Khách hàng",
+                    MaLoaiKhachHang = "KH",
+                    TenLoaiKhachHang = "Khách hàng",
                     TrangThai = 1,
                     TenantId = 1
                 });
@@ -43,11 +43,11 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id = 2,
                     IsDeleted = false,
-                    MaLoai = "NCC",
-                    TenLoai = "Nhà cung cấp",
+                    MaLoaiKhachHang = "NCC",
+                    TenLoaiKhachHang = "Nhà cung cấp",
                     TrangThai = 1,
                     TenantId = 1
-                },
+                });
                 
             };
             var exists = _context.DM_LoaiKhach.Select(x => x.Id).ToList();

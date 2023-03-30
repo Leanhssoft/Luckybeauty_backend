@@ -7,5 +7,6 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
     {
         public string IdNhomHangHoas { set; get; }
         public CommonClass.ParamSearch CommonParam { set; get; }
+        public string Keyword { get; set; }
     }
 }

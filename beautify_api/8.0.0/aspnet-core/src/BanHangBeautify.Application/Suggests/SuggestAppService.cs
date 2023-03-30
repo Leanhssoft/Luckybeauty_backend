@@ -115,7 +115,7 @@ namespace BanHangBeautify.Suggests
                 {
                     SuggestLoaiKhach rdo = new SuggestLoaiKhach();
                     rdo.Id = item.Id;
-                    rdo.TenLoai = item.TenLoai;
+                    rdo.TenLoai = item.TenLoaiKhachHang;
                     result.Add(rdo);
                 }
             }
@@ -185,7 +185,7 @@ namespace BanHangBeautify.Suggests
                 {
                     SuggestLoaiHangHoa rdo = new SuggestLoaiHangHoa();
                     rdo.Id = item.Id;
-                    rdo.TenLoai = item.TenLoai;
+                    rdo.TenLoai = item.TenLoaiHangHoa;
                     result.Add(rdo);
                 }
             }

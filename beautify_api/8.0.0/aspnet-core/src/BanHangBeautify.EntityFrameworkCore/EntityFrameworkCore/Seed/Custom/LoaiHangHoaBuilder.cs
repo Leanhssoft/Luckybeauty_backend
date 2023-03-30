@@ -1,4 +1,5 @@
-﻿using BanHangBeautify.Data.Entities;
+﻿using Abp.Application.Services.Dto;
+using BanHangBeautify.Data.Entities;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -57,30 +58,11 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id = 3,
                     IsDeleted = false,
-                    MaLoai = "CB",
-                    TenLoai = "Combo",
+                    MaLoaiHangHoa = "CB",
+                    TenLoaiHangHoa = "Combo",
                     TenantId = 1
-                },
-            };
-            var exists = _context.DM_LoaiHangHoa.Select(x => x.Id).ToList();
-            if (exists.Count > 0)
-            {
-                foreach (var item in lstLoaiHangHoa)
-                {
-                    if (!exists.Contains(item.Id))
-                    {
-                        _context.DM_LoaiHangHoa.Add(item);
-                        _context.SaveChanges();
-                    }
-                }
-            }
-        }
-    }
-}
-                    TenantId = 1,
-                    TrangThai = 1
                 });
-            }
+            };
             _context.DM_LoaiHangHoa.AddRange(lstLoaiHangHoa);
             _context.SaveChanges();
         }
