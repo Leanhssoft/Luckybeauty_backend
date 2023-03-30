@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BanHangBeautify.Common;
 using AutoMapper.Internal.Mappers;
+using static BanHangBeautify.Common.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Repository
 {
@@ -58,15 +59,39 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
             }
         }
 
-        public async Task<string> GetProductCode(int loaiHangHoa, int? tenantId)
+        public async Task<string> GetProductCode(int? loaiHangHoa = 2, int? tenantId = 1)
         {
-            using (var command = CreateCommand("select dbo.fnGetProductCode(@TenantId,@LoaiHangHoa) ", System.Data.CommandType.Text))
+            using var command = CreateCommand("select dbo.fnGetProductCode(@TenantId,@LoaiHangHoa) ", System.Data.CommandType.Text);
+            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            command.Parameters.Add(new SqlParameter("@LoaiHangHoa", loaiHangHoa));
+            var code = (await command.ExecuteScalarAsync()).ToString();
+            return code;
+        }
+
+        public async Task<MaxCodeDto> SpGetProductCode(int? tenantId = 1, int? loaiHangHoa = 2)
+        {
+            using var command = CreateCommand("spGetProductCode");
+            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            command.Parameters.Add(new SqlParameter("@LoaiHangHoa", loaiHangHoa));
+
+            using (var dataReader = await command.ExecuteReaderAsync())
             {
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
-                command.Parameters.Add(new SqlParameter("@LoaiHangHoa", loaiHangHoa));
-                var code = (await command.ExecuteScalarAsync()).ToString();
-                return code;
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                var ddd = ds.Tables;
+
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var data = ObjectHelper.FillCollection<HangHoaDto>(ds.Tables[0]);
+                    return new BanHangBeautify.Common.CommonClass.MaxCodeDto()
+                    {
+                        FirstStr = ds.Tables[0].Rows[0]["FirstStr"].ToString(),
+                        MaxVal = float.Parse(ds.Tables[0].Rows[0]["MaxVal"].ToString()),
+                    };
+                }
             }
+            return new MaxCodeDto();
         }
     }
 }

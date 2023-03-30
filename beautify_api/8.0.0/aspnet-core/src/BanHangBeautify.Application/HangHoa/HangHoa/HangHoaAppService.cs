@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using static BanHangBeautify.Common.CommonClass;
+
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
@@ -57,34 +59,37 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.TenantId = AbpSession.TenantId ?? 1;
             hangHoa.CreatorUserId = AbpSession.UserId;
             hangHoa.CreationTime = DateTime.Now;
-            await _dmHangHoa.InsertAsync(hangHoa);
 
             if (dto.DonViQuiDois != null && dto.DonViQuiDois.Count > 0)
             {
+                MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                var max = objMax.MaxVal;
                 foreach (var item in dto.DonViQuiDois)
                 {
                     DM_DonViQuiDoi dvt = ObjectMapper.Map<DM_DonViQuiDoi>(item);
                     dvt.Id = Guid.NewGuid();
                     dvt.TenantId = hangHoa.TenantId;
                     dvt.IdHangHoa = productId;
-                    dvt.MaHangHoa = await _repository.GetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                    dvt.MaHangHoa = string.Concat(objMax.FirstStr, max);
                     lstDVT.Add(dvt);
-                    await _dmDonViQuiDoi.InsertAsync(dvt);
+                    max += 1;
                 }
             }
             else
             {
+                MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                 DM_DonViQuiDoi dvt = new()
                 {
                     Id = Guid.NewGuid(),
                     IdHangHoa = productId,
                     TenantId = hangHoa.TenantId,
-                    MaHangHoa = await _repository.GetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId),
+                    MaHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal),
                     TenDonViTinh = string.Empty,
                 };
                 lstDVT.Add(dvt);
-                await _dmDonViQuiDoi.InsertAsync(dvt);
             }
+            await _dmHangHoa.InsertAsync(hangHoa);
+            await _dmDonViQuiDoi.InsertRangeAsync(lstDVT);
 
             hangHoa.DonViQuiDois = lstDVT;
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
