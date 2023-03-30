@@ -35,6 +35,7 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<NS_NhanVien_TimeOff> NS_NhanVien_TimeOff { set; get; }
         public DbSet<DM_ChiNhanh> DM_ChiNhanh { set; get; }
         public DbSet<HT_CongTy> HT_CongTy { get; set; }
+        public DbSet<DM_LoaiChungTu> DM_LoaiChungTu { get; set; }
 
         /* Define a DbSet for each entity of the application */
 

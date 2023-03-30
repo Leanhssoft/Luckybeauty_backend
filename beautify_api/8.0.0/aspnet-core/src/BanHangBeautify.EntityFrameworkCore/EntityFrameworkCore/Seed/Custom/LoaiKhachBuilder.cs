@@ -21,22 +21,31 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
         }
         private void CreateDMLoaiKhach()
         {
-            List<DM_LoaiKhach> lstLoaiKhach = new List<DM_LoaiKhach>()
+            List<DM_LoaiKhach> lstLoaiKhach = new();
+            var kh = _context.DM_LoaiKhach.Where(x => x.Id == 1);
+            if (kh == null)
             {
-                new DM_LoaiKhach()
+                lstLoaiKhach.Add(new DM_LoaiKhach()
                 {
                     Id= 1,
                     IsDeleted= false,
                     MaLoai = "KH",
                     TenLoai = "Khách hàng",
+                    TrangThai = 1,
                     TenantId = 1
-                },
-                new DM_LoaiKhach()
+                });
+            }
+
+            var ncc = _context.DM_LoaiKhach.Where(x => x.Id == 2);
+            if (kh == null)
+            {
+                lstLoaiKhach.Add(new DM_LoaiKhach()
                 {
                     Id= 2,
                     IsDeleted= false,
                     MaLoai = "NCC",
                     TenLoai = "Nhà cung cấp",
+                    TrangThai = 1,
                     TenantId = 1
                 },
                 
