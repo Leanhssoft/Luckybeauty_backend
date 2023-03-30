@@ -57,6 +57,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.TenantId = AbpSession.TenantId ?? 1;
             hangHoa.CreatorUserId = AbpSession.UserId;
             hangHoa.CreationTime = DateTime.Now;
+            await _dmHangHoa.InsertAsync(hangHoa);
 
             if (dto.DonViQuiDois != null && dto.DonViQuiDois.Count > 0)
             {
@@ -68,6 +69,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     dvt.IdHangHoa = productId;
                     dvt.MaHangHoa = await _repository.GetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                     lstDVT.Add(dvt);
+                    await _dmDonViQuiDoi.InsertAsync(dvt);
                 }
             }
             else
@@ -81,10 +83,8 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     TenDonViTinh = string.Empty,
                 };
                 lstDVT.Add(dvt);
+                await _dmDonViQuiDoi.InsertAsync(dvt);
             }
-
-            await _dmHangHoa.InsertAsync(hangHoa);
-            await _dmDonViQuiDoi.InsertRangeAsync(lstDVT);
 
             hangHoa.DonViQuiDois = lstDVT;
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);

@@ -31,8 +31,8 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id = 1,
                     IsDeleted = false,
-                    MaLoai = "HH",
-                    TenLoai = "Hàng Hóa",
+                    MaLoaiHangHoa = "HH",
+                    TenLoaiHangHoa = "Hàng Hóa",
                     TenantId = 1,
                     TrangThai = 1
                 });
@@ -44,8 +44,8 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id = 2,
                     IsDeleted = false,
-                    MaLoai = "DV",
-                    TenLoai = "Dịch Vụ",
+                    MaLoaiHangHoa = "DV",
+                    TenLoaiHangHoa = "Dịch Vụ",
                     TenantId = 1,
                     TrangThai = 1
                 });
@@ -57,8 +57,8 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id = 3,
                     IsDeleted = false,
-                    MaLoai = "CB",
-                    TenLoai = "Combo",
+                    MaLoaiHangHoa = "CB",
+                    TenLoaiHangHoa = "Combo",
                     TenantId = 1,
                     TrangThai = 1
                 });

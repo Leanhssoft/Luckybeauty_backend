@@ -29,7 +29,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             var loaiHangHoas = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
             {
-                loaiHangHoas = loaiHangHoas.Where(x => x.TenLoai.Contains(input.Keyword) || x.MaLoai.Contains(input.Keyword)).ToList();
+                loaiHangHoas = loaiHangHoas.Where(x => x.TenLoaiHangHoa.Contains(input.Keyword) || x.MaLoaiHangHoa.Contains(input.Keyword)).ToList();
             }
             if (input.SkipCount > 0)
             {
@@ -67,8 +67,8 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
             data.TrangThai = 0;
-            data.TenLoai = dto.TenLoai;
-            data.MaLoai = dto.MaLoai;
+            data.TenLoaiHangHoa = dto.TenLoai;
+            data.MaLoaiHangHoa = dto.MaLoai;
             data.IsDeleted = false;
             var result = ObjectMapper.Map<LoaiHangHoaDto>(data);
             await _repository.InsertAsync(data);
@@ -80,8 +80,8 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             data.LastModificationTime = DateTime.Now;
             data.LastModifierUserId = AbpSession.UserId;
             data.TrangThai = dto.TrangThai;
-            data.TenLoai = dto.TenLoai;
-            data.MaLoai = dto.MaLoai;
+            data.TenLoaiHangHoa = dto.TenLoai;
+            data.MaLoaiHangHoa = dto.MaLoai;
             data.IsDeleted = false;
             var result = ObjectMapper.Map<LoaiHangHoaDto>(data);
             await _repository.UpdateAsync(data);
@@ -115,8 +115,8 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
                 {
                     LoaiHangHoaInfoDto rdo = new LoaiHangHoaInfoDto();
                     rdo.Id = item.Id;
-                    rdo.MaLoai = item.MaLoai;
-                    rdo.TenLoai = item.TenLoai;
+                    rdo.MaLoaiHangHoa = item.MaLoaiHangHoa;
+                    rdo.TenLoaiHangHoa = item.TenLoaiHangHoa;
                     var dichVus = _hangHoaRepository.GetAll().Where(x=>x.IdLoaiHangHoa==item.Id && x.TenantId ==(AbpSession.TenantId??1)&& x.IsDeleted==false).Select(x=>x.TenHangHoa).ToList();
                     rdo.DichVus = dichVus;
                     lstData.Add(rdo);    

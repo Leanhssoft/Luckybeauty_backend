@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Repository
 {
-    public interface IHangHoaRepository : IRepository<DM_HangHoa, Guid>
+    public interface IHangHoaRepository
     {
         Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input, int? tenantId);
         Task<string> GetProductCode(int loaiHangHoa, int? tenantId);

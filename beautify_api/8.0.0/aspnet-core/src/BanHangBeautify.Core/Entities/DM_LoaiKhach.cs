@@ -14,9 +14,9 @@ namespace BanHangBeautify.Entities
         public int Id { get; set; }
         public int TenantId { get; set; }
         [MaxLength(10)]
-        public string MaLoai { get; set; }
+        public string MaLoaiKhachHang { get; set; }
         [MaxLength(256)]
-        public string TenLoai { get; set; }
+        public string TenLoaiKhachHang { get; set; }
         public int TrangThai { get; set; }
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }

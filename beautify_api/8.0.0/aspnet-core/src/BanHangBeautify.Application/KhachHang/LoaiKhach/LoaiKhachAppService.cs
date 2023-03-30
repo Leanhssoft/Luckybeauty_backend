@@ -71,7 +71,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
             {
-                lstData = lstData.Where(x => x.TenLoai.Contains(input.Keyword) || x.MaLoai.Contains(input.Keyword)).ToList();
+                lstData = lstData.Where(x => x.TenLoaiKhachHang.Contains(input.Keyword) || x.MaLoaiKhachHang.Contains(input.Keyword)).ToList();
             }
             input.MaxResultCount = 10;
             if (input.SkipCount > 0)

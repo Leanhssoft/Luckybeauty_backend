@@ -11,8 +11,8 @@ namespace BanHangBeautify.Data.Entities
         [Castle.Components.DictionaryAdapter.Key("Id")]
         override
         public int Id { get; set; }
-        public string MaLoai { get; set; }
-        public string TenLoai { get; set; }
+        public string MaLoaiHangHoa { get; set; }
+        public string TenLoaiHangHoa { get; set; }
         public int TenantId { get; set; }
         public int TrangThai { get; set; } = 1;
         public Guid? NguoiTao { get; set; }
