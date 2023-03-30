@@ -99,13 +99,54 @@ namespace BanHangBeautify.HangHoa.HangHoa
         [NonAction]
         public async Task<CreateOrEditHangHoaDto> Edit(CreateOrEditHangHoaDto dto, DM_HangHoa hangHoa)
         {
+            #region compare dvt & update IsDeleted = true if not exists
+            var dvt = _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == hangHoa.Id);
+            var idOlds = dvt.Select(x => x.Id).ToList();
+            var idNews = dto.DonViQuiDois.Select(x => x.Id);
+            var idDeletes = (from idOld in idOlds
+                             join idNew in idNews on idOld equals idNew
+                             into tbl
+                             from de in tbl.DefaultIfEmpty()
+                             where de == Guid.Empty
+                             select idOld).ToList();
+            _dmDonViQuiDoi.GetAllList(x => idDeletes.Contains(x.Id)).ForEach(x => x.IsDeleted = true);
+            #endregion
+
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TrangThai = dto.TrangThai;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
-            var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             await _dmHangHoa.UpdateAsync(hangHoa);
+
+            foreach (var item in dto.DonViQuiDois)
+            {
+                DM_DonViQuiDoi objDVT = _dmDonViQuiDoi.FirstOrDefault(item.Id);
+                if (objDVT != null)
+                {
+                    // update
+                    objDVT.MaHangHoa = item.MaHangHoa;
+                    objDVT.TenDonViTinh = item.TenDonViTinh;
+                    objDVT.TyLeChuyenDoi = item.TyLeChuyenDoi;
+                    objDVT.GiaBan = item.GiaBan;
+                    await _dmDonViQuiDoi.UpdateAsync(objDVT);
+                }
+                else
+                {
+                    // insert
+                    MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                    DM_DonViQuiDoi dvtNew = ObjectMapper.Map<DM_DonViQuiDoi>(item);
+                    dvtNew.MaHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal);
+                    dvtNew.IdHangHoa = hangHoa.Id;
+                    dvtNew.TenantId = hangHoa.TenantId;
+                    dvtNew.LaDonViTinhChuan = item.LaDonViTinhChuan;
+                    await _dmDonViQuiDoi.InsertAsync(dvtNew);
+                    hangHoa.DonViQuiDois.Add(dvtNew);// used to return
+                }
+            }
+        
+            // only return dvt not delete (todo)
+            var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
         }
         public async Task<DM_HangHoa> getDetail(Guid id)
