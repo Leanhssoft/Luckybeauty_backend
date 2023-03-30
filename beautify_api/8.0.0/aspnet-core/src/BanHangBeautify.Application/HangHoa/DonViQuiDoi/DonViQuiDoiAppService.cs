@@ -69,7 +69,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
         {
             return await _repository.FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<ListResultDto<DM_DonViQuiDoi>> GetAll(DonViQuiDoiPagedRequestResultDto input)
+        public async Task<PagedResultDto<DM_DonViQuiDoi>> GetAll(DonViQuiDoiPagedRequestResultDto input)
         {
             var lstDonViQuiDoi = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(input.Keyword))
@@ -85,7 +85,8 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             {
                 input.SkipCount *= input.MaxResultCount;
             }
-            ListResultDto<DM_DonViQuiDoi> result = new ListResultDto<DM_DonViQuiDoi>();
+            PagedResultDto<DM_DonViQuiDoi> result = new PagedResultDto<DM_DonViQuiDoi>();
+            result.TotalCount = lstDonViQuiDoi.Count;   
             var getDonViQuiDoi = lstDonViQuiDoi.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = getDonViQuiDoi;
             return result;

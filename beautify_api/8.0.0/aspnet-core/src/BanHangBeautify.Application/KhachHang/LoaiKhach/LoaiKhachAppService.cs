@@ -24,6 +24,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         {
             LoaiKhachDto result = new LoaiKhachDto();
             var loaiKhach = ObjectMapper.Map<DM_LoaiKhach>(dto);
+            loaiKhach.Id = _repository.Count() + 1;
             loaiKhach.CreationTime = DateTime.Now;
             loaiKhach.CreatorUserId = AbpSession.UserId;
             loaiKhach.TenantId = AbpSession.TenantId ?? 1;
@@ -65,10 +66,11 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             return loaiKhach;
         }
 
-        public async Task<ListResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input)
+        public async Task<PagedResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input)
         {
-            ListResultDto<DM_LoaiKhach> ListResultDto = new ListResultDto<DM_LoaiKhach>();
+            PagedResultDto<DM_LoaiKhach> ListResultDto = new PagedResultDto<DM_LoaiKhach>();
             var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            ListResultDto.TotalCount = lstData.Count;
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstData = lstData.Where(x => x.TenLoai.Contains(input.Keyword) || x.MaLoai.Contains(input.Keyword)).ToList();
@@ -79,7 +81,10 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
                 input.SkipCount = input.SkipCount * 10;
             }
             ListResultDto.Items = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+           
             return ListResultDto;
         }
+
+        
     }
 }

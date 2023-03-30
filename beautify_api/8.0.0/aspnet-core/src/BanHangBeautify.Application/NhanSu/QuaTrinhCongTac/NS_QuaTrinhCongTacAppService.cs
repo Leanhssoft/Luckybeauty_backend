@@ -96,10 +96,11 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
         {
             return await _repository.GetAsync(id);
         }
-        public async Task<ListResultDto<NS_QuaTrinh_CongTac>> GetAll(PagedResultRequestDto input, string keyWord)
+        public async Task<PagedResultDto<NS_QuaTrinh_CongTac>> GetAll(PagedResultRequestDto input, string keyWord)
         {
-            ListResultDto<NS_QuaTrinh_CongTac> result = new ListResultDto<NS_QuaTrinh_CongTac>();
+            PagedResultDto<NS_QuaTrinh_CongTac> result = new PagedResultDto<NS_QuaTrinh_CongTac>();
             var lstQuaTrinhCongTac = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).ToListAsync();
+            result.TotalCount = lstQuaTrinhCongTac.Count;
             if (!string.IsNullOrEmpty(keyWord))
             {
                 lstQuaTrinhCongTac = lstQuaTrinhCongTac.ToList();

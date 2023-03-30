@@ -10,17 +10,27 @@ import '../../../../Models/TenanlModels/CreateTenantDto.dart';
 
 class TenantService {
   // ignore: non_constant_identifier_names
-  void CreateTenant(CreateTenantDto input) async {
-    String token = await SessionManager().get("accessToken");
-    // ignore: unused_local_variable
-    final responsive = await http.post(
-        Uri.parse("${Constants.BASE_URL}/api/services/app/Tenant/Create"),
-        headers: {
-          'accept': 'text/plant',
-          'Content-Type': 'application/json-patch+json',
-          'Authorization': 'Bearer $token'
-        },
-        body: jsonEncode(input));
+  Future<bool> CreateTenant(CreateTenantDto input) async {
+    bool result = false;
+    try {
+      String token = await SessionManager().get("accessToken");
+      // ignore: unused_local_variable
+      final responsive = await http.post(
+          Uri.parse("${Constants.BASE_URL}/api/services/app/Tenant/Create"),
+          headers: {
+            'accept': 'text/plant',
+            'Content-Type': 'application/json-patch+json',
+            'Authorization': 'Bearer $token'
+          },
+          body: jsonEncode(input));
+      if (responsive.statusCode == 200) {
+        result = true;
+      }
+    } catch (e) {
+      result = false;
+      throw Exception("lỗi :$e");
+    }
+    return result;
   }
 
   Future<List<Tenant>> getAll(PagedTenantResultRequestDto input) async {
@@ -39,11 +49,13 @@ class TenantService {
         final items = List<Map<String, dynamic>>.from(data['result']['items']);
 
         final result = items
-            .map((json) => Tenant(
-                id: json['id'],
-                isActive: json['isActive'],
-                name: json['name'],
-                tenancyName: json['tenancyName']))
+            .map(
+              (json) => Tenant(
+                  id: json['id'],
+                  isActive: json['isActive'],
+                  name: json['name'],
+                  tenancyName: json['tenancyName']),
+            )
             .toList();
         return result;
       } else {

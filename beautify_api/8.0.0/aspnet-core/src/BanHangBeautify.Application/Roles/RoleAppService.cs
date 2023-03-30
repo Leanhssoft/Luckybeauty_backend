@@ -51,7 +51,7 @@ namespace BanHangBeautify.Roles
             return MapToEntityDto(role);
         }
 
-        public async Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input)
+        public async Task<PagedResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input)
         {
             var roles = await _roleManager
                 .Roles
@@ -61,7 +61,7 @@ namespace BanHangBeautify.Roles
                 )
                 .ToListAsync();
 
-            return new ListResultDto<RoleListDto>(ObjectMapper.Map<List<RoleListDto>>(roles));
+            return new PagedResultDto<RoleListDto>(roles.Count,ObjectMapper.Map<List<RoleListDto>>(roles));
         }
 
         public override async Task<RoleDto> UpdateAsync(RoleDto input)

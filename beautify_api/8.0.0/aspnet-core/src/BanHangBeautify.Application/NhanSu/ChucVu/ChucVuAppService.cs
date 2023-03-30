@@ -89,12 +89,13 @@ namespace BanHangBeautify.NhanSu.ChucVu
         {
             return await _repository.GetAsync(id);
         }
-        public async Task<ListResultDto<NS_ChucVu>> GetAll(PagedResultRequestDto input, string keyWord)
+        public async Task<PagedResultDto<NS_ChucVu>> GetAll(PagedResultRequestDto input, string keyWord)
         {
-            ListResultDto<NS_ChucVu> result = new ListResultDto<NS_ChucVu>();
+            PagedResultDto<NS_ChucVu> result = new PagedResultDto<NS_ChucVu>();
             try
             {
                 var lstChucVu = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+                result.TotalCount = lstChucVu.Count;
                 if (!string.IsNullOrEmpty(keyWord))
                 {
                     lstChucVu = lstChucVu.Where(x => x.TenChucVu.Contains(keyWord) || x.MaChucVu.Contains(keyWord)).ToList();
@@ -106,6 +107,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             catch (Exception)
             {
                 result.Items = null;
+                result.TotalCount=0;
             }
 
             return result;

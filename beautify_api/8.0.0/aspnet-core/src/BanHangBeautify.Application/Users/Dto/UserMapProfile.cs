@@ -10,7 +10,7 @@ namespace BanHangBeautify.Users.Dto
             CreateMap<UserDto, User>();
             CreateMap<UserDto, User>()
                 .ForMember(x => x.Roles, opt => opt.Ignore())
-                .ForMember(x => x.CreationTime, opt => opt.Ignore());
+                .ForMember(x => x.CreationTime, opt => opt.Ignore()).ReverseMap();
 
             CreateMap<CreateUserDto, User>();
             CreateMap<CreateUserDto, User>().ForMember(x => x.Roles, opt => opt.Ignore());

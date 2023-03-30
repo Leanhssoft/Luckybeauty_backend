@@ -77,10 +77,11 @@ namespace BanHangBeautify.PhongBan
         {
             return await _phongBanRepository.GetAsync(id);
         }
-        public async Task<ListResultDto<DM_PhongBan>> GetAll(PhongBanPagedResultRequestDto input)
+        public async Task<PagedResultDto<DM_PhongBan>> GetAll(PhongBanPagedResultRequestDto input)
         {
-            ListResultDto<DM_PhongBan> result = new ListResultDto<DM_PhongBan>();
+            PagedResultDto<DM_PhongBan> result = new PagedResultDto<DM_PhongBan>();
             var lstPhongBan = await _phongBanRepository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = lstPhongBan.Count;
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstPhongBan = lstPhongBan.Where(x => x.TenPhongBan.Contains(input.Keyword) || x.MaPhongBan.Contains(input.Keyword)).ToList();

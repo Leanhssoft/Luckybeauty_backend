@@ -48,8 +48,18 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                     TenantId = 1
                 },
             };
-            _context.DM_LoaiHangHoa.AddRange(lstLoaiHangHoa);
-            _context.SaveChanges();
+            var exists = _context.DM_LoaiHangHoa.Select(x => x.Id).ToList();
+            if (exists.Count > 0)
+            {
+                foreach (var item in lstLoaiHangHoa)
+                {
+                    if (!exists.Contains(item.Id))
+                    {
+                        _context.DM_LoaiHangHoa.Add(item);
+                        _context.SaveChanges();
+                    }
+                }
+            }
         }
     }
 }

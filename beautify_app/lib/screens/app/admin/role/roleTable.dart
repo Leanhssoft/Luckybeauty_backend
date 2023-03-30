@@ -237,7 +237,7 @@ class _RoleTableState extends State<RoleTable> {
                                                 builder:
                                                     (BuildContext context) {
                                                   return CreateOrUpdateRoleModal(
-                                                    id: _data[i].id.toString(),
+                                                    id: _data[i].id,
                                                     reload: () {
                                                       _getRole();
                                                     },
@@ -435,7 +435,7 @@ List<DataRow> dataRows(List<RoleDto> items, BuildContext context) {
                           context: context,
                           builder: (BuildContext context) {
                             return CreateOrUpdateRoleModal(
-                              id: item.id.toString(),
+                              id: item.id,
                               reload: () {},
                             );
                           });

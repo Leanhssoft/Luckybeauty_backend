@@ -77,10 +77,11 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             }
             return new CaLamViecDto();
         }
-        public async Task<ListResultDto<NS_CaLamViec>> GetAll(PagedResultRequestDto input, string keyWord)
+        public async Task<PagedResultDto<NS_CaLamViec>> GetAll(PagedResultRequestDto input, string keyWord)
         {
-            ListResultDto<NS_CaLamViec> result = new ListResultDto<NS_CaLamViec>();
+            PagedResultDto<NS_CaLamViec> result = new PagedResultDto<NS_CaLamViec>();
             var lstCaLamViec = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = lstCaLamViec.Count;
             if (!string.IsNullOrEmpty(keyWord))
             {
                 lstCaLamViec = lstCaLamViec.Where(

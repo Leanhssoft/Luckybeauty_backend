@@ -14,6 +14,7 @@ using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Roles.Dto;
+using BanHangBeautify.Suggests.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -55,24 +56,7 @@ namespace BanHangBeautify.Users
             _logInManager = logInManager;
             _nhanVienRepository = nhanVienRepository;
         }
-        public async Task<List<SuggestNhanSu>> SuggestNhanSus()
-        {
-            List<SuggestNhanSu> result = new List<SuggestNhanSu>();
-            var lstNhanSu = await _nhanVienRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
-            if (lstNhanSu!=null || lstNhanSu.Count>0)
-            {
-                foreach (var item in lstNhanSu)
-                {
-                    SuggestNhanSu rdo = new SuggestNhanSu();
-                    rdo.Id=item.Id;
-                    rdo.TenNhanVien = item.TenNhanVien;
-                    rdo.SoDienThoai = item.SoDienThoai;
-                    result.Add(rdo);
-                }
-            }
-            return result;
-            
-        }
+        
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -296,6 +280,7 @@ namespace BanHangBeautify.Users
 
             return true;
         }
+        
     }
 }
 
