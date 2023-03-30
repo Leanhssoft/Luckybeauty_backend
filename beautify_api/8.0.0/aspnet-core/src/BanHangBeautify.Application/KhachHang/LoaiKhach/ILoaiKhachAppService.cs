@@ -11,7 +11,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         Task<LoaiKhachDto> CreateLoaiKhach(CreateOrEditLoaiKhachDto dto);
         Task<LoaiKhachDto> Delete(int id);
         Task<LoaiKhachDto> EditLoaiKhach(CreateOrEditLoaiKhachDto dto);
-        Task<ListResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input);
+        Task<PagedResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input);
         Task<DM_LoaiKhach> GetLoaiKhachDetail(int Id);
     }
 }

@@ -12,7 +12,7 @@ import 'package:beautify_app/screens/app/admin/role/roleService.dart';
 import 'models/createRoleDto.dart';
 
 class CreateOrUpdateRoleModal extends StatefulWidget {
-  String? id;
+  int? id;
   Function? reload;
   CreateOrUpdateRoleModal({
     Key? key,
@@ -48,7 +48,7 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      if (widget.id == '') {
+      if (widget.id == null) {
         // Lưu trữ dữ liệu của tab 'Role'
         CreateRoleDto role = CreateRoleDto(
             name: roleData['roleName'],
@@ -60,7 +60,7 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
       } else {
         // Lưu trữ dữ liệu của tab 'Role'
         RoleDto role = RoleDto(
-            id: int.parse(widget.id.toString()),
+            id: widget.id ?? 0,
             name: roleData['roleName'],
             displayName: roleData['displayName'],
             description: roleData['description'],
@@ -77,9 +77,6 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
     var lstPermission = await RoleService().getAllPermission();
     setState(() {
       _fullPermissions = lstPermission;
-      if (kDebugMode) {
-        print(_fullPermissions);
-      }
     });
   }
 
@@ -88,9 +85,6 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
     setState(() {
       roleEdit = role;
       _permissionsCurent = role.grantedPermissions!.cast<String>();
-      if (kDebugMode) {
-        print(_fullPermissions);
-      }
     });
     return role;
   }
@@ -98,7 +92,9 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
-    getRole(int.parse(widget.id.toString()));
+    if (widget.id != null) {
+      getRole(widget.id ?? 0);
+    }
     getFullPermission();
     super.initState();
   }
@@ -114,62 +110,56 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return AlertDialog(
-          title:
-              Text(widget.id == '' ? 'Thêm mới vai trò' : 'Chỉnh sửa vai trò'),
+          title: Text(
+              widget.id == null ? 'Thêm mới vai trò' : 'Chỉnh sửa vai trò'),
           content: SizedBox(
             height: _heightDialog,
             width: 560,
             child: Column(
               children: [
-                TabBar(
-                  controller: _tabController,
-                  tabs: [
-                    Tab(
-                        child: TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _heightDialog = 380;
-                        });
-                      },
-                      child: Text("Tên vai trò",
-                          style: GoogleFonts.roboto(
-                              color: Colors.black.withOpacity(.7))),
-                    )),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _heightDialog = 800;
-                        });
-                      },
-                      child: Tab(
-                        child: Text("Quyền",
-                            style: GoogleFonts.roboto(
-                                color: Colors.black.withOpacity(.7))),
-                      ),
-                    ),
-                  ],
-                  indicatorColor: Colors.blue,
-                  // Set the label style for the active tab
-                  labelStyle: const TextStyle(color: Colors.blue),
-                ),
                 Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      RoleForm(
-                        role: roleEdit,
-                        formKey: _formKey,
-                        onRoleSave: (Map<String, dynamic> data) {
-                          roleData.addAll(data);
-                        },
+                  child: Stepper(
+                    currentStep: _tabController.index,
+                    onStepTapped: (int index) {
+                      setState(() {
+                        _tabController.index = index;
+                        _updateDialogHeight(index);
+                      });
+                    },
+                    steps: [
+                      Step(
+                        title: Text(
+                          "Tên vai trò",
+                          style: GoogleFonts.roboto(
+                              color: Colors.black.withOpacity(.7)),
+                        ),
+                        isActive: _tabController.index == 0,
+                        content: RoleForm(
+                          role: roleEdit,
+                          formKey: _formKey,
+                          onRoleSave: (Map<String, dynamic> data) {
+                            roleData.addAll(data);
+                          },
+                        ),
                       ),
-                      PermissionList(
-                        fullPermissions: _fullPermissions,
-                        selectedPermissions: _permissionsCurent,
-                        onSelectedPermissionsChanged: (p0) => {
-                          _permissionsCurent = p0,
-                        },
-                      )
+                      Step(
+                        title: Text(
+                          "Quyền",
+                          style: GoogleFonts.roboto(
+                              color: Colors.black.withOpacity(.7)),
+                        ),
+                        isActive: _tabController.index == 1,
+                        content: PermissionList(
+                          fullPermissions: _fullPermissions,
+                          selectedPermissions: _permissionsCurent,
+                          onSelectedPermissionsChanged: (p0) {
+                            setState(() {
+                              _permissionsCurent = p0;
+                            });
+                            print(_permissionsCurent);
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -200,7 +190,13 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
       },
     );
   }
-}
+
+  void _updateDialogHeight(int index) {
+    setState(() {
+      _heightDialog = index == 0 ? 380 : 800;
+    });
+  }
+    }
 
 class PermissionList extends StatefulWidget {
   List<PermissionViewModel> fullPermissions;
@@ -260,14 +256,18 @@ class _PermissionListState extends State<PermissionList>
                   setState(() {
                     isSelectAll = value!;
                     if (value == true) {
-                      widget.selectedPermissions =
-                          filterFullPermissions.map((permission) {
-                        return permission.name;
-                      }).toList();
+                      setState(() {
+                        widget.selectedPermissions =
+                            filterFullPermissions.map((e) => e.name).toList();
+                      });
                     } else {
-                      widget.selectedPermissions = [];
+                      setState(() {
+                        widget.selectedPermissions = [];
+                      });
                     }
                   });
+                  widget
+                      .onSelectedPermissionsChanged(widget.selectedPermissions);
                 },
               ),
               const Text('Select all'),
@@ -297,7 +297,7 @@ class _PermissionListState extends State<PermissionList>
                         });
                       },
                     ),
-                    Text(filterFullPermissions[index].displayName.toString()),
+                    Text(filterFullPermissions[index].displayName.toString(),style: GoogleFonts.roboto(color: Colors.black),),
                   ],
                 );
               },

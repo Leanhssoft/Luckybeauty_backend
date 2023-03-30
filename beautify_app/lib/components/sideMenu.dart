@@ -30,40 +30,43 @@ class _SideMenuState extends State<SideMenu> {
       backgroundColor: const Color(0xFFFFFFFF),
       child: SizedBox(
         height: MediaQuery.of(context).size.height - 120,
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    ...buildDrawerItems(drawerMenu.items, context),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 120,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 8, bottom: 8, left: 16, right: 16),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical  ,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Divider(),
-                      const Spacer(),
-                      SignOut(
-                          buildContext: context,
-                          item: DrawerItem(
-                              title: "Đăng xuất",
-                              icon: Icons.logout,
-                              permission: null,
-                              route: "/auth")),
-                      const Spacer()
+                      ...buildDrawerItems(drawerMenu.items, context),
                     ],
                   ),
                 ),
-              )
-            ]),
+                SizedBox(
+                  height: 120,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 8, bottom: 8, left: 16, right: 16),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Divider(),
+                        const Spacer(),
+                        SignOut(
+                            buildContext: context,
+                            item: DrawerItem(
+                                title: "Đăng xuất",
+                                icon: Icons.logout,
+                                permission: null,
+                                route: "/auth")),
+                        const Spacer()
+                      ],
+                    ),
+                  ),
+                )
+              ]),
+        ),
       ),
     );
   }

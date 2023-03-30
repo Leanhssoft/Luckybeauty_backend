@@ -70,10 +70,11 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             var nguonKhach = await _repository.GetAsync(Id);
             return nguonKhach;
         }
-        public async Task<ListResultDto<DM_NguonKhach>> GetAll(PagedNguonKhachResultRequestDto input)
+        public async Task<PagedResultDto<DM_NguonKhach>> GetAll(PagedNguonKhachResultRequestDto input)
         {
-            ListResultDto<DM_NguonKhach> ListResultDto = new ListResultDto<DM_NguonKhach>();
+            PagedResultDto<DM_NguonKhach> ListResultDto = new PagedResultDto<DM_NguonKhach>();
             var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            ListResultDto.TotalCount = lstData.Count;
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstData = lstData.Where(x => x.TenNguon.Contains(input.Keyword) || x.MaNguon.Contains(input.Keyword)).ToList();

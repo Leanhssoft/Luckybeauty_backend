@@ -11,6 +11,6 @@ namespace BanHangBeautify.Roles
 
         Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input);
 
-        Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
+        Task<PagedResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
     }
 }

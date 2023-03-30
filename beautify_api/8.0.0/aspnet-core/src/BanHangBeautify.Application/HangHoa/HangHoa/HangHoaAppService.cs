@@ -107,11 +107,12 @@ namespace BanHangBeautify.HangHoa.HangHoa
         {
             return await _dmHangHoa.FirstOrDefaultAsync(x => x.Id == id);
         }
-        public async Task<ListResultDto<DM_HangHoa>> GetAll(HangHoaPagedResultRequestDto input)
+        public async Task<PagedResultDto<DM_HangHoa>> GetAll(HangHoaPagedResultRequestDto input)
         {
-            ListResultDto<DM_HangHoa> result = new ListResultDto<DM_HangHoa>();
-            var lstHangHoa = await _dmHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
-            if (!string.IsNullOrEmpty(input.CommonParam.TextSearch))
+            PagedResultDto<DM_HangHoa> result = new PagedResultDto<DM_HangHoa>();
+            var lstHangHoa = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = lstHangHoa.Count;
+            if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.CommonParam.TextSearch) || x.TenHangHoa.Contains(input.CommonParam.TextSearch)).ToList();
             }

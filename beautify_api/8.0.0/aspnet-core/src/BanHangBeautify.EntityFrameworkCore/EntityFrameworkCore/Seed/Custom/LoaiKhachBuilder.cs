@@ -27,10 +27,10 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
             {
                 lstLoaiKhach.Add(new DM_LoaiKhach()
                 {
-                    Id = 1,
-                    IsDeleted = false,
-                    MaLoaiKhachHang   = "KH",
-                    TenLoaiKhachHang = "Khách hàng",
+                    Id= 1,
+                    IsDeleted= false,
+                    MaLoai = "KH",
+                    TenLoai = "Khách hàng",
                     TrangThai = 1,
                     TenantId = 1
                 });
@@ -43,14 +43,25 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id = 2,
                     IsDeleted = false,
-                    MaLoaiKhachHang = "NCC",
-                    TenLoaiKhachHang = "Nhà cung cấp",
+                    MaLoai = "NCC",
+                    TenLoai = "Nhà cung cấp",
                     TrangThai = 1,
                     TenantId = 1
-                });
+                },
+                
+            };
+            var exists = _context.DM_LoaiKhach.Select(x => x.Id).ToList();
+            if(exists.Count > 0 )
+            {
+                foreach (var item in lstLoaiKhach)
+                {
+                    if (!exists.Contains(item.Id))
+                    {
+                        _context.DM_LoaiKhach.Add(item);
+                        _context.SaveChanges();
+                    }
+                }
             }
-            _context.DM_LoaiKhach.AddRange(lstLoaiKhach);
-            _context.SaveChanges();
         }
     }
 }

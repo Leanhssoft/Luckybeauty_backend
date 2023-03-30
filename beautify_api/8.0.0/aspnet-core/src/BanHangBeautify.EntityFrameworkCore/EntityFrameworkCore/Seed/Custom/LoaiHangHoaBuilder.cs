@@ -57,8 +57,26 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                 {
                     Id = 3,
                     IsDeleted = false,
-                    MaLoaiHangHoa = "CB",
-                    TenLoaiHangHoa = "Combo",
+                    MaLoai = "CB",
+                    TenLoai = "Combo",
+                    TenantId = 1
+                },
+            };
+            var exists = _context.DM_LoaiHangHoa.Select(x => x.Id).ToList();
+            if (exists.Count > 0)
+            {
+                foreach (var item in lstLoaiHangHoa)
+                {
+                    if (!exists.Contains(item.Id))
+                    {
+                        _context.DM_LoaiHangHoa.Add(item);
+                        _context.SaveChanges();
+                    }
+                }
+            }
+        }
+    }
+}
                     TenantId = 1,
                     TrangThai = 1
                 });

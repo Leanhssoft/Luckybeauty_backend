@@ -66,10 +66,11 @@ namespace BanHangBeautify.KhachHang.NhomKhach
             var nhomKhach = await _repository.GetAsync(Id);
             return nhomKhach;
         }
-        public async Task<ListResultDto<DM_NhomKhachHang>> GetAll(PagedNhomKhachResultRequestDto input)
+        public async Task<PagedResultDto<DM_NhomKhachHang>> GetAll(PagedNhomKhachResultRequestDto input)
         {
-            ListResultDto<DM_NhomKhachHang> ListResultDto = new ListResultDto<DM_NhomKhachHang>();
+            PagedResultDto<DM_NhomKhachHang> ListResultDto = new PagedResultDto<DM_NhomKhachHang>();
             var lstData = await _repository.GetAll().Where(x=>x.TenantId== (AbpSession.TenantId ?? 1)&& x.IsDeleted==false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            ListResultDto.TotalCount = lstData.Count;
             if (!string.IsNullOrEmpty(input.Keyword))
             {
                 lstData = lstData.Where(x => x.MaNhomKhach.Contains(input.Keyword) || x.TenNhomKhach.Contains(input.Keyword)).ToList();
