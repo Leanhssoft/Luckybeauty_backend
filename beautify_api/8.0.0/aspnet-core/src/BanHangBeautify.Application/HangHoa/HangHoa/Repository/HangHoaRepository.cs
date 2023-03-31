@@ -33,6 +33,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
                 command.Parameters.Add(new SqlParameter("@TextSearch", input.CommonParam.TextSearch ?? (object)DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@IdNhomHangHoas", input.IdNhomHangHoas ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@Where", DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@CurrentPage", input.CommonParam.CurrentPage));
                 command.Parameters.Add(new SqlParameter("@PageSize", input.CommonParam.PageSize));
                 command.Parameters.Add(new SqlParameter("@ColumnSort", input.CommonParam.ColumnSort));
