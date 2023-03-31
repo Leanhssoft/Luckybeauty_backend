@@ -144,7 +144,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     hangHoa.DonViQuiDois.Add(dvtNew);// used to return
                 }
             }
-        
+
             // only return dvt not delete (todo)
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
@@ -185,6 +185,9 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 findHangHoa.DeletionTime = DateTime.Now;
                 findHangHoa.DeleterUserId = AbpSession.UserId;
                 _dmHangHoa.Update(findHangHoa);
+
+                _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == id).ForEach(x => x.IsDeleted = true);
+
                 result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
