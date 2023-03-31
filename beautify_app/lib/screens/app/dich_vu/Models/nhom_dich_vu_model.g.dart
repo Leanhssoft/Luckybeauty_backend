@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'nhom-dich-vu-model.dart';
+part of 'nhom_dich_vu_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

@@ -11,11 +11,11 @@ class DichVuTableSource extends DataTableSource {
     final DichVuViewModel item = data[index];
     return DataRow(cells: [
       DataCell(Text(item.id)),
-      DataCell(Text(item.maHangHoa.toString())),
-      DataCell(Text(item.tenHangHoa)),
-      DataCell(Text(item.loaiHangHoa)),
-      DataCell(Text(item.giaBan)),
-      DataCell(Text(item.trangThaiText)),
+      // DataCell(Text(item.maHangHoa.toString())),
+      // DataCell(Text(item.tenHangHoa)),
+      // DataCell(Text(item.loaiHangHoa)),
+      // DataCell(Text(item.giaBan)),
+      // DataCell(Text(item.trangThaiText)),
     ]);
   }
 

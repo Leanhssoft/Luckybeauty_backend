@@ -66,8 +66,15 @@ class _DichVuPageState extends State<DichVuPage> {
               height: 40,
               width: 40,
               child: IconButton(
-                icon: Icon(Icons.menu),
+                icon: Icon(
+                  Icons.menu,
+                  color: ClassAppColor.iconColor,
+                ),
                 onPressed: () {},
+                style: const ButtonStyle(
+                  backgroundColor:
+                      MaterialStatePropertyAll(ClassAppColor.bgSecondBtnColor),
+                ),
               ),
             ),
             SizedBox(
@@ -94,7 +101,7 @@ class _DichVuPageState extends State<DichVuPage> {
         children: [
           Expanded(
             child: SizedBox(
-              width: screenWidth * 0.5,
+              width: screenWidth * 0.5, // notworking in expand
               child: TextField(
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.search),
@@ -197,9 +204,10 @@ class _DichVuPageState extends State<DichVuPage> {
                     ),
                     // list nhomDV
                     Expanded(
-                        child: Container(
-                      color: Colors.greenAccent,
-                    ))
+                      child: Container(
+                        color: Colors.greenAccent,
+                      ),
+                    ),
                   ],
                 ),
               ),

@@ -1,52 +1,86 @@
-import 'dart:convert';
+import 'package:json_annotation/json_annotation.dart';
+part 'dich_vu_model.g.dart';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+@JsonSerializable()
+class DonViQuiDoiDto {
+  @JsonKey(name: 'IdDonViQuyDoi', defaultValue: null)
+  String? idDonViQuyDoi;
+
+  @JsonKey(name: 'IdHangHoa', defaultValue: null)
+  String? idHangHoa;
+
+  @JsonKey(name: 'MaHangHoa', defaultValue: '')
+  String? maHangHoa;
+
+  @JsonKey(name: 'GiaBan', defaultValue: 0)
+  double? giaBan;
+
+  @JsonKey(name: 'TenDonViTinh', defaultValue: '')
+  String? tenDonViTinh;
+
+  @JsonKey(name: 'TyLeChuyenDoi', defaultValue: 1)
+  double? tyLeChuyenDoi;
+
+  @JsonKey(name: 'LaDonViTinhChuan', defaultValue: 1)
+  int? laDonViTinhChuan;
+
+  @JsonKey(name: 'IsDeleted', defaultValue: false)
+  bool? isDeleted;
+
+  DonViQuiDoiDto(
+    this.idDonViQuyDoi,
+    this.idHangHoa,
+    this.maHangHoa,
+    this.giaBan,
+    this.tenDonViTinh,
+    this.tyLeChuyenDoi,
+    this.laDonViTinhChuan,
+  );
+
+  factory DonViQuiDoiDto.fromJson(Map<String, dynamic> json) =>
+      _$DonViQuiDoiDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DonViQuiDoiDtoToJson(this);
+}
+
+@JsonSerializable()
 class DichVuViewModel {
+  @JsonKey(name: 'Id', required: true)
   String id;
-  String maHangHoa;
+
+  @JsonKey(name: 'TenHangHoa', required: true)
   String tenHangHoa;
-  String giaBan;
-  String loaiHangHoa;
-  String trangThaiText;
+
+  @JsonKey(name: 'TenHangHoa_KhongDau', defaultValue: '')
+  String? tenHangHoaKhongDau;
+
+  @JsonKey(name: 'IdLoaiHangHoa', required: true, defaultValue: 2)
+  int? idLoaiHangHoa;
+
+  @JsonKey(name: 'IdNhomHangHoa', defaultValue: null)
+  String? idNhomHangHoa;
+
+  @JsonKey(name: 'SoPhutThucHien', defaultValue: 0)
+  double? soPhutThucHien;
+
+  @JsonKey(name: 'TrangThai', defaultValue: 1)
+  int? trangThai;
+
+  @JsonKey(name: 'MoTa', defaultValue: '')
+  String? moTa;
+
+  late DonViQuiDoiDto? donViChuan;
+  late final List<DonViQuiDoiDto>? listDonViTinh;
+
   DichVuViewModel({
     required this.id,
-    required this.maHangHoa,
     required this.tenHangHoa,
-    required this.giaBan,
-    required this.loaiHangHoa,
-    required this.trangThaiText,
+    this.idLoaiHangHoa,
+    this.donViChuan,
   });
 
-  
+  factory DichVuViewModel.fromJson(Map<String, dynamic> json) =>
+      _$DichVuViewModelFromJson(json);
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'maHangHoa': maHangHoa,
-      'tenHangHoa': tenHangHoa,
-      'giaBan': giaBan,
-      'loaiHangHoa': loaiHangHoa,
-      'trangThaiText': trangThaiText,
-    };
-  }
-
-  factory DichVuViewModel.fromMap(Map<String, dynamic> map) {
-    return DichVuViewModel(
-      id: map['id'] as String,
-      maHangHoa: map['maHangHoa'] as String,
-      tenHangHoa: map['tenHangHoa'] as String,
-      giaBan: map['giaBan'] as String,
-      loaiHangHoa: map['loaiHangHoa'] as String,
-      trangThaiText: map['trangThaiText'] as String,
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory DichVuViewModel.fromJson(String source) => DichVuViewModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'DichVuViewModel(id: $id, maHangHoa: $maHangHoa, tenHangHoa: $tenHangHoa, giaBan: $giaBan, loaiHangHoa: $loaiHangHoa, trangThaiText: $trangThaiText)';
-  }
+  Map<String, dynamic> toJson() => _$DichVuViewModelToJson(this);
 }

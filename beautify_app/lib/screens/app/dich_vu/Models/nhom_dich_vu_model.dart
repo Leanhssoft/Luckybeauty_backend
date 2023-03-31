@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'nhom-dich-vu-model.g.dart';
+part 'nhom_dich_vu_model.g.dart';
 
 @JsonSerializable()
 class NhomDichVuDto {
