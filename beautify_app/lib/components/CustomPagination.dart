@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class CustomPaginator extends StatefulWidget {
@@ -91,7 +90,8 @@ class _CustomPaginatorState extends State<CustomPaginator> {
             ),
           ),
         IconButton(
-          onPressed: _currentPage == _lastPage
+          onPressed: _currentPage == _lastPage ||
+                  (_currentPage * widget.perPage) > widget.itemCount
               ? null
               : () {
                   _changePage(_currentPage + 1);

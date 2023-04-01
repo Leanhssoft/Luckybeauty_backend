@@ -3,6 +3,7 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Suggests.Dto;
 using BanHangBeautify.Users.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Suggests
 {
+    [Authorize]
     public class SuggestAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;//

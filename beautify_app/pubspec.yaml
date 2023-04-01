@@ -53,6 +53,7 @@ dependencies:
   number_paginator: ^0.2.3
   flutter_bloc: ^8.1.2
   im_stepper: ^1.0.1+1
+  timezone: ^0.9.1
   #flutter_datetime_picker: ^2.0.0
 dev_dependencies:
   flutter_test:

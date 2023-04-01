@@ -7,6 +7,8 @@ class CustomTextFormField extends StatelessWidget {
   final TextInputType? keyBoardType;
   final double? heightForm;
   final Function(String?)? onSaved;
+  final Function(String?)? onChanged;
+  final Function()? onEditingComplete;
   final Function()? onTab;
   final Icon? leftIcon;
   final Icon? rightIcon;
@@ -17,6 +19,8 @@ class CustomTextFormField extends StatelessWidget {
     this.keyBoardType,
     this.heightForm,
     this.onSaved,
+    this.onChanged,
+    this.onEditingComplete,
     this.onTab,
     this.leftIcon,
     this.rightIcon,
@@ -28,7 +32,6 @@ class CustomTextFormField extends StatelessWidget {
       height: heightForm ?? 48,
       child: TextFormField(
         controller: controller,
-        keyboardType: keyBoardType,
         decoration: InputDecoration(
           prefixIcon: leftIcon,
           suffixIcon: rightIcon,
@@ -49,6 +52,8 @@ class CustomTextFormField extends StatelessWidget {
         ),
         onSaved: onSaved,
         onTap: onTab,
+        onChanged: onChanged,
+        onEditingComplete: onEditingComplete,
       ),
     );
   }

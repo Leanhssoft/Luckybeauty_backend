@@ -1,10 +1,24 @@
-import 'package:beautify_app/components/CustomPagination.dart';
-import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:beautify_app/screens/app/customer/customerScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:beautify_app/components/CustomDeleteDialog.dart';
+import 'package:beautify_app/components/CustomPagination.dart';
+import 'package:beautify_app/components/CustomSuccessDialog.dart';
+import 'package:beautify_app/screens/app/customer/Models/PagedKhachHangRequestDto.dart';
+import 'package:beautify_app/screens/app/customer/Service/KhachHangServices.dart';
+import 'package:beautify_app/screens/app/customer/create-or-edit-customer-modal.dart';
+import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
+
+import 'Models/KhachHangItemDto.dart';
+
 class KhachHangTable extends StatefulWidget {
-  const KhachHangTable({super.key});
+  final Function? refreshData;
+  const KhachHangTable({
+    Key? key,
+    this.refreshData,
+  }) : super(key: key);
 
   @override
   State<KhachHangTable> createState() => _KhachHangTableState();
@@ -12,13 +26,41 @@ class KhachHangTable extends StatefulWidget {
 
 class _KhachHangTableState extends State<KhachHangTable> {
   bool checkAll = false;
-  List<String> khachHang = ["", "", "", "", "", "", "", "", "", "", "", ""];
+  List<KhachHangItemDto> _khachHang = [];
   int _currentPage = 1;
-  int perPage = 10;
+  int _perPage = 10;
+  String _keyword = '';
+  int totalCount = 0;
   @override
   void initState() {
     super.initState();
     _currentPage = 1;
+    getData();
+  }
+
+  void getData() async {
+    PagedKhachHangRequestDto input = PagedKhachHangRequestDto();
+    input.keyword = _keyword;
+    input.maxResultCount = _perPage;
+    input.skipCount = _currentPage == 1 ? 0 : _currentPage;
+    var data = await KhachHangServices().getAllKhachHang(input);
+    setState(() {
+      _khachHang = data.items;
+      totalCount = data.totalCount;
+    });
+    widget.refreshData!();
+  }
+
+  void refreshData() async {
+    PagedKhachHangRequestDto input = PagedKhachHangRequestDto();
+    input.keyword = _keyword;
+    input.maxResultCount = _perPage;
+    input.skipCount = (_currentPage - 1) * _perPage;
+    var data = await KhachHangServices().getAllKhachHang(input);
+    setState(() {
+      _khachHang = data.items;
+      totalCount = data.totalCount;
+    });
   }
 
   @override
@@ -149,10 +191,12 @@ class _KhachHangTableState extends State<KhachHangTable> {
                 controller: scrollController,
                 scrollDirection: Axis.horizontal,
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           DataTable(
                             dividerThickness: 1,
@@ -160,7 +204,7 @@ class _KhachHangTableState extends State<KhachHangTable> {
                               color: Color(0xFFB2AFB2),
                             ),
                             columns: viewColumn,
-                            rows: dataRows(khachHang),
+                            rows: dataRows(_khachHang, context, refreshData),
                           ),
                         ],
                       ),
@@ -173,27 +217,32 @@ class _KhachHangTableState extends State<KhachHangTable> {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              const Spacer(),
+              const Spacer(
+                flex: 3,
+              ),
               Expanded(
+                flex: 2,
                 child: Row(
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                          "Hiển thị ${(_currentPage * perPage) - 9}-${_currentPage * perPage} của ${khachHang.length} mục",
+                          "Hiển thị ${(_currentPage * _perPage) - 9}-${_currentPage * _perPage} của $totalCount mục",
                           style: GoogleFonts.roboto(
                               color: const Color(0xFF666466), fontSize: 14)),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: CustomPaginator(
-                        itemCount: khachHang.length,
-                        perPage: 10,
+                        itemCount: totalCount,
+                        perPage: _perPage,
                         pagesVisible: 5,
                         onPageChanged: (curentPage) {
-                          setState(() {
-                            _currentPage = curentPage;
-                          });
+                          if (curentPage * _perPage < totalCount) {
+                            setState(() {
+                              _currentPage = curentPage;
+                            });
+                          }
                         },
                       ),
                     ),
@@ -205,6 +254,158 @@ class _KhachHangTableState extends State<KhachHangTable> {
         ],
       ),
     );
+  }
+
+  List<DataRow> dataRows(List<KhachHangItemDto> items, BuildContext context,
+      Function refreshData) {
+    int i = 0;
+    List<DataRow> dataRow = [];
+    for (var item in items) {
+      i += 1;
+      DataRow row = DataRow(
+        cells: [
+          DataCell(
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                i.toString(),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(item.tenKhachHang.toString()),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(item.soDienThoai.toString()),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(item.tenNhomKhach.toString()),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(item.gioiTinh.toString()),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(item.nhanVienPhuTrach.toString()),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(item.tongChiTieu.toString()),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(item.cuocHenGanNhat.toString()),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item.tenNguonKhach.toString(),
+                style: GoogleFonts.roboto(
+                    color: const Color(0xFF009EF7), fontSize: 12),
+              ),
+            ),
+          ),
+          DataCell(
+            Container(
+              alignment: Alignment.center,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: const Icon(Icons.remove_red_eye_outlined),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => CreateOrEditCustomerModal(
+                            idKhachHang: item.id.toString(),
+                          ),
+                        );
+                      },
+                      child: const Icon(Icons.edit),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: ElevatedButton(
+                      style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Color(0xFFFF5252))),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext buildContext) {
+                            return CustomDeleteDialog(
+                              onDelete: () async {
+                                var isDelete = await KhachHangServices()
+                                    .deleteKhachHang(item.id.toString());
+                                if (isDelete) {
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          backgroundColor: Color(0xFF90CAF9),
+                                          content:
+                                              Text("Xóa dữ liệu thành công!")));
+                                } else {
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          backgroundColor:
+                                              Color.fromARGB(255, 233, 53, 22),
+                                          content: Text(
+                                              "Có lỗ sảy ra vui lòng thử lại sau!")));
+                                }
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const KhachHangScreen()),
+                                ).then((value) => refreshData());
+                              },
+                            );
+                          },
+                        );
+                      },
+                      child: const Icon(Icons.delete),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+
+      dataRow.add(row);
+    }
+    return dataRow;
   }
 
   List<DataColumn> get viewColumn {
@@ -297,110 +498,4 @@ class _KhachHangTableState extends State<KhachHangTable> {
       ),
     ];
   }
-}
-
-List<DataRow> dataRows(List<dynamic> items) {
-  int i = 0;
-  List<DataRow> dataRow = [];
-  for (var item in items) {
-    i += 1;
-    DataRow row = DataRow(
-      cells: [
-        DataCell(
-          Container(
-            alignment: Alignment.center,
-            child: Text(
-              i.toString(),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('Lương đức mạnh'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('0348016446'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('VIP'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('Nam'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('Lương đức mạnh'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('5.000.000'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: const Text('22-03-2023'),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Online',
-              style: GoogleFonts.roboto(
-                  color: const Color(0xFF009EF7), fontSize: 12),
-            ),
-          ),
-        ),
-        DataCell(
-          Container(
-            alignment: Alignment.center,
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.remove_red_eye_outlined),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.edit),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    child: const Icon(Icons.delete),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-
-    dataRow.add(row);
-  }
-  return dataRow;
 }

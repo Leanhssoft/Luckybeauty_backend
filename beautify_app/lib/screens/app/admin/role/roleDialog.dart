@@ -1,5 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -26,7 +25,7 @@ class CreateOrUpdateRoleModal extends StatefulWidget {
 }
 
 class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin,RestorationMixin {
   RoleDto roleEdit = RoleDto(
       id: 0,
       name: '',
@@ -56,6 +55,7 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
             description: roleData['description'],
             normalizedName: roleData['roleName'].toString().toUpperCase(),
             grantedPermissions: _permissionsCurent);
+        print(role);
         await RoleService().createRole(role); // add await here
       } else {
         // Lưu trữ dữ liệu của tab 'Role'
@@ -72,6 +72,16 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
   }
 
   late TabController _tabController;
+  final RestorableInt tabIndex = RestorableInt(0);
+
+  @override
+  String get restorationId => 'tab_scrollable_demo';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(tabIndex, 'tab_index');
+    _tabController.index = tabIndex.value;
+  }
   late List<PermissionViewModel> _fullPermissions = [];
   Future<void> getFullPermission() async {
     var lstPermission = await RoleService().getAllPermission();
@@ -92,6 +102,13 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      // When the tab controller's value is updated, make sure to update the
+      // tab index value, which is state restorable.
+      setState(() {
+        tabIndex.value = _tabController.index;
+      });
+    });
     if (widget.id != null) {
       getRole(widget.id ?? 0);
     }
@@ -101,7 +118,8 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
 
   @override
   void dispose() {
-    _tabController.dispose();
+     _tabController.dispose();
+    tabIndex.dispose();
     super.dispose();
   }
 
@@ -117,49 +135,62 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
             width: 560,
             child: Column(
               children: [
-                Expanded(
-                  child: Stepper(
-                    currentStep: _tabController.index,
-                    onStepTapped: (int index) {
-                      setState(() {
-                        _tabController.index = index;
-                        _updateDialogHeight(index);
-                      });
-                    },
-                    steps: [
-                      Step(
-                        title: Text(
+                TabBar(
+                  controller: _tabController,
+                  tabs: [
+                    Tab(
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _heightDialog = 380;
+                          });
+                        },
+                        child: Text(
                           "Tên vai trò",
                           style: GoogleFonts.roboto(
                               color: Colors.black.withOpacity(.7)),
                         ),
-                        isActive: _tabController.index == 0,
-                        content: RoleForm(
-                          role: roleEdit,
-                          formKey: _formKey,
-                          onRoleSave: (Map<String, dynamic> data) {
-                            roleData.addAll(data);
-                          },
-                        ),
                       ),
-                      Step(
-                        title: Text(
+                    ),
+                    Tab(
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _heightDialog = 800;
+                          });
+                        },
+                        child: Text(
                           "Quyền",
                           style: GoogleFonts.roboto(
-                              color: Colors.black.withOpacity(.7)),
-                        ),
-                        isActive: _tabController.index == 1,
-                        content: PermissionList(
-                          fullPermissions: _fullPermissions,
-                          selectedPermissions: _permissionsCurent,
-                          onSelectedPermissionsChanged: (p0) {
-                            setState(() {
-                              _permissionsCurent = p0;
-                            });
-                            print(_permissionsCurent);
-                          },
+                            color: Colors.black.withOpacity(.7),
+                          ),
                         ),
                       ),
+                    ),
+                  ],
+                  indicatorColor: Colors.blue,
+                  labelStyle: const TextStyle(color: Colors.blue),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      RoleForm(
+                        role: roleEdit,
+                        formKey: _formKey,
+                        onRoleSave: (Map<String, dynamic> data) {
+                          roleData.addAll(data);
+                        },
+                      ),
+                      PermissionList(
+                        fullPermissions: _fullPermissions,
+                        selectedPermissions: _permissionsCurent,
+                        onSelectedPermissionsChanged: (p0) => {
+                          setState(() {
+                            _permissionsCurent = p0;
+                          }),
+                        },
+                      )
                     ],
                   ),
                 ),
@@ -190,13 +221,7 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
       },
     );
   }
-
-  void _updateDialogHeight(int index) {
-    setState(() {
-      _heightDialog = index == 0 ? 380 : 800;
-    });
-  }
-    }
+}
 
 class PermissionList extends StatefulWidget {
   List<PermissionViewModel> fullPermissions;
@@ -297,7 +322,7 @@ class _PermissionListState extends State<PermissionList>
                         });
                       },
                     ),
-                    Text(filterFullPermissions[index].displayName.toString(),style: GoogleFonts.roboto(color: Colors.black),),
+                    Text(filterFullPermissions[index].displayName.toString()),
                   ],
                 );
               },

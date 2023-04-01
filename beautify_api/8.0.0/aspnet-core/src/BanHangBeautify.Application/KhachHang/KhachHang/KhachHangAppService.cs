@@ -39,6 +39,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.LastModificationTime = DateTime.Now;
             khachHang.LastModifierUserId = AbpSession.UserId;
+            khachHang.TenantId = AbpSession.TenantId ?? 1;
             await _repository.UpdateAsync(khachHang);
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
 
@@ -86,6 +87,43 @@ namespace BanHangBeautify.KhachHang.KhachHang
 
             lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             ListResultDto.Items = lstData;
+            return ListResultDto;
+        }
+
+        public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input)
+        {
+            PagedResultDto<KhachHangView> ListResultDto = new PagedResultDto<KhachHangView>();
+            var lstData = await _repository.GetAll().Include(x=>x.NguonKhach).Include(x=>x.NhomKhach)
+                .Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            ListResultDto.TotalCount = lstData.Count;
+            if (!string.IsNullOrEmpty(input.Keyword))
+            {
+                lstData = lstData.Where(
+                    x => x.TenKhachHang.Contains(input.Keyword) || x.MaKhachHang.Contains(input.Keyword) ||
+                    x.MaSoThue.Contains(input.Keyword) || x.SoDienThoai.Contains(input.Keyword) ||
+                    x.DiaChi.Contains(input.Keyword) || x.Email.Contains(input.Keyword)
+                   ).ToList();
+            }
+            if (input.SkipCount > 0)
+            {
+                input.SkipCount = input.SkipCount * 10;
+            }
+
+            lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+
+            var items = lstData.Select(x=>new KhachHangView()
+            {
+                Id = x.Id,
+                TenKhachHang = x.TenKhachHang,
+                CuocHenGanNhat = x.CreationTime,
+                GioiTinh = x.GioiTinhNam==null? "Khác": (x.GioiTinhNam==true?"Nam":"Nữ"),
+                SoDienThoai = x.SoDienThoai,
+                NhanVienPhuTrach = "",
+                TenNguonKhach = x.NguonKhach.TenNguon,
+                TenNhomKhach = x.NhomKhach.TenNhomKhach,
+                TongChiTieu = 0
+            }).ToList();
+            ListResultDto.Items = items;
             return ListResultDto;
         }
     }

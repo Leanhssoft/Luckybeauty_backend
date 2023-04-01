@@ -5,8 +5,8 @@ namespace BanHangBeautify.KhachHang.NhomKhach.Dto
 {
     public class NhomKhachDto : EntityDto<Guid>
     {
-        public string MaNhom { get; set; }
-        public string Tennhom { get; set; }
+        public string MaNhomKhach { get; set; }
+        public string TenNhomKhach { get; set; }
         public string MoTa { get; set; }
         public int TrangThai { get; set; }
     }

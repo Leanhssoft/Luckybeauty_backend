@@ -1,6 +1,10 @@
+import 'package:beautify_app/components/CustomDeleteDialog.dart';
 import 'package:beautify_app/components/CustomPagination.dart';
+import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
 import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuDto.dart';
 import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuFilter.dart';
+import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuItemDto.dart';
+import 'package:beautify_app/screens/app/nhan_vien/nhanVienHeader.dart';
 import 'package:beautify_app/screens/app/nhan_vien/services/nhanVienServices.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,13 +21,13 @@ class _NhanVienTableState extends State<NhanVienTable> {
   int _currentPage = 1;
   int perPage = 10;
   String searchText = '';
-  List<NhanSuDto> _data = [];
+  List<NhanSuItemDto> _data = [];
   Future<void> _loadData() async {
     NhanSuFilter input = NhanSuFilter(
         keyWord: searchText,
         skipCount: _currentPage == 1 ? 0 : _currentPage * perPage,
         maxResultCount: perPage);
-    var data = await NhanVienService().getAll(input);
+    var data = await NhanVienService().getAllNhanVien(input);
     setState(() {
       _data = data;
     });
@@ -177,7 +181,7 @@ class _NhanVienTableState extends State<NhanVienTable> {
                               color: Color(0xFFB2AFB2),
                             ),
                             columns: viewColumn,
-                            rows: dataRows(_data),
+                            rows: dataRows(_data, context),
                           ),
                         ],
                       ),
@@ -308,7 +312,7 @@ class _NhanVienTableState extends State<NhanVienTable> {
   }
 }
 
-List<DataRow> dataRows(List<NhanSuDto> items) {
+List<DataRow> dataRows(List<NhanSuItemDto> items, BuildContext buildContext) {
   int i = 0;
   List<DataRow> dataRow = [];
   for (var item in items) {
@@ -349,19 +353,19 @@ List<DataRow> dataRows(List<NhanSuDto> items) {
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: Text(item.idChucVu),
+            child: Text(item.tenChucVu.toString()),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: Text(item.ngaySinh),
+            child: Text(item.ngaySinh.toString()),
           ),
         ),
         DataCell(
           Container(
             alignment: Alignment.centerLeft,
-            child: const Text('Hoạt động'),
+            child: Text("Hoạt động"),
           ),
         ),
         DataCell(
@@ -379,14 +383,59 @@ List<DataRow> dataRows(List<NhanSuDto> items) {
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                          context: buildContext,
+                          builder: (BuildContext context) {
+                            return CreateOrEditNhanVienModal(
+                              idNhanVien: item.id,
+                            );
+                          });
+                    },
                     child: const Icon(Icons.edit),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    style: const ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(Color(0xFFFF5252))),
+                    onPressed: () {
+                      showDialog(
+                          context: buildContext,
+                          builder: (BuildContext context) {
+                            return CustomDeleteDialog(
+                              onDelete: () async {
+                                var isDelete = await NhanVienService()
+                                    .deleteNhanSu(item.id.toString());
+                                if (isDelete) {
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          backgroundColor: Color(0xFF90CAF9),
+                                          content:
+                                              Text("Xóa dữ liệu thành công!")));
+                                } else {
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          backgroundColor:
+                                              Color.fromARGB(255, 233, 53, 22),
+                                          content: Text(
+                                              "Có lỗ sảy ra vui lòng thử lại sau!")));
+                                }
+                                // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NhanVienHeader()),
+                                );
+                              },
+                            );
+                          });
+                    },
                     child: const Icon(Icons.delete),
                   ),
                 ),

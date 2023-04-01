@@ -18,7 +18,7 @@ import 'package:beautify_app/screens/app/lich_hen/lichHenScreen.dart';
 import 'package:beautify_app/screens/app/nhan_vien/nhanhVienScreen.dart';
 import 'package:beautify_app/screens/main/HomeScreen.dart';
 import 'package:beautify_app/widgets/AuthenWidget.dart';
-
+import 'package:timezone/data/latest.dart' as tz;
 import 'routing/routes.dart';
 
 final storage = SessionManager();
@@ -31,6 +31,7 @@ void main() async {
   if (token != null) {
     isLoggedIn = true;
   }
+  tz.initializeTimeZones();
   runApp(MyApp(
     token: token,
   ));
@@ -85,19 +86,9 @@ class MyApp extends StatelessWidget {
       initialRoute: isLoggedIn ? overviewPageRoute : authenticationPageRoute,
       routes: {
         rootRoute: (context) => const AuthenWidget(),
-        // "/home": (context) => const HomeScreen(),
-        // overviewPageRoute: (context) => isLoggedIn ? const HomeScreen():const LoginScreen(),
-        // nhanVienPageRoute: (context) =>isLoggedIn ? const NhanVienScreen():const LoginScreen(),
-        // userPageRoute: (context) => isLoggedIn ? const UserPage():const LoginScreen(),
-        // rolePageRoute: (context) =>isLoggedIn ? const RolePage():const LoginScreen(),
-        // tenantPageRoute: (context) => isLoggedIn ?const TenantScreen():const LoginScreen(),
-        // appointmentPageRoute: (context) =>isLoggedIn ?const CalendarWorkingPage():const LoginScreen(),
-        // customerPageRoute: (context) =>isLoggedIn ? const KhachHangScreen():const LoginScreen(),
-        // settingsPageRoute: (context) => isLoggedIn ? const HomeScreen():const AuthenWidget(),
-        // baoCaoPageRoute: (context) => isLoggedIn ? const HomeScreen():const AuthenWidget(),
+        '/home': (context) => const HomeScreen(),
         '/auth': (context) => const AuthenWidget(),
         registerPageRoute: (context) => const RegisterScreen(),
-        //dichVuPageRoute: (context) =>isLoggedIn ? const DichVuPage():const LoginScreen(),
       },
       onGenerateRoute: _onGenerateRoute,
       debugShowCheckedModeBanner: false,

@@ -27,6 +27,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
 
         //public Guid PhongBan_Id { get; set; }
         public Guid IdChucVu { set; get; }
+        public string GhiChu { get; set; }
 
     }
 }

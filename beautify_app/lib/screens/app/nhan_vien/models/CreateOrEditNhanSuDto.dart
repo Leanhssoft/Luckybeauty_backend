@@ -2,34 +2,36 @@
 import 'dart:convert';
 
 class CreateOrEditNhanSuDto {
-  late String id;
-  late String maNhanVien;
-  late String tenNhanVien;
-  late String diaChi;
-  late String soDienThoai;
-  late String cccd;
-  late String ngaySinh;
-  late int kieuNgaySinh;
-  late int gioiTinh;
-  late String ngayCap;
-  late String noiCap;
+  late String? id;
+  late String? maNhanVien;
+  late String? tenNhanVien;
+  late String? diaChi;
+  late String? soDienThoai;
+  late String? cccd;
+  late String? ngaySinh;
+  late int? kieuNgaySinh;
+  late int? gioiTinh;
+  late String? ngayCap;
+  late String? noiCap;
   late String? avatar;
-  late String idChucVu;
-
-  CreateOrEditNhanSuDto(
-      {required this.id,
-      required this.maNhanVien,
-      required this.tenNhanVien,
-      required this.diaChi,
-      required this.soDienThoai,
-      required this.cccd,
-      required this.ngaySinh,
-      required this.kieuNgaySinh,
-      required this.gioiTinh,
-      required this.ngayCap,
-      required this.noiCap,
-      this.avatar,
-      required this.idChucVu});
+  late String? idChucVu;
+  late String? ghiChu;
+  CreateOrEditNhanSuDto({
+    this.id = '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    this.maNhanVien = "NS000",
+    this.tenNhanVien,
+    this.diaChi,
+    this.soDienThoai,
+    this.cccd,
+    this.ngaySinh,
+    this.kieuNgaySinh = 0,
+    this.gioiTinh = 0,
+    this.ngayCap,
+    this.noiCap,
+    this.avatar,
+    this.idChucVu,
+    this.ghiChu,
+  });
 
   CreateOrEditNhanSuDto.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -45,6 +47,7 @@ class CreateOrEditNhanSuDto {
     noiCap = json['noiCap'];
     avatar = json['avatar'];
     idChucVu = json['idChucVu'];
+    ghiChu = json['ghiChu'];
   }
 
   String toJson() => json.encode(toMap());
@@ -64,6 +67,7 @@ class CreateOrEditNhanSuDto {
       'noiCap': noiCap,
       'avatar': avatar,
       'idChucVu': idChucVu,
+      'ghiChu': ghiChu
     };
   }
 }

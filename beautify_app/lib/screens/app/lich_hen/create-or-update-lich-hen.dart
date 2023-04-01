@@ -1,5 +1,7 @@
 import 'package:beautify_app/components/CustomTextFormField.dart';
 import 'package:beautify_app/components/CustomTextFormFieldValidate.dart';
+import 'package:beautify_app/screens/app/lich_hen/models/CreateBookingDto.dart';
+import 'package:beautify_app/screens/app/lich_hen/services/lichHenService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,6 +21,8 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
   late DateTime dateSelect = DateTime.now();
   late int selectedTypeBooking = 1;
   late int selectedStatusBooking = 1;
+
+  CreateBookingDto booking = CreateBookingDto();
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> typeBooking = [
@@ -32,6 +36,24 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
       {"statusName": "Checkin", "value": 3},
       {"statusName": "Xóa", "value": 0},
     ];
+    Future<void> _saveData() async {
+      if (_formKey.currentState!.validate()) {
+        _formKey.currentState!.save();
+        // Lưu trữ dữ liệu của tab 'Role'
+        var kq = await LichHenService().createBooking(booking);
+        if (kq == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Thêm mới thành công")),
+          );
+          Navigator.of(context).pop();
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Có lỗi xảy ra, vui lòng thử lại sau")),
+        );
+      }
+    }
+
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       return Container(
@@ -104,10 +126,17 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                                       height: 8,
                                     ),
                                     CustomTextFormFieldValidate(
-                                        controller: TextEditingController(),
-                                        hintText: "Nhập thông tin khách hàng",
-                                        textValidate:
-                                            "Tên khách hàng không được bỏ trống")
+                                      controller: TextEditingController(
+                                          text: booking.tenKhachHang),
+                                      hintText: "Nhập thông tin khách hàng",
+                                      textValidate:
+                                          "Tên khách hàng không được bỏ trống",
+                                      onSave: (value) {
+                                        setState(() {
+                                          booking.tenKhachHang = value;
+                                        });
+                                      },
+                                    )
                                   ],
                                 ),
                               ),
@@ -128,11 +157,17 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                                       height: 8,
                                     ),
                                     CustomTextFormFieldValidate(
-                                        controller: TextEditingController(),
-                                        hintText:
-                                            "Nhập số điện thoại khách hàng",
-                                        textValidate:
-                                            "Số điện thoại không được bỏ trống")
+                                      controller: TextEditingController(
+                                          text: booking.soDienThoai),
+                                      hintText: "Nhập số điện thoại khách hàng",
+                                      textValidate:
+                                          "Số điện thoại không được bỏ trống",
+                                      onSave: (value) {
+                                        setState(() {
+                                          booking.soDienThoai = value;
+                                        });
+                                      },
+                                    )
                                   ],
                                 ),
                               ),
@@ -226,8 +261,19 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                                         if (date != null) {
                                           setState(() {
                                             dateSelect = date;
+                                            booking.bookingDate =
+                                                dateSelect.toString();
                                           });
                                         }
+                                      },
+                                      onSaved: (value) {
+                                        setState(() {
+                                          booking.bookingDate = DateTime(
+                                                  dateSelect.year,
+                                                  dateSelect.month,
+                                                  dateSelect.day)
+                                              .toString();
+                                        });
                                       },
                                     ),
                                   ],
@@ -260,8 +306,21 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                                         if (time != null) {
                                           setState(() {
                                             timeSelected = time;
+                                            booking.startTime =
+                                                "${booking.bookingDate} ${timeSelected.hour}:${timeSelected.minute}:00";
                                           });
                                         }
+                                      },
+                                      onSaved: (value) {
+                                        setState(() {
+                                          booking.startTime = DateTime(
+                                                  dateSelect.year,
+                                                  dateSelect.month,
+                                                  dateSelect.day,
+                                                  timeSelected.hour,
+                                                  timeSelected.minute)
+                                              .toString();
+                                        });
                                       },
                                     ),
                                   ],
@@ -293,25 +352,20 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold),
                                 border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8)),
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide:
+                                        const BorderSide(color: Colors.black)),
                                 errorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide:
                                         const BorderSide(color: Colors.red)),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide:
-                                        const BorderSide(color: Colors.black)),
-                                disabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide:
-                                        const BorderSide(color: Colors.black)),
                               ),
                               value: selectedTypeBooking,
                               onChanged: (value) => {},
                               onSaved: (int? newValue) {
                                 setState(() {
                                   selectedTypeBooking = newValue ?? 1;
+                                  booking.loaiBooking = selectedStatusBooking;
                                 });
                               },
                               items: typeBooking.map<DropdownMenuItem<int>>(
@@ -347,25 +401,20 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold),
                                 border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8)),
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide:
+                                        const BorderSide(color: Colors.black)),
                                 errorBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8),
                                     borderSide:
                                         const BorderSide(color: Colors.red)),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide:
-                                        const BorderSide(color: Colors.black)),
-                                disabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide:
-                                        const BorderSide(color: Colors.black)),
                               ),
                               value: selectedStatusBooking,
                               onChanged: (value) => {},
                               onSaved: (int? newValue) {
                                 setState(() {
                                   selectedStatusBooking = newValue ?? 1;
+                                  booking.trangThai = selectedStatusBooking;
                                 });
                               },
                               items: statusBooking.map<DropdownMenuItem<int>>(
@@ -394,8 +443,14 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                             ),
                             CustomTextFormField(
                               heightForm: 120,
-                              controller: TextEditingController(),
+                              controller:
+                                  TextEditingController(text: booking.ghiChu),
                               hintText: "Ghi chú",
+                              onSaved: (value) {
+                                setState(() {
+                                  booking.ghiChu = value;
+                                });
+                              },
                             )
                           ],
                         ),
@@ -412,6 +467,7 @@ class _CreateOrEditLichHenState extends State<CreateOrEditLichHen> {
                 height: 32,
                 child: ElevatedButton(
                   onPressed: () {
+                    _saveData();
                     Navigator.of(context).pop();
                   },
                   style: const ButtonStyle(

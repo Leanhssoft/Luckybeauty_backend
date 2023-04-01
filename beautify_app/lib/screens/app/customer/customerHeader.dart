@@ -1,3 +1,4 @@
+import 'package:beautify_app/screens/app/customer/create-or-edit-customer-modal.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -91,7 +92,15 @@ class KhachHangHeader extends StatelessWidget {
                     child: SizedBox(
                       height: 40,
                       child: ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return const CreateOrEditCustomerModal(
+                                  idKhachHang: '',
+                                );
+                              });
+                        },
                         icon: const Icon(Icons.add),
                         label: const Text("Thêm"),
                         style: ElevatedButton.styleFrom(

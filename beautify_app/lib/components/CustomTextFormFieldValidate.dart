@@ -8,6 +8,8 @@ class CustomTextFormFieldValidate extends StatelessWidget {
   final TextInputType? keyboardType;
   final double? heightForm;
   final Function(String?)? onSave;
+  final Function(String?)? onChanged;
+  final Function()? onEditingComplete;
   final Function()? onTab;
   final Icon? leftIcon;
   final Icon? rightIcon;
@@ -19,6 +21,8 @@ class CustomTextFormFieldValidate extends StatelessWidget {
     this.keyboardType,
     this.heightForm,
     this.onSave,
+    this.onChanged,
+    this.onEditingComplete,
     this.onTab,
     this.leftIcon,
     this.rightIcon,
@@ -30,7 +34,6 @@ class CustomTextFormFieldValidate extends StatelessWidget {
       height: heightForm ?? 48,
       child: TextFormField(
         controller: controller,
-        keyboardType: keyboardType,
         decoration: InputDecoration(
           hintText: hintText,
           prefixIcon: leftIcon,
@@ -57,6 +60,8 @@ class CustomTextFormFieldValidate extends StatelessWidget {
         },
         onSaved: onSave,
         onTap: onTab,
+        onChanged: onChanged,
+        onEditingComplete: onEditingComplete,
       ),
     );
   }

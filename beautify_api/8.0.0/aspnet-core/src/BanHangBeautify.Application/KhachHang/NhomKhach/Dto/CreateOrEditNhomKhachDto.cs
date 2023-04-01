@@ -7,9 +7,9 @@ namespace BanHangBeautify.KhachHang.NhomKhach.Dto
     public class CreateOrEditNhomKhachDto : EntityDto<Guid>
     {
         [MaxLength(50)]
-        public string MaNhom { get; set; }
+        public string MaNhomKhach { get; set; }
         [MaxLength(256)]
-        public string Tennhom { get; set; }
+        public string TenNhomKhach { get; set; }
         [MaxLength(2000)]
         public string MoTa { get; set; }
         public int TrangThai { get; set; }

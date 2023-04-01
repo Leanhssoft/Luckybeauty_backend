@@ -8,12 +8,12 @@ namespace BanHangBeautify.Entities
     public class Booking : FullAuditedEntity<Guid>, IMustHaveTenant
     {
         public int TenantId { get; set; }
-        public Guid IdKhachHang { set; get; }
-        //[ForeignKey("IdKhachHang")]
-        //public DM_KhachHang DM_KhachHang { get; set; }
-        public Guid IdChiNhanh { get; set; }
+        public Guid? IdKhachHang { set; get; }
+        [ForeignKey("IdKhachHang")]
+        public DM_KhachHang? DM_KhachHang { get; set; }
+        public Guid? IdChiNhanh { get; set; }
         [ForeignKey(nameof(IdChiNhanh))]
-        public DM_ChiNhanh DM_ChiNhanh { set; get; }
+        public DM_ChiNhanh? DM_ChiNhanh { set; get; }
         public string TenKhachHang { get; set; }
         public string SoDienThoai { set; get; }
         public DateTime StartTime { set; get; }

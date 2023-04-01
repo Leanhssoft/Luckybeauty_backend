@@ -19,7 +19,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string GhiChu { get; set; }
         public DateTime NgayXuLy { get; set; }
         public string XuLy_GhiChu { get; set; }
-        public Guid IdKhachHang { get; set; }
-        public Guid IdChiNhanh { get; set; }
+        public Guid? IdKhachHang { get; set; }
+        public Guid? IdChiNhanh { get; set; }
     }
 }

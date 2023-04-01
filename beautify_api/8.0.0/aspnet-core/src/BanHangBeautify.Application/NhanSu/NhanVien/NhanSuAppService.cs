@@ -112,7 +112,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         public async Task<PagedResultDto<NhanSuDto>> GetAll(PagedResultRequestDto input, string keyWord)
         {
             PagedResultDto<NhanSuDto> result = new PagedResultDto<NhanSuDto>();
-            var lstNhanSu =await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstNhanSu.Count;
             if (!string.IsNullOrEmpty(keyWord))
             {
@@ -122,7 +122,38 @@ namespace BanHangBeautify.NhanSu.NhanVien
             input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
             lstNhanSu = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             var items = ObjectMapper.Map<List<NhanSuDto>>(lstNhanSu);
-            result.Items = items;  
+            result.Items = items;
+            return result;
+        }
+        public async Task<PagedResultDto<NhanSuItemDto>> Search(PagedResultRequestDto input, string keyWord)
+        {
+            PagedResultDto<NhanSuItemDto> result = new PagedResultDto<NhanSuItemDto>();
+            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = lstNhanSu.Count;
+            if (!string.IsNullOrEmpty(keyWord))
+            {
+                lstNhanSu = lstNhanSu.Where(x => x.TenNhanVien.Contains(keyWord) || x.MaNhanVien.Contains(keyWord) || x.NoiCap.Contains(keyWord)).ToList();
+            }
+            input.MaxResultCount = 10;
+            input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
+            var items = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).Select(x => new NhanSuItemDto()
+            {
+                Id = x.Id,
+                MaNhanVien = x.MaNhanVien,
+                TenNhanVien = x.TenNhanVien,
+                GioiTinh = x.GioiTinh,
+                Avatar = x.Avatar,
+                CCCD = x.CCCD,
+                DiaChi = x.DiaChi,
+                TenChucVu = x.NS_ChucVu.TenChucVu,
+                KieuNgaySinh = x.KieuNgaySinh,
+                NgayCap = x.NgayCap,
+                NgaySinh = x.NgaySinh,
+                NgayVaoLam = x.CreationTime,
+                NoiCap = x.NoiCap,
+                SoDienThoai = x.SoDienThoai
+            }).ToList();
+            result.Items = items;
             return result;
         }
     }

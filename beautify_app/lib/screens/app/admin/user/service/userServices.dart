@@ -160,7 +160,7 @@ class UserServices {
     try {
       final token = await SessionManager().get("accessToken");
       final response = await http.post(
-        Uri.parse('${Constants.BASE_URL}/api/services/app/User/SuggestNhanSus'),
+        Uri.parse('${Constants.BASE_URL}/api/services/app/Suggest/SuggestNhanSus'),
         headers: {'Authorization': 'Bearer $token'},
       );
 

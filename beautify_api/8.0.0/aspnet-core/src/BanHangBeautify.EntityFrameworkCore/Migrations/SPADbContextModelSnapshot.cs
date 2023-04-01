@@ -1891,10 +1891,10 @@ namespace BanHangBeautify.Migrations
                     b.Property<string>("GhiChu")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("IdChiNhanh")
+                    b.Property<Guid?>("IdChiNhanh")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdKhachHang")
+                    b.Property<Guid?>("IdKhachHang")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
@@ -1936,6 +1936,8 @@ namespace BanHangBeautify.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdChiNhanh");
+
+                    b.HasIndex("IdKhachHang");
 
                     b.ToTable("Booking");
                 });
@@ -3433,11 +3435,15 @@ namespace BanHangBeautify.Migrations
                 {
                     b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
                         .WithMany()
-                        .HasForeignKey("IdChiNhanh")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("IdChiNhanh");
+
+                    b.HasOne("BanHangBeautify.Entities.DM_KhachHang", "DM_KhachHang")
+                        .WithMany()
+                        .HasForeignKey("IdKhachHang");
 
                     b.Navigation("DM_ChiNhanh");
+
+                    b.Navigation("DM_KhachHang");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BookingNhanVien", b =>

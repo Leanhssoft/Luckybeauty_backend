@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, use_build_context_synchronously
 import 'package:beautify_app/screens/app/nhan_vien/models/CreateOrEditNhanSuDto.dart';
 import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuDto.dart';
+import 'package:beautify_app/screens/app/nhan_vien/nhanhVienScreen.dart';
 import 'package:beautify_app/screens/app/nhan_vien/services/nhanVienServices.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +15,7 @@ class CreateOrEditNhanVienModal extends StatefulWidget {
   String? idNhanVien;
   CreateOrEditNhanVienModal({
     Key? key,
-    this.idNhanVien,
+    this.idNhanVien = '',
   }) : super(key: key);
 
   @override
@@ -26,23 +27,15 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
   int? _genderGroup;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<SuggestChucVu> _suggestChucVu = [];
-
+  late DateTime birthdaySelected = DateTime.now();
   String selectedChucVu = '';
-  Map<String, dynamic> nhanSuData = {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "maNhanVien": "",
-    "tenNhanVien": "",
-    "diaChi": "",
-    "soDienThoai": "",
-    "cccd": "",
-    "ngaySinh": "",
-    "kieuNgaySinh": 0,
-    "gioiTinh": 0,
-    "ngayCap": "",
-    "noiCap": "",
-    "avatar": null,
-    "idChucVu": "3fa85f64-5858-4562-b3fc-2c963f66afa6"
-  };
+  final List<Map<String, dynamic>> genderOptions = [
+    {"display": "Nam", "value": 1},
+    {"display": "Nữ", "value": 2},
+    {"display": "Khác", "value": 0}
+  ];
+  int selectedGenderValue = 0;
+  CreateOrEditNhanSuDto createNhanVien = CreateOrEditNhanSuDto();
 
   void suggestChucVu() async {
     var chucVu = await NhanVienService().suggestChucVu();
@@ -51,10 +44,21 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
     });
   }
 
+  void getNhanVien() async {
+    var nhanVien =
+        await NhanVienService().getNhanVien(widget.idNhanVien.toString());
+    setState(() {
+      createNhanVien = nhanVien;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     suggestChucVu();
+    if (widget.idNhanVien != '' || widget.idNhanVien != null) {
+      getNhanVien();
+    }
   }
 
   @override
@@ -62,90 +66,62 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
     super.dispose();
   }
 
+  Future<void> _saveData() async {
+    var kq = await NhanVienService().createOrEditNhanVien(createNhanVien);
+    if (kq == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.idNhanVien == ''
+                ? "Thêm mới nhân viên thành công!"
+                : "Cập nhật thông tin nhân viên thành công!",
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: const Color(0xFF90CAF9),
+        ),
+      );
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Có lỗi xảy ra, vui lòng thử lại sau")),
+      );
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const NhanVienScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> genderOptions = [
-      {"display": "Nam", "value": 0},
-      {"display": "Nữ", "value": 1},
-      {"display": "Khác", "value": 2}
-    ];
-    NhanSuDto nhanSuDto = NhanSuDto(
-        id: '',
-        maNhanVien: '',
-        tenNhanVien: '',
-        ngaySinh: '',
-        gioiTinh: 0,
-        idChucVu: '');
-    CreateOrEditNhanSuDto createNhanSu;
-    Future<void> _saveData() async {
-      if (_formKey.currentState!.validate()) {
-        _formKey.currentState!.save();
-        // Lưu trữ dữ liệu của tab 'Role'
-        createNhanSu = CreateOrEditNhanSuDto(
-            cccd: '',
-            diaChi: '',
-            gioiTinh: 0,
-            idChucVu: '',
-            maNhanVien: '',
-            ngayCap: '',
-            id: '',
-            kieuNgaySinh: 0,
-            ngaySinh: '',
-            noiCap: '',
-            soDienThoai: '',
-            tenNhanVien: '');
-        if (widget.idNhanVien == null) {
-          createNhanSu.id = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
-        } else {
-          createNhanSu.id = widget.idNhanVien.toString();
-        }
-        createNhanSu.avatar = null;
-        createNhanSu.kieuNgaySinh = 0;
-        createNhanSu.maNhanVien = "NS000002";
-        createNhanSu.tenNhanVien = nhanSuData['tenNhanVien'];
-        createNhanSu.diaChi = nhanSuData['diaChi'];
-        createNhanSu.soDienThoai = nhanSuData['soDienThoai'];
-        createNhanSu.cccd = nhanSuData['cccd'];
-        createNhanSu.ngaySinh = nhanSuData['ngaySinh'];
-        createNhanSu.gioiTinh = nhanSuData['gioiTinh'];
-        createNhanSu.ngayCap = nhanSuData['ngayCap'];
-        createNhanSu.noiCap = nhanSuData['noiCap'];
-        createNhanSu.idChucVu = nhanSuData['idChucVu'].toString();
-        print(createNhanSu.toJson());
-        var kq = await NhanVienService().createOrEditNhanVien(createNhanSu);
-        if (kq == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Cập nhật thành công")),
-          );
-          Navigator.of(context).pop();
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Có lỗi xảy ra, vui lòng thử lại sau")),
-        );
-      }
-    }
-
-    int selectedGenderValue = genderOptions[0]['value'];
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         return AlertDialog(
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text('Thêm nhân viên'),
-              InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(30)),
+              Text(
+                widget.idNhanVien == ''
+                    ? "Thêm nhân viên"
+                    : "Cập nhật thông tin nhân viên",
+                style: GoogleFonts.roboto(
+                    color: const Color(0xFF333233), fontSize: 24),
+              ),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border:
+                        Border.all(color: const Color(0xFF999699), width: 2)),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                   child: const Icon(
                     Icons.close,
-                    color: Colors.white,
+                    color: Color(0xFF999699),
                     size: 16,
                   ),
                 ),
@@ -189,22 +165,27 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                               Padding(
                                   padding:
                                       const EdgeInsets.only(top: 24, bottom: 2),
-                                  child: Text(
-                                    "Tên nhân viên",
-                                    style: GoogleFonts.roboto(
+                                  child: Text("Tên nhân viên",
+                                      style: GoogleFonts.roboto(
                                         fontSize: 14,
-                                        color: const Color(0xFF53545C),
-                                        fontWeight: FontWeight.bold),
-                                  )),
+                                        color: const Color(0xFF999699),
+                                      ))),
+                              const SizedBox(
+                                height: 8,
+                              ),
                               CustomTextFormFieldValidate(
                                 controller: TextEditingController(
-                                    text: nhanSuDto.tenNhanVien),
+                                    text: createNhanVien.tenNhanVien),
+                                hintText: "Nhập tên nhân viên",
                                 textValidate:
                                     "Tên nhân viên không được bỏ trống",
                                 onSave: (value) {
                                   setState(() {
-                                    nhanSuData.addAll({'tenNhanVien': value});
+                                    createNhanVien.tenNhanVien = value;
                                   });
+                                },
+                                onChanged: (value) {
+                                  createNhanVien.tenNhanVien = value;
                                 },
                               ),
                               Padding(
@@ -219,21 +200,33 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "Ngày Sinh",
+                                            "Ngày sinh",
                                             style: GoogleFonts.roboto(
                                                 fontSize: 14,
-                                                color: const Color(0xFF53545C),
-                                                fontWeight: FontWeight.bold),
+                                                color: const Color(0xFF999699)),
                                           ),
-                                          InputDatePickerFormField(
-                                            firstDate: DateTime(0001),
-                                            lastDate: DateTime(3000),
-                                            keyboardType:
-                                                TextInputType.datetime,
-                                            onDateSaved: (value) => {
-                                              nhanSuData.addAll({
-                                                'ngaySinh': value.toString()
-                                              })
+                                          const SizedBox(
+                                            height: 8,
+                                          ),
+                                          CustomTextFormField(
+                                            leftIcon: const Icon(
+                                                Icons.date_range_outlined),
+                                            controller: TextEditingController(
+                                                text:
+                                                    '${birthdaySelected.day}/${birthdaySelected.month}/${birthdaySelected.year}'),
+                                            hintText: "Chọn ngày",
+                                            onTab: () async {
+                                              final date = await pickDate();
+                                              if (date != null) {
+                                                setState(() {
+                                                  birthdaySelected = date;
+                                                });
+                                              }
+                                            },
+                                            onSaved: (value) {
+                                              setState(() {
+                                                createNhanVien.ngaySinh = value;
+                                              });
                                             },
                                           ),
                                         ],
@@ -250,8 +243,10 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                             "Giới tính",
                                             style: GoogleFonts.roboto(
                                                 fontSize: 14,
-                                                color: const Color(0xFF53545C),
-                                                fontWeight: FontWeight.bold),
+                                                color: const Color(0xFF999699)),
+                                          ),
+                                          const SizedBox(
+                                            height: 8,
                                           ),
                                           DropdownButtonFormField(
                                             decoration: InputDecoration(
@@ -264,35 +259,27 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                                   fontWeight: FontWeight.bold),
                                               border: OutlineInputBorder(
                                                   borderRadius:
-                                                      BorderRadius.circular(8)),
+                                                      BorderRadius.circular(8),
+                                                  borderSide: const BorderSide(
+                                                      color: Colors.black)),
                                               errorBorder: OutlineInputBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(8),
                                                   borderSide: const BorderSide(
                                                       color: Colors.red)),
-                                              enabledBorder: OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
-                                                  borderSide: const BorderSide(
-                                                      color: Colors.black)),
-                                              disabledBorder:
-                                                  OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              8),
-                                                      borderSide:
-                                                          const BorderSide(
-                                                              color: Colors
-                                                                  .black)),
                                             ),
                                             value: selectedGenderValue,
-                                            onChanged: (value) => {},
+                                            onChanged: (value) => {
+                                              selectedGenderValue = value ?? 0,
+                                              createNhanVien.gioiTinh =
+                                                  selectedGenderValue
+                                            },
                                             onSaved: (int? newValue) {
                                               setState(() {
                                                 selectedGenderValue =
                                                     newValue ?? 0;
-                                                nhanSuData.addAll(
-                                                    {'gioiTinh': newValue});
+                                                createNhanVien.gioiTinh =
+                                                    selectedGenderValue;
                                               });
                                             },
                                             items: genderOptions.map<
@@ -328,18 +315,26 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                               style: GoogleFonts.roboto(
                                                   fontSize: 14,
                                                   color:
-                                                      const Color(0xFF53545C),
-                                                  fontWeight: FontWeight.bold),
+                                                      const Color(0xFF999699)),
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
                                             ),
                                             CustomTextFormField(
                                               keyBoardType: TextInputType.phone,
+                                              hintText: "Nhập số điện thoại",
                                               controller: TextEditingController(
-                                                  text: nhanSuDto.soDienThoai),
+                                                  text: createNhanVien
+                                                      .soDienThoai),
                                               onSaved: (value) {
                                                 setState(() {
-                                                  nhanSuData.addAll(
-                                                      {'soDienThoai': value});
+                                                  createNhanVien.soDienThoai =
+                                                      value;
                                                 });
+                                              },
+                                              onChanged: (value) {
+                                                createNhanVien.soDienThoai =
+                                                    value;
                                               },
                                             ),
                                           ],
@@ -357,14 +352,20 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                             "E-mail",
                                             style: GoogleFonts.roboto(
                                                 fontSize: 14,
-                                                color: const Color(0xFF53545C),
-                                                fontWeight: FontWeight.bold),
+                                                color: const Color(0xFF999699)),
+                                          ),
+                                          const SizedBox(
+                                            height: 8,
                                           ),
                                           CustomTextFormField(
                                             keyBoardType:
                                                 TextInputType.emailAddress,
+                                            hintText: "Nhập địa chỉ email",
                                             controller: TextEditingController(),
                                             onSaved: (value) {
+                                              setState(() {});
+                                            },
+                                            onChanged: (value) {
                                               setState(() {});
                                             },
                                           ),
@@ -390,22 +391,29 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                                 "Địa chỉ",
                                                 style: GoogleFonts.roboto(
                                                     fontSize: 14,
-                                                    color:
-                                                        const Color(0xFF53545C),
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                                    color: const Color(
+                                                        0xFF999699)),
+                                              ),
+                                              const SizedBox(
+                                                height: 8,
                                               ),
                                               CustomTextFormField(
                                                 keyBoardType:
                                                     TextInputType.streetAddress,
+                                                hintText:
+                                                    "Nhập địa chỉ khách hàng",
                                                 controller:
                                                     TextEditingController(
-                                                        text: nhanSuDto.diaChi),
+                                                        text: createNhanVien
+                                                            .diaChi),
                                                 onSaved: (value) {
                                                   setState(() {
-                                                    nhanSuData.addAll(
-                                                        {'diaChi': value});
+                                                    createNhanVien.diaChi =
+                                                        value;
                                                   });
+                                                },
+                                                onChanged: (value) {
+                                                  createNhanVien.diaChi = value;
                                                 },
                                               ),
                                             ],
@@ -424,19 +432,24 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                               style: GoogleFonts.roboto(
                                                   fontSize: 14,
                                                   color:
-                                                      const Color(0xFF53545C),
-                                                  fontWeight: FontWeight.bold),
+                                                      const Color(0xFF999699)),
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
                                             ),
                                             CustomTextFormField(
                                               keyBoardType:
                                                   TextInputType.number,
+                                              hintText: "Nhập số CCCD",
                                               controller: TextEditingController(
-                                                  text: nhanSuDto.cccd),
+                                                  text: createNhanVien.cccd),
                                               onSaved: (value) {
                                                 setState(() {
-                                                  nhanSuData
-                                                      .addAll({'cccd': value});
+                                                  createNhanVien.cccd = value;
                                                 });
+                                              },
+                                              onChanged: (value) {
+                                                createNhanVien.cccd = value;
                                               },
                                             ),
                                           ],
@@ -461,19 +474,24 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                               style: GoogleFonts.roboto(
                                                   fontSize: 14,
                                                   color:
-                                                      const Color(0xFF53545C),
-                                                  fontWeight: FontWeight.bold),
+                                                      const Color(0xFF999699)),
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
                                             ),
                                             CustomTextFormField(
                                               keyBoardType:
                                                   TextInputType.streetAddress,
+                                              hintText: "Nhập nơi cấp",
                                               controller: TextEditingController(
-                                                  text: nhanSuDto.noiCap),
+                                                  text: createNhanVien.noiCap),
                                               onSaved: (value) {
                                                 setState(() {
-                                                  nhanSuData.addAll(
-                                                      {'noiCap': value});
+                                                  createNhanVien.noiCap = value;
                                                 });
+                                              },
+                                              onChanged: (value) {
+                                                createNhanVien.noiCap = value;
                                               },
                                             ),
                                           ]),
@@ -490,20 +508,29 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                               style: GoogleFonts.roboto(
                                                   fontSize: 14,
                                                   color:
-                                                      const Color(0xFF53545C),
-                                                  fontWeight: FontWeight.bold),
+                                                      const Color(0xFF999699)),
                                             ),
-                                            InputDatePickerFormField(
-                                              keyboardType:
-                                                  TextInputType.datetime,
-                                              firstDate: DateTime(0001),
-                                              lastDate: DateTime(3000),
-                                              onDateSaved: (value) => {
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            CustomTextFormField(
+                                              leftIcon: const Icon(
+                                                  Icons.date_range_outlined),
+                                              controller:
+                                                  TextEditingController(),
+                                              hintText: "Chọn ngày",
+                                              onTab: () async {
+                                                final date = await pickDate();
                                                 setState(() {
-                                                  nhanSuData.addAll({
-                                                    'ngayCap': value.toString()
-                                                  });
-                                                })
+                                                  createNhanVien.ngayCap =
+                                                      date.toString();
+                                                });
+                                              },
+                                              onSaved: (value) {
+                                                setState(() {
+                                                  createNhanVien.ngayCap =
+                                                      value;
+                                                });
                                               },
                                             ),
                                           ]),
@@ -523,8 +550,10 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                           "Chức vụ",
                                           style: GoogleFonts.roboto(
                                               fontSize: 14,
-                                              color: const Color(0xFF53545C),
-                                              fontWeight: FontWeight.bold),
+                                              color: const Color(0xFF999699)),
+                                        ),
+                                        const SizedBox(
+                                          height: 8,
                                         ),
                                         DropdownButtonFormField(
                                           decoration: InputDecoration(
@@ -537,29 +566,21 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                                 fontWeight: FontWeight.bold),
                                             border: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(8)),
+                                                    BorderRadius.circular(8),
+                                                borderSide: const BorderSide(
+                                                    color: Colors.black)),
                                             errorBorder: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 borderSide: const BorderSide(
                                                     color: Colors.red)),
-                                            enabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                borderSide: const BorderSide(
-                                                    color: Colors.black)),
-                                            disabledBorder: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                borderSide: const BorderSide(
-                                                    color: Colors.black)),
                                           ),
-                                          items: _suggestChucVu.map<
-                                                  DropdownMenuItem<
-                                                      SuggestChucVu>>(
-                                              (SuggestChucVu value) {
+                                          value: _suggestChucVu[0].idChucVu,
+                                          items: _suggestChucVu
+                                              .map<DropdownMenuItem<String>>(
+                                                  (SuggestChucVu value) {
                                             return DropdownMenuItem(
-                                              value: value,
+                                              value: value.idChucVu.toString(),
                                               child: Text(
                                                 value.tenChucVu.toString(),
                                                 style: const TextStyle(
@@ -569,13 +590,12 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                           }).toList(),
                                           onSaved: (value) {
                                             setState(() {
-                                              nhanSuData.addAll({
-                                                'idChucVu':
-                                                    value!.idChucVu.toString()
-                                              });
+                                              createNhanVien.idChucVu = value;
                                             });
                                           },
-                                          onChanged: (value) {},
+                                          onChanged: (value) {
+                                            createNhanVien.idChucVu = value;
+                                          },
                                         ),
                                       ]),
                                 ),
@@ -589,14 +609,22 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                       "Ghi chú",
                                       style: GoogleFonts.roboto(
                                           fontSize: 14,
-                                          color: const Color(0xFF53545C),
-                                          fontWeight: FontWeight.bold),
+                                          color: const Color(0xFF999699)),
+                                    ),
+                                    const SizedBox(
+                                      height: 8,
                                     ),
                                     CustomTextFormField(
                                       keyBoardType: TextInputType.multiline,
+                                      hintText: "Nhập ghi chú",
                                       controller: TextEditingController(),
                                       onSaved: (value) {
-                                        setState(() {});
+                                        setState(() {
+                                          createNhanVien.ghiChu = value;
+                                        });
+                                      },
+                                      onChanged: (value) {
+                                        createNhanVien.ghiChu = value;
                                       },
                                     ),
                                   ],
@@ -612,32 +640,50 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.cancel),
-                label: const Text("Hủy"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(Colors.red)),
-              ),
-            ),
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        _saveData();
+                      }
+                    },
+                    style: const ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(Color(0xFF7C3367)),
+                    ),
+                    child: Text(
+                      "Lưu",
+                      style: GoogleFonts.roboto(
+                          fontSize: 12, color: const Color(0xFFFFFFFF)),
+                    ))),
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.save),
-                label: const Text("Lưu"),
-                onPressed: () {
-                  // Đóng form
-                  print(nhanSuData.toString());
-                  _saveData();
-                },
-              ),
-            ),
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      // Đóng form
+                    },
+                    style: ButtonStyle(
+                        backgroundColor:
+                            const MaterialStatePropertyAll(Colors.white),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                const RoundedRectangleBorder(
+                                    side:
+                                        BorderSide(color: Color(0xFF7C3367))))),
+                    child: Text("Hủy",
+                        style: GoogleFonts.roboto(
+                            fontSize: 12, color: const Color(0xFF7C3367))))),
           ],
         );
       },
     );
   }
+
+  Future<DateTime?> pickDate() => showDatePicker(
+      context: context,
+      firstDate: DateTime(1000),
+      lastDate: DateTime(3000),
+      locale: const Locale('vi', 'VN'),
+      initialDate: DateTime.now());
 }
