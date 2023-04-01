@@ -1,5 +1,8 @@
+import 'package:beautify_app/screens/app/dich_vu/Models/loai_dich_vu_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:beautify_app/helper/common_func.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:flutter/material.dart';
 
 part 'dich_vu_model.g.dart';
 
@@ -48,6 +51,7 @@ class DonViQuiDoiDto {
 @JsonSerializable(explicitToJson: true)
 class DichVuViewModel extends DonViQuiDoiDto {
   @JsonKey(required: true)
+  @override
   String id;
 
   @JsonKey(required: true)
@@ -68,6 +72,12 @@ class DichVuViewModel extends DonViQuiDoiDto {
   @JsonKey(defaultValue: '')
   String? moTa;
 
+  @JsonKey(defaultValue: '')
+  String? tenNhomHang;
+
+  @JsonKey(defaultValue: '')
+  String? txtTrangThaiHang;
+
   String? get tenHangHoaKhongDau {
     return convertVietNamtoEng(tenHangHoa);
   }
@@ -85,4 +95,51 @@ class DichVuViewModel extends DonViQuiDoiDto {
 
   @override
   Map<String, dynamic> toJson() => _$DichVuViewModelToJson(this);
+}
+
+class DichVuDataSource extends DataGridSource {
+  List<DataGridRow> dataGridRows = [];
+
+  DichVuDataSource({required List<DichVuViewModel> products}) {
+    dataGridRows = products
+        .map<DataGridRow>((dataGridRow) => DataGridRow(
+              cells: [
+                DataGridCell<String>(
+                    columnName: 'maHangHoa', value: dataGridRow.maHangHoa),
+                DataGridCell<String>(
+                    columnName: 'tenHangHoa', value: dataGridRow.tenHangHoa),
+                DataGridCell<String>(
+                    columnName: 'tenNhomHang',
+                    value: dataGridRow.tenNhomHang ?? ''),
+                DataGridCell<double>(
+                    columnName: 'giaBan', value: dataGridRow.giaBan),
+                DataGridCell<double>(
+                    columnName: 'soPhutThucHien',
+                    value: dataGridRow.soPhutThucHien),
+                DataGridCell<String>(
+                    columnName: 'txtTrangThaiHang',
+                    value: dataGridRow.txtTrangThaiHang),
+              ],
+            ))
+        .toList();
+  }
+  @override
+  List<DataGridRow> get rows => dataGridRows;
+
+  @override
+  DataGridRowAdapter? buildRow(DataGridRow row) {
+    return DataGridRowAdapter(
+        cells: row.getCells().map<Widget>((dataGridCell) {
+      return Container(
+          alignment: (dataGridCell.columnName == "giaBan" ||
+                  dataGridCell.columnName == 'soPhutThucHien')
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            dataGridCell.value.toString(),
+            overflow: TextOverflow.ellipsis,
+          ));
+    }).toList());
+  }
 }

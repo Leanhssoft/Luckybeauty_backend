@@ -6,6 +6,7 @@ Color dark = const Color(0xFF363740);
 Color active = const Color(0xFF3C19C0);
 
 class ClassAppColor {
+  static const Color bgApp = Colors.white;
   static const Color bgMainBtnColor = Color(0xFF7C3367);
   static const Color bgSecondBtnColor = Colors.white;
   static const Color boderBtnColor = Color(0xFFD0D5DD);

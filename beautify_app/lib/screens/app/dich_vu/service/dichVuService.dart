@@ -21,7 +21,6 @@ class DichVuService {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final items = List<Map<String, dynamic>>.from(data['result']['items']);
-      print(items);
 
       final result =
           items.map((json) => DichVuViewModel.fromJson(json)).toList();

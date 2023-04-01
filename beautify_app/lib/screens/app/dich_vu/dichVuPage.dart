@@ -18,7 +18,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:beautify_app/constants/styles.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_filter.dart';
-// import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_model.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class DichVuPage extends StatefulWidget {
   const DichVuPage({super.key});
@@ -29,6 +29,8 @@ class DichVuPage extends StatefulWidget {
 
 class _DichVuPageState extends State<DichVuPage> {
   List<DichVuViewModel> _data = [];
+  late DichVuDataSource _dvDataSource = DichVuDataSource(products: []);
+
   List<LoaiDichVuDto> _loaiDichVu = [];
   int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
   int _sortColumnIndex = 0;
@@ -36,10 +38,11 @@ class _DichVuPageState extends State<DichVuPage> {
 
   Future<void> _loadData() async {
     final input = DichVuFilter('', ParamSearch('', 0, 10, '', ''));
-    var data = await DichVuService().getDichVu(input);
+    List<DichVuViewModel> data = await DichVuService().getDichVu(input);
     var loaiDichVu = await DichVuService().getLoaiDichVu();
     setState(() {
       _data = data;
+      _dvDataSource = DichVuDataSource(products: _data);
       _loaiDichVu = loaiDichVu;
     });
   }
@@ -54,6 +57,15 @@ class _DichVuPageState extends State<DichVuPage> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
+
+    late Map<String, double> columnWidths = {
+      'maHangHoa': double.nan,
+      'tenHangHoa': double.nan,
+      'giaBan': double.nan,
+      'tenNhomHang': double.nan,
+      'soPhutThucHien': double.nan,
+      'txtTrangThai': double.nan,
+    };
 
     var title = Expanded(
       flex: 1,
@@ -108,9 +120,9 @@ class _DichVuPageState extends State<DichVuPage> {
         children: [
           Expanded(
             child: SizedBox(
-              width: screenWidth * 0.5, // notworking in expand
+              width: screenWidth * 0.3, // notworking in expand
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: screenWidth * 0.5),
+                constraints: BoxConstraints(maxWidth: screenWidth * 0.3),
                 child: TextField(
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.search),
@@ -236,7 +248,82 @@ class _DichVuPageState extends State<DichVuPage> {
                     // lst Ds
                     Expanded(
                       child: Container(
-                        color: Colors.deepPurpleAccent,
+                        color: ClassAppColor.bgApp,
+                        padding: EdgeInsets.all(8),
+                        child: SfDataGrid(
+                          source: _dvDataSource,
+                          allowSorting: true,
+                          allowMultiColumnSorting: true,
+                          allowColumnsResizing: true,
+                          columnResizeMode: ColumnResizeMode.onResizeEnd,
+                          onColumnResizeUpdate:
+                              (ColumnResizeUpdateDetails details) {
+                            setState(() {
+                              columnWidths[details.column.columnName] =
+                                  details.width;
+                              print(details.width);
+                            });
+                            return true;
+                          },
+                          columns: [
+                            GridColumn(
+                              width: columnWidths['maHangHoa']!,
+                              columnName: 'maHangHoa',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Mã dịch vụ',
+                                    style:
+                                        TextStyle(fontStyle: FontStyle.italic)),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['tenHangHoa']!,
+                              columnName: 'tenHangHoa',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Tên dịch vụ'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['tenNhomHang']!,
+                              columnName: 'tenNhomHang',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Nhóm'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['giaBan']!,
+                              columnName: 'giaBan',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Giá bán'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['soPhutThucHien']!,
+                              columnName: 'soPhutThucHien',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Thời gian'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['txtTrangThai']!,
+                              columnName: 'txtTrangThaiHang',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Trạng thái'),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     )
                   ],
