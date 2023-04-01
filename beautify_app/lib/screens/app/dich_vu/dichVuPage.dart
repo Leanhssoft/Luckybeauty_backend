@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:developer';
+
+import 'package:beautify_app/Models/comon_model.dart';
 import 'package:beautify_app/components/CustomPagination.dart';
 import 'package:beautify_app/layout.dart';
 import 'package:beautify_app/screens/app/customer/customerHeader.dart';
@@ -11,7 +14,11 @@ import 'package:beautify_app/screens/app/dich_vu/dichVuTable.dart';
 import 'package:beautify_app/screens/app/dich_vu/service/dichVuService.dart';
 import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:beautify_app/constants/styles.dart';
+import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_filter.dart';
+import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class DichVuPage extends StatefulWidget {
   const DichVuPage({super.key});
@@ -22,15 +29,20 @@ class DichVuPage extends StatefulWidget {
 
 class _DichVuPageState extends State<DichVuPage> {
   List<DichVuViewModel> _data = [];
+  late DichVuDataSource _dvDataSource = DichVuDataSource(products: []);
+
   List<LoaiDichVuDto> _loaiDichVu = [];
   int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
+
   Future<void> _loadData() async {
-    //var data = await DichVuService().getDichVu();
+    final input = DichVuFilter('', ParamSearch('', 0, 10, '', ''));
+    List<DichVuViewModel> data = await DichVuService().getDichVu(input);
     var loaiDichVu = await DichVuService().getLoaiDichVu();
     setState(() {
-      //_data = data;
+      _data = data;
+      _dvDataSource = DichVuDataSource(products: _data);
       _loaiDichVu = loaiDichVu;
     });
   }
@@ -43,64 +55,293 @@ class _DichVuPageState extends State<DichVuPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    late Map<String, double> columnWidths = {
+      'maHangHoa': double.nan,
+      'tenHangHoa': double.nan,
+      'giaBan': double.nan,
+      'tenNhomHang': double.nan,
+      'soPhutThucHien': double.nan,
+      'txtTrangThai': double.nan,
+    };
+
+    var title = Expanded(
+      flex: 1,
+      child: Container(
+        alignment: Alignment.center,
+        color: Colors.red,
+        padding: EdgeInsets.all(8),
+        child: Row(
+          children: [
+            Expanded(
+              child: const Text(
+                'Danh mục dịch vụ',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+            SizedBox(
+              height: 40,
+              width: 40,
+              child: IconButton(
+                icon: Icon(
+                  Icons.menu,
+                  color: ClassAppColor.iconColor,
+                ),
+                onPressed: () {},
+                style: const ButtonStyle(
+                  backgroundColor:
+                      MaterialStatePropertyAll(ClassAppColor.bgSecondBtnColor),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 40,
+              width: 100,
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: Icon(Icons.add),
+                label: Text('Thêm'),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all(ClassAppColor.bgMainBtnColor),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    var partSearch = Container(
+      padding: EdgeInsets.all(8),
+      child: Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              width: screenWidth * 0.3, // notworking in expand
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: screenWidth * 0.3),
+                child: TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search),
+                    hintText: 'Tìm kiếm',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 40,
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.filter_alt_rounded,
+                color: ClassAppColor.iconColor,
+              ),
+              style: const ButtonStyle(
+                backgroundColor:
+                    MaterialStatePropertyAll(ClassAppColor.bgSecondBtnColor),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 116, // 100+16
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: ElevatedButton.icon(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.download_rounded,
+                  color: ClassAppColor.iconColor,
+                ),
+                label: Text(
+                  'Nhập',
+                  style: TextStyle(color: ClassAppColor.iconColor),
+                ),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: ClassAppColor.bgSecondBtnColor),
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 100,
+            child: ElevatedButton.icon(
+              onPressed: () {},
+              icon: Icon(
+                Icons.upload,
+                color: ClassAppColor.iconColor,
+              ),
+              label: Text(
+                'Xuất',
+                style: TextStyle(color: ClassAppColor.iconColor),
+              ),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: ClassAppColor.bgSecondBtnColor),
+            ),
+          ),
+        ],
+      ),
+    );
+    var body = Expanded(
+      flex: 11,
+      child: Container(
+        alignment: Alignment.center,
+        color: Colors.yellow,
+        child: Row(
+          textDirection: TextDirection.ltr,
+          children: [
+            // left content
+            SizedBox(
+              height: screenHeight * 0.4,
+              width: 300,
+              child: Container(
+                color: Colors.amber,
+                padding: EdgeInsets.only(left: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // titile nhom
+                    SizedBox(
+                      height: 60,
+                      child: Container(
+                        color: Colors.amberAccent,
+                        padding: EdgeInsets.all(8),
+                        child: Row(
+                          children: const [
+                            Expanded(
+                              child: Text(
+                                'Nhóm dịch vụ',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ),
+                            Icon(Icons.add),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // list nhomDV
+                    Expanded(
+                      child: Container(
+                        color: Colors.greenAccent,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // right content
+            Expanded(
+              child: Container(
+                color: ClassAppColor.bgTitleColor,
+                child: Column(
+                  children: [
+                    // icon search
+                    SizedBox(
+                      height: 60,
+                      child: partSearch,
+                    ),
+                    // lst Ds
+                    Expanded(
+                      child: Container(
+                        color: ClassAppColor.bgApp,
+                        padding: EdgeInsets.all(8),
+                        child: SfDataGrid(
+                          source: _dvDataSource,
+                          allowSorting: true,
+                          allowMultiColumnSorting: true,
+                          allowColumnsResizing: true,
+                          columnResizeMode: ColumnResizeMode.onResizeEnd,
+                          onColumnResizeUpdate:
+                              (ColumnResizeUpdateDetails details) {
+                            setState(() {
+                              columnWidths[details.column.columnName] =
+                                  details.width;
+                              print(details.width);
+                            });
+                            return true;
+                          },
+                          columns: [
+                            GridColumn(
+                              width: columnWidths['maHangHoa']!,
+                              columnName: 'maHangHoa',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Mã dịch vụ',
+                                    style:
+                                        TextStyle(fontStyle: FontStyle.italic)),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['tenHangHoa']!,
+                              columnName: 'tenHangHoa',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Tên dịch vụ'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['tenNhomHang']!,
+                              columnName: 'tenNhomHang',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Nhóm'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['giaBan']!,
+                              columnName: 'giaBan',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Giá bán'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['soPhutThucHien']!,
+                              columnName: 'soPhutThucHien',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Thời gian'),
+                              ),
+                            ),
+                            GridColumn(
+                              width: columnWidths['txtTrangThai']!,
+                              columnName: 'txtTrangThaiHang',
+                              label: Container(
+                                padding: EdgeInsets.all(16),
+                                alignment: Alignment.center,
+                                child: Text('Trạng thái'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
     return SiteLayout(
       child: Scaffold(
         body: SafeArea(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                const DichVuHeader(),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(left: 16.0),
-                                child: Text("Nhóm dịch vụ"),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(Icons.add)),
-                              )
-                            ],
-                          ),
-                          const Divider(),
-                          for (var item in _loaiDichVu)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(item.tenLoai.toString()),
-                                if (item.dichVus?.isNotEmpty == false)
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      for (var child in item.dichVus!)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: Text(child),
-                                        ),
-                                    ],
-                                  ),
-                              ],
-                            )
-                        ])),
-                    Expanded(flex: 3, child: DichVuTable()),
-                  ],
-                ),
-              ],
-            ),
+          child: Column(
+            children: [
+              title,
+              body,
+            ],
           ),
         ),
       ),

@@ -1,39 +1,32 @@
 import 'dart:convert';
 import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_model.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/loai_dich_vu_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
-import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:beautify_app/BASE_CONFIG.dart';
+import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_filter.dart';
 
 class DichVuService {
-  Future<List<DichVuViewModel>> getDichVu() async {
-    String token = await SessionManager().get("accessToken");
-    final response = await http.get(
-        Uri.parse('${Constants.BASE_URL}/api/services/app/HangHoa/GetAll'),
-        headers: {'Authorization': "Bearer $token"});
-    // Add code to authenticate user here
+  Future<List<DichVuViewModel>> getDichVu(DichVuFilter input) async {
+    final token = await SessionManager().get("accessToken");
+    final response = await http.post(
+        Uri.parse(
+            '${Constants.BASE_URL}/api/services/app/HangHoa/GetDMHangHoa'),
+        headers: {
+          'accept': 'text/plain',
+          'Content-Type': 'application/json-patch+json',
+          'Authorization': 'Bearer $token'
+        },
+        body: jsonEncode(input.toJson()));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final items = data['result']['items'];
+      final items = List<Map<String, dynamic>>.from(data['result']['items']);
 
-      final result = items
-          .map((json) => DichVuViewModel(
-                id: json['id'],
-                maHangHoa: json['maHangHoa'],
-                tenHangHoa: json['tenHangHoa'],
-                loaiHangHoa: json['loaiHangHoa'],
-                giaBan: json['giaBan'],
-                trangThaiText: json['trangThaiText'],
-              ))
-          .toList();
-      if (kDebugMode) {
-        print(result);
-      }
+      final result =
+          items.map((json) => DichVuViewModel.fromJson(json)).toList();
       return result;
     } else {
-      return [];
+      throw Exception('Failed to get getDichVu: ${response.statusCode}');
     }
   }
 

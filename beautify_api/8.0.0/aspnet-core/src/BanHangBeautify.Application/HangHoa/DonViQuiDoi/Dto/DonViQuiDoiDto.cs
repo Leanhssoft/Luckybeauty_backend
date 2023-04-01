@@ -13,5 +13,6 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi.Dto
         public float? GiaBan { get; set; } = 0;
         public int? LaDonViTinhChuan { get; set; } = 1;
         public Guid IdHangHoa { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }

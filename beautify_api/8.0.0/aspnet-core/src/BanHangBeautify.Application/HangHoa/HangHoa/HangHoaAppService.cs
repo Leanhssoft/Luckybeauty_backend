@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using static BanHangBeautify.Common.CommonClass;
+
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
@@ -57,34 +59,37 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.TenantId = AbpSession.TenantId ?? 1;
             hangHoa.CreatorUserId = AbpSession.UserId;
             hangHoa.CreationTime = DateTime.Now;
-            await _dmHangHoa.InsertAsync(hangHoa);
 
             if (dto.DonViQuiDois != null && dto.DonViQuiDois.Count > 0)
             {
+                MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                var max = objMax.MaxVal;
                 foreach (var item in dto.DonViQuiDois)
                 {
                     DM_DonViQuiDoi dvt = ObjectMapper.Map<DM_DonViQuiDoi>(item);
                     dvt.Id = Guid.NewGuid();
                     dvt.TenantId = hangHoa.TenantId;
                     dvt.IdHangHoa = productId;
-                    dvt.MaHangHoa = await _repository.GetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                    dvt.MaHangHoa = string.Concat(objMax.FirstStr, max);
                     lstDVT.Add(dvt);
-                    await _dmDonViQuiDoi.InsertAsync(dvt);
+                    max += 1;
                 }
             }
             else
             {
+                MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                 DM_DonViQuiDoi dvt = new()
                 {
                     Id = Guid.NewGuid(),
                     IdHangHoa = productId,
                     TenantId = hangHoa.TenantId,
-                    MaHangHoa = await _repository.GetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId),
+                    MaHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal),
                     TenDonViTinh = string.Empty,
                 };
                 lstDVT.Add(dvt);
-                await _dmDonViQuiDoi.InsertAsync(dvt);
             }
+            await _dmHangHoa.InsertAsync(hangHoa);
+            await _dmDonViQuiDoi.InsertRangeAsync(lstDVT);
 
             hangHoa.DonViQuiDois = lstDVT;
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
@@ -94,13 +99,54 @@ namespace BanHangBeautify.HangHoa.HangHoa
         [NonAction]
         public async Task<CreateOrEditHangHoaDto> Edit(CreateOrEditHangHoaDto dto, DM_HangHoa hangHoa)
         {
+            #region compare dvt & update IsDeleted = true if not exists
+            var dvt = _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == hangHoa.Id);
+            var idOlds = dvt.Select(x => x.Id).ToList();
+            var idNews = dto.DonViQuiDois.Select(x => x.Id);
+            var idDeletes = (from idOld in idOlds
+                             join idNew in idNews on idOld equals idNew
+                             into tbl
+                             from de in tbl.DefaultIfEmpty()
+                             where de == Guid.Empty
+                             select idOld).ToList();
+            _dmDonViQuiDoi.GetAllList(x => idDeletes.Contains(x.Id)).ForEach(x => x.IsDeleted = true);
+            #endregion
+
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TrangThai = dto.TrangThai;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
-            var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             await _dmHangHoa.UpdateAsync(hangHoa);
+
+            foreach (var item in dto.DonViQuiDois)
+            {
+                DM_DonViQuiDoi objDVT = _dmDonViQuiDoi.FirstOrDefault(item.Id);
+                if (objDVT != null)
+                {
+                    // update
+                    objDVT.MaHangHoa = item.MaHangHoa;
+                    objDVT.TenDonViTinh = item.TenDonViTinh;
+                    objDVT.TyLeChuyenDoi = item.TyLeChuyenDoi;
+                    objDVT.GiaBan = item.GiaBan;
+                    await _dmDonViQuiDoi.UpdateAsync(objDVT);
+                }
+                else
+                {
+                    // insert
+                    MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                    DM_DonViQuiDoi dvtNew = ObjectMapper.Map<DM_DonViQuiDoi>(item);
+                    dvtNew.MaHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal);
+                    dvtNew.IdHangHoa = hangHoa.Id;
+                    dvtNew.TenantId = hangHoa.TenantId;
+                    dvtNew.LaDonViTinhChuan = item.LaDonViTinhChuan;
+                    await _dmDonViQuiDoi.InsertAsync(dvtNew);
+                    hangHoa.DonViQuiDois.Add(dvtNew);// used to return
+                }
+            }
+
+            // only return dvt not delete (todo)
+            var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
         }
         public async Task<DM_HangHoa> getDetail(Guid id)
@@ -112,17 +158,18 @@ namespace BanHangBeautify.HangHoa.HangHoa
             PagedResultDto<DM_HangHoa> result = new PagedResultDto<DM_HangHoa>();
             var lstHangHoa = await _dmHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstHangHoa.Count();
-            if (!string.IsNullOrEmpty(input.Keyword))
+            if (!string.IsNullOrEmpty(input.ParamSearch.TextSearch))
             {
-                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.CommonParam.TextSearch) || x.TenHangHoa.Contains(input.CommonParam.TextSearch)).ToList();
+                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.ParamSearch.TextSearch) || x.TenHangHoa.Contains(input.ParamSearch.TextSearch)).ToList();
             }
-            if (input.SkipCount > 0)
+            if (input.ParamSearch.CurrentPage > 0)
             {
-                input.SkipCount *= 10;
+                input.ParamSearch.CurrentPage *= 10;
             }
-            result.Items = lstHangHoa.Skip(input.SkipCount).Take(input.SkipCount).ToList();
+            result.Items = lstHangHoa.Skip(input.ParamSearch.CurrentPage ?? 0).Take(input.ParamSearch.CurrentPage ?? 10).ToList();
             return result;
         }
+        [HttpPost]
         public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input)
         {
             return await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
@@ -139,6 +186,9 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 findHangHoa.DeletionTime = DateTime.Now;
                 findHangHoa.DeleterUserId = AbpSession.UserId;
                 _dmHangHoa.Update(findHangHoa);
+
+                _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == id).ForEach(x => x.IsDeleted = true);
+
                 result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
