@@ -19,10 +19,10 @@ class _DichVuScreenState extends State<DichVuScreen> {
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
   Future<void> _loadData() async {
-    var data = await DichVuService().getDichVu();
+    var data = await DichVuService().getLoaiDichVu();
     var loaiDichVu = await DichVuService().getLoaiDichVu();
     setState(() {
-      _data = data;
+      // _data = data;
       _loaiDichVu = loaiDichVu;
     });
   }

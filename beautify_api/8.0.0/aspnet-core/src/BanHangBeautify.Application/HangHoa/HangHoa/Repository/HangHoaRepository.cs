@@ -31,13 +31,13 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
             using (var command = CreateCommand("spGetDMHangHoa"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
-                command.Parameters.Add(new SqlParameter("@TextSearch", input.CommonParam.TextSearch ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@TextSearch", input.ParamSearch.TextSearch ?? (object)DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@IdNhomHangHoas", input.IdNhomHangHoas ?? (object)DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@Where", DBNull.Value));
-                command.Parameters.Add(new SqlParameter("@CurrentPage", input.CommonParam.CurrentPage));
-                command.Parameters.Add(new SqlParameter("@PageSize", input.CommonParam.PageSize));
-                command.Parameters.Add(new SqlParameter("@ColumnSort", input.CommonParam.ColumnSort));
-                command.Parameters.Add(new SqlParameter("@TypeSort", input.CommonParam.TypeSort));
+                command.Parameters.Add(new SqlParameter("@CurrentPage", input.ParamSearch.CurrentPage));
+                command.Parameters.Add(new SqlParameter("@PageSize", input.ParamSearch.PageSize));
+                command.Parameters.Add(new SqlParameter("@ColumnSort", input.ParamSearch.ColumnSort));
+                command.Parameters.Add(new SqlParameter("@TypeSort", input.ParamSearch.TypeSort));
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {

@@ -1,5 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:developer';
+
+import 'package:beautify_app/Models/comon_model.dart';
 import 'package:beautify_app/components/CustomPagination.dart';
 import 'package:beautify_app/layout.dart';
 import 'package:beautify_app/screens/app/customer/customerHeader.dart';
@@ -14,6 +17,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:beautify_app/constants/styles.dart';
+import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_filter.dart';
+// import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_model.dart';
 
 class DichVuPage extends StatefulWidget {
   const DichVuPage({super.key});
@@ -28,11 +33,13 @@ class _DichVuPageState extends State<DichVuPage> {
   int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
+
   Future<void> _loadData() async {
-    //var data = await DichVuService().getDichVu();
+    final input = DichVuFilter('', ParamSearch('', 0, 10, '', ''));
+    var data = await DichVuService().getDichVu(input);
     var loaiDichVu = await DichVuService().getLoaiDichVu();
     setState(() {
-      //_data = data;
+      _data = data;
       _loaiDichVu = loaiDichVu;
     });
   }
@@ -102,12 +109,15 @@ class _DichVuPageState extends State<DichVuPage> {
           Expanded(
             child: SizedBox(
               width: screenWidth * 0.5, // notworking in expand
-              child: TextField(
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.search),
-                  hintText: 'Tìm kiếm',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: screenWidth * 0.5),
+                child: TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search),
+                    hintText: 'Tìm kiếm',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ),

@@ -158,17 +158,18 @@ namespace BanHangBeautify.HangHoa.HangHoa
             PagedResultDto<DM_HangHoa> result = new PagedResultDto<DM_HangHoa>();
             var lstHangHoa = await _dmHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstHangHoa.Count();
-            if (!string.IsNullOrEmpty(input.Keyword))
+            if (!string.IsNullOrEmpty(input.ParamSearch.TextSearch))
             {
-                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.CommonParam.TextSearch) || x.TenHangHoa.Contains(input.CommonParam.TextSearch)).ToList();
+                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.ParamSearch.TextSearch) || x.TenHangHoa.Contains(input.ParamSearch.TextSearch)).ToList();
             }
-            if (input.SkipCount > 0)
+            if (input.ParamSearch.CurrentPage > 0)
             {
-                input.SkipCount *= 10;
+                input.ParamSearch.CurrentPage *= 10;
             }
-            result.Items = lstHangHoa.Skip(input.SkipCount).Take(input.SkipCount).ToList();
+            result.Items = lstHangHoa.Skip(input.ParamSearch.CurrentPage ?? 0).Take(input.ParamSearch.CurrentPage ?? 10).ToList();
             return result;
         }
+        [HttpPost]
         public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input)
         {
             return await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
