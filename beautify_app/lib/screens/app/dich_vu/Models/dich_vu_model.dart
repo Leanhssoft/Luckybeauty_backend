@@ -133,10 +133,10 @@ class DichVuDataSource extends DataGridSource {
                   dataGridCell.columnName == 'soPhutThucHien')
               ? Alignment.centerRight
               : Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             dataGridCell.value.toString(),
-            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(overflow: TextOverflow.ellipsis),
           ));
     }).toList());
   }

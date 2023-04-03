@@ -1,34 +1,46 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:beautify_app/helper/common_func.dart';
 
 part 'nhom_dich_vu_model.g.dart';
 
 @JsonSerializable()
 class NhomDichVuDto {
   @JsonKey(required: true)
-  final String id;
+  late String? id;
 
   @JsonKey(defaultValue: '')
-  final String? maNhomHang;
+  late String? maNhomHang;
 
   @JsonKey(required: true)
-  final String tenNhomHang;
+  late String? tenNhomHang;
 
   @JsonKey(defaultValue: false)
-  final bool? laNhomHangHoa;
+  late bool? laNhomHangHoa;
 
   @JsonKey(defaultValue: '')
-  final String? color;
+  late String? color;
 
-  final String? moTa;
-
-  @JsonKey(defaultValue: false)
-  final bool? isDeleted;
+  late String? moTa;
 
   @JsonKey(defaultValue: false)
-  bool isSelected;
+  late bool? isDeleted;
 
-  NhomDichVuDto(this.id, this.maNhomHang, this.tenNhomHang, this.laNhomHangHoa,
-      this.color, this.moTa, this.isDeleted, this.isSelected);
+  @JsonKey(defaultValue: false)
+  late bool? isSelected;
+
+  String get tenNhomHangKhongDau {
+    return convertVietNamtoEng(tenNhomHang);
+  }
+
+  NhomDichVuDto(
+      {this.id,
+      this.maNhomHang,
+      this.tenNhomHang,
+      this.laNhomHangHoa,
+      this.color,
+      this.moTa,
+      this.isDeleted,
+      this.isSelected});
 
   factory NhomDichVuDto.fromJson(Map<String, dynamic> json) =>
       _$NhomDichVuDtoFromJson(json);

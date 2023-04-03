@@ -9,7 +9,10 @@ import 'package:beautify_app/screens/app/dich_vu/service/dichVuService.dart';
 import 'package:flutter/material.dart';
 import 'package:beautify_app/constants/styles.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_filter.dart';
+import 'package:http/http.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:beautify_app/screens/app/dich_vu/modal_add_nhom_dich_vu.dart';
 
 class DichVuPage extends StatefulWidget {
   const DichVuPage({super.key});
@@ -70,25 +73,28 @@ class _DichVuPageState extends State<DichVuPage> {
         child: Row(
           children: [
             Expanded(
-              child: const Text(
-                'Danh mục dịch vụ',
-                style: TextStyle(fontSize: 20),
+              child: Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: const Text(
+                  'Danh mục dịch vụ',
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
               child: SizedBox(
                 height: 50,
-                width: 50,
+                width: 40,
                 child: Container(
-                  padding: EdgeInsets.only(bottom: 8),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: ClassAppColor.bgSecondBtnColor,
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(color: ClassAppColor.boderBtnColor),
                   ),
                   child: IconButton(
+                    padding: EdgeInsets.all(4),
                     icon: Icon(
                       Icons.menu,
                       color: ClassAppColor.iconColor,
@@ -120,14 +126,17 @@ class _DichVuPageState extends State<DichVuPage> {
     );
 
     var partSearch = Container(
-      padding: EdgeInsets.all(8),
+      padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
+      // decoration: BoxDecoration(
+      //   borderRadius: BorderRadius.circular(8),
+      // ),
       child: Row(
         children: [
           Expanded(
             child: SizedBox(
-              width: screenWidth * 0.3, // notworking in expand
+              width: 200, // notworking in expand
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: 300),
+                constraints: BoxConstraints(maxWidth: 100, maxHeight: 35),
                 child: TextField(
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.search),
@@ -140,24 +149,35 @@ class _DichVuPageState extends State<DichVuPage> {
               ),
             ),
           ),
-          SizedBox(
-            width: 40,
-            child: IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.filter_alt_rounded,
-                color: ClassAppColor.iconColor,
-              ),
-              style: const ButtonStyle(
-                backgroundColor:
-                    MaterialStatePropertyAll(ClassAppColor.bgSecondBtnColor),
+          Padding(
+            padding: EdgeInsets.only(left: 8),
+            child: SizedBox(
+              width: 40,
+              height: 32,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  border: Border.all(color: ClassAppColor.boderBtnColor),
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.all(5),
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.filter_alt_rounded,
+                    color: ClassAppColor.iconColor,
+                  ),
+                  // style: const ButtonStyle(
+                  //   backgroundColor:
+                  //       MaterialStatePropertyAll(ClassAppColor.bgSecondBtnColor),
+                  // ),
+                ),
               ),
             ),
           ),
           SizedBox(
             width: 116, // 100+16
             child: Padding(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.fromLTRB(8, 5, 8, 5),
               child: ElevatedButton.icon(
                 onPressed: () {},
                 icon: Icon(
@@ -195,76 +215,82 @@ class _DichVuPageState extends State<DichVuPage> {
     var body = Expanded(
       flex: 11,
       child: Container(
-        alignment: Alignment.center,
-        color: Colors.yellow,
+        color: ClassAppColor.bgApp,
         child: Row(
           textDirection: TextDirection.ltr,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // left content
             SizedBox(
               height: screenHeight * 0.4,
               width: 300,
               child: Container(
-                color: Colors.amber,
                 padding: EdgeInsets.only(left: 8),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // titile nhom
                     SizedBox(
-                      height: 60,
+                      height: 40,
                       child: Container(
-                        color: Colors.amberAccent,
-                        padding: EdgeInsets.all(8),
+                        padding: EdgeInsets.fromLTRB(16, 5, 8, 5),
+                        alignment: Alignment.topLeft,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
+                          children: [
                             Expanded(
                               child: Text(
                                 'Nhóm dịch vụ',
                                 style: TextStyle(fontSize: 15),
                               ),
                             ),
-                            Icon(Icons.add),
+                            IconButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return ModalAddNhomDichVu();
+                                    });
+                              },
+                              icon: Icon(Icons.add),
+                            ),
                           ],
                         ),
                       ),
                     ),
+                    const Divider(),
                     // list nhomDV
                     Expanded(
-                      child: Container(
-                        color: Colors.greenAccent,
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxHeight: 400),
-                          child: ListView.builder(
-                            itemCount: _nhomDichVu.length,
-                            itemBuilder: (_, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                  for (var i = 0; i < _nhomDichVu.length; i++) {
-                                    setState(() {
-                                      if (index == i) {
-                                        _nhomDichVu[index].isSelected = true;
-                                      } else {
-                                        //the condition to change the highlighted item
-                                        _nhomDichVu[i].isSelected = false;
-                                      }
-                                    });
-                                  }
-                                },
-                                child: Container(
-                                  color: _nhomDichVu[index].isSelected
-                                      ? Colors.blueAccent
-                                      : Colors.white,
-                                  child: ListTile(
-                                    // leading: Icon(Icons.check),
-                                    title: Text(_nhomDichVu[index].tenNhomHang),
-                                    // trailing: Icon(Icons.check),
-                                  ),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: 400),
+                        child: ListView.builder(
+                          itemCount: _nhomDichVu.length,
+                          itemBuilder: (_, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                for (var i = 0; i < _nhomDichVu.length; i++) {
+                                  setState(() {
+                                    if (index == i) {
+                                      _nhomDichVu[index].isSelected = true;
+                                    } else {
+                                      //the condition to change the highlighted item
+                                      _nhomDichVu[i].isSelected = false;
+                                    }
+                                  });
+                                }
+                              },
+                              child: Container(
+                                color: (_nhomDichVu[index].isSelected ?? false)
+                                    ? Colors.blueAccent
+                                    : Colors.white,
+                                child: ListTile(
+                                  // leading: Icon(Icons.check),
+                                  title: Text(
+                                      _nhomDichVu[index].tenNhomHang ?? ''),
+                                  // trailing: Icon(Icons.check),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -280,7 +306,7 @@ class _DichVuPageState extends State<DichVuPage> {
                   children: [
                     // icon search
                     SizedBox(
-                      height: 60,
+                      height: 50,
                       child: partSearch,
                     ),
                     // lst Ds
@@ -303,16 +329,17 @@ class _DichVuPageState extends State<DichVuPage> {
                             });
                             return true;
                           },
-                          columns: <GridColumn>[
+                          columns: [
                             GridColumn(
                               width: columnWidths['maHangHoa']!,
                               columnName: 'maHangHoa',
                               label: Container(
-                                padding: EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Mã dịch vụ',
-                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
@@ -320,45 +347,65 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['tenHangHoa']!,
                               columnName: 'tenHangHoa',
                               label: Container(
-                                padding: EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 alignment: Alignment.center,
-                                child: Text('Tên dịch vụ'),
+                                child: Text(
+                                  'Tên dịch vụ',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                             GridColumn(
                               width: columnWidths['tenNhomHang']!,
                               columnName: 'tenNhomHang',
                               label: Container(
-                                padding: EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 alignment: Alignment.center,
-                                child: Text('Nhóm'),
+                                child: Text(
+                                  'Nhóm',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                             GridColumn(
                               width: columnWidths['giaBan']!,
                               columnName: 'giaBan',
                               label: Container(
-                                padding: EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 alignment: Alignment.center,
-                                child: Text('Giá bán'),
+                                child: Text(
+                                  'Giá bán',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                             GridColumn(
                               width: columnWidths['soPhutThucHien']!,
                               columnName: 'soPhutThucHien',
                               label: Container(
-                                padding: EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 alignment: Alignment.center,
-                                child: Text('Thời gian'),
+                                child: Text(
+                                  'Thời gian',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                             GridColumn(
                               width: columnWidths['txtTrangThaiHang']!,
                               columnName: 'txtTrangThaiHang',
                               label: Container(
-                                padding: EdgeInsets.all(10),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 alignment: Alignment.center,
-                                child: Text('Trạng thái'),
+                                child: Text(
+                                  'Trạng thái',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                           ],
@@ -386,25 +433,4 @@ class _DichVuPageState extends State<DichVuPage> {
       ),
     );
   }
-}
-
-List<Widget> loaiDichVuItems(List<LoaiDichVuDto> items) {
-  List<Widget> widgets = [];
-  for (var item in items) {
-    List<Widget> children = [
-      Text(item.tenLoai.toString()),
-    ];
-    if (item.dichVus!.isNotEmpty) {
-      children.addAll(item.dichVus!.toList().map((child) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 1, bottom: 1, right: 5, left: 10),
-          child: Text(child),
-        );
-      }));
-    }
-    widgets.add(Column(
-      children: children,
-    ));
-  }
-  return widgets;
 }

@@ -12,14 +12,14 @@ NhomDichVuDto _$NhomDichVuDtoFromJson(Map<String, dynamic> json) {
     requiredKeys: const ['id', 'tenNhomHang'],
   );
   return NhomDichVuDto(
-    json['id'] as String,
-    json['maNhomHang'] as String? ?? '',
-    json['tenNhomHang'] as String,
-    json['laNhomHangHoa'] as bool? ?? false,
-    json['color'] as String? ?? '',
-    json['moTa'] as String?,
-    json['isDeleted'] as bool? ?? false,
-    json['isSelected'] as bool? ?? false,
+    id: json['id'] as String?,
+    maNhomHang: json['maNhomHang'] as String? ?? '',
+    tenNhomHang: json['tenNhomHang'] as String?,
+    laNhomHangHoa: json['laNhomHangHoa'] as bool? ?? false,
+    color: json['color'] as String? ?? '',
+    moTa: json['moTa'] as String?,
+    isDeleted: json['isDeleted'] as bool? ?? false,
+    isSelected: json['isSelected'] as bool? ?? false,
   );
 }
 
