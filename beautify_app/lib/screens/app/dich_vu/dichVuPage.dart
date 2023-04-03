@@ -1,21 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:developer';
-
 import 'package:beautify_app/Models/comon_model.dart';
-import 'package:beautify_app/components/CustomPagination.dart';
 import 'package:beautify_app/layout.dart';
-import 'package:beautify_app/screens/app/customer/customerHeader.dart';
-import 'package:beautify_app/screens/app/customer/customerTable.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_model.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/loai_dich_vu_model.dart';
-import 'package:beautify_app/screens/app/dich_vu/dichVuHeader.dart';
-import 'package:beautify_app/screens/app/dich_vu/dichVuTable.dart';
+import 'package:beautify_app/screens/app/dich_vu/Models/nhom_dich_vu_model.dart';
 import 'package:beautify_app/screens/app/dich_vu/service/dichVuService.dart';
-import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:beautify_app/constants/styles.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/dich_vu_filter.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -32,18 +23,21 @@ class _DichVuPageState extends State<DichVuPage> {
   late DichVuDataSource _dvDataSource = DichVuDataSource(products: []);
 
   List<LoaiDichVuDto> _loaiDichVu = [];
-  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
-  int _sortColumnIndex = 0;
-  bool _sortAscending = true;
+  List<NhomDichVuDto> _nhomDichVu = [];
+  // int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+  // int _sortColumnIndex = 0;
+  // bool _sortAscending = true;
 
   Future<void> _loadData() async {
     final input = DichVuFilter('', ParamSearch('', 0, 10, '', ''));
     List<DichVuViewModel> data = await DichVuService().getDichVu(input);
     var loaiDichVu = await DichVuService().getLoaiDichVu();
+    var nhomDichVu = await DichVuService().getNhomDichVu();
     setState(() {
       _data = data;
       _dvDataSource = DichVuDataSource(products: _data);
       _loaiDichVu = loaiDichVu;
+      _nhomDichVu = nhomDichVu;
     });
   }
 
@@ -64,14 +58,14 @@ class _DichVuPageState extends State<DichVuPage> {
       'giaBan': double.nan,
       'tenNhomHang': double.nan,
       'soPhutThucHien': double.nan,
-      'txtTrangThai': double.nan,
+      'txtTrangThaiHang': double.nan,
     };
 
     var title = Expanded(
       flex: 1,
       child: Container(
         alignment: Alignment.center,
-        color: Colors.red,
+        color: ClassAppColor.bgApp,
         padding: EdgeInsets.all(8),
         child: Row(
           children: [
@@ -81,23 +75,34 @@ class _DichVuPageState extends State<DichVuPage> {
                 style: TextStyle(fontSize: 20),
               ),
             ),
-            SizedBox(
-              height: 40,
-              width: 40,
-              child: IconButton(
-                icon: Icon(
-                  Icons.menu,
-                  color: ClassAppColor.iconColor,
-                ),
-                onPressed: () {},
-                style: const ButtonStyle(
-                  backgroundColor:
-                      MaterialStatePropertyAll(ClassAppColor.bgSecondBtnColor),
+            Padding(
+              padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: SizedBox(
+                height: 50,
+                width: 50,
+                child: Container(
+                  padding: EdgeInsets.only(bottom: 8),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: ClassAppColor.boderBtnColor),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                      color: ClassAppColor.iconColor,
+                    ),
+                    onPressed: () {},
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.yellow,
+                    ),
+                  ),
                 ),
               ),
             ),
             SizedBox(
-              height: 40,
+              height: 50,
               width: 100,
               child: ElevatedButton.icon(
                 onPressed: () {},
@@ -122,7 +127,7 @@ class _DichVuPageState extends State<DichVuPage> {
             child: SizedBox(
               width: screenWidth * 0.3, // notworking in expand
               child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: screenWidth * 0.3),
+                constraints: BoxConstraints(maxWidth: 300),
                 child: TextField(
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.search),
@@ -212,6 +217,7 @@ class _DichVuPageState extends State<DichVuPage> {
                         color: Colors.amberAccent,
                         padding: EdgeInsets.all(8),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: const [
                             Expanded(
                               child: Text(
@@ -228,6 +234,38 @@ class _DichVuPageState extends State<DichVuPage> {
                     Expanded(
                       child: Container(
                         color: Colors.greenAccent,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxHeight: 400),
+                          child: ListView.builder(
+                            itemCount: _nhomDichVu.length,
+                            itemBuilder: (_, index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  for (var i = 0; i < _nhomDichVu.length; i++) {
+                                    setState(() {
+                                      if (index == i) {
+                                        _nhomDichVu[index].isSelected = true;
+                                      } else {
+                                        //the condition to change the highlighted item
+                                        _nhomDichVu[i].isSelected = false;
+                                      }
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  color: _nhomDichVu[index].isSelected
+                                      ? Colors.blueAccent
+                                      : Colors.white,
+                                  child: ListTile(
+                                    // leading: Icon(Icons.check),
+                                    title: Text(_nhomDichVu[index].tenNhomHang),
+                                    // trailing: Icon(Icons.check),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -256,32 +294,33 @@ class _DichVuPageState extends State<DichVuPage> {
                           allowMultiColumnSorting: true,
                           allowColumnsResizing: true,
                           columnResizeMode: ColumnResizeMode.onResizeEnd,
+                          columnWidthMode: ColumnWidthMode.auto,
                           onColumnResizeUpdate:
                               (ColumnResizeUpdateDetails details) {
                             setState(() {
                               columnWidths[details.column.columnName] =
                                   details.width;
-                              print(details.width);
                             });
                             return true;
                           },
-                          columns: [
+                          columns: <GridColumn>[
                             GridColumn(
                               width: columnWidths['maHangHoa']!,
                               columnName: 'maHangHoa',
                               label: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: EdgeInsets.all(10),
                                 alignment: Alignment.center,
-                                child: Text('Mã dịch vụ',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic)),
+                                child: Text(
+                                  'Mã dịch vụ',
+                                  style: TextStyle(fontWeight: FontWeight.w500),
+                                ),
                               ),
                             ),
                             GridColumn(
                               width: columnWidths['tenHangHoa']!,
                               columnName: 'tenHangHoa',
                               label: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: EdgeInsets.all(10),
                                 alignment: Alignment.center,
                                 child: Text('Tên dịch vụ'),
                               ),
@@ -290,7 +329,7 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['tenNhomHang']!,
                               columnName: 'tenNhomHang',
                               label: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: EdgeInsets.all(10),
                                 alignment: Alignment.center,
                                 child: Text('Nhóm'),
                               ),
@@ -299,7 +338,7 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['giaBan']!,
                               columnName: 'giaBan',
                               label: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: EdgeInsets.all(10),
                                 alignment: Alignment.center,
                                 child: Text('Giá bán'),
                               ),
@@ -308,16 +347,16 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['soPhutThucHien']!,
                               columnName: 'soPhutThucHien',
                               label: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: EdgeInsets.all(10),
                                 alignment: Alignment.center,
                                 child: Text('Thời gian'),
                               ),
                             ),
                             GridColumn(
-                              width: columnWidths['txtTrangThai']!,
+                              width: columnWidths['txtTrangThaiHang']!,
                               columnName: 'txtTrangThaiHang',
                               label: Container(
-                                padding: EdgeInsets.all(16),
+                                padding: EdgeInsets.all(10),
                                 alignment: Alignment.center,
                                 child: Text('Trạng thái'),
                               ),

@@ -4,29 +4,31 @@ part 'nhom_dich_vu_model.g.dart';
 
 @JsonSerializable()
 class NhomDichVuDto {
-  @JsonKey(name: 'Id', required: true)
+  @JsonKey(required: true)
   final String id;
 
-  @JsonKey(name: 'MaNhomHang', defaultValue: '')
+  @JsonKey(defaultValue: '')
   final String? maNhomHang;
 
-  @JsonKey(name: 'TenNhomHang', required: true)
+  @JsonKey(required: true)
   final String tenNhomHang;
 
-  @JsonKey(name: 'LaNhomHangHoa', defaultValue: false)
+  @JsonKey(defaultValue: false)
   final bool? laNhomHangHoa;
 
-  @JsonKey(name: 'Color', defaultValue: '')
+  @JsonKey(defaultValue: '')
   final String? color;
 
-  @JsonKey(name: 'MoTa')
   final String? moTa;
 
-  @JsonKey(name: 'IsDeleted', defaultValue: false)
+  @JsonKey(defaultValue: false)
   final bool? isDeleted;
 
+  @JsonKey(defaultValue: false)
+  bool isSelected;
+
   NhomDichVuDto(this.id, this.maNhomHang, this.tenNhomHang, this.laNhomHangHoa,
-      this.color, this.moTa, this.isDeleted);
+      this.color, this.moTa, this.isDeleted, this.isSelected);
 
   factory NhomDichVuDto.fromJson(Map<String, dynamic> json) =>
       _$NhomDichVuDtoFromJson(json);

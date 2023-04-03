@@ -51,7 +51,9 @@ DichVuViewModel _$DichVuViewModelFromJson(Map<String, dynamic> json) {
     ..idNhomHangHoa = json['idNhomHangHoa'] as String? ?? ''
     ..soPhutThucHien = (json['soPhutThucHien'] as num?)?.toDouble() ?? 0
     ..trangThai = json['trangThai'] as int? ?? 1
-    ..moTa = json['moTa'] as String? ?? '';
+    ..moTa = json['moTa'] as String? ?? ''
+    ..tenNhomHang = json['tenNhomHang'] as String? ?? ''
+    ..txtTrangThaiHang = json['txtTrangThaiHang'] as String? ?? '';
 }
 
 Map<String, dynamic> _$DichVuViewModelToJson(DichVuViewModel instance) =>
@@ -71,4 +73,6 @@ Map<String, dynamic> _$DichVuViewModelToJson(DichVuViewModel instance) =>
       'soPhutThucHien': instance.soPhutThucHien,
       'trangThai': instance.trangThai,
       'moTa': instance.moTa,
+      'tenNhomHang': instance.tenNhomHang,
+      'txtTrangThaiHang': instance.txtTrangThaiHang,
     };
