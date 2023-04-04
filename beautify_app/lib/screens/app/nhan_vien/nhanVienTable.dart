@@ -1,10 +1,9 @@
 import 'package:beautify_app/components/CustomDeleteDialog.dart';
 import 'package:beautify_app/components/CustomPagination.dart';
 import 'package:beautify_app/screens/app/nhan_vien/create-or-edit-nhan-vien.dart';
-import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuDto.dart';
 import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuFilter.dart';
 import 'package:beautify_app/screens/app/nhan_vien/models/NhanSuItemDto.dart';
-import 'package:beautify_app/screens/app/nhan_vien/nhanVienHeader.dart';
+import 'package:beautify_app/screens/app/nhan_vien/nhanhVienScreen.dart';
 import 'package:beautify_app/screens/app/nhan_vien/services/nhanVienServices.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -239,17 +238,31 @@ class _NhanVienTableState extends State<NhanVienTable> {
 
   List<DataColumn> get viewColumn {
     return [
-      const DataColumn(
-          label: Center(
-            child: Text(
+      DataColumn(
+          label: Container(
+            width: 50,
+            alignment: Alignment.center,
+            child: Checkbox(
+              value: false,
+              onChanged: (value) {},
+            ),
+          ),
+          numeric: true),
+      DataColumn(
+          label: Container(
+            width: 50,
+            alignment: Alignment.center,
+            child: const Text(
               'STT',
               textAlign: TextAlign.center,
             ),
           ),
           numeric: true),
-      const DataColumn(
-        label: Center(
-          child: Text(
+      DataColumn(
+        label: Container(
+          width: 200,
+          alignment: Alignment.centerLeft,
+          child: const Text(
             'Tên nhân viên',
             textAlign: TextAlign.center,
           ),
@@ -257,7 +270,8 @@ class _NhanVienTableState extends State<NhanVienTable> {
       ),
       DataColumn(
         label: Container(
-          alignment: Alignment.center,
+          width: 150,
+          alignment: Alignment.centerLeft,
           child: const Text(
             'Số điện thoại',
             textAlign: TextAlign.center,
@@ -266,6 +280,7 @@ class _NhanVienTableState extends State<NhanVienTable> {
       ),
       DataColumn(
           label: Container(
+            width: 100,
             alignment: Alignment.center,
             child: const Text(
               'Giới tính',
@@ -275,7 +290,8 @@ class _NhanVienTableState extends State<NhanVienTable> {
           numeric: true),
       DataColumn(
         label: Container(
-          alignment: Alignment.center,
+          width: 150,
+          alignment: Alignment.centerLeft,
           child: const Text(
             'Vị trí',
             textAlign: TextAlign.center,
@@ -284,7 +300,8 @@ class _NhanVienTableState extends State<NhanVienTable> {
       ),
       DataColumn(
         label: Container(
-          alignment: Alignment.center,
+          width: 150,
+          alignment: Alignment.centerLeft,
           child: const Text(
             'Ngày vào làm',
             textAlign: TextAlign.center,
@@ -293,6 +310,7 @@ class _NhanVienTableState extends State<NhanVienTable> {
       ),
       DataColumn(
         label: Container(
+          width: 100,
           alignment: Alignment.center,
           child: const Text(
             'Trạng thái',
@@ -317,10 +335,22 @@ List<DataRow> dataRows(List<NhanSuItemDto> items, BuildContext buildContext) {
   List<DataRow> dataRow = [];
   for (var item in items) {
     i += 1;
+    DateTime ngayVaoLam = DateTime.parse(item.ngayVaoLam.toString());
     DataRow row = DataRow(
       cells: [
         DataCell(
           Container(
+            width: 50,
+            alignment: Alignment.center,
+            child: Checkbox(
+              value: false,
+              onChanged: (value) => {},
+            ),
+          ),
+        ),
+        DataCell(
+          Container(
+            width: 50,
             alignment: Alignment.center,
             child: Text(
               i.toString(),
@@ -330,41 +360,48 @@ List<DataRow> dataRows(List<NhanSuItemDto> items, BuildContext buildContext) {
         ),
         DataCell(
           Container(
+            width: 200,
             alignment: Alignment.centerLeft,
             child: Text(item.tenNhanVien.toString()),
           ),
         ),
         DataCell(
           Container(
+            width: 150,
             alignment: Alignment.centerLeft,
             child: Text(item.soDienThoai.toString()),
           ),
         ),
         DataCell(
           Container(
-            alignment: Alignment.centerLeft,
+            width: 100,
+            alignment: Alignment.center,
             child: Text(item.gioiTinh == 0
-                ? 'Nam'
+                ? 'Khác'
                 : item.gioiTinh == 1
-                    ? 'Nữ'
-                    : 'Khác'),
+                    ? 'Nam'
+                    : 'Nữ'),
           ),
         ),
         DataCell(
           Container(
+            width: 150,
             alignment: Alignment.centerLeft,
             child: Text(item.tenChucVu.toString()),
           ),
         ),
         DataCell(
           Container(
+            width: 150,
             alignment: Alignment.centerLeft,
-            child: Text(item.ngaySinh.toString()),
+            child: Text(
+                "${ngayVaoLam.day}/${ngayVaoLam.month}/${ngayVaoLam.year}"),
           ),
         ),
         DataCell(
           Container(
-            alignment: Alignment.centerLeft,
+            width: 100,
+            alignment: Alignment.center,
             child: Text("Hoạt động"),
           ),
         ),
@@ -423,14 +460,14 @@ List<DataRow> dataRows(List<NhanSuItemDto> items, BuildContext buildContext) {
                                           backgroundColor:
                                               Color.fromARGB(255, 233, 53, 22),
                                           content: Text(
-                                              "Có lỗ sảy ra vui lòng thử lại sau!")));
+                                              "Có lỗi sảy ra vui lòng thử lại sau!")));
                                 }
                                 // ignore: use_build_context_synchronously
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const NhanVienHeader()),
+                                          const NhanVienScreen()),
                                 );
                               },
                             );

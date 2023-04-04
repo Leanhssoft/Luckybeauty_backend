@@ -121,7 +121,8 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 NhanVienPhuTrach = "",
                 TenNguonKhach = x.NguonKhach.TenNguon,
                 TenNhomKhach = x.NhomKhach.TenNhomKhach,
-                TongChiTieu = 0
+                TongChiTieu = 0,
+                TongTichDiem = x.TongTichDiem
             }).ToList();
             ListResultDto.Items = items;
             return ListResultDto;

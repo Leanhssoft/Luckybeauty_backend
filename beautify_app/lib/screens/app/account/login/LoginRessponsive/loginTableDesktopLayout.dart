@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:beautify_app/screens/main/HomeScreen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../Service/LoginService.dart';
@@ -42,7 +43,7 @@ class _loginMobileLayoutState extends State<loginTableDesktopLayout> {
               ),
               backgroundColor: Color(0xFF64B5F6)),
         );
-        Navigator.popAndPushNamed(context, "/home");
+        Navigator.pushNamed(context, "/home");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

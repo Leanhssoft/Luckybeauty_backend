@@ -1,4 +1,3 @@
-
 import 'package:beautify_app/routing/routes.dart';
 import 'package:flutter/material.dart';
 import '../Models/PermissionAndMenu/DrawerItem.dart';
@@ -23,6 +22,11 @@ class DrawerMenu {
           icon: Icons.calendar_month_outlined,
           permission: 'Pages',
           route: appointmentPageRoute),
+      DrawerItem(
+          title: banHangPageDisplayName,
+          icon: Icons.storefront_outlined,
+          permission: 'Pages',
+          route: banHangPageRoute),
       DrawerItem(
           title: dichVuPageDisplayName,
           icon: Icons.self_improvement_sharp,
@@ -74,9 +78,10 @@ class DrawerMenu {
 
     // filter items based on user permissions
     final filteredItems = allItems
-        .where((item) => allowedPermissions.contains(item.permission)||
-                item.permission == '' ||
-                item.permission == 'Pages')
+        .where((item) =>
+            allowedPermissions.contains(item.permission) ||
+            item.permission == '' ||
+            item.permission == 'Pages')
         .toList();
 
     // recursively filter children of items with children

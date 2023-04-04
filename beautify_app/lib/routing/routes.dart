@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+
 
 const rootRoute = "/";
 
@@ -36,3 +36,6 @@ const registerPageRoute = "/register";
 
 const authenticationPageDisplayName = "Log out";
 const authenticationPageRoute = "/auth";
+
+const banHangPageDisplayName = 'Bán hàng';
+const banHangPageRoute = '/ban-hang';

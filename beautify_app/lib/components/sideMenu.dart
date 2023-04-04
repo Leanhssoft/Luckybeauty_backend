@@ -31,7 +31,7 @@ class _SideMenuState extends State<SideMenu> {
       child: SizedBox(
         height: MediaQuery.of(context).size.height - 120,
         child: SingleChildScrollView(
-          scrollDirection: Axis.vertical  ,
+          scrollDirection: Axis.vertical,
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -50,6 +50,7 @@ class _SideMenuState extends State<SideMenu> {
                         top: 8, bottom: 8, left: 16, right: 16),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         const Divider(),
                         const Spacer(),

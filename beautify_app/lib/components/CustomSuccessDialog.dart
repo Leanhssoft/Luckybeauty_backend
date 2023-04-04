@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-
 class CustomSuccessDialog extends StatelessWidget {
   const CustomSuccessDialog({super.key});
 

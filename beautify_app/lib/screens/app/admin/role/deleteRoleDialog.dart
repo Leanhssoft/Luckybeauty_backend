@@ -1,3 +1,4 @@
+import 'package:beautify_app/screens/app/admin/role/rolePage.dart';
 import 'package:beautify_app/screens/app/admin/role/roleService.dart';
 import 'package:flutter/material.dart';
 
@@ -71,8 +72,13 @@ class DeleteRoleDialog extends StatelessWidget {
                       backgroundColor: Color.fromARGB(
                           255, 241, 68, 68)),
                 );
-                // ignore: use_build_context_synchronously
-                Navigator.of(context).pop();
+                 // ignore: use_build_context_synchronously
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const RolePage()),
+                                );
               }
             },
             child: const Text(
