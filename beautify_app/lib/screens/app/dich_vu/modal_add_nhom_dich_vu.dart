@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/nhom_dich_vu_model.dart';
+import 'package:http/http.dart';
 
 @immutable
 class ModalAddNhomDichVu extends StatefulWidget {
@@ -52,42 +53,44 @@ class _ModalAddNhomDichVu extends State<ModalAddNhomDichVu> {
         ),
         content: Container(
           padding: const EdgeInsets.all(8),
-          constraints: const BoxConstraints(minHeight: 800, minWidth: 600),
+          constraints: const BoxConstraints(minHeight: 850, minWidth: 500),
           child: Column(
             children: [
               // image
               Expanded(
-                child: IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.image),
+                child: Container(
+                  constraints: const BoxConstraints(maxHeight: 100),
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.image,
+                      size: 50,
+                    ),
+                  ),
                 ),
               ),
               // text form
               Container(
                 alignment: Alignment.topLeft,
-                padding: const EdgeInsets.all(8),
-                constraints: const BoxConstraints(maxHeight: 80),
+                constraints: const BoxConstraints(maxHeight: 40),
                 child: const Text('Thông tin chi tiết'),
               ),
               Container(
-                padding: const EdgeInsets.all(8),
-                constraints: const BoxConstraints(maxHeight: 100),
+                constraints: const BoxConstraints(maxHeight: 75),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topLeft,
-                        child: const Text(
-                          'Tên dịch vụ',
-                          // style: TextStyle(fontSize: 12),
-                        ),
-                      ),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(0, 15, 0, 4),
+                      child:
+                          Text('Tên dịch vụ', style: TextStyle(fontSize: 13)),
                     ),
                     Expanded(
                         child: TextField(
                       decoration: InputDecoration(
-                        hintText: 'Tên dịch vụ',
+                        hintText: 'Nhập tên dịch vụ',
+                        hintStyle: const TextStyle(fontSize: 13),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(4)),
                       ),
@@ -95,112 +98,135 @@ class _ModalAddNhomDichVu extends State<ModalAddNhomDichVu> {
                   ],
                 ),
               ),
+              Container(
+                constraints: const BoxConstraints(maxHeight: 75),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(0, 15, 0, 4),
+                      child:
+                          Text('Nhóm dịch vụ', style: TextStyle(fontSize: 13)),
+                    ),
+                    Expanded(
+                        child: TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Chọn nhóm dịch vụ',
+                        hintStyle: const TextStyle(fontSize: 13),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4)),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              Container(
+                constraints: const BoxConstraints(maxHeight: 75),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 15, 0, 4),
+                              child: Text(
+                                'Giá',
+                                style: TextStyle(fontSize: 13),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  hintText: '0.00',
+                                  hintStyle: TextStyle(fontSize: 13),
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 15, 0, 4),
+                              child: Text(
+                                'Số phút thực hiện',
+                                style: TextStyle(fontSize: 13),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextField(
+                                decoration: InputDecoration(
+                                  hintText: '20',
+                                  hintStyle: TextStyle(fontSize: 13),
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                constraints: const BoxConstraints(maxHeight: 120),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(0, 15, 0, 4),
+                      child: Text('Mô tả', style: TextStyle(fontSize: 13)),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        minLines: 3,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: 'Mô tả thêm về dịch vụ',
+                          hintStyle: const TextStyle(fontSize: 13),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
         actions: [
-          // bottom
-          SizedBox(
-            height: 100,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  const Expanded(child: Text('')),
-                  SizedBox(
-                    width: 100,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: const ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.blue)),
-                      child: const Text('Lưu'),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 100,
-                    child: ElevatedButton(
-                      style: const ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.red)),
-                      onPressed: () {},
-                      child: const Text('Hủy'),
-                    ),
-                  ),
-                ],
-              ),
+          ElevatedButton(
+            onPressed: () {},
+            style: const ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(Colors.blue)),
+            child: const Text('Lưu'),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: ElevatedButton(
+              style: const ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.red)),
+              onPressed: () {},
+              child: const Text('Hủy'),
             ),
-          )
+          ),
         ],
       );
-      // return Container(
-      //   padding: const EdgeInsets.all(16),
-      //   child: Column(
-      //     children: [
-      //       // title
-      //       SizedBox(
-      //         height: 80,
-      //         child: Row(
-      //           children: [
-      //             const Expanded(
-      //               child: Text('Thêm dịch vụ mới'),
-      //             ),
-      //             IconButton(
-      //               onPressed: () {},
-      //               icon: const Icon(Icons.close),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //       //content
-      //       Expanded(
-      //         child: IconButton(
-      //           onPressed: () {},
-      //           icon: const Icon(Icons.image),
-      //         ),
-      //       ),
-      //       Expanded(
-      //         flex: 3,
-      //         child: IconButton(
-      //           onPressed: () {},
-      //           icon: const Icon(Icons.image),
-      //         ),
-      //       ),
-      //       // bottom
-      //       SizedBox(
-      //         height: 100,
-      //         child: Container(
-      //           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-      //           child: Row(
-      //             children: [
-      //               const Expanded(child: Text('')),
-      //               SizedBox(
-      //                 width: 100,
-      //                 child: ElevatedButton(
-      //                   onPressed: () {},
-      //                   style: const ButtonStyle(
-      //                       backgroundColor:
-      //                           MaterialStatePropertyAll(Colors.blue)),
-      //                   child: const Text('Lưu'),
-      //                 ),
-      //               ),
-      //               SizedBox(
-      //                 width: 100,
-      //                 child: ElevatedButton(
-      //                   style: const ButtonStyle(
-      //                       backgroundColor:
-      //                           MaterialStatePropertyAll(Colors.red)),
-      //                   onPressed: () {},
-      //                   child: const Text('Hủy'),
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // );
     });
   }
 }
