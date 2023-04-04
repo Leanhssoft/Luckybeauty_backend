@@ -34,13 +34,13 @@ class NhomDichVuDto {
 
   NhomDichVuDto(
       {this.id,
-      this.maNhomHang,
-      this.tenNhomHang,
-      this.laNhomHangHoa,
-      this.color,
-      this.moTa,
-      this.isDeleted,
-      this.isSelected});
+      this.maNhomHang = '',
+      this.tenNhomHang = '',
+      this.laNhomHangHoa = false,
+      this.color = '',
+      this.moTa = '',
+      this.isDeleted = false,
+      this.isSelected = false});
 
   factory NhomDichVuDto.fromJson(Map<String, dynamic> json) =>
       _$NhomDichVuDtoFromJson(json);

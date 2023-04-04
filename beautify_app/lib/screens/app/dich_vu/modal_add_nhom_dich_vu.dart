@@ -17,13 +17,7 @@ class _ModalAddNhomDichVu extends State<ModalAddNhomDichVu> {
   void setState(fn) {}
   void innitState() {
     isNew = false;
-    groupNew = NhomDichVuDto(
-        id: null,
-        maNhomHang: "",
-        tenNhomHang: "",
-        laNhomHangHoa: true,
-        isDeleted: false,
-        isSelected: false);
+    groupNew = NhomDichVuDto(id: null);
     super.initState();
   }
 
