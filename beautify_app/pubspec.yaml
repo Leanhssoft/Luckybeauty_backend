@@ -57,6 +57,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  modal_bottom_sheet: ^2.1.2
+  syncfusion_flutter_core: ^20.4.54
   #flutter_datetime_picker: ^2.0.0
 dev_dependencies:
   flutter_test:

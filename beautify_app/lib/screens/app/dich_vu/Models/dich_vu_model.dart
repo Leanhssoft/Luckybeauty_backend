@@ -51,7 +51,6 @@ class DonViQuiDoiDto {
 @JsonSerializable(explicitToJson: true)
 class DichVuViewModel extends DonViQuiDoiDto {
   @JsonKey(required: true)
-  @override
   String id;
 
   @JsonKey(required: true)
@@ -109,8 +108,7 @@ class DichVuDataSource extends DataGridSource {
                 DataGridCell<String>(
                     columnName: 'tenHangHoa', value: dataGridRow.tenHangHoa),
                 DataGridCell<String>(
-                    columnName: 'tenNhomHang',
-                    value: dataGridRow.tenNhomHang ?? ''),
+                    columnName: 'tenNhomHang', value: dataGridRow.tenNhomHang),
                 DataGridCell<double>(
                     columnName: 'giaBan', value: dataGridRow.giaBan),
                 DataGridCell<double>(
@@ -135,10 +133,10 @@ class DichVuDataSource extends DataGridSource {
                   dataGridCell.columnName == 'soPhutThucHien')
               ? Alignment.centerRight
               : Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
             dataGridCell.value.toString(),
-            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(overflow: TextOverflow.ellipsis),
           ));
     }).toList());
   }

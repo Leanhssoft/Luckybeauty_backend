@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Data.Entities
@@ -11,7 +12,9 @@ namespace BanHangBeautify.Data.Entities
         [Castle.Components.DictionaryAdapter.Key("Id")]
         override
         public int Id { get; set; }
+        [MaxLength(10)]
         public string MaLoaiHangHoa { get; set; }
+        [MaxLength(256)]
         public string TenLoaiHangHoa { get; set; }
         public int TenantId { get; set; }
         public int TrangThai { get; set; } = 1;
