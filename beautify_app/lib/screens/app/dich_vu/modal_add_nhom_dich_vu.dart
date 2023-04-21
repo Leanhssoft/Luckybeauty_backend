@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:beautify_app/screens/app/dich_vu/Models/nhom_dich_vu_model.dart';
-import 'package:http/http.dart';
+import 'package:beautify_app/screens/app/dich_vu/service/dichVuService.dart';
+
+import 'package:beautify_app/components/CustomTextFormField.dart';
+import 'package:beautify_app/components/CustomTextFormFieldValidate.dart';
 
 @immutable
 class ModalAddNhomDichVu extends StatefulWidget {
-  const ModalAddNhomDichVu({super.key});
+  const ModalAddNhomDichVu({Key? key, required this.saveDichVu})
+      : super(key: key);
+
+  final Function saveDichVu;
+
   @override
   State<ModalAddNhomDichVu> createState() => _ModalAddNhomDichVu();
 }
@@ -24,6 +31,14 @@ class _ModalAddNhomDichVu extends State<ModalAddNhomDichVu> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> saveNhomDichVutoDB(NhomDichVuDto input) async {
+    if (groupNew.id == null) {
+      DichVuService().insertNhomHangHoa(input);
+    } else {
+      DichVuService().updateNhomHangHoa(input);
+    }
   }
 
   @override
@@ -81,14 +96,22 @@ class _ModalAddNhomDichVu extends State<ModalAddNhomDichVu> {
                           Text('Tên dịch vụ', style: TextStyle(fontSize: 13)),
                     ),
                     Expanded(
-                        child: TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Nhập tên dịch vụ',
-                        hintStyle: const TextStyle(fontSize: 13),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(4)),
+                      // child: TextField(
+                      //   decoration: InputDecoration(
+                      //     hintText: 'Nhập tên dịch vụ',
+                      //     hintStyle: const TextStyle(fontSize: 13),
+                      //     border: OutlineInputBorder(
+                      //         borderRadius: BorderRadius.circular(4)),
+                      //   ),
+                      // ),
+                      child: CustomTextFormFieldValidate(
+                        controller: TextEditingController(text: qidg),
+                        textValidate: 'Tên vai trò không được để trống',
+                        onSave: (value) {
+                          widget.onRoleSave({'roleName': value});
+                        },
                       ),
-                    )),
+                    ),
                   ],
                 ),
               ),
@@ -205,7 +228,9 @@ class _ModalAddNhomDichVu extends State<ModalAddNhomDichVu> {
         ),
         actions: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              saveNhomDichVutoDB(groupNew);
+            },
             style: const ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(Colors.blue)),
             child: const Text('Lưu'),
