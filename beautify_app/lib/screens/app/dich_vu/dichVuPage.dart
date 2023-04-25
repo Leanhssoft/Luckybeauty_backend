@@ -248,7 +248,9 @@ class _DichVuPageState extends State<DichVuPage> {
                                 showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
-                                      return ModalAddNhomDichVu();
+                                      return ModalAddNhomDichVu(
+                                        saveDichVu: () => {},
+                                      );
                                     });
                               },
                               icon: Icon(Icons.add),
@@ -320,7 +322,7 @@ class _DichVuPageState extends State<DichVuPage> {
                           allowMultiColumnSorting: true,
                           allowColumnsResizing: true,
                           columnResizeMode: ColumnResizeMode.onResizeEnd,
-                          columnWidthMode: ColumnWidthMode.auto,
+                          columnWidthMode: ColumnWidthMode.fill,
                           onColumnResizeUpdate:
                               (ColumnResizeUpdateDetails details) {
                             setState(() {
@@ -334,8 +336,8 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['maHangHoa']!,
                               columnName: 'maHangHoa',
                               label: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Mã dịch vụ',
@@ -347,8 +349,8 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['tenHangHoa']!,
                               columnName: 'tenHangHoa',
                               label: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Tên dịch vụ',
@@ -360,8 +362,8 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['tenNhomHang']!,
                               columnName: 'tenNhomHang',
                               label: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Nhóm',
@@ -373,8 +375,8 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['giaBan']!,
                               columnName: 'giaBan',
                               label: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Giá bán',
@@ -386,8 +388,8 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['soPhutThucHien']!,
                               columnName: 'soPhutThucHien',
                               label: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Thời gian',
@@ -399,8 +401,8 @@ class _DichVuPageState extends State<DichVuPage> {
                               width: columnWidths['txtTrangThaiHang']!,
                               columnName: 'txtTrangThaiHang',
                               label: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0),
                                 alignment: Alignment.center,
                                 child: Text(
                                   'Trạng thái',

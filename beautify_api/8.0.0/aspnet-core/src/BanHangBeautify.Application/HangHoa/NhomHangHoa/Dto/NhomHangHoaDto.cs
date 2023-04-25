@@ -11,6 +11,8 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa.Dto
     {
         public string MaNhomHang { get; set; }
         public string TenNhomHang { get; set; }
+        public string TenNhomHang_KhongDau { get; set; }
+        public Guid? ID_Parent { get; set; }
         public bool? LaNhomHangHoa { get; set; } = false;
         public string Color { get; set; }
         public string MoTa { get; set; }

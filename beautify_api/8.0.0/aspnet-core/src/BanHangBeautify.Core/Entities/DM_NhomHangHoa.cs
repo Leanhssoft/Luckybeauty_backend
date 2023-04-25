@@ -15,6 +15,7 @@ namespace BanHangBeautify.Entities
         [MaxLength(256)]
         public string TenNhomHang_KhongDau { get; set; }
         public bool? LaNhomHangHoa { get; set; } = false;
+        public Guid? ID_Parent { get; set; } 
         public string Color { get; set; }
         public string MoTa { get; set; }
         public Guid? NguoiTao { get; set; }
