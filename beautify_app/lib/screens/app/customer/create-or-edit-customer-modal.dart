@@ -209,9 +209,7 @@ class _CreateOrEditCustomerModalState extends State<CreateOrEditCustomerModal> {
                                         });
                                       },
                                       onChanged: (value) {
-                                        setState(() {
-                                          customer.tenKhachHang = value;
-                                        });
+                                        customer.tenKhachHang = value;
                                       },
                                     )
                                   ],
@@ -255,9 +253,7 @@ class _CreateOrEditCustomerModalState extends State<CreateOrEditCustomerModal> {
                                         });
                                       },
                                       onChanged: (value) {
-                                        setState(() {
-                                          customer.soDienThoai = value;
-                                        });
+                                        customer.soDienThoai = value;
                                       },
                                     )
                                   ],
@@ -297,9 +293,7 @@ class _CreateOrEditCustomerModalState extends State<CreateOrEditCustomerModal> {
                                         });
                                       },
                                       onChanged: (value) {
-                                        setState(() {
-                                          customer.email = value;
-                                        });
+                                        customer.email = value;
                                       },
                                     )
                                   ],
@@ -331,9 +325,7 @@ class _CreateOrEditCustomerModalState extends State<CreateOrEditCustomerModal> {
                                         });
                                       },
                                       onChanged: (value) {
-                                        setState(() {
-                                          customer.diaChi = value;
-                                        });
+                                        customer.diaChi = value;
                                       },
                                     )
                                   ],
@@ -582,9 +574,7 @@ class _CreateOrEditCustomerModalState extends State<CreateOrEditCustomerModal> {
                                 });
                               },
                               onChanged: (value) {
-                                setState(() {
-                                  customer.moTa = value;
-                                });
+                                customer.moTa = value;
                               },
                             )
                           ],

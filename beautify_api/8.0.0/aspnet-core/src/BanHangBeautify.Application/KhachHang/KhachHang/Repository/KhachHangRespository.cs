@@ -27,7 +27,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
             using (var command = CreateCommand("prc_KhachHang_GetAll"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
-                command.Parameters.Add(new SqlParameter("@TextSearch", input.Keyword ?? ""));
+                command.Parameters.Add(new SqlParameter("@TextSearch", input.keyword ?? ""));
                 command.Parameters.Add(new SqlParameter("@PageSize", input.MaxResultCount));
                 command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
 

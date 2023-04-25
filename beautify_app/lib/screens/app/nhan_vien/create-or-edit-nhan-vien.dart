@@ -26,8 +26,11 @@ class CreateOrEditNhanVienModal extends StatefulWidget {
 class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
   int? _genderGroup;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  List<SuggestChucVu> _suggestChucVu = [];
+  List<SuggestChucVu> _suggestChucVu = [
+    SuggestChucVu(idChucVu: '', tenChucVu: "Không có chức vụ được hiển thị")
+  ];
   late DateTime birthdaySelected = DateTime.now();
+  late DateTime ngayCapCCCD = DateTime.now();
   String selectedChucVu = '';
   final List<Map<String, dynamic>> genderOptions = [
     {"display": "Nam", "value": 1},
@@ -49,6 +52,10 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
         await NhanVienService().getNhanVien(widget.idNhanVien.toString());
     setState(() {
       createNhanVien = nhanVien;
+      selectedGenderValue = nhanVien.gioiTinh ?? 0;
+      selectedChucVu = nhanVien.idChucVu!;
+      birthdaySelected = DateTime.parse(nhanVien.ngaySinh.toString());
+      ngayCapCCCD = DateTime.parse(nhanVien.ngayCap.toString());
     });
   }
 
@@ -271,15 +278,17 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                             value: selectedGenderValue,
                                             onChanged: (value) => {
                                               selectedGenderValue = value ?? 0,
-                                              createNhanVien.gioiTinh =
-                                                  selectedGenderValue
+                                              setState(
+                                                () => createNhanVien.gioiTinh =
+                                                    value,
+                                              )
                                             },
                                             onSaved: (int? newValue) {
                                               setState(() {
                                                 selectedGenderValue =
                                                     newValue ?? 0;
                                                 createNhanVien.gioiTinh =
-                                                    selectedGenderValue;
+                                                    newValue;
                                               });
                                             },
                                             items: genderOptions.map<
@@ -362,12 +371,8 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                                 TextInputType.emailAddress,
                                             hintText: "Nhập địa chỉ email",
                                             controller: TextEditingController(),
-                                            onSaved: (value) {
-                                              setState(() {});
-                                            },
-                                            onChanged: (value) {
-                                              setState(() {});
-                                            },
+                                            onSaved: (value) {},
+                                            onChanged: (value) {},
                                           ),
                                         ],
                                       ),
@@ -516,12 +521,14 @@ class _CreateOrEditNhanVienModalState extends State<CreateOrEditNhanVienModal> {
                                             CustomTextFormField(
                                               leftIcon: const Icon(
                                                   Icons.date_range_outlined),
-                                              controller:
-                                                  TextEditingController(),
+                                              controller: TextEditingController(
+                                                  text:
+                                                      "${ngayCapCCCD.day}/${ngayCapCCCD.month}-${ngayCapCCCD.year}"),
                                               hintText: "Chọn ngày",
                                               onTab: () async {
                                                 final date = await pickDate();
                                                 setState(() {
+                                                  ngayCapCCCD = date!;
                                                   createNhanVien.ngayCap =
                                                       date.toString();
                                                 });

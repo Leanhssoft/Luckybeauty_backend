@@ -259,11 +259,22 @@ class _KhachHangTableState extends State<KhachHangTable> {
   List<DataRow> dataRows(List<KhachHangItemDto> items, BuildContext context,
       Function refreshData) {
     int i = 0;
+
     List<DataRow> dataRow = [];
     for (var item in items) {
       i += 1;
+      DateTime cuocHenGanNhat = DateTime.parse(item.cuocHenGanNhat.toString());
       DataRow row = DataRow(
         cells: [
+          DataCell(
+            Container(
+              alignment: Alignment.center,
+              child: Checkbox(
+                onChanged: (value) {},
+                value: false,
+              ),
+            ),
+          ),
           DataCell(
             Container(
               alignment: Alignment.center,
@@ -312,7 +323,8 @@ class _KhachHangTableState extends State<KhachHangTable> {
           DataCell(
             Container(
               alignment: Alignment.centerLeft,
-              child: Text(item.cuocHenGanNhat.toString()),
+              child: Text(
+                  "${cuocHenGanNhat.day}/${cuocHenGanNhat.month}/${cuocHenGanNhat.year} ${cuocHenGanNhat.hour}:${cuocHenGanNhat.minute}"),
             ),
           ),
           DataCell(
@@ -410,6 +422,14 @@ class _KhachHangTableState extends State<KhachHangTable> {
 
   List<DataColumn> get viewColumn {
     return [
+      DataColumn(
+          label: Center(
+            child: Checkbox(
+              value: false,
+              onChanged: (value) {},
+            ),
+          ),
+          numeric: true),
       const DataColumn(
           label: Center(
             child: Text(

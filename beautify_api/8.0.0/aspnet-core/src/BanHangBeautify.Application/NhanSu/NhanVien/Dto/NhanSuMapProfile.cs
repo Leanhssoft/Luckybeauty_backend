@@ -8,6 +8,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public NhanSuMapProfile()
         {
             CreateMap<NS_NhanVien, NhanSuDto>().ReverseMap();
+            CreateMap<NS_NhanVien, NhanSuItemDto>().ReverseMap();
             CreateMap<NS_NhanVien, CreateOrEditNhanSuDto>().ReverseMap();
         }
     }

@@ -1,11 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:beautify_app/layout.dart';
-import 'package:beautify_app/screens/app/dashboard/dashboard.dart';
+// ignore_for_file: use_build_context_synchronousl, use_build_context_synchronously
 import 'package:flutter/material.dart';
 
 import '../../../../../Service/LoginService.dart';
 
+// ignore: camel_case_types
 class loginMobileLayout extends StatefulWidget {
   const loginMobileLayout({super.key});
 
@@ -43,7 +41,7 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
               ),
               backgroundColor: Color(0xFF64B5F6)),
         );
-        Navigator.popAndPushNamed(context, "/home");
+        Navigator.pushNamed(context, "/home");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

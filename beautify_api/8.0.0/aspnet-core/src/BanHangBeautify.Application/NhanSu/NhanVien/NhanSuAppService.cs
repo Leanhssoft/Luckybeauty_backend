@@ -19,11 +19,13 @@ namespace BanHangBeautify.NhanSu.NhanVien
     public class NhanSuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_NhanVien, Guid> _repository;
-        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository)
+        private readonly IRepository<NS_ChucVu, Guid> _chucVuRepository;
+        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository, IRepository<NS_ChucVu, Guid> chucVuRepository)
         {
             _repository = repository;
+            _chucVuRepository = chucVuRepository;
         }
-        public async Task<NhanSuDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
+        public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
             try
             {
@@ -40,11 +42,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
             }
             catch (Exception)
             {
-                return new NhanSuDto();
+                return new NhanSuItemDto();
             }
         }
         [NonAction]
-        public async Task<NhanSuDto> Create(CreateOrEditNhanSuDto dto)
+        public async Task<NhanSuItemDto> Create(CreateOrEditNhanSuDto dto)
         {
             NS_NhanVien nhanSu = new NS_NhanVien();
             nhanSu.Id = Guid.NewGuid();
@@ -65,12 +67,15 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.CreatorUserId = AbpSession.UserId;
             nhanSu.NgayTao = DateTime.Now;
             nhanSu.IsDeleted = false;
-            var result = ObjectMapper.Map<NhanSuDto>(nhanSu);
+            var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
+            result.NgayVaoLam = nhanSu.CreationTime;
+
+            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu).TenChucVu;
             await _repository.InsertAsync(nhanSu);
             return result;
         }
         [NonAction]
-        public async Task<NhanSuDto> Edit(CreateOrEditNhanSuDto dto, NS_NhanVien nhanSu)
+        public async Task<NhanSuItemDto> Edit(CreateOrEditNhanSuDto dto, NS_NhanVien nhanSu)
         {
             nhanSu.IdChucVu = dto.IdChucVu;
             nhanSu.MaNhanVien = dto.MaNhanVien;
@@ -87,12 +92,14 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.LastModificationTime = DateTime.Now;
             nhanSu.LastModifierUserId = AbpSession.UserId;
             nhanSu.NgaySua = DateTime.Now;
-            var result = ObjectMapper.Map<NhanSuDto>(nhanSu);
+            var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
+            result.NgayVaoLam = nhanSu.CreationTime;
+            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu).TenChucVu;
             await _repository.UpdateAsync(nhanSu);
             return result;
         }
         [HttpPost]
-        public async Task<NhanSuDto> Delete(Guid id)
+        public async Task<NhanSuItemDto> Delete(Guid id)
         {
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (find != null)
@@ -101,13 +108,20 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 find.DeleterUserId = AbpSession.UserId;
                 find.DeletionTime = DateTime.Now;
                 _repository.Update(find);
-                return ObjectMapper.Map<NhanSuDto>(find);
+                return ObjectMapper.Map<NhanSuItemDto>(find);
             }
-            return new NhanSuDto();
+            return new NhanSuItemDto();
         }
         public async Task<NS_NhanVien> GetDetail(Guid id)
         {
             return await _repository.GetAsync(id);
+        }
+        [HttpPost]
+        public async Task<CreateOrEditNhanSuDto> GetNhanSu(Guid id)
+        {
+            var nhanSu= await _repository.GetAsync(id);
+            var result = ObjectMapper.Map<CreateOrEditNhanSuDto>(nhanSu);
+            return result;
         }
         public async Task<PagedResultDto<NhanSuDto>> GetAll(PagedResultRequestDto input, string keyWord)
         {
@@ -132,7 +146,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             result.TotalCount = lstNhanSu.Count;
             if (!string.IsNullOrEmpty(keyWord))
             {
-                lstNhanSu = lstNhanSu.Where(x => x.TenNhanVien.Contains(keyWord) || x.MaNhanVien.Contains(keyWord) || x.NoiCap.Contains(keyWord)).ToList();
+                lstNhanSu = lstNhanSu.Where(x => (x.TenNhanVien.Contains(keyWord) && x.TenNhanVien != null) || (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord)) || (x.NoiCap != null&& x.NoiCap.Contains(keyWord))).ToList();
             }
             input.MaxResultCount = 10;
             input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
@@ -145,7 +159,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 Avatar = x.Avatar,
                 CCCD = x.CCCD,
                 DiaChi = x.DiaChi,
-                TenChucVu = x.NS_ChucVu.TenChucVu,
+                TenChucVu = x.NS_ChucVu==null?"":x.NS_ChucVu.TenChucVu,
                 KieuNgaySinh = x.KieuNgaySinh,
                 NgayCap = x.NgayCap,
                 NgaySinh = x.NgaySinh,

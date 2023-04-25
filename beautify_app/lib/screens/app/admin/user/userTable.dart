@@ -4,6 +4,7 @@ import 'package:beautify_app/screens/app/admin/role/roleService.dart';
 import 'package:beautify_app/screens/app/admin/user/create_or_update_user_modal.dart';
 import 'package:beautify_app/screens/app/admin/user/models/userDto.dart';
 import 'package:beautify_app/screens/app/admin/user/service/userServices.dart';
+import 'package:beautify_app/screens/app/admin/user/userPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -466,7 +467,10 @@ class DeleteUserDialog extends StatelessWidget {
                       backgroundColor: Color.fromARGB(255, 241, 68, 68)),
                 );
                 // ignore: use_build_context_synchronously
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const UserPage()),
+                );
               } else {
                 // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(

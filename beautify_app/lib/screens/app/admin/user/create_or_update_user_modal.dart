@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:beautify_app/screens/app/admin/user/models/userDto.dart';
+import 'package:beautify_app/screens/app/admin/user/userPage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,34 +51,36 @@ class _CreateOrUpdateUserModalState extends State<CreateOrUpdateUserModal>
   List<String> _roleNames = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Future<void> _saveData() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      if (widget.id == null) {
-        CreateUserDto user = CreateUserDto(
-            isActive: true,
-            name: userData['name'],
-            password: userData['password'],
-            surname: userData['surname'],
-            userName: userData['userName'],
-            emailAddress: userData['emailAddress'],
-            roleNames: _roleNames,
-            nhanSuId: userData['nhanSuId']);
-        await UserServices().createUser(user);
-      } else {
-        _user.id = _user.id;
-        _user.userName = _user.userName;
-        _user.surname = userData['surname'];
-        _user.name = userData['name'];
-        _user.emailAddress = userData['emailAddress'];
-        _user.creationTime = _user.creationTime;
-        _user.isActive = true;
-        _user.fullName = userData['name'] + userData['surname'];
-        _user.lastLoginTime = null;
-        _user.roleNames = _roleNames;
-        _user.nhanSuId = _user.nhanSuId;
-        await UserServices().updateUser(_user);
-      }
+    if (widget.id == null) {
+      CreateUserDto user = CreateUserDto(
+          isActive: true,
+          name: userData['name'],
+          password: userData['password'],
+          surname: userData['surname'],
+          userName: userData['userName'],
+          emailAddress: userData['emailAddress'],
+          roleNames: _roleNames,
+          nhanSuId: userData['nhanSuId']);
+      await UserServices().createUser(user);
+    } else {
+      _user.id = _user.id;
+      _user.userName = _user.userName;
+      _user.surname = userData['surname'];
+      _user.name = userData['name'];
+      _user.emailAddress = userData['emailAddress'];
+      _user.creationTime = _user.creationTime;
+      _user.isActive = true;
+      _user.fullName = userData['name'] + userData['surname'];
+      _user.lastLoginTime = null;
+      _user.roleNames = _roleNames;
+      _user.nhanSuId = _user.nhanSuId;
+      await UserServices().updateUser(_user);
     }
+    // ignore: use_build_context_synchronously
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UserPage()),
+    );
   }
 
   late TabController _tabController;
@@ -198,9 +201,10 @@ class _CreateOrUpdateUserModalState extends State<CreateOrUpdateUserModal>
               icon: const Icon(Icons.save),
               label: const Text("Lưu"),
               onPressed: () {
-                // Đóng form
-                _saveData();
-                Navigator.of(context).pop();
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  _saveData();
+                }
               },
             ),
           ],

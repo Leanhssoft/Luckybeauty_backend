@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:beautify_app/screens/app/account/login/LoginScreen.dart';
+import 'package:beautify_app/screens/app/ban-hang/ban-hang-screen.dart';
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'package:get/get.dart';
@@ -46,13 +47,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
   Route<dynamic> _onGenerateRoute(RouteSettings settings) {
-    if (token != null && token!.isNotEmpty) {
+    // if (token != null && token!.isNotEmpty) {
       switch (settings.name) {
         case overviewPageRoute:
           return MaterialPageRoute(builder: (context) => const HomeScreen());
         case nhanVienPageRoute:
           return MaterialPageRoute(
               builder: (context) => const NhanVienScreen());
+        case banHangPageRoute:
+          return MaterialPageRoute(
+              builder: (context) => const BanHangScreen());
         case userPageRoute:
           return MaterialPageRoute(builder: (context) => const UserPage());
         case rolePageRoute:
@@ -75,15 +79,15 @@ class MyApp extends StatelessWidget {
         default:
           return MaterialPageRoute(builder: (context) => const HomeScreen());
       }
-    } else {
-      return MaterialPageRoute(builder: (context) => const AuthenWidget());
-    }
+    // } else {
+    //   return MaterialPageRoute(builder: (context) => const AuthenWidget());
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: isLoggedIn ? overviewPageRoute : authenticationPageRoute,
+      initialRoute: isLoggedIn==true ? overviewPageRoute : authenticationPageRoute,
       routes: {
         rootRoute: (context) => const AuthenWidget(),
         '/home': (context) => const HomeScreen(),

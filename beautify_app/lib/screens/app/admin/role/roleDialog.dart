@@ -1,4 +1,4 @@
-
+import 'package:beautify_app/screens/app/admin/role/rolePage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -25,7 +25,7 @@ class CreateOrUpdateRoleModal extends StatefulWidget {
 }
 
 class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
-    with SingleTickerProviderStateMixin,RestorationMixin {
+    with SingleTickerProviderStateMixin, RestorationMixin {
   RoleDto roleEdit = RoleDto(
       id: 0,
       name: '',
@@ -44,31 +44,32 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
   List<String> _permissionsCurent = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Future<void> _saveData() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-
-      if (widget.id == null) {
-        // Lưu trữ dữ liệu của tab 'Role'
-        CreateRoleDto role = CreateRoleDto(
-            name: roleData['roleName'],
-            displayName: roleData['displayName'],
-            description: roleData['description'],
-            normalizedName: roleData['roleName'].toString().toUpperCase(),
-            grantedPermissions: _permissionsCurent);
-        print(role);
-        await RoleService().createRole(role); // add await here
-      } else {
-        // Lưu trữ dữ liệu của tab 'Role'
-        RoleDto role = RoleDto(
-            id: widget.id ?? 0,
-            name: roleData['roleName'],
-            displayName: roleData['displayName'],
-            description: roleData['description'],
-            normalizedName: roleData['roleName'].toString().toUpperCase(),
-            grantedPermissions: _permissionsCurent);
-        await RoleService().updateRole(role); // add await here
-      }
+    if (widget.id == null) {
+      // Lưu trữ dữ liệu của tab 'Role'
+      CreateRoleDto role = CreateRoleDto(
+          name: roleData['roleName'],
+          displayName: roleData['displayName'],
+          description: roleData['description'],
+          normalizedName: roleData['roleName'].toString().toUpperCase(),
+          grantedPermissions: _permissionsCurent);
+      print(role);
+      await RoleService().createRole(role); // add await here
+    } else {
+      // Lưu trữ dữ liệu của tab 'Role'
+      RoleDto role = RoleDto(
+          id: widget.id ?? 0,
+          name: roleData['roleName'],
+          displayName: roleData['displayName'],
+          description: roleData['description'],
+          normalizedName: roleData['roleName'].toString().toUpperCase(),
+          grantedPermissions: _permissionsCurent);
+      await RoleService().updateRole(role); // add await here
     }
+    // ignore: use_build_context_synchronously
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const RolePage()),
+    );
   }
 
   late TabController _tabController;
@@ -82,6 +83,7 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
     registerForRestoration(tabIndex, 'tab_index');
     _tabController.index = tabIndex.value;
   }
+
   late List<PermissionViewModel> _fullPermissions = [];
   Future<void> getFullPermission() async {
     var lstPermission = await RoleService().getAllPermission();
@@ -118,7 +120,7 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
 
   @override
   void dispose() {
-     _tabController.dispose();
+    _tabController.dispose();
     tabIndex.dispose();
     super.dispose();
   }
@@ -211,9 +213,10 @@ class _CreateOrUpdateRoleModalState extends State<CreateOrUpdateRoleModal>
               icon: const Icon(Icons.save),
               label: const Text("Lưu"),
               onPressed: () {
-                // Đóng form
-                _saveData();
-                Navigator.of(context).pop();
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  _saveData();
+                }
               },
             ),
           ],

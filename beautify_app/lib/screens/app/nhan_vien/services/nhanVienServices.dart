@@ -73,12 +73,10 @@ class NhanVienService {
             'Content-Type': 'application/json; charset=UTF-8',
             'Authorization': 'Bearer $token',
           },
-          body: {
-            {
-              "maxResultCount": model.maxResultCount,
-              "skipCount": model.skipCount
-            }
-          });
+          body: jsonEncode({
+            "maxResultCount": model.maxResultCount,
+            "skipCount": model.skipCount
+          }));
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final items = List<Map<String, dynamic>>.from(data['result']['items']);
@@ -114,14 +112,12 @@ class NhanVienService {
     try {
       final token = await SessionManager().get("accessToken");
       final response = await http.post(
-          Uri.parse('${Constants.BASE_URL}/api/services/app/NhanSu/Delete'),
+          Uri.parse(
+              '${Constants.BASE_URL}/api/services/app/NhanSu/Delete?id=$id'),
           headers: {
             'accept': 'text/plain',
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
-          },
-          body: {
-            'id': id
           });
 
       if (response.statusCode == 200) {

@@ -6,7 +6,7 @@ class CustomPaginator extends StatefulWidget {
   final int pagesVisible;
   final void Function(int) onPageChanged;
 
-  CustomPaginator({
+  const CustomPaginator({super.key, 
     required this.itemCount,
     this.perPage = 10,
     this.pagesVisible = 5,
@@ -68,7 +68,7 @@ class _CustomPaginatorState extends State<CustomPaginator> {
               : () {
                   _changePage(_currentPage - 1);
                 },
-          icon: Icon(Icons.arrow_left),
+          icon:const Icon(Icons.arrow_left),
         ),
         for (final page in pages)
           TextButton(
@@ -96,7 +96,7 @@ class _CustomPaginatorState extends State<CustomPaginator> {
               : () {
                   _changePage(_currentPage + 1);
                 },
-          icon: Icon(Icons.arrow_right),
+          icon:const Icon(Icons.arrow_right),
         ),
       ],
     );
