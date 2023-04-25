@@ -51,13 +51,13 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
             using (var command = CreateCommand("spGetDMHangHoa"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
-                command.Parameters.Add(new SqlParameter("@TextSearch", input.ParamSearch.TextSearch ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? (object)DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@IdNhomHangHoas", input.IdNhomHangHoas ?? (object)DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@Where", DBNull.Value));
-                command.Parameters.Add(new SqlParameter("@CurrentPage", input.ParamSearch.CurrentPage));
-                command.Parameters.Add(new SqlParameter("@PageSize", input.ParamSearch.PageSize));
-                command.Parameters.Add(new SqlParameter("@ColumnSort", input.ParamSearch.ColumnSort));
-                command.Parameters.Add(new SqlParameter("@TypeSort", input.ParamSearch.TypeSort));
+                command.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
+                command.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
+                command.Parameters.Add(new SqlParameter("@ColumnSort", input.ColumnSort));
+                command.Parameters.Add(new SqlParameter("@TypeSort", input.TypeSort));
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
