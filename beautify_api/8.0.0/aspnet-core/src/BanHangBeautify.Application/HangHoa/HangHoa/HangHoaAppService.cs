@@ -150,9 +150,9 @@ namespace BanHangBeautify.HangHoa.HangHoa
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
         }
-        public async Task<DM_HangHoa> getDetail(Guid id)
+        public async Task<HangHoaDto> GetDetailProduct(Guid idDonViQuyDoi)
         {
-            return await _dmHangHoa.FirstOrDefaultAsync(x => x.Id == id);
+            return await _repository.GetDetailProduct(idDonViQuyDoi, AbpSession.TenantId ?? 1);
         }
         public async Task<PagedResultDto<DM_HangHoa>> GetAll(HangHoaPagedResultRequestDto input)
         {
