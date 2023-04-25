@@ -33,6 +33,12 @@ namespace BanHangBeautify.KhachHang.KhachHang
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
             return result;
         }
+        public async Task<CreateOrEditKhachHangDto> GetKhachHang(Guid id)
+        {
+            var KhachHang = await _repository.GetAsync(id);
+            var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
+            return result;
+        }
         public async Task<KhachHangDto> EditKhachHang(CreateOrEditKhachHangDto dto)
         {
             KhachHangDto result = new KhachHangDto();
@@ -72,12 +78,12 @@ namespace BanHangBeautify.KhachHang.KhachHang
             PagedResultDto<DM_KhachHang> ListResultDto = new PagedResultDto<DM_KhachHang>();
             var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             ListResultDto.TotalCount = lstData.Count;
-            if (!string.IsNullOrEmpty(input.Keyword))
+            if (!string.IsNullOrEmpty(input.keyword))
             {
                 lstData = lstData.Where(
-                    x => x.TenKhachHang.Contains(input.Keyword) || x.MaKhachHang.Contains(input.Keyword) ||
-                    x.MaSoThue.Contains(input.Keyword) || x.SoDienThoai.Contains(input.Keyword) ||
-                    x.DiaChi.Contains(input.Keyword) || x.Email.Contains(input.Keyword)
+                    x => x.TenKhachHang.Contains(input.keyword) || x.MaKhachHang.Contains(input.keyword) ||
+                    x.MaSoThue.Contains(input.keyword) || x.SoDienThoai.Contains(input.keyword) ||
+                    x.DiaChi.Contains(input.keyword) || x.Email.Contains(input.keyword)
                    ).ToList();
             }
             if (input.SkipCount > 0)
@@ -96,17 +102,20 @@ namespace BanHangBeautify.KhachHang.KhachHang
             var lstData = await _repository.GetAll().Include(x=>x.NguonKhach).Include(x=>x.NhomKhach)
                 .Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             ListResultDto.TotalCount = lstData.Count;
-            if (!string.IsNullOrEmpty(input.Keyword))
+            if (!string.IsNullOrEmpty(input.keyword))
             {
                 lstData = lstData.Where(
-                    x => x.TenKhachHang.Contains(input.Keyword) || x.MaKhachHang.Contains(input.Keyword) ||
-                    x.MaSoThue.Contains(input.Keyword) || x.SoDienThoai.Contains(input.Keyword) ||
-                    x.DiaChi.Contains(input.Keyword) || x.Email.Contains(input.Keyword)
+                    x => (x.TenKhachHang!=null && x.TenKhachHang.Contains(input.keyword)) ||
+                    (x.MaKhachHang!=null&& x.MaKhachHang.Contains(input.keyword))||
+                    (x.MaSoThue!=null&&x.MaSoThue.Contains(input.keyword)) || 
+                    (x.SoDienThoai!=null&&x.SoDienThoai.Contains(input.keyword)) ||
+                    (x.DiaChi!=null&&x.DiaChi.Contains(input.keyword)) || 
+                    (x.Email != null && x.Email.Contains(input.keyword))
                    ).ToList();
             }
             if (input.SkipCount > 0)
             {
-                input.SkipCount = input.SkipCount * 10;
+                input.SkipCount = (input.SkipCount-1 )<=0?0 : (input.SkipCount-1)* input.MaxResultCount;
             }
 
             lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
@@ -119,8 +128,8 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 GioiTinh = x.GioiTinhNam==null? "Khác": (x.GioiTinhNam==true?"Nam":"Nữ"),
                 SoDienThoai = x.SoDienThoai,
                 NhanVienPhuTrach = "",
-                TenNguonKhach = x.NguonKhach.TenNguon,
-                TenNhomKhach = x.NhomKhach.TenNhomKhach,
+                TenNguonKhach = x.NguonKhach==null?"":x.NguonKhach.TenNguon,
+                TenNhomKhach = x.NhomKhach==null?"":x.NhomKhach.TenNhomKhach,
                 TongChiTieu = 0,
                 TongTichDiem = x.TongTichDiem
             }).ToList();

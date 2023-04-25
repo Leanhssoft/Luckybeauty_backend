@@ -4,6 +4,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
 {
     public class PagedKhachHangResultRequestDto : PagedResultRequestDto
     {
-        public string Keyword { get; set; }
+        public string keyword { get; set; }
     }
 }
