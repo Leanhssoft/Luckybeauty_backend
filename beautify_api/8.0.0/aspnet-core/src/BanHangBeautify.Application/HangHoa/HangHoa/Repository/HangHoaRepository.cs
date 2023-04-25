@@ -26,6 +26,26 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
         {
         }
 
+        public async Task<HangHoaDto> GetDetailProduct(Guid idDonViQuyDoi, int? tenantId)
+        {
+            using var command = CreateCommand("GetDetailProduct");
+            command.Parameters.Add(new SqlParameter("@IdDonViQuyDoi", idDonViQuyDoi));
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                var ddd = ds.Tables;
+
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var data = ObjectHelper.FillCollection<HangHoaDto>(ds.Tables[0]).FirstOrDefault();
+                    return data;
+                }
+            }
+            return new HangHoaDto();
+        }
+
         public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input, int? tenantId)
         {
             using (var command = CreateCommand("spGetDMHangHoa"))
