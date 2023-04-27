@@ -63,15 +63,22 @@ namespace BanHangBeautify.HangHoa.HangHoa
 
             if (dto.DonViQuiDois != null && dto.DonViQuiDois.Count > 0)
             {
-                MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
-                var max = objMax.MaxVal;
+                float? max = 1;
                 foreach (var item in dto.DonViQuiDois)
                 {
+                    string maHangHoa = item.MaHangHoa;
+                    if (string.IsNullOrEmpty(maHangHoa))
+                    {
+                        MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                        max = objMax.MaxVal;
+                        maHangHoa = string.Concat(objMax.FirstStr, max);
+                    }
+
                     DM_DonViQuiDoi dvt = ObjectMapper.Map<DM_DonViQuiDoi>(item);
                     dvt.Id = Guid.NewGuid();
                     dvt.TenantId = hangHoa.TenantId;
                     dvt.IdHangHoa = productId;
-                    dvt.MaHangHoa = string.Concat(objMax.FirstStr, max);
+                    dvt.MaHangHoa = maHangHoa;
                     lstDVT.Add(dvt);
                     max += 1;
                 }
@@ -112,9 +119,10 @@ namespace BanHangBeautify.HangHoa.HangHoa
                              select idOld).ToList();
             _dmDonViQuiDoi.GetAllList(x => idDeletes.Contains(x.Id)).ForEach(x => x.IsDeleted = true);
             #endregion
-
+            hangHoa.IdNhomHangHoa = dto.IdNhomHangHoa;
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
+            hangHoa.TenHangHoa_KhongDau = dto.TenHangHoa_KhongDau;
             hangHoa.TrangThai = dto.TrangThai;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
@@ -135,9 +143,14 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 else
                 {
                     // insert
-                    MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                    string maHangHoa = item.MaHangHoa;
+                    if (string.IsNullOrEmpty(maHangHoa))
+                    {
+                        MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                        maHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal);
+                    }
                     DM_DonViQuiDoi dvtNew = ObjectMapper.Map<DM_DonViQuiDoi>(item);
-                    dvtNew.MaHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal);
+                    dvtNew.MaHangHoa = maHangHoa;
                     dvtNew.IdHangHoa = hangHoa.Id;
                     dvtNew.TenantId = hangHoa.TenantId;
                     dvtNew.LaDonViTinhChuan = item.LaDonViTinhChuan;
@@ -193,6 +206,28 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
+        }
+
+        [HttpGet]
+        public async Task<bool> CheckExistsMaHangHoa(string mahanghoa, Guid? id = null)
+        {
+            if (id != null && id != Guid.Empty)
+            {
+                var lst = await _dmDonViQuiDoi.GetAllListAsync(x => x.Id != id && x.MaHangHoa.ToUpper() == mahanghoa.Trim().ToUpper());
+                if (lst.Count > 0)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                var lst = await _dmDonViQuiDoi.GetAllListAsync(x => x.MaHangHoa.ToUpper() == mahanghoa.Trim().ToUpper());
+                if (lst.Count > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
