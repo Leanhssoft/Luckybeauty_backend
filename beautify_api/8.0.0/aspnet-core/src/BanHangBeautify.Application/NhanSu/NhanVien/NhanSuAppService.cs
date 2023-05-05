@@ -52,7 +52,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
             nhanSu.MaNhanVien = dto.MaNhanVien;
-            nhanSu.TenNhanVien = dto.TenNhanVien;
+            nhanSu.Ho = dto.Ho;
+            nhanSu.TenLot = dto.TenLot;
+            nhanSu.TenNhanVien = dto.Ho + " " + dto.TenLot;
             nhanSu.CCCD = dto.CCCD;
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;
@@ -79,7 +81,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
         {
             nhanSu.IdChucVu = dto.IdChucVu;
             nhanSu.MaNhanVien = dto.MaNhanVien;
-            nhanSu.TenNhanVien = dto.TenNhanVien;
+            nhanSu.Ho = dto.Ho;
+            nhanSu.TenLot = dto.TenLot;
+            nhanSu.TenNhanVien = dto.Ho + " " + dto.TenLot;
             nhanSu.CCCD = dto.CCCD;
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;
