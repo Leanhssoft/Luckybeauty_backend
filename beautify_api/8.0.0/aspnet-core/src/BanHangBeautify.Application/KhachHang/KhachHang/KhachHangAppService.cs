@@ -3,22 +3,29 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
+using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
+using BanHangBeautify.KhachHang.KhachHang.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.KhachHang
 {
-    [AbpAuthorize(PermissionNames.Pages_KhachHang)]
+    //[AbpAuthorize(PermissionNames.Pages_KhachHang)]
     public class KhachHangAppService : SPAAppServiceBase
     {
         private IRepository<DM_KhachHang, Guid> _repository;
-        public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository)
+        private readonly IKhachHangRespository _customerRepo;
+
+        public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
+              IKhachHangRespository customerRepo)
         {
             _repository = repository;
+            _customerRepo = customerRepo;
         }
         public async Task<KhachHangDto> CreateKhachHang(CreateOrEditKhachHangDto dto)
         {
@@ -138,6 +145,18 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }).ToList();
             ListResultDto.Items = items;
             return ListResultDto;
+        }
+
+        public async Task<List<KhachHangView>> JqAutoCustomer(PagedKhachHangResultRequestDto input)
+        {
+            try
+            {
+                return await _customerRepo.JqAutoCustomer(input, AbpSession.TenantId ?? 1);
+            }
+            catch (Exception)
+            {
+                return new List<KhachHangView>();
+            }
         }
     }
 }

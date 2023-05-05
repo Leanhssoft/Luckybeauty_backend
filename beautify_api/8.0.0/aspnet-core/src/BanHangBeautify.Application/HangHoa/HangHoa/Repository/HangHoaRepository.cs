@@ -89,7 +89,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
             return code;
         }
 
-        public async Task<MaxCodeDto> SpGetProductCode(int? tenantId = 1, int? loaiHangHoa = 2)
+        public async Task<MaxCodeDto> SpGetProductCode(int? loaiHangHoa = 2, int? tenantId = 1)
         {
             using var command = CreateCommand("spGetProductCode");
             command.Parameters.Add(new SqlParameter("@TenantId", tenantId));

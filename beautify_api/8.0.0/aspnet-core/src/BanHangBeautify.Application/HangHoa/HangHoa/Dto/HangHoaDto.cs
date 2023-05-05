@@ -13,6 +13,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
         public string MaHangHoa { get; set; }
         public string TenHangHoa { get; set; }
         public string TenNhomHang { get; set; }
+        public float? SoPhutThucHien { get; set; }
         public int TrangThai { get; set; }
         public int IdLoaiHangHoa { get; set; }
         public float? GiaBan { get; set; }

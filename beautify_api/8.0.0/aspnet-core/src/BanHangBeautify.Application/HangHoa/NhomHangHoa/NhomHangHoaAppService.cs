@@ -35,10 +35,59 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
         public async Task<PagedResultDto<NhomHangHoaDto>> GetNhomDichVu()
         {
             PagedResultDto<NhomHangHoaDto> result = new();
-            var lst =  _dmNhomHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.TenNhomHang);
+            var lst = _dmNhomHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.TenNhomHang);
 
             result.Items = ObjectMapper.Map<List<NhomHangHoaDto>>(lst);
             return result;
+        }
+
+        public async Task<PagedResultDto<NhomHangHoaDto>> GetTreeNhomHangHoa()
+        {
+            PagedResultDto<NhomHangHoaDto> result = new();
+            var data = _dmNhomHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && !x.IsDeleted)
+                        .Select(x =>
+                        new NhomHangHoaDto
+                        {
+                            Id = x.Id,
+                            IdParent = x.IdParent,
+                            MaNhomHang = x.MaNhomHang,
+                            TenNhomHang = x.TenNhomHang,
+                            LaNhomHangHoa = x.LaNhomHangHoa,
+                            MoTa= x.MoTa,
+                            Color=x.Color,
+                            IsDeleted = x.IsDeleted
+                        }).ToList();
+            var lst = data.Where(x => x.IdParent == null)
+                .Select(o => new NhomHangHoaDto
+                {
+                    Id = o.Id,
+                    IdParent = o.IdParent,
+                    MaNhomHang = o.MaNhomHang,
+                    TenNhomHang = o.TenNhomHang,
+                    LaNhomHangHoa = o.LaNhomHangHoa,
+                    MoTa = o.MoTa,
+                    Color = o.Color,
+                    children = GetChildren(data, o.Id)
+                });
+
+            result.Items = ObjectMapper.Map<List<NhomHangHoaDto>>(lst);
+            return result;
+        }
+
+        public List<NhomHangHoaDto> GetChildren(List<NhomHangHoaDto> data, Guid? idParent)
+        {
+            return data.Where(o => o.IdParent.Equals(idParent))
+                .Select(o =>
+                         new NhomHangHoaDto
+                         {
+                             Id = o.Id,
+                             IdParent = o.IdParent,
+                             MaNhomHang = o.MaNhomHang,
+                             TenNhomHang = o.TenNhomHang,
+                             Color = o.Color,
+                             MoTa = o.MoTa,
+                             children = GetChildren(data, o.Id)
+                         }).ToList();
         }
         /// <summary>
         /// 
@@ -76,6 +125,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 }
                 objUp.MaNhomHang = dto.MaNhomHang;
                 objUp.TenNhomHang = dto.TenNhomHang;
+                objUp.TenNhomHang_KhongDau = dto.TenNhomHang_KhongDau;
                 objUp.LaNhomHangHoa = dto.LaNhomHangHoa;
                 objUp.Color = dto.Color;
                 objUp.MoTa = dto.MoTa;

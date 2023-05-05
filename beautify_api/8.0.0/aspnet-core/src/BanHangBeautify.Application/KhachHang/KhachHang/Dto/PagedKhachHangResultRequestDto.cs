@@ -5,5 +5,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
     public class PagedKhachHangResultRequestDto : PagedResultRequestDto
     {
         public string keyword { get; set; }
+        public int? LoaiDoiTuong { get; set; }
     }
 }
