@@ -13,5 +13,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
     public interface IKhachHangRespository
     {
         Task<PagedResultDto<KhachHangView>> GetAllKhachHang(PagedKhachHangResultRequestDto input,int? tenantId);
+        Task<List<KhachHangView>> JqAutoCustomer(PagedKhachHangResultRequestDto input,int? tenantId);
     }
 }

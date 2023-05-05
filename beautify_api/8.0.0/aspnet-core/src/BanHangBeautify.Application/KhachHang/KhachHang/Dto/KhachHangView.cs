@@ -9,6 +9,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
     public class KhachHangView
     {
         public Guid Id { get; set; }
+        public string MaKhachHang { get; set; }
         public string TenKhachHang { get; set; }
         public string SoDienThoai { get; set; }
         public string TenNhomKhach { get; set; }
