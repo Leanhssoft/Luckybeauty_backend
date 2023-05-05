@@ -8,6 +8,10 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
     {
         [MaxLength(50)]
         public string MaNhanVien { get; set; }
+        [MaxLength(20)]
+        public string Ho { set; get; }
+        [MaxLength(50)]
+        public string TenLot { set; get; }
         [MaxLength(256)]
         public string TenNhanVien { get; set; }
         [MaxLength(2000)]

@@ -81,9 +81,12 @@ namespace BanHangBeautify.KhachHang.KhachHang
             if (!string.IsNullOrEmpty(input.keyword))
             {
                 lstData = lstData.Where(
-                    x => x.TenKhachHang.Contains(input.keyword) || x.MaKhachHang.Contains(input.keyword) ||
-                    x.MaSoThue.Contains(input.keyword) || x.SoDienThoai.Contains(input.keyword) ||
-                    x.DiaChi.Contains(input.keyword) || x.Email.Contains(input.keyword)
+                    x => (x.TenKhachHang!=null && x.TenKhachHang.Contains(input.keyword)) ||
+                    (x.MaKhachHang!=null&& x.MaKhachHang.Contains(input.keyword)) ||
+                    (x.MaSoThue != null && x.MaSoThue.Contains(input.keyword)) || 
+                    (x.SoDienThoai != null && x.SoDienThoai.Contains(input.keyword)) ||
+                    (x.DiaChi != null && x.DiaChi.Contains(input.keyword)) || 
+                    (x.Email != null && x.Email.Contains(input.keyword))
                    ).ToList();
             }
             if (input.SkipCount > 0)
