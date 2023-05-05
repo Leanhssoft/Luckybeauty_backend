@@ -35,7 +35,6 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
         public async Task<PagedResultDto<NhomHangHoaDto>> GetNhomDichVu()
         {
             PagedResultDto<NhomHangHoaDto> result = new();
-            //List<DM_NhomHangHoa> lst = await _dmNhomHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.TenNhomHang).ToListAsync();
             var lst =  _dmNhomHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.TenNhomHang);
 
             result.Items = ObjectMapper.Map<List<NhomHangHoaDto>>(lst);

@@ -159,15 +159,15 @@ namespace BanHangBeautify.HangHoa.HangHoa
             PagedResultDto<DM_HangHoa> result = new PagedResultDto<DM_HangHoa>();
             var lstHangHoa = await _dmHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstHangHoa.Count();
-            if (!string.IsNullOrEmpty(input.ParamSearch.TextSearch))
+            if (!string.IsNullOrEmpty(input.TextSearch))
             {
-                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.ParamSearch.TextSearch) || x.TenHangHoa.Contains(input.ParamSearch.TextSearch)).ToList();
+                lstHangHoa = lstHangHoa.Where(x => x.TenHangHoa.Contains(input.TextSearch) || x.TenHangHoa.Contains(input.TextSearch)).ToList();
             }
-            if (input.ParamSearch.CurrentPage > 0)
+            if (input.CurrentPage > 0)
             {
-                input.ParamSearch.CurrentPage *= 10;
+                input.CurrentPage *= 10;
             }
-            result.Items = lstHangHoa.Skip(input.ParamSearch.CurrentPage ?? 0).Take(input.ParamSearch.CurrentPage ?? 10).ToList();
+            result.Items = lstHangHoa.Skip(input.CurrentPage ?? 0).Take(input.CurrentPage ?? 10).ToList();
             return result;
         }
         [HttpPost]
