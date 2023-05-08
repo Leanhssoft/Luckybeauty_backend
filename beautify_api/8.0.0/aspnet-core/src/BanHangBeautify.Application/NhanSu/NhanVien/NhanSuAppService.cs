@@ -146,32 +146,47 @@ namespace BanHangBeautify.NhanSu.NhanVien
         public async Task<PagedResultDto<NhanSuItemDto>> Search(PagedResultRequestDto input, string keyWord)
         {
             PagedResultDto<NhanSuItemDto> result = new PagedResultDto<NhanSuItemDto>();
-            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
-            result.TotalCount = lstNhanSu.Count;
-            if (!string.IsNullOrEmpty(keyWord))
+            try
             {
-                lstNhanSu = lstNhanSu.Where(x => (x.TenNhanVien.Contains(keyWord) && x.TenNhanVien != null) || (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord)) || (x.NoiCap != null&& x.NoiCap.Contains(keyWord))).ToList();
+                if (!string.IsNullOrEmpty(keyWord))
+                {
+                    keyWord = "";
+                }
+                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false &&
+                                           (x.TenNhanVien.Contains(keyWord) && x.TenNhanVien != null) ||
+                                           (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord)) ||
+                                           (x.NoiCap != null && x.NoiCap.Contains(keyWord))).
+                                           OrderByDescending(x => x.CreationTime).
+                                           ToListAsync();
+                result.TotalCount = lstNhanSu.Count;
+                input.MaxResultCount = 10;
+                input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
+                var items = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).Select(x => new NhanSuItemDto()
+                {
+                    Id = x.Id,
+                    MaNhanVien = x.MaNhanVien,
+                    TenNhanVien = x.TenNhanVien,
+                    GioiTinh = x.GioiTinh,
+                    Avatar = x.Avatar,
+                    CCCD = x.CCCD,
+                    DiaChi = x.DiaChi,
+                    TenChucVu = x.NS_ChucVu == null ? "" : x.NS_ChucVu.TenChucVu,
+                    KieuNgaySinh = x.KieuNgaySinh,
+                    NgayCap = x.NgayCap,
+                    NgaySinh = x.NgaySinh,
+                    NgayVaoLam = x.CreationTime,
+                    NoiCap = x.NoiCap,
+                    SoDienThoai = x.SoDienThoai
+                }).ToList();
+                result.Items = items;
             }
-            input.MaxResultCount = 10;
-            input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
-            var items = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).Select(x => new NhanSuItemDto()
+            catch (Exception ex)
             {
-                Id = x.Id,
-                MaNhanVien = x.MaNhanVien,
-                TenNhanVien = x.TenNhanVien,
-                GioiTinh = x.GioiTinh,
-                Avatar = x.Avatar,
-                CCCD = x.CCCD,
-                DiaChi = x.DiaChi,
-                TenChucVu = x.NS_ChucVu==null?"":x.NS_ChucVu.TenChucVu,
-                KieuNgaySinh = x.KieuNgaySinh,
-                NgayCap = x.NgayCap,
-                NgaySinh = x.NgaySinh,
-                NgayVaoLam = x.CreationTime,
-                NoiCap = x.NoiCap,
-                SoDienThoai = x.SoDienThoai
-            }).ToList();
-            result.Items = items;
+                result.TotalCount= 0;
+                result.Items = null;
+            }
+            
+           
             return result;
         }
     }
