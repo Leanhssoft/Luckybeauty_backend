@@ -129,6 +129,49 @@ BEGIN
 	left join DM_NhomHangHoa nhom on hh.IdNhomHangHoa= nhom.Id
 	where qd.Id = @IdDonViQuyDoi 
 END");
+
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[spJqAutoCustomer]");
+            migrationBuilder.Sql(@"
+CREATE PROCEDURE [dbo].[spJqAutoCustomer]
+	@TenantId int= 1,
+	@LoaiDoiTuong int= 1,
+	@TextSearch nvarchar(max)='',
+	@CurrentPage int=0,
+	@PageSize int = 50
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	if ISNULL(@TextSearch,'')!=''
+		set @TextSearch = CONCAT(N'%', @TextSearch, '%')
+	else set @TextSearch='%%'
+
+	;with data_cte
+	as(
+	select  kh.Id, kh.TenantId, kh.MaKhachHang, kh.TenKhachHang, kh.SoDienThoai,
+		 kh.TongTichDiem,
+		 kh.GioiTinhNam,
+		nhom.TenNhomKhach
+	from DM_KhachHang kh
+	left join DM_NhomKhachHang nhom on kh.IdNhomKhach= nhom.Id	
+	where kh.TrangThai in (0,1)
+	and kh.TenantId= @TenantId
+	and IdLoaiKhach= @LoaiDoiTuong
+	and (SoDienThoai like @TextSearch or TenKhachHang like @TextSearch COLLATE Vietnamese_CI_AI 
+		or TenKhachHang_KhongDau like @TextSearch
+		or MaKhachHang like @TextSearch
+		or TenKhachHang like @TextSearch
+		or TenKhachHang_KhongDau like @TextSearch COLLATE Vietnamese_CI_AI 	
+		or MaKhachHang like @TextSearch COLLATE Vietnamese_CI_AI)
+	)
+	select *
+	from data_cte
+	order by MaKhachHang
+	OFFSET (@CurrentPage* @PageSize) ROWS
+	FETCH NEXT @PageSize ROWS ONLY
+    
+END");
         }
 
         /// <inheritdoc />
@@ -138,6 +181,7 @@ END");
                 name: "IdParent",
                 table: "DM_NhomHangHoa",
                 newName: "ID_Parent");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[spJqAutoCustomer]");
         }
     }
 }

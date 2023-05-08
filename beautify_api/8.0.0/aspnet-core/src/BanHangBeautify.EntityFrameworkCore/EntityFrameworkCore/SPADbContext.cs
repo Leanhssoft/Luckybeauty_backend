@@ -35,7 +35,20 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<NS_NhanVien_TimeOff> NS_NhanVien_TimeOff { set; get; }
         public DbSet<DM_ChiNhanh> DM_ChiNhanh { set; get; }
         public DbSet<HT_CongTy> HT_CongTy { get; set; }
-        public DbSet<DM_LoaiChungTu> DM_LoaiChungTu { get; set; }
+        public DbSet<DM_LoaiChungTu> DM_LoaiChungTu { get; set; }  
+        
+        public DbSet<BH_HoaDon> BH_HoaDon { set; get; }
+        public DbSet<BH_HoaDon_ChiTiet> BH_HoaDon_ChiTiet { set; get; }
+        public DbSet<BH_HoaDon_Anh> BH_HoaDon_Anh { set; get; }
+        public DbSet<DM_Phong> DM_Phong { get; set; }
+        public DbSet<DM_ViTriPhong> DM_ViTriPhong { get; set; } 
+        public DbSet<QuyHoaDon> QuyHoaDon { set; get; }
+        public DbSet<QuyHoaDon_ChiTiet> QuyHoaDon_ChiTiet { set; get; }
+        public DbSet<DM_NganHang> DM_NganHang { get; set; }
+        public DbSet<DM_TaiKhoanNganHang> DM_TaiKhoanNganHang { get; set; } 
+        public DbSet<DM_KhoanThuChi> DM_KhoanThuChi { set; get; }
+        public DbSet<BH_NhanVienThucHien> BH_NhanVienThucHien { get; set; }
+        public DbSet<KH_CheckIn> KH_CheckIn { get; set; }
 
         /* Define a DbSet for each entity of the application */
 
