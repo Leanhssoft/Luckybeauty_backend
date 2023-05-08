@@ -63,7 +63,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AbpEditions");
+                    b.ToTable("AbpEditions", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Application.Features.FeatureSetting", b =>
@@ -99,7 +99,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AbpFeatures");
+                    b.ToTable("AbpFeatures", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("FeatureSetting");
 
@@ -179,7 +179,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("AbpAuditLogs");
+                    b.ToTable("AbpAuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.PermissionSetting", b =>
@@ -215,7 +215,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "Name");
 
-                    b.ToTable("AbpPermissions");
+                    b.ToTable("AbpPermissions", (string)null);
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("PermissionSetting");
 
@@ -255,7 +255,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "ClaimType");
 
-                    b.ToTable("AbpRoleClaims");
+                    b.ToTable("AbpRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserAccount", b =>
@@ -316,7 +316,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "UserName");
 
-                    b.ToTable("AbpUserAccounts");
+                    b.ToTable("AbpUserAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserClaim", b =>
@@ -352,7 +352,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "ClaimType");
 
-                    b.ToTable("AbpUserClaims");
+                    b.ToTable("AbpUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserLogin", b =>
@@ -391,7 +391,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "LoginProvider", "ProviderKey");
 
-                    b.ToTable("AbpUserLogins");
+                    b.ToTable("AbpUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserLoginAttempt", b =>
@@ -440,7 +440,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenancyName", "UserNameOrEmailAddress", "Result");
 
-                    b.ToTable("AbpUserLoginAttempts");
+                    b.ToTable("AbpUserLoginAttempts", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserOrganizationUnit", b =>
@@ -475,7 +475,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("AbpUserOrganizationUnits");
+                    b.ToTable("AbpUserOrganizationUnits", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserRole", b =>
@@ -509,7 +509,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("AbpUserRoles");
+                    b.ToTable("AbpUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Authorization.Users.UserToken", b =>
@@ -547,7 +547,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("AbpUserTokens");
+                    b.ToTable("AbpUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Abp.BackgroundJobs.BackgroundJobInfo", b =>
@@ -593,7 +593,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IsAbandoned", "NextTryTime");
 
-                    b.ToTable("AbpBackgroundJobs");
+                    b.ToTable("AbpBackgroundJobs", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Configuration.Setting", b =>
@@ -637,7 +637,7 @@ namespace BanHangBeautify.Migrations
                     b.HasIndex("TenantId", "Name", "UserId")
                         .IsUnique();
 
-                    b.ToTable("AbpSettings");
+                    b.ToTable("AbpSettings", (string)null);
                 });
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicEntityProperty", b =>
@@ -666,7 +666,7 @@ namespace BanHangBeautify.Migrations
                         .IsUnique()
                         .HasFilter("[EntityFullName] IS NOT NULL AND [TenantId] IS NOT NULL");
 
-                    b.ToTable("AbpDynamicEntityProperties");
+                    b.ToTable("AbpDynamicEntityProperties", (string)null);
                 });
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicEntityPropertyValue", b =>
@@ -694,7 +694,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("DynamicEntityPropertyId");
 
-                    b.ToTable("AbpDynamicEntityPropertyValues");
+                    b.ToTable("AbpDynamicEntityPropertyValues", (string)null);
                 });
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicProperty", b =>
@@ -727,7 +727,7 @@ namespace BanHangBeautify.Migrations
                         .IsUnique()
                         .HasFilter("[PropertyName] IS NOT NULL AND [TenantId] IS NOT NULL");
 
-                    b.ToTable("AbpDynamicProperties");
+                    b.ToTable("AbpDynamicProperties", (string)null);
                 });
 
             modelBuilder.Entity("Abp.DynamicEntityProperties.DynamicPropertyValue", b =>
@@ -752,7 +752,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("DynamicPropertyId");
 
-                    b.ToTable("AbpDynamicPropertyValues");
+                    b.ToTable("AbpDynamicPropertyValues", (string)null);
                 });
 
             modelBuilder.Entity("Abp.EntityHistory.EntityChange", b =>
@@ -789,7 +789,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("EntityTypeFullName", "EntityId");
 
-                    b.ToTable("AbpEntityChanges");
+                    b.ToTable("AbpEntityChanges", (string)null);
                 });
 
             modelBuilder.Entity("Abp.EntityHistory.EntityChangeSet", b =>
@@ -842,7 +842,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "UserId");
 
-                    b.ToTable("AbpEntityChangeSets");
+                    b.ToTable("AbpEntityChangeSets", (string)null);
                 });
 
             modelBuilder.Entity("Abp.EntityHistory.EntityPropertyChange", b =>
@@ -885,7 +885,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("EntityChangeId");
 
-                    b.ToTable("AbpEntityPropertyChanges");
+                    b.ToTable("AbpEntityPropertyChanges", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Localization.ApplicationLanguage", b =>
@@ -941,7 +941,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "Name");
 
-                    b.ToTable("AbpLanguages");
+                    b.ToTable("AbpLanguages", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Localization.ApplicationLanguageText", b =>
@@ -991,7 +991,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "Source", "LanguageName", "Key");
 
-                    b.ToTable("AbpLanguageTexts");
+                    b.ToTable("AbpLanguageTexts", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Notifications.NotificationInfo", b =>
@@ -1052,7 +1052,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AbpNotifications");
+                    b.ToTable("AbpNotifications", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Notifications.NotificationSubscriptionInfo", b =>
@@ -1095,7 +1095,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "NotificationName", "EntityTypeName", "EntityId", "UserId");
 
-                    b.ToTable("AbpNotificationSubscriptions");
+                    b.ToTable("AbpNotificationSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Notifications.TenantNotificationInfo", b =>
@@ -1145,7 +1145,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("AbpTenantNotifications");
+                    b.ToTable("AbpTenantNotifications", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Notifications.UserNotificationInfo", b =>
@@ -1177,7 +1177,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("UserId", "State", "CreationTime");
 
-                    b.ToTable("AbpUserNotifications");
+                    b.ToTable("AbpUserNotifications", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Organizations.OrganizationUnit", b =>
@@ -1231,7 +1231,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "Code");
 
-                    b.ToTable("AbpOrganizationUnits");
+                    b.ToTable("AbpOrganizationUnits", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Organizations.OrganizationUnitRole", b =>
@@ -1266,7 +1266,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "RoleId");
 
-                    b.ToTable("AbpOrganizationUnitRoles");
+                    b.ToTable("AbpOrganizationUnitRoles", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Webhooks.WebhookEvent", b =>
@@ -1296,7 +1296,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AbpWebhookEvents");
+                    b.ToTable("AbpWebhookEvents", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Webhooks.WebhookSendAttempt", b =>
@@ -1330,7 +1330,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("WebhookEventId");
 
-                    b.ToTable("AbpWebhookSendAttempts");
+                    b.ToTable("AbpWebhookSendAttempts", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Webhooks.WebhookSubscriptionInfo", b =>
@@ -1367,7 +1367,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AbpWebhookSubscriptions");
+                    b.ToTable("AbpWebhookSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Authorization.Roles.Role", b =>
@@ -1442,7 +1442,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "NormalizedName");
 
-                    b.ToTable("AbpRoles");
+                    b.ToTable("AbpRoles", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Authorization.Users.User", b =>
@@ -1573,7 +1573,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "NormalizedUserName");
 
-                    b.ToTable("AbpUsers");
+                    b.ToTable("AbpUsers", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Data.Entities.DM_HangHoa", b =>
@@ -1645,7 +1645,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdNhomHangHoa");
 
-                    b.ToTable("DM_HangHoa");
+                    b.ToTable("DM_HangHoa", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Data.Entities.DM_LoaiHangHoa", b =>
@@ -1699,7 +1699,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_LoaiHangHoa");
+                    b.ToTable("DM_LoaiHangHoa", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Data.Entities.DM_PhongBan", b =>
@@ -1765,7 +1765,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdChiNhanh");
 
-                    b.ToTable("DM_PhongBan");
+                    b.ToTable("DM_PhongBan", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Data.Entities.NS_NhanVien", b =>
@@ -1871,7 +1871,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdChucVu");
 
-                    b.ToTable("NS_NhanViens");
+                    b.ToTable("NS_NhanViens", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BH_HoaDon", b =>
@@ -2000,7 +2000,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdPhong");
 
-                    b.ToTable("BH_HoaDon");
+                    b.ToTable("BH_HoaDon", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BH_HoaDon_Anh", b =>
@@ -2044,7 +2044,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdHoaDon");
 
-                    b.ToTable("BH_HoaDon_Anh");
+                    b.ToTable("BH_HoaDon_Anh", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BH_HoaDon_ChiTiet", b =>
@@ -2140,7 +2140,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdHoaDon");
 
-                    b.ToTable("BH_HoaDon_ChiTiet");
+                    b.ToTable("BH_HoaDon_ChiTiet", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BH_NhanVienThucHien", b =>
@@ -2213,7 +2213,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdQuyHoaDon");
 
-                    b.ToTable("BH_NhanVienThucHien");
+                    b.ToTable("BH_NhanVienThucHien", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.Booking", b =>
@@ -2291,7 +2291,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdKhachHang");
 
-                    b.ToTable("Booking");
+                    b.ToTable("Booking", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BookingNhanVien", b =>
@@ -2336,7 +2336,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdNhanVien");
 
-                    b.ToTable("BookingNhanVien");
+                    b.ToTable("BookingNhanVien", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BookingService", b =>
@@ -2381,7 +2381,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdDonViQuiDoi");
 
-                    b.ToTable("BookingService");
+                    b.ToTable("BookingService", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_ChiNhanh", b =>
@@ -2470,7 +2470,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdCongTy");
 
-                    b.ToTable("DM_ChiNhanh");
+                    b.ToTable("DM_ChiNhanh", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_DonViQuiDoi", b =>
@@ -2527,7 +2527,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdHangHoa");
 
-                    b.ToTable("DM_DonViQuiDoi");
+                    b.ToTable("DM_DonViQuiDoi", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_KhachHang", b =>
@@ -2643,7 +2643,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdNhomKhach");
 
-                    b.ToTable("DM_KhachHang");
+                    b.ToTable("DM_KhachHang", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_KhoanThuChi", b =>
@@ -2701,7 +2701,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_KhoanThuChi");
+                    b.ToTable("DM_KhoanThuChi", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_LoaiChungTu", b =>
@@ -2755,7 +2755,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_LoaiChungTu");
+                    b.ToTable("DM_LoaiChungTu", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_LoaiKhach", b =>
@@ -2809,7 +2809,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_LoaiKhach");
+                    b.ToTable("DM_LoaiKhach", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_NganHang", b =>
@@ -2873,7 +2873,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_NganHang");
+                    b.ToTable("DM_NganHang", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_NgayNghiLe", b =>
@@ -2924,7 +2924,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_NgayNghiLe");
+                    b.ToTable("DM_NgayNghiLe", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_NguonKhach", b =>
@@ -2988,7 +2988,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_NguonKhach");
+                    b.ToTable("DM_NguonKhach", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_NhomHangHoa", b =>
@@ -3056,7 +3056,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_NhomHangHoa");
+                    b.ToTable("DM_NhomHangHoa", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_NhomKhachHang", b =>
@@ -3124,7 +3124,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_NhomKhachHang");
+                    b.ToTable("DM_NhomKhachHang", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_Phong", b =>
@@ -3173,7 +3173,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdViTri");
 
-                    b.ToTable("DM_Phong");
+                    b.ToTable("DM_Phong", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_TaiKhoanNganHang", b =>
@@ -3236,7 +3236,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdNganHang");
 
-                    b.ToTable("DM_TaiKhoanNganHang");
+                    b.ToTable("DM_TaiKhoanNganHang", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_ViTriPhong", b =>
@@ -3280,7 +3280,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DM_ViTriPhong");
+                    b.ToTable("DM_ViTriPhong", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DichVu_NhanVien", b =>
@@ -3330,7 +3330,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdNhanVien");
 
-                    b.ToTable("DichVu_NhanVien");
+                    b.ToTable("DichVu_NhanVien", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.HT_CongTy", b =>
@@ -3395,7 +3395,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HT_CongTy");
+                    b.ToTable("HT_CongTy", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.KH_CheckIn", b =>
@@ -3449,7 +3449,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("KH_CheckIn");
+                    b.ToTable("KH_CheckIn", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_CaLamViec", b =>
@@ -3504,7 +3504,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NS_CaLamViec");
+                    b.ToTable("NS_CaLamViec", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_ChucVu", b =>
@@ -3566,7 +3566,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NS_ChucVu");
+                    b.ToTable("NS_ChucVu", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_LichLamViec", b =>
@@ -3633,7 +3633,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdNhanVien");
 
-                    b.ToTable("NS_LichLamViec");
+                    b.ToTable("NS_LichLamViec", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_LichLamViec_Ca", b =>
@@ -3684,7 +3684,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdLichLamViec");
 
-                    b.ToTable("NS_LichLamViec_Ca");
+                    b.ToTable("NS_LichLamViec_Ca", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_NhanVien_TimeOff", b =>
@@ -3728,7 +3728,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NS_NhanVien_TimeOff");
+                    b.ToTable("NS_NhanVien_TimeOff", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_QuaTrinh_CongTac", b =>
@@ -3794,7 +3794,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdPhongBan");
 
-                    b.ToTable("NS_QuaTrinh_CongTac");
+                    b.ToTable("NS_QuaTrinh_CongTac", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.QuyHoaDon", b =>
@@ -3860,7 +3860,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdLoaiChungTu");
 
-                    b.ToTable("QuyHoaDon");
+                    b.ToTable("QuyHoaDon", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.QuyHoaDon_ChiTiet", b =>
@@ -3943,7 +3943,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdTaiKhoanNganHang");
 
-                    b.ToTable("QuyHoaDon_ChiTiet");
+                    b.ToTable("QuyHoaDon_ChiTiet", (string)null);
                 });
 
             modelBuilder.Entity("BanHangBeautify.MultiTenancy.Tenant", b =>
@@ -4007,7 +4007,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenancyName");
 
-                    b.ToTable("AbpTenants");
+                    b.ToTable("AbpTenants", (string)null);
                 });
 
             modelBuilder.Entity("Abp.Application.Features.EditionFeatureSetting", b =>
@@ -4019,7 +4019,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("EditionId", "Name");
 
-                    b.ToTable("AbpFeatures");
+                    b.ToTable("AbpFeatures", (string)null);
 
                     b.HasDiscriminator().HasValue("EditionFeatureSetting");
                 });
@@ -4030,7 +4030,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("TenantId", "Name");
 
-                    b.ToTable("AbpFeatures");
+                    b.ToTable("AbpFeatures", (string)null);
 
                     b.HasDiscriminator().HasValue("TenantFeatureSetting");
                 });
@@ -4044,7 +4044,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AbpPermissions");
+                    b.ToTable("AbpPermissions", (string)null);
 
                     b.HasDiscriminator().HasValue("RolePermissionSetting");
                 });
@@ -4058,7 +4058,7 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AbpPermissions");
+                    b.ToTable("AbpPermissions", (string)null);
 
                     b.HasDiscriminator().HasValue("UserPermissionSetting");
                 });
