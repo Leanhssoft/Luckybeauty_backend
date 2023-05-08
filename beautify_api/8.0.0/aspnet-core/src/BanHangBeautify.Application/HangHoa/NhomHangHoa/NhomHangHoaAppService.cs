@@ -36,7 +36,6 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
         {
             PagedResultDto<NhomHangHoaDto> result = new();
             var lst = _dmNhomHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.TenNhomHang);
-
             result.Items = ObjectMapper.Map<List<NhomHangHoaDto>>(lst);
             return result;
         }
@@ -53,8 +52,8 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                             MaNhomHang = x.MaNhomHang,
                             TenNhomHang = x.TenNhomHang,
                             LaNhomHangHoa = x.LaNhomHangHoa,
-                            MoTa= x.MoTa,
-                            Color=x.Color,
+                            MoTa = x.MoTa,
+                            Color = x.Color,
                             IsDeleted = x.IsDeleted
                         }).ToList();
             var lst = data.Where(x => x.IdParent == null)
