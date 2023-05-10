@@ -152,10 +152,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 {
                     keyWord = "";
                 }
-                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false &&
+                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false ||
                                            (x.TenNhanVien.Contains(keyWord) && x.TenNhanVien != null) ||
-                                           (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord)) ||
-                                           (x.NoiCap != null && x.NoiCap.Contains(keyWord))).
+                                           (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord))).
                                            OrderByDescending(x => x.CreationTime).
                                            ToListAsync();
                 result.TotalCount = lstNhanSu.Count;

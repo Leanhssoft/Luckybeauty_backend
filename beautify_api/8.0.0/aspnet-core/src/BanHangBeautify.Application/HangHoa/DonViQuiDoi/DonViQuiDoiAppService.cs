@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +17,11 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
     public class DonViQuiDoiAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_DonViQuiDoi, Guid> _repository;
-        public DonViQuiDoiAppService(IRepository<DM_DonViQuiDoi, Guid> repository)
+        private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
+        public DonViQuiDoiAppService(IRepository<DM_DonViQuiDoi, Guid> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository)
         {
             _repository = repository;
+            _hangHoaRepository = hangHoaRepository;
         }
         public async Task<DonViQuiDoiDto> CreateOrEdit(CreateOrEditDonViQuiDoiDto dto)
         {
@@ -38,7 +41,8 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             DM_DonViQuiDoi donViQuiDoi = new DM_DonViQuiDoi();
             donViQuiDoi.Id = Guid.NewGuid();
             donViQuiDoi.IdHangHoa = dto.IdHangHoa;
-            donViQuiDoi.MaHangHoa = dto.MaHangHoa;
+            var hangHoa = _hangHoaRepository.FirstOrDefault(h => h.Id == dto.IdHangHoa);
+            donViQuiDoi.MaHangHoa = hangHoa == null ? dto.MaHangHoa : hangHoa.TenHangHoa;
             donViQuiDoi.GiaBan = dto.GiaBan;
             donViQuiDoi.TenDonViTinh = dto.TenDonViTinh;
             donViQuiDoi.LaDonViTinhChuan = dto.LaDonViTinhChuan;

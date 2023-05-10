@@ -10,16 +10,13 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
 {
     public class CreateBookingDto
     {
-        public int TenantId { get; set; }
-        [Required]
-        public string TenKhachHang { get; set; }
-        [Required]
-        public string SoDienThoai { get; set; }
-        public DateTime BookingDate { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
-        public byte LoaiBooking { get; set; }
+        public Guid Id { get; set; }
+        public string StartTime { get; set; }
+        public string StartHours { get; set; }
         public int TrangThai { get; set; }
         public string GhiChu { get; set; }
+        public Guid IdKhachHang { get; set; }
+        public Guid IdNhanVien { get; set; }
+        public Guid IdDonViQuiDoi { get; set; }
     }
 }
