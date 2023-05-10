@@ -1,10 +1,13 @@
 ﻿using Abp.Domain.Repositories;
+using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Checkin.Repository;
 using BanHangBeautify.CheckIn.Dto;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +16,12 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Checkin
 {
-    public class KHCheckInService : SPAAppServiceBase
+    public class CheckInAppService : SPAAppServiceBase
     {
         private readonly IRepository<KH_CheckIn, Guid> _khCheckIn;
         private readonly IKHCheckInRespository _repository;
 
-        public KHCheckInService(IRepository<KH_CheckIn, Guid> khCheckIn,
+        public CheckInAppService(IRepository<KH_CheckIn, Guid> khCheckIn,
            IKHCheckInRespository checkInRepo
            )
         {
@@ -55,6 +58,18 @@ namespace BanHangBeautify.Checkin
             objUp.LastModificationTime = DateTime.Now;
             await _khCheckIn.UpdateAsync(objUp);
             return string.Empty;
+        }
+        [HttpPost]
+        public async Task<List<PageKhachHangCheckingDto>> GetListCustomerChecking(PagedKhachHangResultRequestDto input)
+        {
+            try
+            {
+                return await _repository.GetListCustomerChecking(input, AbpSession.TenantId ?? 1);
+            }
+            catch (Exception)
+            {
+                return new List<PageKhachHangCheckingDto>();
+            }
         }
     }
 }

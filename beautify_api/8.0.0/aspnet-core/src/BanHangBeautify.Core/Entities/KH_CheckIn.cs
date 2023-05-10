@@ -16,8 +16,6 @@ namespace BanHangBeautify.Entities
         public Guid IdKhachHang { get; set; }
         public Guid? IdBooking { get; set; }
         public DateTime DateTimeCheckIn { get; set; }// ngay check in yyyy-mm-dd hh:mm:ss
-        public DateOnly DateCheckIn { get { return DateOnly.FromDateTime(DateTimeCheckIn); } }// ngay check in yyyy-mm-dd
-        public TimeOnly TimeCheckIn { get { return TimeOnly.FromDateTime(DateTimeCheckIn); } } // thoigian checkin 1205.22:47:09.5550000
         [MaxLength(4000)]
         public string GhiChu { get; set; } = string.Empty;
         public int TrangThai { get; set; } = 1; // 0. Check in nhưng đợi lâu quá --> Cancel, 1. check in & làm dịch vụ (mặc định)

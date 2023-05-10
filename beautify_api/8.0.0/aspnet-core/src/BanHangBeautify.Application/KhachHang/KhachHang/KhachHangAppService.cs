@@ -159,7 +159,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
         }
         [HttpGet]
-        public async Task<bool> CheckExistsMaKhachHang(string makhachhang, Guid? id = null)
+        public async Task<bool> CheckExistMaKhachHang(string makhachhang, Guid? id = null)
         {
             if (id != null && id != Guid.Empty)
             {
@@ -172,6 +172,27 @@ namespace BanHangBeautify.KhachHang.KhachHang
             else
             {
                 var lst = await _repository.GetAllListAsync(x => x.MaKhachHang.ToUpper() == makhachhang.Trim().ToUpper());
+                if (lst.Count > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        [HttpGet]
+        public async Task<bool> CheckExistSoDienThoai(string phone, Guid? id = null)
+        {
+            if (id != null && id != Guid.Empty)
+            {
+                var lst = await _repository.GetAllListAsync(x => x.Id != id && x.SoDienThoai.ToUpper() == phone.Trim().ToUpper());
+                if (lst.Count > 0)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                var lst = await _repository.GetAllListAsync(x => x.SoDienThoai.ToUpper() == phone.Trim().ToUpper());
                 if (lst.Count > 0)
                 {
                     return true;
