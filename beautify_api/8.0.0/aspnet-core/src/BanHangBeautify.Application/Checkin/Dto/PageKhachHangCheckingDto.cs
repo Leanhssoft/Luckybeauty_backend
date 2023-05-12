@@ -9,8 +9,12 @@ namespace BanHangBeautify.Checkin.Dto
 {
     public class PageKhachHangCheckingDto: KhachHangView
     {
-        public DateOnly DateCheckIn { get; set; }
-        public TimeSpan TimeCheckIn { get; set; }
-        public int TxtTrangThaiCheckIn { get; set; }
+        public Guid? IdCheckIn { get; set; }
+        public Guid? IdChiNhanh { get; set; }
+        public Guid IdKhachHang { get; set; }
+        public Guid? IdBooking { get; set; }
+        public string DateCheckIn { get; set; }
+        public string TimeCheckIn { get; set; }
+        public string TxtTrangThaiCheckIn { get; set; }
     }
 }

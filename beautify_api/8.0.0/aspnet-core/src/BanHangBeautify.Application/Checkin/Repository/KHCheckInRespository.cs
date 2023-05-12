@@ -23,10 +23,9 @@ namespace BanHangBeautify.Checkin.Repository
         }
         public async Task<List<PageKhachHangCheckingDto>> GetListCustomerChecking(PagedKhachHangResultRequestDto input, int? tenantId)
         {
-            using (var command = CreateCommand("spJqAutoCustomer"))
+            using (var command = CreateCommand("spGetListCustomerChecking"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
-                command.Parameters.Add(new SqlParameter("@LoaiDoiTuong", input.LoaiDoiTuong ?? 1));
                 command.Parameters.Add(new SqlParameter("@TextSearch", input.keyword ?? ""));
                 command.Parameters.Add(new SqlParameter("@CurrentPage", input.SkipCount));
                 command.Parameters.Add(new SqlParameter("@PageSize", input.MaxResultCount));

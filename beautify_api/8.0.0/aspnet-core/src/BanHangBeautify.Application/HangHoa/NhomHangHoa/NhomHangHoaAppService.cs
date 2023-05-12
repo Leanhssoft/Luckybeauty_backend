@@ -122,6 +122,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 {
                     return "object null";
                 }
+                objUp.IdParent = dto.IdParent;
                 objUp.MaNhomHang = dto.MaNhomHang;
                 objUp.TenNhomHang = dto.TenNhomHang;
                 objUp.TenNhomHang_KhongDau = dto.TenNhomHang_KhongDau;
