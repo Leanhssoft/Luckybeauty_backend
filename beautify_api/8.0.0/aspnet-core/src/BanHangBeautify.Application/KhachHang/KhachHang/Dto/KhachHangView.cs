@@ -11,6 +11,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public Guid Id { get; set; }
         public string MaKhachHang { get; set; }
         public string TenKhachHang { get; set; }
+        public string TenKhach_KiTuDau { get; set; }
         public string SoDienThoai { get; set; }
         public string TenNhomKhach { get; set; }
         public string GioiTinh { get; set; }

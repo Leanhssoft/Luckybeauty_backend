@@ -38,6 +38,19 @@ namespace BanHangBeautify.HangHoa.HangHoa
             _dmDonViQuiDoi = dvqd;
             _repository = productRepo;
         }
+
+        public string FormatMaHangHoa(string firstChar, float? maxVal=0)
+        {
+            if (maxVal <9)
+            {
+                return string.Concat(firstChar, "0",  maxVal);
+            }
+            else
+            {
+                return string.Concat(firstChar,  maxVal);
+            }
+        }
+
         public async Task<CreateOrEditHangHoaDto> CreateOrEdit(CreateOrEditHangHoaDto dto)
         {
             var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == dto.Id);
@@ -71,7 +84,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     {
                         MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                         max = objMax.MaxVal;
-                        maHangHoa = string.Concat(objMax.FirstStr, max);
+                        maHangHoa = FormatMaHangHoa(objMax.FirstStr, max);
                     }
 
                     DM_DonViQuiDoi dvt = ObjectMapper.Map<DM_DonViQuiDoi>(item);
@@ -91,8 +104,8 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     Id = Guid.NewGuid(),
                     IdHangHoa = productId,
                     TenantId = hangHoa.TenantId,
-                    MaHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal),
-                    TenDonViTinh = string.Empty,
+                    MaHangHoa = FormatMaHangHoa(objMax.FirstStr, objMax.MaxVal),
+                TenDonViTinh = string.Empty,
                 };
                 lstDVT.Add(dvt);
             }
@@ -134,7 +147,13 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 if (objDVT != null)
                 {
                     // update
-                    objDVT.MaHangHoa = item.MaHangHoa;
+                    string maHangHoa = item.MaHangHoa;
+                    if (string.IsNullOrEmpty(maHangHoa))
+                    {
+                        MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                        maHangHoa = FormatMaHangHoa(objMax.FirstStr, objMax.MaxVal);
+                    }
+                    objDVT.MaHangHoa = maHangHoa;
                     objDVT.TenDonViTinh = item.TenDonViTinh;
                     objDVT.TyLeChuyenDoi = item.TyLeChuyenDoi;
                     objDVT.GiaBan = item.GiaBan;
@@ -147,7 +166,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     if (string.IsNullOrEmpty(maHangHoa))
                     {
                         MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
-                        maHangHoa = string.Concat(objMax.FirstStr, objMax.MaxVal);
+                        maHangHoa = FormatMaHangHoa(objMax.FirstStr, objMax.MaxVal);
                     }
                     DM_DonViQuiDoi dvtNew = ObjectMapper.Map<DM_DonViQuiDoi>(item);
                     dvtNew.MaHangHoa = maHangHoa;
@@ -187,7 +206,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
         public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input)
         {
             return await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
-        } 
+        }
         [HttpPost]
         public async Task<List<HangHoaGroupTheoNhomDto>> GetDMHangHoa_groupByNhom(HangHoaPagedResultRequestDto input)
         {
@@ -195,9 +214,9 @@ namespace BanHangBeautify.HangHoa.HangHoa
             var dataGroup = data.Items.GroupBy(x => new { x.IdNhomHangHoa, x.TenNhomHang })
                 .Select(x => new HangHoaGroupTheoNhomDto
                 {
-                    IdNhomHangHoa = x.Key.IdNhomHangHoa, 
-                    TenNhomHang= x.Key.TenNhomHang,
-                    HangHoas= x.ToList()
+                    IdNhomHangHoa = x.Key.IdNhomHangHoa,
+                    TenNhomHang = x.Key.TenNhomHang,
+                    HangHoas = x.ToList()
                 }).ToList();
             return dataGroup;
         }
