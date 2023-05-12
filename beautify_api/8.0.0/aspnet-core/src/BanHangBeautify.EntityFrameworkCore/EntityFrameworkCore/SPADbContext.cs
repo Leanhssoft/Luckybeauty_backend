@@ -5,6 +5,7 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 
 namespace BanHangBeautify.EntityFrameworkCore
 {
@@ -72,12 +73,10 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<BH_HoaDon> BH_HoaDon { set; get; }
         public DbSet<BH_HoaDon_ChiTiet> BH_HoaDon_ChiTiet { set; get; }
         public DbSet<BH_HoaDon_Anh> BH_HoaDon_Anh { set; get; }
-        
+
         public DbSet<QuyHoaDon> QuyHoaDon { set; get; }
         public DbSet<QuyHoaDon_ChiTiet> QuyHoaDon_ChiTiet { set; get; }
         #endregion
-      
-       
 
         /* Define a DbSet for each entity of the application */
 
@@ -86,9 +85,50 @@ namespace BanHangBeautify.EntityFrameworkCore
         {
 
         }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<DichVu_NhanVien>().HasKey(key => new { key.IdHangHoa, key.IdNhanVien });
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<DM_LoaiHangHoa>().HasData(
+                new DM_LoaiHangHoa()
+                {
+                    Id = 1,
+                    IsDeleted = false,
+                    MaLoaiHangHoa = "HH",
+                    TenLoaiHangHoa = "Hàng Hóa",
+                    TrangThai = 1
+                },
+                new DM_LoaiHangHoa()
+                {
+                    Id = 2,
+                    IsDeleted = false,
+                    MaLoaiHangHoa = "DV",
+                    TenLoaiHangHoa = "Dịch Vụ",
+                    TrangThai = 1
+                },
+                new DM_LoaiHangHoa()
+                {
+                    Id = 3,
+                    IsDeleted = false,
+                    MaLoaiHangHoa = "CB",
+                    TenLoaiHangHoa = "Combo"
+                }
+            );
+            modelBuilder.Entity<DM_LoaiKhach>().HasData(
+                new DM_LoaiKhach()
+                {
+                    Id = 1,
+                    IsDeleted = false,
+                    MaLoaiKhachHang = "KH",
+                    TenLoaiKhachHang = "Khách hàng",
+                    TrangThai = 1
+                }, new DM_LoaiKhach()
+                {
+                    Id = 2,
+                    IsDeleted = false,
+                    MaLoaiKhachHang = "NCC",
+                    TenLoaiKhachHang = "Nhà cung cấp",
+                    TrangThai = 1
+                }) ;
+        }
     }
 }

@@ -1703,6 +1703,38 @@ namespace BanHangBeautify.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DM_LoaiHangHoa");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1676),
+                            IsDeleted = false,
+                            MaLoaiHangHoa = "HH",
+                            TenLoaiHangHoa = "Hàng Hóa",
+                            TenantId = 1,
+                            TrangThai = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1708),
+                            IsDeleted = false,
+                            MaLoaiHangHoa = "DV",
+                            TenLoaiHangHoa = "Dịch Vụ",
+                            TenantId = 1,
+                            TrangThai = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1711),
+                            IsDeleted = false,
+                            MaLoaiHangHoa = "CB",
+                            TenLoaiHangHoa = "Combo",
+                            TenantId = 1,
+                            TrangThai = 1
+                        });
                 });
 
             modelBuilder.Entity("BanHangBeautify.Data.Entities.DM_PhongBan", b =>
@@ -3062,6 +3094,28 @@ namespace BanHangBeautify.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DM_LoaiKhach");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1969),
+                            IsDeleted = false,
+                            MaLoaiKhachHang = "KH",
+                            TenLoaiKhachHang = "Khách hàng",
+                            TenantId = 1,
+                            TrangThai = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1974),
+                            IsDeleted = false,
+                            MaLoaiKhachHang = "NCC",
+                            TenLoaiKhachHang = "Nhà cung cấp",
+                            TenantId = 1,
+                            TrangThai = 1
+                        });
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_MauIn", b =>

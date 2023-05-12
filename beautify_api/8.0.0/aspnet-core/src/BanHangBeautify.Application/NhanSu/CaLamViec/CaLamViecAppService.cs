@@ -80,16 +80,18 @@ namespace BanHangBeautify.NhanSu.CaLamViec
         public async Task<PagedResultDto<NS_CaLamViec>> GetAll(PagedResultRequestDto input, string keyWord)
         {
             PagedResultDto<NS_CaLamViec> result = new PagedResultDto<NS_CaLamViec>();
-            var lstCaLamViec = await _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstCaLamViec = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstCaLamViec.Count;
-            if (!string.IsNullOrEmpty(keyWord))
+            if (string.IsNullOrEmpty(keyWord))
             {
-                lstCaLamViec = lstCaLamViec.Where(
+                keyWord = "";
+                
+            }
+            lstCaLamViec = lstCaLamViec.Where(
                     x => x.TenCa.Contains(keyWord) || x.MaCa.Contains(keyWord) || x.TongGioCong.ToString().Contains(keyWord) ||
                     x.GioVao.ToString().Contains(keyWord) || x.GioRa.ToString().Contains(keyWord)
                     ).
                     ToList();
-            }
             input.MaxResultCount = 10;
             input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
             result.Items = lstCaLamViec.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

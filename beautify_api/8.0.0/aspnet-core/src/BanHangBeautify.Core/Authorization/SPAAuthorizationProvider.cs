@@ -85,6 +85,12 @@ namespace BanHangBeautify.Authorization
             booking.CreateChildPermission(PermissionNames.Pages_Booking_Create, L("CreateBooking"));
             booking.CreateChildPermission(PermissionNames.Pages_Booking_Edit, L("EditBooking"));
             booking.CreateChildPermission(PermissionNames.Pages_Booking_Delete, L("DeleteBooking"));
+
+            var caLamViec = pages.CreateChildPermission(PermissionNames.Pages_CaLamViec, L("CaLamViec"));
+            caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Create, L("CreateCaLamViec"));
+            caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Edit, L("EditCaLamViec"));
+            caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Delete, L("DeleteCaLamViec"));
+
             #endregion
 
             //adminsitrantion
