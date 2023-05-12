@@ -42,6 +42,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             data.TenCongTy = dto.TenCongTy;
             data.DiaChi = dto.DiaChi;
             data.GhiChu = dto.GhiChu;
+            data.SoDienThoai = dto.SoDienThoai;
             data.MaSoThue = dto.MaSoThue;
             data.Logo = dto.Logo;
             data.TenantId = AbpSession.TenantId ?? 1;
@@ -64,7 +65,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             chiNhanh.NgayTao = DateTime.Now;
             chiNhanh.IdCongTy = data.Id;
             chiNhanh.CreationTime = DateTime.Now;
-            var result = ObjectMapper.Map<CuaHangDto>(chiNhanh);
+            var result = ObjectMapper.Map<CuaHangDto>(data);
             await _chiNhanhRepository.InsertAsync(chiNhanh);
             return result;
             //CuaHangDto store = new CuaHangDto();
@@ -76,13 +77,13 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
         {
             item.TenCongTy = dto.TenCongTy;
             item.DiaChi = dto.DiaChi;
+            item.SoDienThoai = dto.SoDienThoai;
             item.GhiChu = dto.GhiChu;
             item.MaSoThue = dto.MaSoThue;
             item.Logo = dto.Logo;
             item.TenantId = AbpSession.TenantId ?? 1;
-            item.CreatorUserId = AbpSession.UserId;
-            item.CreationTime = DateTime.Now;
-            item.NgayTao = DateTime.Now;
+            item.LastModifierUserId = AbpSession.UserId;
+            item.LastModificationTime = DateTime.Now;
             var result = ObjectMapper.Map<CuaHangDto>(item);
             await _congTyRepository.UpdateAsync(item);
             //CuaHangDto store = new CuaHangDto();

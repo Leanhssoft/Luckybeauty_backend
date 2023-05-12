@@ -148,15 +148,16 @@ namespace BanHangBeautify.NhanSu.NhanVien
             PagedResultDto<NhanSuItemDto> result = new PagedResultDto<NhanSuItemDto>();
             try
             {
-                if (!string.IsNullOrEmpty(keyWord))
+                if (string.IsNullOrEmpty(keyWord))
                 {
                     keyWord = "";
                 }
-                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false ||
-                                           (x.TenNhanVien.Contains(keyWord) && x.TenNhanVien != null) ||
-                                           (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord))).
+                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).
                                            OrderByDescending(x => x.CreationTime).
                                            ToListAsync();
+                lstNhanSu = lstNhanSu.Where(x => (x.TenNhanVien != null && x.TenNhanVien.Contains(keyWord)) ||
+                                           (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord))).ToList();
+
                 result.TotalCount = lstNhanSu.Count;
                 input.MaxResultCount = 10;
                 input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
