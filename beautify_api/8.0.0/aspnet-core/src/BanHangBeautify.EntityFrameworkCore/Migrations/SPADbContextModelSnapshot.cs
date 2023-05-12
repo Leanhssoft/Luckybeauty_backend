@@ -1708,31 +1708,31 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1676),
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3345),
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
-                            TenantId = 1,
+                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1708),
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3373),
                             IsDeleted = false,
                             MaLoaiHangHoa = "DV",
                             TenLoaiHangHoa = "Dịch Vụ",
-                            TenantId = 1,
+                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1711),
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3375),
                             IsDeleted = false,
                             MaLoaiHangHoa = "CB",
                             TenLoaiHangHoa = "Combo",
-                            TenantId = 1,
+                            TenantId = 0,
                             TrangThai = 1
                         });
                 });
@@ -3099,21 +3099,21 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1969),
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3703),
                             IsDeleted = false,
                             MaLoaiKhachHang = "KH",
                             TenLoaiKhachHang = "Khách hàng",
-                            TenantId = 1,
+                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 12, 14, 35, 57, 15, DateTimeKind.Local).AddTicks(1974),
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3714),
                             IsDeleted = false,
                             MaLoaiKhachHang = "NCC",
                             TenLoaiKhachHang = "Nhà cung cấp",
-                            TenantId = 1,
+                            TenantId = 0,
                             TrangThai = 1
                         });
                 });
@@ -5525,7 +5525,6 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("NS_NhanVien");
                 });
 
-<<<<<<< .mine
             modelBuilder.Entity("BanHangBeautify.Entities.HT_CauHinh_ChungTu", b =>
                 {
                     b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
@@ -5548,32 +5547,7 @@ namespace BanHangBeautify.Migrations
             modelBuilder.Entity("BanHangBeautify.Entities.HT_CauHinh_TichDiem", b =>
                 {
                     b.HasOne("BanHangBeautify.Entities.HT_CauHinhPhanMem", "HT_CauHinhPhanMem")
-=======
-            modelBuilder.Entity("BanHangBeautify.Entities.KH_CheckIn", b =>
-                {
-                    b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
                         .WithMany()
-                        .HasForeignKey("IdChiNhanh");
-
-                    b.HasOne("BanHangBeautify.Entities.DM_KhachHang", "DM_KhachHang")
-                        .WithMany()
-                        .HasForeignKey("IdKhachHang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DM_ChiNhanh");
-
-                    b.Navigation("DM_KhachHang");
-                });
-
-
-
-
-
-
->>>>>>> .theirs
-                        .WithMany()
-<<<<<<< .mine
                         .HasForeignKey("HT_CauHinhPhanMemId");
 
                     b.Navigation("HT_CauHinhPhanMem");
@@ -5626,6 +5600,23 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("DM_KhachHang");
 
                     b.Navigation("NS_NhanVien");
+                });
+
+            modelBuilder.Entity("BanHangBeautify.Entities.KH_CheckIn", b =>
+                {
+                    b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
+                        .WithMany()
+                        .HasForeignKey("IdChiNhanh");
+
+                    b.HasOne("BanHangBeautify.Entities.DM_KhachHang", "DM_KhachHang")
+                        .WithMany()
+                        .HasForeignKey("IdKhachHang")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DM_ChiNhanh");
+
+                    b.Navigation("DM_KhachHang");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_ChietKhauDichVu", b =>
@@ -5683,117 +5674,6 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("NS_NhanVien");
                 });
 
-=======
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> .theirs
             modelBuilder.Entity("BanHangBeautify.Entities.NS_LichLamViec", b =>
                 {
                     b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")

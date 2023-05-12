@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BanHangBeautify.Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    [Migration("20230512042858_add_new_some_entities")]
-    partial class addnewsomeentities
+    [Migration("20230512101143_add_more_tables")]
+    partial class addmoretables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1706,6 +1706,38 @@ namespace BanHangBeautify.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DM_LoaiHangHoa");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3345),
+                            IsDeleted = false,
+                            MaLoaiHangHoa = "HH",
+                            TenLoaiHangHoa = "Hàng Hóa",
+                            TenantId = 0,
+                            TrangThai = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3373),
+                            IsDeleted = false,
+                            MaLoaiHangHoa = "DV",
+                            TenLoaiHangHoa = "Dịch Vụ",
+                            TenantId = 0,
+                            TrangThai = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3375),
+                            IsDeleted = false,
+                            MaLoaiHangHoa = "CB",
+                            TenLoaiHangHoa = "Combo",
+                            TenantId = 0,
+                            TrangThai = 1
+                        });
                 });
 
             modelBuilder.Entity("BanHangBeautify.Data.Entities.DM_PhongBan", b =>
@@ -3065,6 +3097,28 @@ namespace BanHangBeautify.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DM_LoaiKhach");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3703),
+                            IsDeleted = false,
+                            MaLoaiKhachHang = "KH",
+                            TenLoaiKhachHang = "Khách hàng",
+                            TenantId = 0,
+                            TrangThai = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreationTime = new DateTime(2023, 5, 12, 17, 11, 41, 521, DateTimeKind.Local).AddTicks(3714),
+                            IsDeleted = false,
+                            MaLoaiKhachHang = "NCC",
+                            TenLoaiKhachHang = "Nhà cung cấp",
+                            TenantId = 0,
+                            TrangThai = 1
+                        });
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_MauIn", b =>
@@ -4182,6 +4236,10 @@ namespace BanHangBeautify.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdChiNhanh");
+
+                    b.HasIndex("IdKhachHang");
 
                     b.ToTable("KH_CheckIn");
                 });
@@ -5545,6 +5603,23 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("DM_KhachHang");
 
                     b.Navigation("NS_NhanVien");
+                });
+
+            modelBuilder.Entity("BanHangBeautify.Entities.KH_CheckIn", b =>
+                {
+                    b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
+                        .WithMany()
+                        .HasForeignKey("IdChiNhanh");
+
+                    b.HasOne("BanHangBeautify.Entities.DM_KhachHang", "DM_KhachHang")
+                        .WithMany()
+                        .HasForeignKey("IdKhachHang")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DM_ChiNhanh");
+
+                    b.Navigation("DM_KhachHang");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_ChietKhauDichVu", b =>

@@ -144,7 +144,7 @@ namespace BanHangBeautify.Bookings.Bookings
                     totalTimeService += i.Value;
                 }
                 rdo.EndTime = rdo.StartTime.AddMinutes(totalTimeService);
-                rdo.Color = dichVus.Count==1 ? dichVus[0].Color : "";
+                rdo.Color = dichVus.Count==1 ? dichVus[0].Color??"" : "";
                 result.Add(rdo);
             }
             return result;
