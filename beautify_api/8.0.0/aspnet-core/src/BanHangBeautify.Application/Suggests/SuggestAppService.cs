@@ -197,14 +197,14 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestDonViQuiDoi>> SuggestDonViQuiDois()
         {
             List<SuggestDonViQuiDoi> result = new List<SuggestDonViQuiDoi>();
-            var lst = await _donViQuiDoiRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+            var lst = await _donViQuiDoiRepository.GetAll().Include(x=>x.DM_HangHoa).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)
                 {
                     SuggestDonViQuiDoi rdo = new SuggestDonViQuiDoi();
                     rdo.Id = item.Id;
-                    rdo.TenDonVi = item.TenDonViTinh;
+                    rdo.TenDonVi = item.DM_HangHoa.TenHangHoa;
                     result.Add(rdo);
                 }
             }

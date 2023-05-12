@@ -13,6 +13,7 @@ using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Editions;
 using BanHangBeautify.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -113,13 +114,29 @@ namespace BanHangBeautify.MultiTenancy
             entity.TenancyName = updateInput.TenancyName;
             entity.IsActive = updateInput.IsActive;
         }
-
         public override async Task DeleteAsync(EntityDto<int> input)
         {
             CheckDeletePermission();
 
             var tenant = await _tenantManager.GetByIdAsync(input.Id);
             await _tenantManager.DeleteAsync(tenant);
+        }
+        [HttpPost]
+        public async Task DeleteTenant(int id)
+        {
+            CheckDeletePermission();
+            var tenant = await _tenantManager.GetByIdAsync(id);
+            await _tenantManager.DeleteAsync(tenant);
+        }
+        [HttpPost]
+        public async Task UpdateTenant(TenantDto input)
+        {
+            CheckDeletePermission();
+            var tenant = await _tenantManager.GetByIdAsync(input.Id);
+            tenant.IsActive = input.IsActive;
+            tenant.Name = input.Name;
+            tenant.TenancyName = input.TenancyName;
+            await _tenantManager.UpdateAsync(tenant);
         }
 
         private void CheckErrors(IdentityResult identityResult)

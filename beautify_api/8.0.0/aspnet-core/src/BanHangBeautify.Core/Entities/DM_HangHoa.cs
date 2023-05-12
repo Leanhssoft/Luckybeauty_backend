@@ -28,6 +28,7 @@ namespace BanHangBeautify.Data.Entities
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }
         public Guid? NguoiXoa { get; set; }
+        public string Color { get; set; }
         public virtual ICollection<DM_DonViQuiDoi> DonViQuiDois { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using BanHangBeautify.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BanHangBeautify.Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    partial class SPADbContextModelSnapshot : ModelSnapshot
+    [Migration("20230510041202_add_Color_DM_HangHoa")]
+    partial class addColorDMHangHoa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3452,10 +3455,6 @@ namespace BanHangBeautify.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdChiNhanh");
-
-                    b.HasIndex("IdKhachHang");
-
                     b.ToTable("KH_CheckIn");
                 });
 
@@ -4529,23 +4528,6 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("DM_DonViQuiDoi");
 
                     b.Navigation("NS_NhanVien");
-                });
-
-            modelBuilder.Entity("BanHangBeautify.Entities.KH_CheckIn", b =>
-                {
-                    b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
-                        .WithMany()
-                        .HasForeignKey("IdChiNhanh");
-
-                    b.HasOne("BanHangBeautify.Entities.DM_KhachHang", "DM_KhachHang")
-                        .WithMany()
-                        .HasForeignKey("IdKhachHang")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DM_ChiNhanh");
-
-                    b.Navigation("DM_KhachHang");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_LichLamViec", b =>
