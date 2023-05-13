@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.AppDanhMuc.AppCuaHang
 {
@@ -45,6 +46,10 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             data.SoDienThoai = dto.SoDienThoai;
             data.MaSoThue = dto.MaSoThue;
             data.Logo = dto.Logo;
+            data.Website = dto.Website;
+            data.Facebook = dto.Facebook;
+            data.Twitter = dto.Twitter;
+            data.Instagram = dto.Instagram;
             data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
@@ -81,6 +86,10 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             item.GhiChu = dto.GhiChu;
             item.MaSoThue = dto.MaSoThue;
             item.Logo = dto.Logo;
+            item.Website = dto.Website;
+            item.Facebook = dto.Facebook;
+            item.Twitter = dto.Twitter;
+            item.Instagram = dto.Instagram;
             item.TenantId = AbpSession.TenantId ?? 1;
             item.LastModifierUserId = AbpSession.UserId;
             item.LastModificationTime = DateTime.Now;

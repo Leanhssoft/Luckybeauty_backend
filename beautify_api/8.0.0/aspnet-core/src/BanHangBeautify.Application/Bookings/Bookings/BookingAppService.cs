@@ -97,6 +97,7 @@ namespace BanHangBeautify.Bookings.Bookings
             }
             return result;
         }
+        [HttpPost]
         public async Task<Booking> UpdateBooking(UpdateBookingDto dto)
         {
             var findBooking = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -112,6 +113,7 @@ namespace BanHangBeautify.Bookings.Bookings
 
         }
         [AbpAuthorize(PermissionNames.Pages_Booking_Delete)]
+        [HttpPost]
         public async Task<bool> DeleteBooking(Guid id)
         {
             bool result = false;

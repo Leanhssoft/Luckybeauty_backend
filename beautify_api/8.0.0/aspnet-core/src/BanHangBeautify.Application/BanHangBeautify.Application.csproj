@@ -20,6 +20,5 @@
     <Folder Include="Bookings\BookingNhanVien\" />
     <Folder Include="HoaDon\Dto\" />
     <Folder Include="HoaDon\Repository\" />
-    <Folder Include="NhanSu\LichLamViec\" />
   </ItemGroup>
 </Project>

@@ -20,6 +20,11 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang.Dto
         public string MaSoThue { get; set; }
         [MaxLength(2000)]
         public string Logo { get; set; }
+
+        public string Twitter { get; set; }
+        public string Facebook { get; set; }
+        public string Instagram { get; set; }
+        public string Website { get; set; }
         [MaxLength(2000)]
         public string GhiChu { get; set; }
 

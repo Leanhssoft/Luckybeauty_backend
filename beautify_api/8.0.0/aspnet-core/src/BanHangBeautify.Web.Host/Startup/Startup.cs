@@ -185,7 +185,7 @@ namespace BanHangBeautify.Web.Host.Startup
                     var webCoreXmlPath = Path.Combine(AppContext.BaseDirectory, webCoreXmlFile);
                     options.IncludeXmlComments(webCoreXmlPath);
                 }
-            });
+            });  
         }
     }
 }

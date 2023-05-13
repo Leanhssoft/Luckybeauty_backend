@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.HoaDon
+namespace BanHangBeautify.HoaDon.ChungTu.Dto
 {
-    public class HoaDonService
+    internal class CreateOrEditChungTuDto
     {
     }
 }

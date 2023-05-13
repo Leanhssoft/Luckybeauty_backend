@@ -19,6 +19,10 @@ namespace BanHangBeautify.Entities
         [MaxLength(2000)]
         public string Logo { get; set; }
         [MaxLength(2000)]
+        public string Website { set; get; }
+        public string Facebook { get; set; }
+        public string Twitter { get; set; }
+        public string Instagram { get; set; }
         public string GhiChu { get; set; }
         public int TrangThai { get; set; }
         public DateTime NgayTao { get; set; }

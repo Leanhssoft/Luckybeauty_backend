@@ -87,10 +87,7 @@ namespace BanHangBeautify.PhongBan
                 lstPhongBan = lstPhongBan.Where(x => x.TenPhongBan.Contains(input.Keyword) || x.MaPhongBan.Contains(input.Keyword)).ToList();
             }
             input.MaxResultCount = 10;
-            if (input.SkipCount > 0)
-            {
-                input.SkipCount *= input.MaxResultCount;
-            }
+            input.SkipCount = input.SkipCount == 0 || input.SkipCount == 1 ? 0 : (input.SkipCount - 1) * input.MaxResultCount;
             result.Items = lstPhongBan.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return result;
         }
