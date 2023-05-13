@@ -25,7 +25,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
         public async Task<NhanVienTimeOffDto> CreateOrEdit(CreateOrEditNhanVienTimeOffDto input)
         {
             var check =await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
-            if (check != null)
+            if (check == null)
             {
                 return await Create(input);
             }

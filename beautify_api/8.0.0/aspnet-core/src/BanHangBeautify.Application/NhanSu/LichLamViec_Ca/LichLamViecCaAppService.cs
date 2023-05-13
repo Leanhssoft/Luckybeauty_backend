@@ -23,7 +23,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
         public async Task<LichLamViecCaDto> CreateOrEdit(CreateOrEditLichLamViecCaDto input)
         {
             var check = await _lichLamViecCa.FirstOrDefaultAsync(x=>x.Id==input.Id);
-            if (check != null)
+            if (check == null)
             {
                 return await Create(input);
             }

@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.ChungTu.Dto
 {
-    internal class ChungTuDto
+    public class LoaiChungTuDto
     {
+        public int Id { get; set; }
+        public string MaLoaiChungTu { get; set; }
+        public string TenLoaiCHungTu { get; set; }
+        public int TrangThai { get; set; }
     }
 }
