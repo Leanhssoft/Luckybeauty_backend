@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.MauIn.Dto
 {
-    internal class CreateOrEditMauInDto
+    public class CreateOrEditMauInDto
     {
+        public Guid Id { get; set; }
+        public int LoaiChungTu { set; get; }
+        public string TenMauIn{set;get;}
+        public bool LaMacDinh{set;get;}
+        public string NoiDungMauIn{set;get;}
     }
 }

@@ -80,7 +80,8 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             input.SkipCount = input.SkipCount>0 ? input.SkipCount * input.MaxResultCount : 0;
             var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = data.Count;
-            result.Items = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            var lstMauIn = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            result.Items = ObjectMapper.Map<List<MauInDto>>(lstMauIn);
             return result;
         }
     }
