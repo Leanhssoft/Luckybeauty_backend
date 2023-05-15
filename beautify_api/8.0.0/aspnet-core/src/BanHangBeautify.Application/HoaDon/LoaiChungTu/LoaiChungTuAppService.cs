@@ -49,10 +49,13 @@ namespace BanHangBeautify.HoaDon.ChungTu
         public async Task<LoaiChungTuDto> Update(CreateOrEditLoaiChungTuDto input,DM_LoaiChungTu oldData)
         {
             LoaiChungTuDto result = new LoaiChungTuDto();
-            oldData = ObjectMapper.Map<DM_LoaiChungTu>(oldData);
+            oldData.MaLoaiChungTu = input.MaLoaiChungTu;
+            oldData.TenLoaiChungTu = input.TenLoaiChungTu;
+            oldData.TrangThai = input.TrangThai;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             _loaiChungTuRepository.Update(oldData);
+            result = ObjectMapper.Map<LoaiChungTuDto>(oldData);
             return result;
         }
         [HttpPost]

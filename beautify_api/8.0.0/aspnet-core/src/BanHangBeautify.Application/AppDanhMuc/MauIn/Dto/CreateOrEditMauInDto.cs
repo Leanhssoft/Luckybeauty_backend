@@ -13,5 +13,6 @@ namespace BanHangBeautify.AppDanhMuc.MauIn.Dto
         public string TenMauIn{set;get;}
         public bool LaMacDinh{set;get;}
         public string NoiDungMauIn{set;get;}
+        public Guid IdChiNhanh { get; set; }
     }
 }

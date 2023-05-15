@@ -32,10 +32,10 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         public async Task<LichLamViecDto> Create(CreateOrEditLichLamViecDto input) {
             LichLamViecDto result = new LichLamViecDto();
             NS_LichLamViec data = new NS_LichLamViec();
-            data = ObjectMapper.Map<NS_LichLamViec>(data);
+            data = ObjectMapper.Map<NS_LichLamViec>(input);
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId ?? 0;
+            data.TenantId = AbpSession.TenantId ?? 1;
             data.TrangThai = 0;
             result = ObjectMapper.Map<LichLamViecDto>(data);
             await _lichLamViecRepository.InsertAsync(data);
@@ -44,10 +44,17 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         [NonAction]
         public async Task<LichLamViecDto> Update(CreateOrEditLichLamViecDto input,NS_LichLamViec oldData) {
             LichLamViecDto result = new LichLamViecDto();
-            oldData = ObjectMapper.Map<NS_LichLamViec>(input);
-            oldData.LastModificationTime= DateTime.Now;
-            oldData.LastModifierUserId= AbpSession.UserId;
-            await _lichLamViecRepository.UpdateAsync(oldData);
+            //oldData.GiaTriLap = input.GiaTriLap;
+            //oldData.KieuLapLai = input.KieuLapLai;
+            //oldData.LapLai = input.LapLai;
+            //oldData.TuNgay = input.TuNgay;
+            //oldData.DenNgay= input.DenNgay;
+            //oldData.IdNhanVien = input.IdNhanVien;
+            //oldData.IdChiNhanh = input.IdChiNhanh;
+            var newData = ObjectMapper.Map<NS_LichLamViec>(input);
+            newData.LastModificationTime= DateTime.Now;
+            newData.LastModifierUserId= AbpSession.UserId;
+            await _lichLamViecRepository.UpdateAsync(newData);
             result = ObjectMapper.Map<LichLamViecDto>(input);
             return result;
 

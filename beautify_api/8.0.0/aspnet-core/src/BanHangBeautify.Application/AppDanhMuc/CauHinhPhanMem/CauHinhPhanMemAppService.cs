@@ -46,7 +46,12 @@ namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
         [NonAction]
         public async Task<CauHinhPhanMemDto> Update(CreateOrEditCauHinhDto input,HT_CauHinhPhanMem oldData)
         {
-            oldData = ObjectMapper.Map<HT_CauHinhPhanMem>(input);
+            oldData.MauInMacDinh = input.MauInMacDinh;
+            oldData.SuDungMaChungTu = input.SuDungMaChungTu;
+            oldData.KhuyenMai = input.KhuyenMai;
+            oldData.IdChiNhanh = input.IdChiNhanh;
+            oldData.TichDiem = input.TichDiem;
+            oldData.QLKhachHangTheoChiNhanh = input.QLKhachHangTheoChiNhanh;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(oldData);

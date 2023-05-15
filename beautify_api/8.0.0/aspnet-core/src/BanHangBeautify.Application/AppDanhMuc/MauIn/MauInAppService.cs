@@ -45,12 +45,17 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         [NonAction]
         public async Task<MauInDto> Update(CreateOrEditMauInDto input,DM_MauIn oldData)
         {
-            oldData = ObjectMapper.Map<DM_MauIn>(input);
+            oldData.TenMauIn = input.TenMauIn;
+            oldData.NoiDungMauIn = input.TenMauIn;
+            oldData.LaMacDinh = input.LaMacDinh;
+            oldData.IdChiNhanh = input.IdChiNhanh;
+            oldData.LoaiChungTu = input.LoaiChungTu;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             await _dmMauInRepository.UpdateAsync(oldData);
             return ObjectMapper.Map<MauInDto>(oldData);
         }
+        [HttpPost]
         public async Task<MauInDto> Delete(Guid id)
         {
             var data = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == id);

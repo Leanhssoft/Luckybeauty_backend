@@ -9,7 +9,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec.Dto
     public class CreateOrEditLichLamViecDto
     {
         public Guid Id { get; set; }
-        public Guid? IdChiNhanh { get; set; }
+        public Guid IdChiNhanh { get; set; }
         public Guid IdNhanVien { get; set; }
         public DateTime TuNgay { get; set; }
         public DateTime? DenNgay { get; set; }

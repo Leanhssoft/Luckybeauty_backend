@@ -21,5 +21,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string XuLy_GhiChu { get; set; }
         public Guid? IdKhachHang { get; set; }
         public Guid? IdChiNhanh { get; set; }
+        public Guid IdNhanVien { get; set; }
+        public Guid IdDonViQuiDoi { get; set; }
     }
 }

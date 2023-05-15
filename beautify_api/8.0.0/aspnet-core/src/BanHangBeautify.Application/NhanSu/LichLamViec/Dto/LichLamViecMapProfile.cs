@@ -12,8 +12,8 @@ namespace BanHangBeautify.NhanSu.LichLamViec.Dto
     {
         public LichLamViecMapProfile()
         {
-            CreateMap<CreateOrEditLichLamViecDto,NS_CaLamViec>().ReverseMap();
-            CreateMap<LichLamViecDto, NS_CaLamViec>().ReverseMap();
+            CreateMap<CreateOrEditLichLamViecDto,NS_LichLamViec>().ReverseMap();
+            CreateMap<LichLamViecDto, NS_LichLamViec>().ReverseMap();
             CreateMap<CreateOrEditLichLamViecDto,LichLamViecDto>().ReverseMap();
         }
     }

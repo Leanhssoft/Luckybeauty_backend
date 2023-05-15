@@ -53,7 +53,9 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
         {
             var calculator = input.DenNgay.Subtract(input.TuNgay);
             var roundTimeOff = Math.Round(calculator.TotalDays, 1);
-            ollData = ObjectMapper.Map<NS_NhanVien_TimeOff>(input);
+            ollData.TuNgay = input.TuNgay;
+            ollData.DenNgay = input.DenNgay;
+            ollData.LoaiNghi = input.LoaiNghi;
             ollData.TongNgayNghi = roundTimeOff;
             ollData.LastModificationTime= DateTime.Now;
             ollData.LastModifierUserId = AbpSession.UserId;
