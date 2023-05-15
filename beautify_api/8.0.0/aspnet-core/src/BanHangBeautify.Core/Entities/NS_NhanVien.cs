@@ -45,5 +45,10 @@ namespace BanHangBeautify.Data.Entities
         public DateTime? NgaySua { get; set; }
         public Guid? NguoiXoa { get; set; }
         public DateTime? NgayXoa { get; set; }
+
+        public static implicit operator string(NS_NhanVien v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
