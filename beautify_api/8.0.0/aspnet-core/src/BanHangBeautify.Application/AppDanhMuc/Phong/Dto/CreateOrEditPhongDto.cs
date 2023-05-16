@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.Phong.Dto
 {
-    internal class CreateOrEditPhongDto
+    public class CreateOrEditPhongDto
     {
+        public Guid Id { get; set; }
+        public string MaPhong { get; set; }
+        public string TenPhong { get; set; }
+        public Guid IdViTri { get; set; }
     }
 }

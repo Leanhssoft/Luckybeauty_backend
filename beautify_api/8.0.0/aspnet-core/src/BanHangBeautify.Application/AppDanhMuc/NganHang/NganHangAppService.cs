@@ -28,6 +28,7 @@ namespace BanHangBeautify.AppDanhMuc.NganHang
             }
             return await Update(input,checkExist);
         }
+        [NonAction]
         public async Task<NganHangDto> Create(CreateOrEditNganHangDto input) {
             NganHangDto result =new NganHangDto();
             DM_NganHang data = new DM_NganHang();
@@ -40,12 +41,14 @@ namespace BanHangBeautify.AppDanhMuc.NganHang
             result = ObjectMapper.Map<NganHangDto>(data);
             return result;
         }
+        [NonAction]
         public async Task<NganHangDto> Update(CreateOrEditNganHangDto input,DM_NganHang oldData) {
             NganHangDto result = new NganHangDto();
             oldData.MaNganHang = input.MaNganHang;
             oldData.TenNganHang = input.TenNganHang;
             oldData.ThuPhiThanhToan = input.ThuPhiThanhToan;
             oldData.TheoPhanTram = input.TheoPhanTram;
+            oldData.ChungTuApDung = input.ChungTuApDung;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             await _nganHangRepository.UpdateAsync(oldData);

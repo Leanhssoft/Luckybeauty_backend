@@ -1,7 +1,9 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.Phong.Dto;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using System;
 using System.Collections.Generic;
@@ -54,6 +56,7 @@ namespace BanHangBeautify.AppDanhMuc.Phong
             result = ObjectMapper.Map<PhongDto>(oldData);
             return result;
         }
+        [HttpPost]
         public async Task<PhongDto> Delete(Guid id)
         {
             var data = await _phongRepository.FirstOrDefaultAsync(x => x.Id == id);
@@ -76,6 +79,15 @@ namespace BanHangBeautify.AppDanhMuc.Phong
             }
             return new CreateOrEditPhongDto();
         }
-        public async Task<PagedResultDto<PhongDto>> GetAll() { get; set; }
+        public async Task<PagedResultDto<PhongDto>> GetAll(PagedRequestDto input) {
+            PagedResultDto<PhongDto> result = new PagedResultDto<PhongDto>();
+            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
+            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            var data = await _phongRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = data.Count;
+            var lstData = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            result.Items = ObjectMapper.Map<List<PhongDto>>(lstData);
+            return result;
+        }
     }
 }

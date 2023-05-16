@@ -44,17 +44,16 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         [NonAction]
         public async Task<LichLamViecDto> Update(CreateOrEditLichLamViecDto input,NS_LichLamViec oldData) {
             LichLamViecDto result = new LichLamViecDto();
-            //oldData.GiaTriLap = input.GiaTriLap;
-            //oldData.KieuLapLai = input.KieuLapLai;
-            //oldData.LapLai = input.LapLai;
-            //oldData.TuNgay = input.TuNgay;
-            //oldData.DenNgay= input.DenNgay;
-            //oldData.IdNhanVien = input.IdNhanVien;
-            //oldData.IdChiNhanh = input.IdChiNhanh;
-            var newData = ObjectMapper.Map<NS_LichLamViec>(input);
-            newData.LastModificationTime= DateTime.Now;
-            newData.LastModifierUserId= AbpSession.UserId;
-            await _lichLamViecRepository.UpdateAsync(newData);
+            oldData.GiaTriLap = input.GiaTriLap;
+            oldData.KieuLapLai = input.KieuLapLai;
+            oldData.LapLai = input.LapLai;
+            oldData.TuNgay = input.TuNgay;
+            oldData.DenNgay = input.DenNgay;
+            oldData.IdNhanVien = input.IdNhanVien;
+            oldData.IdChiNhanh = input.IdChiNhanh;
+            oldData.LastModificationTime= DateTime.Now;
+            oldData.LastModifierUserId= AbpSession.UserId;
+            await _lichLamViecRepository.UpdateAsync(oldData);
             result = ObjectMapper.Map<LichLamViecDto>(input);
             return result;
 

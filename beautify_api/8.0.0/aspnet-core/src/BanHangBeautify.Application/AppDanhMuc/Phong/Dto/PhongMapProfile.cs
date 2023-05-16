@@ -14,6 +14,7 @@ namespace BanHangBeautify.AppDanhMuc.Phong.Dto
         {
             CreateMap<PhongDto, DM_Phong>().ReverseMap();
             CreateMap<CreateOrEditPhongDto, DM_Phong>().ReverseMap();
+            CreateMap<CreateOrEditPhongDto,PhongDto>().ReverseMap();
         }
     }
 }
