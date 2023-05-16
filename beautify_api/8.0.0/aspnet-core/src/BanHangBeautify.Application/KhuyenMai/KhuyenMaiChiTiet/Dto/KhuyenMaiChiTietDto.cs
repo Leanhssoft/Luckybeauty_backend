@@ -8,18 +8,18 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet.Dto
 {
     public class KhuyenMaiChiTietDto
     {
-        Id{set;get;}
-IdKhuyenMai{set;get;}
-STT{set;get;}
-TongTienHang{set;get;}
-GiamGia{set;get;}
-GiamGiaTheoPhanTram{set;get;}
-IdNhomHangMua{set;get;}
-IdDonViQuyDoiMua{set;get;}
-IdNhomHangTang{set;get;}
-IdDonViQuyDoiTang{set;get;}
-SoLuongMua{set;get;}
-SoLuongTang{set;get;}
-GiaKhuyenMai{set;get;}
+        public Guid Id{set;get;}
+        public Guid IdKhuyenMai{set;get;}
+        public byte STT{set;get;}
+        public decimal TongTienHang{set;get;}
+        public decimal GiamGia{set;get;}
+        public bool GiamGiaTheoPhanTram{set;get;}
+        public Guid IdNhomHangMua{set;get;}
+        public Guid IdDonViQuyDoiMua{set;get;}
+        public Guid IdNhomHangTang{set;get;}
+        public Guid IdDonViQuyDoiTang{set;get;}
+        public int SoLuongMua{set;get;}
+        public int SoLuongTang{set;get;}
+        public decimal GiaKhuyenMai{set;get;}
     }
 }
