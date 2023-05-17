@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.LichLamViec_Ca.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.LichLamViec_Ca
 {
+    [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Ca)]
     public class LichLamViecCaAppService: SPAAppServiceBase
     {
         private readonly IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCa;

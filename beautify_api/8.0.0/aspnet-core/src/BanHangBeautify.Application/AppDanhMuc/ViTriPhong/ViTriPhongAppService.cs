@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.ViTriPhong.Dto;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.ViTriPhong
 {
+    [AbpAuthorize(PermissionNames.Pages_ViTriPhong)]
     public class ViTriPhongAppService:SPAAppServiceBase
     {
         private readonly IRepository<DM_ViTriPhong, Guid> _repository;

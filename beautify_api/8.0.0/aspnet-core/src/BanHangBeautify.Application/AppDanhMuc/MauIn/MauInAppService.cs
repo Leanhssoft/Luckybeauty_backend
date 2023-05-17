@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.MauIn.Dto;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.MauIn
 {
+    [AbpAuthorize(PermissionNames.Pages_MauIn)]
     public class MauInAppService: SPAAppServiceBase
     {
         private readonly IRepository<DM_MauIn,Guid> _dmMauInRepository;

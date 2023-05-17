@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien_TimeOff.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +17,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
 {
+    [AbpAuthorize(PermissionNames.Pages_NhanSu_TimeOff)]
     public class NhanVienTimeOffAppService:SPAAppServiceBase
     {
         private readonly IRepository<NS_NhanVien_TimeOff,Guid> _nhanVienTimeOffRepository;

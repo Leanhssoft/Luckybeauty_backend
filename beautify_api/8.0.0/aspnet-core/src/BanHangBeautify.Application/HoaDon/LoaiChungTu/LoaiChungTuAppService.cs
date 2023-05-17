@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.ChungTu.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.ChungTu
 {
+    [AbpAuthorize(PermissionNames.Pages_LoaiChungTu)]
     public class LoaiChungTuAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_LoaiChungTu> _loaiChungTuRepository;

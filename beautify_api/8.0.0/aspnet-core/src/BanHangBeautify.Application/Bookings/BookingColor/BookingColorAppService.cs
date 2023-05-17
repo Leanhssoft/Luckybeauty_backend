@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Bookings.BookingColor.Dto;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Bookings.BookingColor
 {
+    [AbpAuthorize(PermissionNames.Pages_Booking_Color)]
     public class BookingColorAppService : SPAAppServiceBase
     {
         private readonly IRepository<Booking_Color, Guid> _repository;

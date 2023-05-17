@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhuyenMai.KhuyenMai.Dto;
 using BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet.Dto;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet
 {
+    [AbpAuthorize(PermissionNames.Pages_KhuyenMai)]
     public class KhuyenMaiChiTietAppService: SPAAppServiceBase
     {
         private readonly IRepository<DM_KhuyenMai_ChiTiet, Guid> _repository;

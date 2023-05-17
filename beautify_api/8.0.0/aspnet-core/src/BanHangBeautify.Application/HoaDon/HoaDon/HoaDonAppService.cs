@@ -1,7 +1,10 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Authorization;
+using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BanHangBeautify.HoaDon.HoaDon.Repository;
 using System;
@@ -18,6 +21,7 @@ using Newtonsoft.Json.Linq;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
+    [AbpAuthorize(PermissionNames.Pages_HoaDon)]
     public class HoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
@@ -26,9 +30,9 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
         private readonly IHoaDonRepository _repoHoaDon;
         public HoaDonAppService(
-            IRepository<BH_HoaDon, Guid> hoaDonRepository,
-            IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
-            IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
+            IRepository<BH_HoaDon, Guid> hoaDonRepository, 
+            IRepository<DM_LoaiChungTu, int> loaiChungTuRepository, 
+            IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository, 
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             IHoaDonRepository repoHoaDon
         )
@@ -107,7 +111,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
             return result;
-        }
+            }
         public async Task<string> UpdateHoaDon([FromBody] JObject data)
         {
             List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
@@ -122,10 +126,10 @@ namespace BanHangBeautify.HoaDon.HoaDon
             if (objUp == null)
             {
                 return "object null";
-            }
+        }
 
             if (string.IsNullOrEmpty(objUp.MaHoaDon))
-            {
+        {
                 objUp.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
             }
 
@@ -154,6 +158,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             await _hoaDonRepository.UpdateAsync(objUp);
             return string.Empty;
         }
+        [HttpPost]
         public async Task DeleteHoaDon(Guid id)
         {
             var hoaDon = _hoaDonRepository.FirstOrDefault(x => x.Id == id);
@@ -170,7 +175,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                         await _hoaDonChiTietRepository.UpdateAsync(item);
                     }
                 }
-
+                
                 var hoaDonAnh = await _hoaDonAnhRepository.GetAll().Where(x => x.IdHoaDon == hoaDon.IdHoaDon && x.IsDeleted == false).ToListAsync();
                 if (hoaDonAnh != null || hoaDonAnh.Count > 0)
                 {
@@ -179,7 +184,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                         item.IsDeleted = true;
                         item.DeleterUserId = AbpSession.UserId;
                         item.DeletionTime = DateTime.Now;
-                        await _hoaDonAnhRepository.UpdateAsync(item);
+                        await _hoaDonAnhRepository.UpdateAsync(item); 
                     }
                 }
                 hoaDon.IsDeleted = true;
