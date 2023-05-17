@@ -29,5 +29,7 @@ namespace BanHangBeautify.Entities
         public string NoiDungThu { get; set; } = string.Empty;
         public bool? HachToanKinhDoanh { get; set; } = true;
         public int TrangThai { get; set; } = 1;//0.xoa, 1.chua xoa
+
+        public List<QuyHoaDon_ChiTiet> QuyHoaDon_ChiTiet { get; set; }
     }
 }

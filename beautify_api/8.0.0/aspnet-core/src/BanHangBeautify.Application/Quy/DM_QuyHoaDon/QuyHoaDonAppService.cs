@@ -1,11 +1,14 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
+using BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +20,17 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
     public class QuyHoaDonAppService: SPAAppServiceBase
     {
         private readonly IRepository<QuyHoaDon, Guid> _quyHoaDonRepository;
+        private readonly IRepository<QuyHoaDon_ChiTiet, Guid> __quyHoaDonChiTiet;
         private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
-        public QuyHoaDonAppService(IRepository<QuyHoaDon, Guid> quyHoaDonRepository, IRepository<DM_LoaiChungTu, int> loaiChungTuRepository)
+        private readonly IQuyHoaDonRepository _repoQuyHD;
+        public QuyHoaDonAppService(IRepository<QuyHoaDon, Guid> quyHoaDonRepository, IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
+            IRepository<QuyHoaDon_ChiTiet, Guid> quyHoaDonChiTiet,
+            IQuyHoaDonRepository repoQuyHD)
         {
             _quyHoaDonRepository = quyHoaDonRepository;
             _loaiChungTuRepository = loaiChungTuRepository;
+            __quyHoaDonChiTiet = quyHoaDonChiTiet;
+            _repoQuyHD = repoQuyHD;
         }
         public async Task<QuyHoaDonDto> CreateOrEdit(CreateOrEditQuyHoaDonDto input)
         {
@@ -63,6 +72,40 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             await _quyHoaDonRepository.UpdateAsync(oldData);
+            return result;
+        }
+        public async Task<CreateOrEditQuyHoaDonDto> CreateQuyHoaDon([FromBody] JObject data)
+        {
+            List<QuyHoaDon_ChiTiet> lstCTQuy = new();
+            QuyHoaDon objHD = ObjectMapper.Map<QuyHoaDon>(data["soquy"].ToObject<QuyHoaDon>());
+            List<QuyHoaDon_ChiTiet> dataChiTietHD = ObjectMapper.Map<List<QuyHoaDon_ChiTiet>>(data["soquyChiTiet"].ToObject<List<QuyHoaDon_ChiTiet>>());
+
+            objHD.Id = Guid.NewGuid();
+            objHD.TenantId = AbpSession.TenantId ?? 1;
+            objHD.CreatorUserId = AbpSession.UserId;
+            objHD.CreationTime = DateTime.Now;
+
+            if (string.IsNullOrEmpty(objHD.MaHoaDon))
+            {
+                var maChungTu = await _repoQuyHD.FnGetMaPhieuThuChi(AbpSession.TenantId ?? 1, objHD.IdChiNhanh ?? null,
+                    objHD.IdLoaiChungTu, objHD.NgayLapHoaDon);
+                objHD.MaHoaDon = maChungTu;
+            }
+            foreach (var item in dataChiTietHD)
+            {
+                QuyHoaDon_ChiTiet ctNew = ObjectMapper.Map<QuyHoaDon_ChiTiet>(item);
+                ctNew.Id = Guid.NewGuid();
+                ctNew.IdQuyHoaDon = objHD.Id;
+                ctNew.TenantId = AbpSession.TenantId ?? 1;
+                ctNew.CreatorUserId = AbpSession.UserId;
+                ctNew.CreationTime = DateTime.Now;
+                lstCTQuy.Add(ctNew);
+            }
+            await _quyHoaDonRepository.InsertAsync(objHD);
+            await __quyHoaDonChiTiet.InsertRangeAsync(lstCTQuy);
+
+            objHD.QuyHoaDon_ChiTiet = lstCTQuy;
+            var result = ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(objHD);
             return result;
         }
         [HttpPost]

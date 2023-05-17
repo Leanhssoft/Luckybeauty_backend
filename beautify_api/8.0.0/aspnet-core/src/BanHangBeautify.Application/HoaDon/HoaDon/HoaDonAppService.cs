@@ -30,9 +30,9 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
         private readonly IHoaDonRepository _repoHoaDon;
         public HoaDonAppService(
-            IRepository<BH_HoaDon, Guid> hoaDonRepository, 
-            IRepository<DM_LoaiChungTu, int> loaiChungTuRepository, 
-            IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository, 
+            IRepository<BH_HoaDon, Guid> hoaDonRepository,
+            IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
+            IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             IHoaDonRepository repoHoaDon
         )
@@ -90,7 +90,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
             if (string.IsNullOrEmpty(objHD.MaHoaDon))
             {
-                var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, objHD.IdChiNhanh??null,
+                var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, objHD.IdChiNhanh ?? null,
                     objHD.IdLoaiChungTu, objHD.NgayLapHoaDon);
                 objHD.MaHoaDon = maChungTu;
             }
@@ -111,7 +111,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
             return result;
-            }
+        }
         public async Task<string> UpdateHoaDon([FromBody] JObject data)
         {
             List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
@@ -126,10 +126,10 @@ namespace BanHangBeautify.HoaDon.HoaDon
             if (objUp == null)
             {
                 return "object null";
-        }
+            }
 
             if (string.IsNullOrEmpty(objUp.MaHoaDon))
-        {
+            { 
                 objUp.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
             }
 
@@ -175,7 +175,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                         await _hoaDonChiTietRepository.UpdateAsync(item);
                     }
                 }
-                
+
                 var hoaDonAnh = await _hoaDonAnhRepository.GetAll().Where(x => x.IdHoaDon == hoaDon.IdHoaDon && x.IsDeleted == false).ToListAsync();
                 if (hoaDonAnh != null || hoaDonAnh.Count > 0)
                 {
@@ -184,7 +184,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                         item.IsDeleted = true;
                         item.DeleterUserId = AbpSession.UserId;
                         item.DeletionTime = DateTime.Now;
-                        await _hoaDonAnhRepository.UpdateAsync(item); 
+                        await _hoaDonAnhRepository.UpdateAsync(item);
                     }
                 }
                 hoaDon.IsDeleted = true;
