@@ -8,16 +8,16 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem.Dto
 {
     public class CauHinhTichDiemDto
     {
-       public Guid  Id{set;get;}
-public Guid IdCauHinh{set;get;}
-public Guid TyLeDoiDiem{set;get;}
-public Guid ChoPhepThanhToanBangDiem{set;get;}
-public Guid DiemThanhToan{set;get;}
-public Guid TienThanhToan{set;get;}
-public Guid KhongTichDiemHDGiamGia{set;get;}
-public Guid TichDiemHoaDonGiamGia{set;get;}
-public Guid KhongTichDiemSPGiamGia{set;get;}
-public Guid TatCaKhachHang{set;get;}
-public Guid SoLanMua{set;get;}
+        public Guid Id{set;get;}
+        public Guid IdCauHinh{set;get;}
+        public decimal TyLeDoiDiem{set;get;}
+        public bool ChoPhepThanhToanBangDiem{set;get;}
+        public decimal DiemThanhToan{set;get;}
+        public decimal TienThanhToan{set;get;}
+        public bool KhongTichDiemHDGiamGia{set;get;}
+        public bool TichDiemHoaDonGiamGia{set;get;}
+        public bool KhongTichDiemSPGiamGia{set;get;}
+        public bool TatCaKhachHang{set;get;}
+        public int SoLanMua{set;get;}
     }
 }

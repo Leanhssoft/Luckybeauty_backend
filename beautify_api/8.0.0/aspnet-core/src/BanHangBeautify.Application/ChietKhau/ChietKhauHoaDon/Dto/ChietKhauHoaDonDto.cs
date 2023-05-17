@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto
 {
-    internal class ChietKhauHoaDonDto
+    public class ChietKhauHoaDonDto
     {
+        public Guid Id{ set; get; }
+        public Guid IdChiNhanh{ set; get; }
+        public byte LoaiChietKhau{ set; get; }
+        public decimal GiaTriChietKhau{ set; get; }
+        public string ChungTuApDung{ set; get; }
     }
 }

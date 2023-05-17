@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDonChiTiet.Dto
 {
-    internal class CreateOrEditChietKhauHDCTDto
+    public class CreateOrEditChietKhauHDCTDto
     {
+        public Guid Id { set; get; }
+        public Guid IdChietKhauHD { set; get; }
+        public Guid IdNhanVien { set; get; }
     }
 }

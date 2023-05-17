@@ -112,7 +112,7 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
                     Id = item.Id,
                     IdNhomKhachHang = item.IdNhomKhachHang,
                     IdTichDiem = item.IdTichDiem
-                })
+                });
             }
             result.Items = ObjectMapper.Map<List<CauHinhTichDiemChiTietDto>>(lstData);
             return result;

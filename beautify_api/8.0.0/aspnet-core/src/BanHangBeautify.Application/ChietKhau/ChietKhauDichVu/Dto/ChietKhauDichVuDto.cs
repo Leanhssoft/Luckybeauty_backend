@@ -12,8 +12,8 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto
        public Guid IdChiNhanh{set;get;}
        public Guid IdNhanVien{set;get;}
        public Guid IdDonViQuyDoi{set;get;}
-       public Guid LoaiChietKhau{set;get;}
-       public Guid GiaTri{set;get;}
-       public Guid LaPhanTram { set; get; }
+       public byte LoaiChietKhau{set;get;}
+       public decimal GiaTri{set;get;}
+       public bool LaPhanTram { set; get; }
     }
 }

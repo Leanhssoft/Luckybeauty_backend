@@ -42,6 +42,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.IsDeleted = false;
+            data.TenantId = AbpSession.TenantId??1;
             await _khuyenMaiApDungRepository.InsertAsync(data);
             return result;
         }
