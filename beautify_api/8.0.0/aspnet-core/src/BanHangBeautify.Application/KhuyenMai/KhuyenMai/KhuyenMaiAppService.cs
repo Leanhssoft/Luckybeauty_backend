@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhuyenMai.KhuyenMai.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMai
 {
+    [AbpAuthorize(PermissionNames.Pages_KhuyenMai)]
     public class KhuyenMaiAppService:SPAAppServiceBase
     {
         private readonly IRepository<DM_KhuyenMai,Guid> _khuyenMaiRepository;

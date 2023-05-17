@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.PhongBan.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.PhongBan
 {
+    [AbpAuthorize(PermissionNames.Pages_PhongBan)]
     public class PhongBanAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;

@@ -1,7 +1,10 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Authorization;
+using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,13 +15,14 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
-    public class HoaDonService : SPAAppServiceBase
+    [AbpAuthorize(PermissionNames.Pages_HoaDon)]
+    public class HoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_HoaDon,Guid> _hoaDonRepository;
         private readonly IRepository<BH_HoaDon_ChiTiet,Guid> _hoaDonChiTietRepository;
         private readonly IRepository<BH_HoaDon_Anh, Guid> _hoaDonAnhRepository;
         private readonly IRepository<DM_LoaiChungTu,int> _loaiChungTuRepository;
-        public HoaDonService(
+        public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository, 
             IRepository<DM_LoaiChungTu, int> loaiChungTuRepository, 
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository, 
@@ -52,6 +56,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         {
 
         }
+        [HttpPost]
         public async Task DeleteHoaDon(Guid id)
         {
             var hoaDon = _hoaDonRepository.FirstOrDefault(x => x.Id == id);

@@ -1,8 +1,11 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDonChiTiet.Dto;
 using BanHangBeautify.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -13,6 +16,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDonChiTiet
 {
+    [AbpAuthorize(PermissionNames.Pages_ChietKhauHoaDon)]
     public class ChietKhauHoaDonChiTietAppService: SPAAppServiceBase
     {
         private readonly IRepository<NS_ChietKhauHoaDon_ChiTiet, Guid> _repository;
@@ -49,6 +53,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDonChiTiet
                 IdNhanVien = input.IdNhanVien
             };
         }
+        [HttpPost]
         public async Task<ChietKhauHDCTDto> Delete(Guid id)
         {
             var check = await _repository.FirstOrDefaultAsync(x=>x.Id==id);

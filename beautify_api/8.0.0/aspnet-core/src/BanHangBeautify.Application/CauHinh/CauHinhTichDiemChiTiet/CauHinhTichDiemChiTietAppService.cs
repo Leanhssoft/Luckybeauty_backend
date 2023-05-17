@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.CauHinh.CauHinhTichDiem.Dto;
 using BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet.Dto;
 using BanHangBeautify.Entities;
@@ -14,6 +16,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
 {
+    [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem)]
     public class CauHinhTichDiemChiTietAppService:SPAAppServiceBase
     {
         private readonly IRepository<HT_CauHinh_TichDiemChiTiet,Guid> _repository;
@@ -64,6 +67,7 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
             result.IdNhomKhachHang = input.IdNhomKhachHang;
             return result;
         }
+        [HttpPost]
         public async Task<CauHinhTichDiemChiTietDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id==id);

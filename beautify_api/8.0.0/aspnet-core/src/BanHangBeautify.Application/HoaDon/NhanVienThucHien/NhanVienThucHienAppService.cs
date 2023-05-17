@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.NhanVienThucHien.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.NhanVienThucHien
 {
+    [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien)]
     public class NhanVienThucHienAppService:SPAAppServiceBase
     {
         private readonly IRepository<BH_NhanVienThucHien, Guid> _repository;

@@ -14,6 +14,6 @@ namespace BanHangBeautify.Quy.KhoanThuChi.Dto
        public string MaKhoanThuChi{set;get;}
        public string TenKhoanThuChi{set;get;}
        public string ChungTuApDung{set;get;}
-        public string GhiChu { get; set; }
+       public string GhiChu { get; set; }
     }
 }

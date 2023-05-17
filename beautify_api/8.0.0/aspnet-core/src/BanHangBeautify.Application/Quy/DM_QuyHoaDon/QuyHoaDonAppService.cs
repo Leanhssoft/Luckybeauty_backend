@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon
 {
+    [AbpAuthorize(PermissionNames.Pages_QuyHoaDon)]
     public class QuyHoaDonAppService: SPAAppServiceBase
     {
         private readonly IRepository<QuyHoaDon, Guid> _quyHoaDonRepository;
@@ -62,6 +65,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             await _quyHoaDonRepository.UpdateAsync(oldData);
             return result;
         }
+        [HttpPost]
         public async Task<QuyHoaDonDto> Delete(Guid id)
         {
             var data = await _quyHoaDonRepository.FirstOrDefaultAsync(x => x.Id == id);

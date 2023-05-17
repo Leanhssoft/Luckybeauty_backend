@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.CauHinh.CauHinhChungTu.Dto;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +15,15 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.CauHinh.CauHinhChungTu
 {
+    [AbpAuthorize(PermissionNames.Pages_CauHinhChungTu)]
     public class CauHinhChungTuAppService:SPAAppServiceBase
     {
         private readonly IRepository<HT_CauHinh_ChungTu, Guid> _repository;
         private readonly IRepository<DM_LoaiChungTu, int> _loaiCHungTu;
-        public CauHinhChungTuAppService(IRepository<HT_CauHinh_ChungTu, Guid> repository, IRepository<DM_LoaiChungTu, int> loaiCHungTu, IRepository<DM_ChiNhanh, Guid> chiNhanh)
+        public CauHinhChungTuAppService(IRepository<HT_CauHinh_ChungTu, Guid> repository, IRepository<DM_LoaiChungTu, int> loaiCHungTu)
         {
             _repository = repository;
             _loaiCHungTu = loaiCHungTu;
-            _chiNhanh = chiNhanh;
         }
 
         public async Task<CauHinhChungTuDto> CreateOrEdit(CreateOrEditCauHinhChungTuDto input)

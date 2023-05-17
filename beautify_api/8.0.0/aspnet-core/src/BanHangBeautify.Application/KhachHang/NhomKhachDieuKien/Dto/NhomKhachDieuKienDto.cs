@@ -10,13 +10,11 @@ namespace BanHangBeautify.KhachHang.NhomKhachDieuKien.Dto
 {
     public class NhomKhachDieuKienDto
     {
+        public Guid Id { get; set; }
         public byte STT { get; set; }
         public Guid IdNhomKhach { get; set; }
-        [ForeignKey("IdNhomKhach")]
-        public DM_NhomKhachHang DM_NhomKhachHang { get; set; }
-
         public byte LoaiDieuKien { get; set; }
-        public byte LoaiSoSanh { get; set; } // 1: > , 2: >= , 3: = , 4: <=, 5: <, 6 : khác
+        public byte LoaiSoSanh { get; set; }
 
         public float GiaTriSo { get; set; }
         public bool GiaTriBool { get; set; }

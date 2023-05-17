@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
@@ -15,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhatKyHoatDong
 {
+    [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac)]
     public class NhatKyThaoTacAppService : SPAAppServiceBase, INhatKyThaoTacAppService
     {
         private readonly IRepository<HT_NhatKyThaoTac, Guid> _repository;

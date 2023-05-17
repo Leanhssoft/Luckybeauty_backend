@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.NhomKhachDieuKien.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
 {
+    [AbpAuthorize(PermissionNames.Pages_NhomKhach_DieuKien)]
     public class NhomKhachDieuKienAppService:SPAAppServiceBase
     {
         private readonly IRepository<DM_NhomKhach_DieuKien, Guid> _repository;
@@ -59,6 +62,7 @@ namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
             await _repository.UpdateAsync(oldData);
             return result;
         }
+        [HttpPost]
         public async Task<NhomKhachDieuKienDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);

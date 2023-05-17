@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.CauHinhPhanMem.Dto;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.CauHinh.CauHinhTichDiem.Dto;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.CauHinh.CauHinhTichDiem
 {
+    [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem)]
     public class CauHinhTichDiemAppService:SPAAppServiceBase
     {
         private readonly IRepository<HT_CauHinh_TichDiem,Guid> _repository;

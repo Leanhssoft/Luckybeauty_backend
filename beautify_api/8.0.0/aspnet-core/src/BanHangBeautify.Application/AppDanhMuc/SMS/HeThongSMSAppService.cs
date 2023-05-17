@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.SMS.Dto;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.SMS
 {
+    [AbpAuthorize(PermissionNames.Pages_HeThongSMS)]
     public class HeThongSMSAppService: SPAAppServiceBase
     {
         private readonly IRepository<HeThong_SMS,Guid> _repository;

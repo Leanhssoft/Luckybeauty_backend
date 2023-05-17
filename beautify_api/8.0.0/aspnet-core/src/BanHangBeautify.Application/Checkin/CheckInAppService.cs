@@ -1,4 +1,6 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Authorization;
+using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Checkin.Repository;
 using BanHangBeautify.CheckIn.Dto;
@@ -16,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Checkin
 {
+    [AbpAuthorize(PermissionNames.Pages_CheckIn)]
     public class CheckInAppService : SPAAppServiceBase
     {
         private readonly IRepository<KH_CheckIn, Guid> _khCheckIn;

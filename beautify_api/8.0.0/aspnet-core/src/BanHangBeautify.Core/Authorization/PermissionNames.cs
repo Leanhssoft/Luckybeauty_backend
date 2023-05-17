@@ -88,6 +88,34 @@
         public const string Pages_ChucVu_Create = "Pages.ChucVu.Create";
         public const string Pages_ChucVu_Edit = "Pages.ChucVu.Edit";
         public const string Pages_ChucVu_Delete = "Pages.ChucVu.Delete";
+
+        public const string Pages_CauHinhPhanMem = "Pages.CauHinhPhanMem";
+        public const string Pages_MauIn = "Pages.MauIn";
+        public const string Pages_NganHang = "Pages.NganHang";
+        public const string Pages_TaiKhoanNganHang = "Pages.TaiKhoanNganHang";
+        public const string Pages_Phong = "Pages.Phong";
+        public const string Pages_HeThongSMS = "Pages.HeThongSMS";
+        public const string Pages_ViTriPhong = "Pages.ViTriPhong";
+        public const string Pages_Booking_Color = "Pages.Booking_Color";
+        public const string Pages_CauHinhChungTu = "Pages_CauHinhChungTu";
+        public const string Pages_CauHinhTichDiem = "Pages_CauHinhTichDiem";
+        public const string Pages_CheckIn = "Pages.CheckIn";
+        public const string Pages_ChietKhauDichVu = "Pages.ChietKhauDichVu";
+        public const string Pages_ChietKhauHoaDon = "Pages.ChietKhauHoaDon";
+        public const string Pages_HoaDon_Anh = "Pages.HoaDon_Anh";
+        public const string Pages_HoaDon = "Pages.HoaDon";
+        public const string Pages_LoaiChungTu = "Pages.LoaiChungTu";
+        public const string Pages_NhanVienThucHien = "Pages.NhanVienThucHien";
+        public const string Pages_NhomKhach_DieuKien = "Pages.NhomKhachDieuKien";
+        public const string Pages_KhuyenMai = "Pages.KhuyenMai";
+        public const string Pages_KhuyenMai_ApDung = "Pages.KhuyenMaiApDung";
+        public const string Pages_NhanSu_LichLamViec = "Pages.NhanSu_CaLamViec";
+        public const string Pages_NhanSu_LichLamViec_Ca = "Pages.NhanSu_LichLamViec_Ca";
+        public const string Pages_NhanSu_NgayNghiLe = "Pages.NhanSu_NgayNghiLe";
+        public const string Pages_NhanSu_TimeOff = "Pages.NhanSu_TimeOff";
+        public const string Pages_NhatKyThaoTac = "Pages.NhatKyThaoTac";
+        public const string Pages_QuyHoaDon = "Pages.QuyHoaDon";
+        public const string Pages_KhoanThuChi = "Pages.KhoanThuChi";
         #endregion
         //COMMON PERMISSIONS (FOR BOTH OF TENANTS AND HOST)
 

@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhuyenMai.KhuyenMaiApDung.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
 {
+    [AbpAuthorize(PermissionNames.Pages_KhuyenMai_ApDung)]
     public class KhuyenMaiApDungAppService: SPAAppServiceBase
     {
         private readonly IRepository<DM_KhuyenMai_ApDung,Guid> _khuyenMaiApDungRepository;
@@ -59,6 +62,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
             await _khuyenMaiApDungRepository.UpdateAsync(oldData);
             return result;
         }
+        [HttpPost]
         public async Task<KhuyenMaiApDungDto> Delete(Guid id)
         {
             var data = await _khuyenMaiApDungRepository.FirstOrDefaultAsync(x => x.Id == id);

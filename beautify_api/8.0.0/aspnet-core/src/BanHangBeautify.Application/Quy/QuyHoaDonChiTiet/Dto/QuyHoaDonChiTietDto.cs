@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto
 {
-    public class QuyHoaDonCHiTietDto
+    public class QuyHoaDonChiTietDto
     {
         public Guid Id { set; get; }
         public Guid IdQuyHoaDon { set; get; }

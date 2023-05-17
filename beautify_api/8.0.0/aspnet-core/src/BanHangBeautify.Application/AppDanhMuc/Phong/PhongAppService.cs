@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.Phong.Dto;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.AppDanhMuc.Phong
 {
+    [AbpAuthorize(PermissionNames.Pages_Phong)]
     public class PhongAppService:SPAAppServiceBase
     {
         private readonly IRepository<DM_Phong,Guid> _phongRepository;
