@@ -26,6 +26,5 @@
   <ItemGroup>
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
-    <Folder Include="HoaDon\HoaDonChiTiet\" />
   </ItemGroup>
 </Project>
