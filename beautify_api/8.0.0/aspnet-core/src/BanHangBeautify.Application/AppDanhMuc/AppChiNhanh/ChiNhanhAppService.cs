@@ -7,6 +7,7 @@ using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,9 +22,9 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             _chiNhanhRepository = chiNhanhRepository;
         }
         [HttpGet]
-        public async Task<ListResultDto<DM_ChiNhanh>> GetAllChiNhanh(PagedResultRequestDto input, string keyWord)
+        public async Task<ListResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedResultRequestDto input, string keyWord)
         {
-            ListResultDto<DM_ChiNhanh> result = new ListResultDto<DM_ChiNhanh>();
+            ListResultDto<ChiNhanhDto> result = new ListResultDto<ChiNhanhDto>();
             var chiNhanhs = await _chiNhanhRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
             if (!string.IsNullOrEmpty(keyWord))
             {
@@ -31,12 +32,23 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             }
             input.MaxResultCount = 10;
             input.SkipCount = input.SkipCount > 0 ? input.SkipCount * 10 : 0;
-            result.Items = chiNhanhs.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            chiNhanhs = chiNhanhs.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            result.Items = ObjectMapper.Map<List<ChiNhanhDto>>(chiNhanhs);
             return result;
         }
         public async Task<DM_ChiNhanh> GetChiNhanh(Guid id)
         {
             return await _chiNhanhRepository.GetAsync(id);
+        }
+
+        public async Task<CreateChiNhanhDto> GetForEdit(Guid id)
+        {
+            var data = await _chiNhanhRepository.GetAsync(id);
+            if (data!=null)
+            {
+                return ObjectMapper.Map<CreateChiNhanhDto>(data);
+            }
+            return new CreateChiNhanhDto();
         }
         [HttpPost]
         public async Task<ChiNhanhDto> CreateOrEditChiNhanh(CreateChiNhanhDto dto)
