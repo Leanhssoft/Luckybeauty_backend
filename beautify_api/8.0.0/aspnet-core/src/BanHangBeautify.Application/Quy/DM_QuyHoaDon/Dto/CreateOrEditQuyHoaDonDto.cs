@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BanHangBeautify.Entities;
+using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +18,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
         public float? TongTienThu{set;get;}
         public string NoiDungThu{set;get;}
         public bool HachToanKinhDoanh { set; get; }
+        public List<QuyHoaDonChiTietDto> QuyHoaDon_ChiTiet { get; set; }
+
     }
 }

@@ -117,33 +117,5 @@
     <text name="ResetPasswordStepOneInfo">1. Nhập mật khẩu quản trị của bạn</text>
     <text name="ResetPasswordStepTwoInfo">2. Sao chép mật khẩu ngẫu nhiên này để bạn có thể gửi cho người dùng</text>
     <text name="UsersActivation">Kích hoạt người dùng</text>
-	  <test name ="CauHinhPhanMem">Cấu hình phần mềm</test>
-	  <test name ="MauIn">Mẫu in</test>
-	  <test name ="NganHang">Ngân hàng</test>
-	  <test name ="TaiKhoanNganHang">Tài khoản ngân hàng</test>
-	  <test name ="Phong">Phòng</test>
-	  <test name ="HeThongSMS">Hệ thống SMS</test>
-	  <test name ="BookingColor">Màu booking</test>
-	  <test name ="CauHinhChungTu">Cấu hình chứng từ</test>
-	  <test name ="CauHinhTichDiem">Cấu hình tích điểm</test>
-	  <test name ="CheckIn">Check In</test>
-	  <test name ="ChietKhauDichVu">Chiết khấu dịch vụ</test>
-	  <test name ="ChietKhauHoaDon">Chiết khấu hóa đơn</test>
-	  <test name ="HoaDon">Hóa đơn</test>
-	  <test name ="AnhHoaDon">Ảnh hóa đơn</test>
-	  <test name ="LoaiChungTu">Loại chứng từ</test>
-	  <test name ="NhanVienThucHien">Nhân viên thực hiện</test>
-	  <test name ="NangNhomKhach">Nâng nhóm khách</test>
-	  <test name ="KhuyenMaiApDung">Khuyễn mãi áp dụng</test>
-	  <test name ="LichLamViec">Lịch làm việc</test>
-	  <test name ="LichLamViecCa">Lịch làm việc ca</test>
-	  <test name ="NgayNghiLe">Ngày nghỉ lễ</test>
-	  <test name ="NhanVienNghi">Nhân viên nghỉ</test>
-	  <test name ="NhatKyThaoTac">NHật ký thao tác</test>
-	  <test name ="QuyHoaDon">Quỹ hóa đơn</test>
-	  <test name ="ThuChi">Thu chi</test>
-	  <test name ="Unlock">Mở khóa</test>
-	  <test name ="NhomKhach">Nhóm khách hàng</test>
-	<text name="NhatKyThaoTac">Nhật ký thao tác</text>
   </texts>
 </localizationDictionary>
