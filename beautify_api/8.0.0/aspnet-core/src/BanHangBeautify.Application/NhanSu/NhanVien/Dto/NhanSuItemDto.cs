@@ -27,5 +27,6 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public DateTime NgayVaoLam { set; get; }
         public byte[] Avatar { get; set; }
         public string TenChucVu { set; get; }
+        public string TenPhongBan { set; get; }
     }
 }

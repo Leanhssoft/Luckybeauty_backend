@@ -1,9 +1,14 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Runtime.Session;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.PhongBan.Dto;
+using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,9 +22,17 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
     public class ChiNhanhAppService : SPAAppServiceBase
     {
         public readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
-        public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhRepository)
+        public readonly IRepository<User, long> _userRepository;
+        private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
+        private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;
+        public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,IRepository<User, long> userRepository,
+            IRepository<NS_NhanVien,Guid> nhanSuRepository,
+            IRepository<DM_PhongBan,Guid> phongBanRepository)
         {
             _chiNhanhRepository = chiNhanhRepository;
+            _userRepository = userRepository;
+            _nhanSuRepository = nhanSuRepository;
+            _phongBanRepository = phongBanRepository;
         }
         [HttpGet]
         public async Task<ListResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedResultRequestDto input, string keyWord)
@@ -40,7 +53,35 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         {
             return await _chiNhanhRepository.GetAsync(id);
         }
+        public async Task<List<SuggestChiNhanh>> GetByUserId(long userId)
+        {
+            List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();
+            var user =await _userRepository.FirstOrDefaultAsync(x => x.Id == userId && x.TenantId==(AbpSession.TenantId??1));
+            var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x => x.Id == user.NhanSuId && x.TenantId == (AbpSession.TenantId??1));
+            if (nhanSu==null)
+            {
+                var chiNhanh = _chiNhanhRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
+                foreach (var item in chiNhanh)
+                {
+                    SuggestChiNhanh rdo = new SuggestChiNhanh();
+                    rdo.Id = item.Id;
+                    rdo.TenChiNhanh = item.TenChiNhanh;
+                    result.Add(rdo);
+                }
+            }
+            else
+            {
+                var idChiNhanh = _phongBanRepository.FirstOrDefault(x => x.Id == nhanSu.IdPhongBan).IdChiNhanh;
+                var chiNhanh = _chiNhanhRepository.FirstOrDefault(x => x.Id == idChiNhanh);
+                result.Add(new SuggestChiNhanh()
+                {
+                    Id = chiNhanh.Id,
+                    TenChiNhanh = chiNhanh.TenChiNhanh
+                });
+            }
+            return result;
 
+        }
         public async Task<CreateChiNhanhDto> GetForEdit(Guid id)
         {
             var data = await _chiNhanhRepository.GetAsync(id);

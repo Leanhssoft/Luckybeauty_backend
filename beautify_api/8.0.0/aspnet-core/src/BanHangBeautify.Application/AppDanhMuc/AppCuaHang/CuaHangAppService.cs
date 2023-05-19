@@ -23,20 +23,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
         }
-        public async Task<CuaHangDto> CreateCongTy(CreateOrEditCuaHangDto dto)
-        {
-            var findExist = await _congTyRepository.FirstOrDefaultAsync(dto.Id);
-            if (findExist == null)
-            {
-                return await CreateCuaHang(dto);
-            }
-            else
-            {
-                return await EditCuaHang(dto, findExist);
-            }
-        }
-        [NonAction]
-        public async Task<CuaHangDto> CreateCuaHang(CreateOrEditCuaHangDto dto)
+        public async Task<CuaHangDto> CreateCuaHang(CreateCuaHangDto dto)
         {
             HT_CongTy data = new HT_CongTy();
             data.Id = Guid.NewGuid();
@@ -59,6 +46,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             chiNhanh.Id = Guid.NewGuid();
             chiNhanh.MaChiNhanh = dto.MaChiNhanh;
             chiNhanh.TenChiNhanh = dto.TenChiNhanh;
+            chiNhanh.SoDienThoai = dto.SoDienThoai;
             chiNhanh.MaSoThue = dto.MaSoThue;
             chiNhanh.DiaChi = dto.DiaChi;
             chiNhanh.GhiChu = dto.GhiChu;
@@ -77,28 +65,28 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             //store = ObjectMapper.Map<CuaHangDto>(dto);
             //return store;
         }
-        [NonAction]
-        public async Task<CuaHangDto> EditCuaHang(CreateOrEditCuaHangDto dto, HT_CongTy item)
+        public async Task<CuaHangDto> EditCuaHang(EditCuaHangDto dto)
         {
-            item.TenCongTy = dto.TenCongTy;
-            item.DiaChi = dto.DiaChi;
-            item.SoDienThoai = dto.SoDienThoai;
-            item.GhiChu = dto.GhiChu;
-            item.MaSoThue = dto.MaSoThue;
-            item.Logo = dto.Logo;
-            item.Website = dto.Website;
-            item.Facebook = dto.Facebook;
-            item.Twitter = dto.Twitter;
-            item.Instagram = dto.Instagram;
-            item.TenantId = AbpSession.TenantId ?? 1;
-            item.LastModifierUserId = AbpSession.UserId;
-            item.LastModificationTime = DateTime.Now;
-            var result = ObjectMapper.Map<CuaHangDto>(item);
-            await _congTyRepository.UpdateAsync(item);
-            //CuaHangDto store = new CuaHangDto();
-            //store = ObjectMapper.Map<CuaHangDto>(dto);
-            //return store;
-            return result;
+            CuaHangDto store = new CuaHangDto();
+            var item = await _congTyRepository.FirstOrDefaultAsync(dto.Id);
+            if (item != null)
+            {
+                item.TenCongTy = dto.TenCongTy;
+                item.DiaChi = dto.DiaChi;
+                item.SoDienThoai = dto.SoDienThoai;
+                item.GhiChu = dto.GhiChu;
+                item.MaSoThue = dto.MaSoThue;
+                item.Logo = dto.Logo;
+                item.Website = dto.Website;
+                item.Facebook = dto.Facebook;
+                item.Twitter = dto.Twitter;
+                item.Instagram = dto.Instagram;
+                item.LastModifierUserId = AbpSession.UserId;
+                item.LastModificationTime = DateTime.Now;
+                store = ObjectMapper.Map<CuaHangDto>(item);
+                await _congTyRepository.UpdateAsync(item);
+            }
+            return store;
         }
 
         [AbpAuthorize(PermissionNames.Pages_CongTy_Delete)]
@@ -118,6 +106,27 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
         public async Task<HT_CongTy> GetCongTy(Guid id)
         {
             return await _congTyRepository.GetAsync(id);
+        }
+        public async Task<EditCuaHangDto> GetCongTyForEdit(Guid idChiNhanh)
+        {
+            var chiNhanh = _chiNhanhRepository.FirstOrDefault(x => x.Id == idChiNhanh);
+            if (chiNhanh!=null)
+            {
+                var cuaHang =  await _congTyRepository.GetAsync(chiNhanh.IdCongTy);
+                return new EditCuaHangDto() {
+                    Id = cuaHang.Id,
+                    DiaChi = cuaHang.DiaChi,
+                    Facebook = cuaHang.Facebook,
+                    GhiChu = cuaHang.GhiChu ,
+                    Instagram = cuaHang.Instagram ,
+                    Logo = cuaHang.Logo ,
+                    MaSoThue = cuaHang.MaSoThue ,SoDienThoai=cuaHang.SoDienThoai,
+                    TenCongTy = cuaHang.TenCongTy ,
+                    Twitter= cuaHang.Twitter ,
+                    Website =cuaHang.Website
+                };
+            }
+            return new EditCuaHangDto();
         }
         public async Task<ListResultDto<HT_CongTy>> GetAllCongTy(PagedResultRequestDto input, string keyWord)
         {

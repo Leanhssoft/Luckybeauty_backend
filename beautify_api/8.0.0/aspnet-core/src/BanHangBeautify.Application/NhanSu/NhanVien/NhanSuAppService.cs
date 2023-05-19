@@ -51,6 +51,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             NS_NhanVien nhanSu = new NS_NhanVien();
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
+            nhanSu.IdPhongBan = dto.IdPhongBan;
             nhanSu.MaNhanVien = dto.MaNhanVien;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
@@ -80,6 +81,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         public async Task<NhanSuItemDto> Edit(CreateOrEditNhanSuDto dto, NS_NhanVien nhanSu)
         {
             nhanSu.IdChucVu = dto.IdChucVu;
+            nhanSu.IdPhongBan = dto.IdPhongBan;
             nhanSu.MaNhanVien = dto.MaNhanVien;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
@@ -130,7 +132,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         public async Task<PagedResultDto<NhanSuDto>> GetAll(PagedResultRequestDto input, string keyWord)
         {
             PagedResultDto<NhanSuDto> result = new PagedResultDto<NhanSuDto>();
-            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Include(x=>x.IdPhongBan).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstNhanSu.Count;
             if (!string.IsNullOrEmpty(keyWord))
             {
@@ -152,7 +154,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 {
                     keyWord = "";
                 }
-                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).
+                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Include(x=>x.DM_PhongBan).
+                                           Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).
                                            OrderByDescending(x => x.CreationTime).
                                            ToListAsync();
                 lstNhanSu = lstNhanSu.Where(x => (x.TenNhanVien != null && x.TenNhanVien.Contains(keyWord)) ||
@@ -171,6 +174,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                     CCCD = x.CCCD,
                     DiaChi = x.DiaChi,
                     TenChucVu = x.NS_ChucVu == null ? "" : x.NS_ChucVu.TenChucVu,
+                    TenPhongBan = x.DM_PhongBan==null ? "": x.DM_PhongBan.TenPhongBan,
                     KieuNgaySinh = x.KieuNgaySinh,
                     NgayCap = x.NgayCap,
                     NgaySinh = x.NgaySinh,

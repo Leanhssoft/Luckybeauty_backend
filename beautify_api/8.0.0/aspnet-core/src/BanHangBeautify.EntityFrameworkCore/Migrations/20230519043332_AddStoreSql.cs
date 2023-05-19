@@ -1,51 +1,20 @@
 ﻿using System;
+using BanHangBeautify.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace BanHangBeautify.Migrations
 {
+    [DbContext(typeof(SPADbContext))]
+    [Migration("20230519043332_AddStoreSql")]
     /// <inheritdoc />
     public partial class AddStoreSql : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.UpdateData(
-                table: "DM_LoaiHangHoa",
-                keyColumn: "Id",
-                keyValue: 1,
-                columns: new[] { "CreationTime", "DeletionTime", "LastModificationTime" },
-                values: new object[] { new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(4948), null, null });
-
-            migrationBuilder.UpdateData(
-                table: "DM_LoaiHangHoa",
-                keyColumn: "Id",
-                keyValue: 2,
-                columns: new[] { "CreationTime", "DeletionTime", "LastModificationTime" },
-                values: new object[] { new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5074), null, null });
-
-            migrationBuilder.UpdateData(
-                table: "DM_LoaiHangHoa",
-                keyColumn: "Id",
-                keyValue: 3,
-                columns: new[] { "CreationTime", "DeletionTime", "LastModificationTime" },
-                values: new object[] { new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5077), null, null });
-
-            migrationBuilder.UpdateData(
-                table: "DM_LoaiKhach",
-                keyColumn: "Id",
-                keyValue: 1,
-                columns: new[] { "CreationTime", "DeletionTime", "LastModificationTime" },
-                values: new object[] { new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5322), null, null });
-
-            migrationBuilder.UpdateData(
-                table: "DM_LoaiKhach",
-                keyColumn: "Id",
-                keyValue: 2,
-                columns: new[] { "CreationTime", "DeletionTime", "LastModificationTime" },
-                values: new object[] { new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5326), null, null });
-
             migrationBuilder.Sql(@"CREATE FUNCTION [dbo].[fnSplitstring] ( @stringToSplit NVARCHAR(MAX) )
             RETURNS
              @returnList TABLE ([GiaTri] [nvarchar] (500))

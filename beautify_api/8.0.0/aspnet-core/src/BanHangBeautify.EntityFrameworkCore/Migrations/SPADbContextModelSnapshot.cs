@@ -1708,7 +1708,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(4948),
+                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7653),
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
@@ -1718,7 +1718,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5074),
+                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7677),
                             IsDeleted = false,
                             MaLoaiHangHoa = "DV",
                             TenLoaiHangHoa = "Dịch Vụ",
@@ -1728,7 +1728,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5077),
+                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7678),
                             IsDeleted = false,
                             MaLoaiHangHoa = "CB",
                             TenLoaiHangHoa = "Combo",
@@ -1842,6 +1842,9 @@ namespace BanHangBeautify.Migrations
                     b.Property<Guid>("IdChucVu")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("IdPhongBan")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1906,7 +1909,9 @@ namespace BanHangBeautify.Migrations
 
                     b.HasIndex("IdChucVu");
 
-                    b.ToTable("NS_NhanViens");
+                    b.HasIndex("IdPhongBan");
+
+                    b.ToTable("NS_NhanVien");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.BH_HoaDon", b =>
@@ -3099,7 +3104,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5322),
+                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7910),
                             IsDeleted = false,
                             MaLoaiKhachHang = "KH",
                             TenLoaiKhachHang = "Khách hàng",
@@ -3109,7 +3114,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 17, 17, 18, 39, 380, DateTimeKind.Local).AddTicks(5326),
+                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7914),
                             IsDeleted = false,
                             MaLoaiKhachHang = "NCC",
                             TenLoaiKhachHang = "Nhà cung cấp",
@@ -5232,6 +5237,14 @@ namespace BanHangBeautify.Migrations
                         .HasForeignKey("IdChucVu")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BanHangBeautify.Data.Entities.DM_PhongBan", "DM_PhongBan")
+                        .WithMany()
+                        .HasForeignKey("IdPhongBan")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DM_PhongBan");
 
                     b.Navigation("NS_ChucVu");
                 });
