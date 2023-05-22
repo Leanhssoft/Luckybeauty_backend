@@ -9,6 +9,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
         {
             CreateMap<DM_ChiNhanh, ChiNhanhDto>().ReverseMap();
             CreateMap<DM_ChiNhanh, CreateChiNhanhDto>().ReverseMap();
+            CreateMap<ChiNhanhDto, CreateChiNhanhDto>().ReverseMap();
         }
     }
 }

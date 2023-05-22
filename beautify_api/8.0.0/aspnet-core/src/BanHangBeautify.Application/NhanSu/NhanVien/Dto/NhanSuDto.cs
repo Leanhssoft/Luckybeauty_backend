@@ -22,5 +22,6 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public string NoiCap { get; set; }
         public byte[] Avatar { get; set; }
         public Guid IdChucVu { set; get; }
+        public Guid IdPhongBan { get; set; }
     }
 }

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Data.Entities
 {
-    [Table("NS_NhanViens")]
+    [Table("NS_NhanVien")]
     public class NS_NhanVien : FullAuditedEntity<Guid>, IMustHaveTenant
     {
         [MaxLength(50)]
@@ -33,7 +33,9 @@ namespace BanHangBeautify.Data.Entities
         public string NoiCap { get; set; }
         public byte[] Avatar { get; set; }
 
-        //public Guid PhongBan_Id { get; set; }
+        public Guid IdPhongBan { get; set; }
+        [ForeignKey("IdPhongBan")]
+        public DM_PhongBan DM_PhongBan { get; set; }
         public Guid IdChucVu { set; get; }
         [ForeignKey("IdChucVu")]
         public NS_ChucVu NS_ChucVu { get; set; }

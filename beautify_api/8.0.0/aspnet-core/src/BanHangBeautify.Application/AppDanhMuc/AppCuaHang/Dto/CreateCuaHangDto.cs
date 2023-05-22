@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.AppDanhMuc.AppCuaHang.Dto
 {
-    public class CreateOrEditCuaHangDto : EntityDto<Guid>
+    public class CreateCuaHangDto
     {
         [Required]
         [MaxLength(2000)]

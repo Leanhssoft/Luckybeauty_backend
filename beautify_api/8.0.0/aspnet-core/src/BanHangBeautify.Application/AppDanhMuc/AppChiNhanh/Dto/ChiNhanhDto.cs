@@ -5,7 +5,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
 {
     public class ChiNhanhDto
     {
-        [Required]
         public Guid IdCongTy { get; set; }
         public string MaChiNhanh { get; set; }
         public string TenChiNhanh { get; set; }
