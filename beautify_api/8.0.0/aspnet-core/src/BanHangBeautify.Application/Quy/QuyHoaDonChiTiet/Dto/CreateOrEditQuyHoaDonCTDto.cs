@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto
 {
+    // not use
     public class CreateOrEditQuyHoaDonCTDto
     {
         public Guid Id{set;get;}

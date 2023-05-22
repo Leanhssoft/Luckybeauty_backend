@@ -23,7 +23,7 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
         {
             _quyHoaDonCTRepository = quyHoaDonCTRepository;
         }
-        public async Task<QuyHoaDonChiTietDto> CreateOrEdit(CreateOrEditQuyHoaDonCTDto input)
+        public async Task<QuyHoaDonChiTietDto> CreateOrEdit(QuyHoaDonChiTietDto input)
         {
             var checkExist = await _quyHoaDonCTRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist != null)
@@ -33,7 +33,7 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
             return await Create(input);
         }
         [NonAction]
-        public async Task<QuyHoaDonChiTietDto> Create(CreateOrEditQuyHoaDonCTDto input)
+        public async Task<QuyHoaDonChiTietDto> Create(QuyHoaDonChiTietDto input)
         {
             QuyHoaDonChiTietDto result = new QuyHoaDonChiTietDto();
             QuyHoaDon_ChiTiet data = new QuyHoaDon_ChiTiet();
@@ -47,7 +47,7 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
             return result;
         }
         [NonAction]
-        public async Task<QuyHoaDonChiTietDto> Update(CreateOrEditQuyHoaDonCTDto input, QuyHoaDon_ChiTiet oldData)
+        public async Task<QuyHoaDonChiTietDto> Update(QuyHoaDonChiTietDto input, QuyHoaDon_ChiTiet oldData)
         {
             QuyHoaDonChiTietDto result = new QuyHoaDonChiTietDto();
             oldData.IdQuyHoaDon = input.IdQuyHoaDon;
@@ -81,14 +81,14 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
             }
             return new QuyHoaDonChiTietDto();
         }
-        public async Task<CreateOrEditQuyHoaDonCTDto> GetForEdit(Guid id)
+        public async Task<QuyHoaDonChiTietDto> GetForEdit(Guid id)
         {
             var data = await _quyHoaDonCTRepository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
-                return ObjectMapper.Map<CreateOrEditQuyHoaDonCTDto>(data);
+                return ObjectMapper.Map<QuyHoaDonChiTietDto>(data);
             }
-            return new CreateOrEditQuyHoaDonCTDto();
+            return new QuyHoaDonChiTietDto();
         }
         public async Task<PagedResultDto<QuyHoaDonChiTietDto>> GetAll(PagedRequestDto input)
         {

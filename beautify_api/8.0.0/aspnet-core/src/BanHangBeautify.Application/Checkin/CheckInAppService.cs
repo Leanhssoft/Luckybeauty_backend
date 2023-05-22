@@ -10,6 +10,7 @@ using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Checkin
 {
-    [AbpAuthorize(PermissionNames.Pages_CheckIn)]
+    //[AbpAuthorize(PermissionNames.Pages_CheckIn)]
     public class CheckInAppService : SPAAppServiceBase
     {
         private readonly IRepository<KH_CheckIn, Guid> _khCheckIn;
@@ -30,6 +31,27 @@ namespace BanHangBeautify.Checkin
         {
             _khCheckIn = khCheckIn;
             _repository = checkInRepo;
+        }
+
+        public async Task<bool> CheckExistCusCheckin(Guid idCus, Guid? idCheckIn = null)
+        {
+            if (idCheckIn != null && idCheckIn != Guid.Empty)
+            {
+                var lst = await _khCheckIn.GetAllListAsync(x => x.Id != idCheckIn && x.IdKhachHang == idCus);
+                if (lst.Count > 0)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                var lst = await _khCheckIn.GetAllListAsync(x => x.IdKhachHang == idCus);
+                if (lst.Count > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public KHCheckInDto InsertCustomerCheckIn(KHCheckInDto dto)
@@ -72,6 +94,24 @@ namespace BanHangBeautify.Checkin
             catch (Exception)
             {
                 return new List<PageKhachHangCheckingDto>();
+            }
+        }
+        public async Task<string> UpdateTrangThaiCheckin(Guid idCheckIn, int trangThai = 1)
+        {
+            try
+            {
+                var objUp = await _khCheckIn.FirstOrDefaultAsync(idCheckIn);
+                if (objUp == null)
+                {
+                    return "data null";
+                }
+                objUp.TrangThai = trangThai;
+                await _khCheckIn.UpdateAsync(objUp);
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + ex.InnerException;
             }
         }
     }

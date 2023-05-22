@@ -24,7 +24,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Repositories
         public DbCommand CreateCommand(string commandText, CommandType commandType = CommandType.StoredProcedure)
         {
             var command = GetConnection().CreateCommand();
-            command.CommandTimeout = 60 * 30;
+            //command.CommandTimeout = 60 * 30;
             command.CommandText = commandText;
             command.CommandType = commandType;
             command.Transaction = GetTransaction();

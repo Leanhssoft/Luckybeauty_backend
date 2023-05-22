@@ -18,10 +18,11 @@ using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
-    [AbpAuthorize(PermissionNames.Pages_HoaDon)]
+    //[AbpAuthorize(PermissionNames.Pages_HoaDon)]
     public class HoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
@@ -58,22 +59,26 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, dto.IdChiNhanh, dto.IdLoaiChungTu, dto.NgayLapHoaDon);
                 objHD.MaHoaDon = maChungTu;
             }
-            foreach (var item in dto.BH_HoaDon_ChiTiet)
+            if (dto.HoaDonChiTiet != null)
             {
-                BH_HoaDon_ChiTiet ctNew = ObjectMapper.Map<BH_HoaDon_ChiTiet>(item);
-                ctNew.Id = Guid.NewGuid();
-                ctNew.IdHoaDon = objHD.Id;
-                ctNew.TenantId = AbpSession.TenantId ?? 1;
-                ctNew.CreatorUserId = AbpSession.UserId;
-                ctNew.CreationTime = DateTime.Now;
-                lstCTHoaDon.Add(ctNew);
-                // toddo NVThucHien
+                foreach (var item in dto.HoaDonChiTiet)
+                {
+                    BH_HoaDon_ChiTiet ctNew = ObjectMapper.Map<BH_HoaDon_ChiTiet>(item);
+                    ctNew.Id = Guid.NewGuid();
+                    ctNew.IdHoaDon = objHD.Id;
+                    ctNew.TenantId = AbpSession.TenantId ?? 1;
+                    ctNew.CreatorUserId = AbpSession.UserId;
+                    ctNew.CreationTime = DateTime.Now;
+                    lstCTHoaDon.Add(ctNew);
+                    // toddo NVThucHien
+                }
+                await _hoaDonRepository.InsertAsync(objHD);
+                await _hoaDonChiTietRepository.InsertRangeAsync(lstCTHoaDon);
             }
-            await _hoaDonRepository.InsertAsync(objHD);
-            await _hoaDonChiTietRepository.InsertRangeAsync(lstCTHoaDon);
-
-            objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
+            
+            //objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
+            result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
             return result;
         }
 
@@ -108,8 +113,9 @@ namespace BanHangBeautify.HoaDon.HoaDon
             await _hoaDonRepository.InsertAsync(objHD);
             await _hoaDonChiTietRepository.InsertRangeAsync(lstCTHoaDon);
 
-            objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
+            //objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
+            result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
             return result;
         }
         public async Task<string> UpdateHoaDon([FromBody] JObject data)
@@ -133,16 +139,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 objUp.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
             }
 
-            //objUp.IdKhachHang = dto.IdKhachHang;
-            //objUp.IdNhanVien = dto.IdNhanVien;
-            //objUp.IdHoaDon = dto.IdHoaDon;
-            //objUp.NgayLapHoaDon = dto.NgayLapHoaDon;
-            //objUp.MaHoaDon = dto.MaHoaDon;
-            //objUp.NgayApDung = dto.NgayApDung;
-            //objUp.IdHoaDon = dto.IdHoaDon;
-            //objUp.IdHoaDon = dto.IdHoaDon;
-            //objUp.IdHoaDon = dto.IdHoaDon;
-            //objUp.GhiChuHD = dto.GhiChuHD;
             objUp.LastModifierUserId = AbpSession.UserId;
             objUp.LastModificationTime = DateTime.Now;
 

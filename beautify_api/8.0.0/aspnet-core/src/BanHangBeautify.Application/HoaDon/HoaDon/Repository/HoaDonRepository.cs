@@ -7,6 +7,7 @@ using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;

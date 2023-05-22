@@ -12,5 +12,6 @@ namespace BanHangBeautify.Checkin.Repository
     public interface IKHCheckInRespository
     {
         Task<List<PageKhachHangCheckingDto>> GetListCustomerChecking(PagedKhachHangResultRequestDto input, int? tenantId);
+        Task<List<PageKhachHangCheckingDto>> GetListCustomerChecking2(PagedKhachHangResultRequestDto input, int? tenantId);
     }
 }

@@ -57,6 +57,6 @@ namespace BanHangBeautify.Entities
         [MaxLength(4000)]
         public string GhiChuHD { get; set; } = string.Empty;
         public int TrangThai { get; set; } = 3;// 0.Xóa, 1.Tạm lưu, 2.Đang xử lý, 3.Hoàn thành
-        public virtual ICollection<BH_HoaDon_ChiTiet> BH_HoaDon_ChiTiet { get; set; }
+        //public virtual ICollection<BH_HoaDon_ChiTiet> BH_HoaDon_ChiTiet { get; set; }
     }
 }

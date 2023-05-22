@@ -12,9 +12,9 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto
     {
         public QuyHoaDonChiTietMapProfile()
         {
-            CreateMap<CreateOrEditQuyHoaDonCTDto, QuyHoaDon_ChiTiet>().ReverseMap();
+            //CreateMap<CreateOrEditQuyHoaDonCTDto, QuyHoaDon_ChiTiet>().ReverseMap();
             CreateMap<QuyHoaDon_ChiTiet,QuyHoaDonChiTietDto>().ReverseMap();
-            CreateMap<CreateOrEditQuyHoaDonCTDto, QuyHoaDonChiTietDto>().ReverseMap();
+            //CreateMap<CreateOrEditQuyHoaDonCTDto, QuyHoaDonChiTietDto>().ReverseMap();
         }
     }
 }

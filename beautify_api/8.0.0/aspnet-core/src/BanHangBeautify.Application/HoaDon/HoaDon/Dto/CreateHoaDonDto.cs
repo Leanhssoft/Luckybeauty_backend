@@ -12,7 +12,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Dto
     {
         public Guid Id { get; set; }
         public int IdLoaiChungTu { get; set; }
-        public Guid IdChiNhanh { get; set; }
+        public Guid? IdChiNhanh { get; set; }
         public Guid? IdKhachHang { get; set; }
         public Guid? IdNhanVien { get; set; }
         public Guid? IdViTriPhong { get; set; }
@@ -39,7 +39,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Dto
         public string ChiPhi_GhiChu { get; set; } = string.Empty;
         public float? DiemGiaoDich { get; set; } = 0; // Số điểm khách hàng tích được khi mua hàng theo hóa đơn này
 
-        public List<HoaDonChiTietDto> BH_HoaDon_ChiTiet { get; set; }
+        public List<HoaDonChiTietDto> HoaDonChiTiet { get; set; }
         
     }
 }
