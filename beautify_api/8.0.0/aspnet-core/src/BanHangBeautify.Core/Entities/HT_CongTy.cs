@@ -25,6 +25,5 @@ namespace BanHangBeautify.Entities
         public string Instagram { get; set; }
         public string GhiChu { get; set; }
         public int TrangThai { get; set; }
-        public DateTime NgayTao { get; set; }
     }
 }

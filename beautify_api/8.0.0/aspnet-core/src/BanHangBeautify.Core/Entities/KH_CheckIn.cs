@@ -19,7 +19,6 @@ namespace BanHangBeautify.Entities
         public Guid IdKhachHang { get; set; }
         [ForeignKey("IdKhachHang")]
         public DM_KhachHang DM_KhachHang { get; set; }
-        public Guid? IdBooking { get; set; }
         public DateTime DateTimeCheckIn { get; set; }// ngay check in yyyy-mm-dd hh:mm:ss
         [MaxLength(4000)]
         public string GhiChu { get; set; } = string.Empty;

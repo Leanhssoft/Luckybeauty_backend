@@ -12,7 +12,6 @@ namespace BanHangBeautify.Entities
     {
         public int TenantId { get; set; }
         public Guid IdCauHinh{set;get;}
-        public HT_CauHinhPhanMem HT_CauHinhPhanMem { get; set; }
         public float? TyLeDoiDiem { set; get; } = 0;
         public bool? ChoPhepThanhToanBangDiem { set; get; } = false;
         public float? DiemThanhToan { set; get; } = 0;

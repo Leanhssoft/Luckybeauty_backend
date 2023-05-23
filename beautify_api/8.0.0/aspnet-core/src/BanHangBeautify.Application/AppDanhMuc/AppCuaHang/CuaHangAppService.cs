@@ -40,7 +40,6 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
-            data.NgayTao = DateTime.Now;
             await _congTyRepository.InsertAsync(data);
             DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
             chiNhanh.Id = Guid.NewGuid();
@@ -55,7 +54,6 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             chiNhanh.NgayHetHan = dto.NgayHetHan ?? DateTime.Now.AddDays(7);
             chiNhanh.TenantId = AbpSession.TenantId ?? 1;
             chiNhanh.CreatorUserId = AbpSession.UserId;
-            chiNhanh.NgayTao = DateTime.Now;
             chiNhanh.IdCongTy = data.Id;
             chiNhanh.CreationTime = DateTime.Now;
             var result = ObjectMapper.Map<CuaHangDto>(data);

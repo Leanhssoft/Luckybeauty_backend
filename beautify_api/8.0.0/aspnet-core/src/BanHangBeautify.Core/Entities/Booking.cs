@@ -10,10 +10,10 @@ namespace BanHangBeautify.Entities
         public int TenantId { get; set; }
         public Guid? IdKhachHang { set; get; }
         [ForeignKey("IdKhachHang")]
-        public DM_KhachHang? DM_KhachHang { get; set; }
+        public DM_KhachHang DM_KhachHang { get; set; }
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey(nameof(IdChiNhanh))]
-        public DM_ChiNhanh? DM_ChiNhanh { set; get; }
+        public DM_ChiNhanh DM_ChiNhanh { set; get; }
         public string TenKhachHang { get; set; }
         public string SoDienThoai { set; get; }
         public DateTime StartTime { set; get; }
@@ -22,8 +22,7 @@ namespace BanHangBeautify.Entities
         public byte LoaiBooking { get; set; }
         public int TrangThai { get; set; }
         public string GhiChu { get; set; }
-        public Guid UserXuLy { get; set; }
-        public DateTime NgayXuLy { get; set; }
-        public DateTime NgayTao { get; set; }
+        public Guid? UserXuLy { get; set; }
+        public DateTime? NgayXuLy { get; set; }
     }
 }

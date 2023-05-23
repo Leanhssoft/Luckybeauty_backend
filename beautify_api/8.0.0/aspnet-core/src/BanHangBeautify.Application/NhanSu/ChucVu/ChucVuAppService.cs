@@ -50,7 +50,6 @@ namespace BanHangBeautify.NhanSu.ChucVu
             chucVu.MoTa = dto.MoTa;
             chucVu.TenantId = AbpSession.TenantId ?? 1;
             chucVu.CreatorUserId = AbpSession.UserId;
-            chucVu.NgayTao = DateTime.Now;
             var result = ObjectMapper.Map<ChucVuDto>(chucVu);
             await _repository.InsertAsync(chucVu);
             return result;
@@ -62,7 +61,6 @@ namespace BanHangBeautify.NhanSu.ChucVu
             chucVu.TenChucVu = dto.TenChucVu;
             chucVu.TrangThai = dto.TrangThai;
             chucVu.MoTa = dto.MoTa;
-            chucVu.NgaySua = DateTime.Now;
             chucVu.LastModifierUserId = AbpSession.UserId;
             chucVu.LastModificationTime = DateTime.Now;
             var result = ObjectMapper.Map<ChucVuDto>(chucVu);

@@ -116,7 +116,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             chiNhanh.NgayHetHan = dto.NgayHetHan;
             chiNhanh.TenantId = AbpSession.TenantId ?? 1;
             chiNhanh.CreatorUserId = AbpSession.UserId;
-            chiNhanh.NgayTao = DateTime.Now;
             chiNhanh.IdCongTy = dto.IdCongTy;
             chiNhanh.CreationTime = DateTime.Now;
             var result = ObjectMapper.Map<ChiNhanhDto>(chiNhanh);
@@ -137,7 +136,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             chiNhanh.NgayHetHan = dto.NgayHetHan;
             chiNhanh.TenantId = AbpSession.TenantId ?? 1;
             chiNhanh.LastModifierUserId = AbpSession.UserId;
-            chiNhanh.NgaySua = DateTime.Now;
             var result = ObjectMapper.Map<ChiNhanhDto>(chiNhanh);
             await _chiNhanhRepository.UpdateAsync(chiNhanh);
             return result;

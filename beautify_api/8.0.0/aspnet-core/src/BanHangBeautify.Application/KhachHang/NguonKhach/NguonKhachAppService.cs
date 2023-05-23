@@ -27,7 +27,6 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             var nguonKhach = ObjectMapper.Map<DM_NguonKhach>(dto);
             nguonKhach.Id = Guid.NewGuid();
             nguonKhach.CreationTime = DateTime.Now;
-            nguonKhach.NgayTao = DateTime.Now;
             nguonKhach.CreatorUserId = AbpSession.UserId;
             nguonKhach.TenantId = AbpSession.TenantId ?? 1;
             nguonKhach.IsDeleted = false;
@@ -40,7 +39,6 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             NguonKhachDto result = new NguonKhachDto();
             var nguonKhach = ObjectMapper.Map<DM_NguonKhach>(dto);
             nguonKhach.LastModificationTime = DateTime.Now;
-            nguonKhach.NgaySua = DateTime.Now;
             nguonKhach.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(nguonKhach);
             result = ObjectMapper.Map<NguonKhachDto>(nguonKhach);
@@ -57,7 +55,6 @@ namespace BanHangBeautify.KhachHang.NguonKhach
                 delete.IsDeleted = true;
                 delete.DeletionTime = DateTime.Now;
                 delete.DeleterUserId = AbpSession.UserId;
-                delete.NgayXoa = DateTime.Now;
                 delete.TrangThai = 1;
                 _repository.Update(delete);
                 result = ObjectMapper.Map<NguonKhachDto>(delete);

@@ -76,7 +76,6 @@ namespace BanHangBeautify.Checkin
             }
             objUp.IdChiNhanh = dto.IdChiNhanh;
             objUp.IdKhachHang = dto.IdKhachHang;
-            objUp.IdBooking = dto.IdBooking;
             objUp.DateTimeCheckIn = dto.DateTimeCheckIn;
             objUp.GhiChu = dto.GhiChu;
             objUp.LastModifierUserId = AbpSession.UserId;

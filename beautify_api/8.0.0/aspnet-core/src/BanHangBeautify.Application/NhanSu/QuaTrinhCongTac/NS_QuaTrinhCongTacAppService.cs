@@ -44,7 +44,6 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             data.CreatorUserId = AbpSession.UserId;
             data.TrangThai = 0;
             data.CreationTime = DateTime.Now;
-            data.NgayTao = DateTime.Now;
             var result = ObjectMapper.Map<QuaTrinhConTacDto>(data);
             await _repository.InsertAsync(data);
             return result;
@@ -60,7 +59,6 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             data.LastModifierUserId = AbpSession.UserId;
             data.TrangThai = 0;
             data.LastModificationTime = DateTime.Now;
-            data.NgaySua = DateTime.Now;
             var result = ObjectMapper.Map<QuaTrinhConTacDto>(data);
             await _repository.UpdateAsync(data);
             return result;

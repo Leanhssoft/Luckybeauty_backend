@@ -15,6 +15,6 @@ namespace BanHangBeautify.Entities
         public Guid IdTichDiem { get; set; }
         [ForeignKey(nameof(IdTichDiem))]
         public HT_CauHinh_TichDiem HT_CauHinh_TichDiem { get; set; }
-        public Guid IdNhomKhachHang { get; set; }
+        public Guid? IdNhomKhachHang { get; set; }
     }
 }

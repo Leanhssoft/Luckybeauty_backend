@@ -16,7 +16,7 @@ namespace BanHangBeautify.Entities
         [ForeignKey("IdKhuyenMai")]
         public DM_KhuyenMai DM_KhuyenMai { get; set; }
 
-        public int STT { get; set; }
+        public byte? STT { get; set; } = 1;
         public float? TongTienHang { get; set; } = 0;
         public float? GiamGia { get; set; } = 0;
         public bool? GiamGiaTheoPhanTram { get; set; } = true;

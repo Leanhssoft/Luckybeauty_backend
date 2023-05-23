@@ -43,7 +43,6 @@ namespace BanHangBeautify.PhongBan
             data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
-            data.NgayTao = DateTime.Now;
             var result = ObjectMapper.Map<PhongBanDto>(data);
             await _phongBanRepository.InsertAsync(data);
             return result;
@@ -56,7 +55,6 @@ namespace BanHangBeautify.PhongBan
             data.TenPhongBan = dto.TenPhongBan;
             data.LastModifierUserId = AbpSession.UserId;
             data.LastModificationTime = DateTime.Now;
-            data.NgaySua = DateTime.Now;
             var result = ObjectMapper.Map<PhongBanDto>(data);
             await _phongBanRepository.UpdateAsync(data);
             return result;

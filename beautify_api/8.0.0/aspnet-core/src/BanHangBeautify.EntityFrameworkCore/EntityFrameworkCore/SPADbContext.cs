@@ -129,7 +129,109 @@ namespace BanHangBeautify.EntityFrameworkCore
                     MaLoaiKhachHang = "NCC",
                     TenLoaiKhachHang = "Nhà cung cấp",
                     TrangThai = 1
-                }) ;
+                });
+
+            modelBuilder.Entity<DM_LoaiChungTu>().HasData(
+               new DM_LoaiChungTu()
+               {
+                   Id = 1,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "HD",
+                   TenLoaiChungTu = "Hóa đơn bán",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 2,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "GDV",
+                   TenLoaiChungTu = "Gói dịch vụ",
+                   TrangThai = 1
+               },
+               new DM_LoaiChungTu()
+               {
+                   Id = 3,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "BG",
+                   TenLoaiChungTu = "Báo giá",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 4,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "PNK",
+                   TenLoaiChungTu = "Phiếu nhập kho",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 5,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "PXK",
+                   TenLoaiChungTu = "Phiếu xuất kho",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 6,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "TH",
+                   TenLoaiChungTu = "Khách trả hàng",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 7,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "THNCC",
+                   TenLoaiChungTu = "Trả hàng nhà cung cấp",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 8,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "TGT",
+                   TenLoaiChungTu = "Thẻ giá trị",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 9,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "PKK",
+                   TenLoaiChungTu = "Phiếu kiểm kê",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 10,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "CH",
+                   TenLoaiChungTu = "Chuyển hàng",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 11,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "SQPT",
+                   TenLoaiChungTu = "Phiếu thu",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 12,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "SQPC",
+                   TenLoaiChungTu = "Phiếu chi",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 13,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "DCGV",
+                   TenLoaiChungTu = "Điều chỉnh giá vốn",
+                   TrangThai = 1
+               }, new DM_LoaiChungTu()
+               {
+                   Id = 14,
+                   IsDeleted = false,
+                   MaLoaiChungTu = "NH",
+                   TenLoaiChungTu = "Nhận hàng",
+                   TrangThai = 1
+               });
         }
     }
 }

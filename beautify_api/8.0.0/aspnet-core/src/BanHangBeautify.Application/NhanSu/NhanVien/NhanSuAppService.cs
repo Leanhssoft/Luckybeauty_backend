@@ -70,11 +70,10 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.TenantId = AbpSession.TenantId ?? 1;
             nhanSu.CreationTime = DateTime.Now;
             nhanSu.CreatorUserId = AbpSession.UserId;
-            nhanSu.NgayTao = DateTime.Now;
             nhanSu.IsDeleted = false;
             var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
             result.NgayVaoLam = nhanSu.CreationTime;
-            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu).TenChucVu;
+            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu??Guid.Empty)!=null ? _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty).TenChucVu:string.Empty;
             await _repository.InsertAsync(nhanSu);
             var qtct =  CreateFirstQuaTrinhCongTac(nhanSu.Id, dto.IdChiNhanh);
             await _quaTrinhCongTac.InsertAsync(qtct);
@@ -92,7 +91,6 @@ namespace BanHangBeautify.NhanSu.NhanVien
             qtct.TenantId = AbpSession.TenantId ?? 1;
             qtct.CreationTime = DateTime.Now;
             qtct.CreatorUserId = AbpSession.UserId;
-            qtct.NgayTao = DateTime.Now;
             qtct.IsDeleted = false;
             return qtct;
         }
@@ -116,10 +114,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.Avatar = dto.Avatar;
             nhanSu.LastModificationTime = DateTime.Now;
             nhanSu.LastModifierUserId = AbpSession.UserId;
-            nhanSu.NgaySua = DateTime.Now;
             var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
             result.NgayVaoLam = nhanSu.CreationTime;
-            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu).TenChucVu;
+            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty) != null ? _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty).TenChucVu : string.Empty;
             await _repository.UpdateAsync(nhanSu);
             return result;
         }

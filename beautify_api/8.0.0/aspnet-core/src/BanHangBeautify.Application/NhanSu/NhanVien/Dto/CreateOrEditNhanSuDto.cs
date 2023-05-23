@@ -20,9 +20,9 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public string SoDienThoai { get; set; }
         [MaxLength(256)]
         public string CCCD { get; set; }
-        public DateTime NgaySinh { get; set; }
-        public int KieuNgaySinh { get; set; }
-        public int GioiTinh { get; set; }
+        public DateTime? NgaySinh { get; set; }
+        public byte? KieuNgaySinh { get; set; } = 0;
+        public byte? GioiTinh { get; set; }
         [MaxLength(256)]
         public string NgayCap { get; set; }
         [MaxLength(2000)]
@@ -31,7 +31,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
 
         //public Guid IdPhongBan { get; set; }
         public Guid? IdChiNhanh { set; get; }
-        public Guid IdChucVu { set; get; }
+        public Guid? IdChucVu { set; get; }
         public string GhiChu { get; set; }
 
     }

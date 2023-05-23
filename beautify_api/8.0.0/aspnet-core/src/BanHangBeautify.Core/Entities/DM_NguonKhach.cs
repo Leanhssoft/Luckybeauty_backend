@@ -15,9 +15,6 @@ namespace BanHangBeautify.Entities
         public int TrangThai { get; set; }
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }
-        public DateTime NgayTao { get; set; }
-        public DateTime? NgaySua { get; set; }
         public Guid? NguoiXoa { get; set; }
-        public DateTime? NgayXoa { get; set; }
     }
 }

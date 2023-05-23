@@ -17,17 +17,17 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
 {
     [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem)]
-    public class CauHinhTichDiemChiTietAppService:SPAAppServiceBase
+    public class CauHinhTichDiemChiTietAppService : SPAAppServiceBase
     {
-        private readonly IRepository<HT_CauHinh_TichDiemChiTiet,Guid> _repository;
+        private readonly IRepository<HT_CauHinh_TichDiemChiTiet, Guid> _repository;
         public CauHinhTichDiemChiTietAppService(IRepository<HT_CauHinh_TichDiemChiTiet, Guid> repository)
         {
             _repository = repository;
         }
         public async Task<CauHinhTichDiemChiTietDto> CreateOrEdit(CreateOrEditCauHinhTichDiemChiTietDto input)
         {
-            var checkExist = await _repository.FirstOrDefaultAsync(x=>x.Id==input.Id);
-            if (checkExist!=null)
+            var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (checkExist != null)
             {
                 return await Update(input, checkExist);
             }
@@ -43,7 +43,7 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
             data.IdNhomKhachHang = input.IdNhomKhachHang;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId??1;
+            data.TenantId = AbpSession.TenantId ?? 1;
             data.IsDeleted = false;
             await _repository.InsertAsync(data);
             result.Id = data.Id;
@@ -52,7 +52,7 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
             return result;
         }
         [NonAction]
-        public async Task<CauHinhTichDiemChiTietDto> Update(CreateOrEditCauHinhTichDiemChiTietDto input,HT_CauHinh_TichDiemChiTiet data)
+        public async Task<CauHinhTichDiemChiTietDto> Update(CreateOrEditCauHinhTichDiemChiTietDto input, HT_CauHinh_TichDiemChiTiet data)
         {
             CauHinhTichDiemChiTietDto result = new CauHinhTichDiemChiTietDto();
             data.IdTichDiem = input.IdTichDiem;
@@ -70,14 +70,15 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
         [HttpPost]
         public async Task<CauHinhTichDiemChiTietDto> Delete(Guid id)
         {
-            var data = await _repository.FirstOrDefaultAsync(x => x.Id==id);
-            if (data!=null)
+            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 data.IsDeleted = true;
                 data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
                 await _repository.UpdateAsync(data);
-                return new CauHinhTichDiemChiTietDto() { 
+                return new CauHinhTichDiemChiTietDto()
+                {
                     Id = data.Id,
                     IdNhomKhachHang = data.IdNhomKhachHang,
                     IdTichDiem = data.IdTichDiem

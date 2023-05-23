@@ -10,6 +10,6 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet.Dto
     {
         public Guid Id{set;get;}
         public Guid IdTichDiem{set;get;}
-        public Guid IdNhomKhachHang{ set; get; }
+        public Guid? IdNhomKhachHang{ set; get; }
     }
 }
