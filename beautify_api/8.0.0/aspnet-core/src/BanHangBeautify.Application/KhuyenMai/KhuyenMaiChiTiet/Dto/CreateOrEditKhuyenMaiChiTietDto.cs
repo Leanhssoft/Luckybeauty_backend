@@ -11,8 +11,8 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet.Dto
         public Guid Id { set; get; }
         public Guid IdKhuyenMai { set; get; }
         public byte STT { set; get; }
-        public decimal TongTienHang { set; get; }
-        public decimal GiamGia { set; get; }
+        public float TongTienHang { set; get; } = 0;
+        public float? GiamGia { set; get; } = 0;
         public bool GiamGiaTheoPhanTram { set; get; }
         public Guid IdNhomHangMua { set; get; }
         public Guid IdDonViQuyDoiMua { set; get; }
@@ -20,6 +20,6 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet.Dto
         public Guid IdDonViQuyDoiTang { set; get; }
         public int SoLuongMua { set; get; }
         public int SoLuongTang { set; get; }
-        public decimal GiaKhuyenMai { set; get; }
+        public float? GiaKhuyenMai { set; get; } = 0;
     }
 }

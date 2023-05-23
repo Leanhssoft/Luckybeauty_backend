@@ -12,8 +12,8 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem.Dto
         public Guid IdCauHinh { set; get; }
         public decimal TyLeDoiDiem { set; get; }
         public bool ChoPhepThanhToanBangDiem { set; get; }
-        public decimal DiemThanhToan { set; get; }
-        public decimal TienThanhToan { set; get; }
+        public float? DiemThanhToan { set; get; } = 0;
+        public float TienThanhToan { set; get; } = 0;
         public bool KhongTichDiemHDGiamGia { set; get; }
         public bool TichDiemHoaDonGiamGia { set; get; }
         public bool KhongTichDiemSPGiamGia { set; get; }
