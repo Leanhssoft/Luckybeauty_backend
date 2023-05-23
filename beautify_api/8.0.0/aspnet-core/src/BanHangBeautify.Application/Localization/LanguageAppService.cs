@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.Localization;
+using BanHangBeautify.Localization.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,20 +38,37 @@ namespace BanHangBeautify.Localization
                 defaultLanguage?.Name
             );
         }
-    }
-    public class GetLanguagesOutput : ListResultDto<ApplicationLanguageListDto>
-    {
-        public string DefaultLanguageName { get; set; }
-
-        public GetLanguagesOutput()
+        public async Task<GetLanguageForEditOutput> GetLanguageForEdit(NullableIdDto input)
         {
+            ApplicationLanguage language = null;
+            if (input.Id.HasValue)
+            {
+                language = await _languageRepository.GetAsync(input.Id.Value);
+            }
 
-        }
+            var output = new GetLanguageForEditOutput();
 
-        public GetLanguagesOutput(IReadOnlyList<ApplicationLanguageListDto> items, string defaultLanguageName)
-            : base(items)
-        {
-            DefaultLanguageName = defaultLanguageName;
+            //Language
+            output.Language = language != null
+                ? ObjectMapper.Map<ApplicationLanguageEditDto>(language)
+                : new ApplicationLanguageEditDto();
+
+            //Language names
+            output.LanguageNames = _applicationCulturesProvider
+                .GetAllCultures()
+                .Select(c => new ComboboxItemDto(c.Name, c.EnglishName + " (" + c.Name + ")")
+                { IsSelected = output.Language.Name == c.Name })
+                .ToList();
+
+            //Flags
+            output.Flags = FamFamFamFlagsHelper
+                .FlagClassNames
+                .OrderBy(f => f)
+                .Select(f => new ComboboxItemDto(f, FamFamFamFlagsHelper.GetCountryCode(f))
+                { IsSelected = output.Language.Icon == f })
+                .ToList();
+
+            return output;
         }
     }
 }
