@@ -33,9 +33,9 @@ namespace BanHangBeautify.Data.Entities
         public string NoiCap { get; set; }
         public byte[] Avatar { get; set; }
 
-        public Guid IdPhongBan { get; set; }
-        [ForeignKey("IdPhongBan")]
-        public DM_PhongBan DM_PhongBan { get; set; }
+        //public Guid? IdPhongBan { get; set; }
+        //[ForeignKey("IdPhongBan")]
+        //public DM_PhongBan DM_PhongBan { get; set; }
         public Guid IdChucVu { set; get; }
         [ForeignKey("IdChucVu")]
         public NS_ChucVu NS_ChucVu { get; set; }

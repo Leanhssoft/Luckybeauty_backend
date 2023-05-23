@@ -15,18 +15,38 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.KhachHang
 {
-    //[AbpAuthorize(PermissionNames.Pages_KhachHang)]
+    [AbpAuthorize(PermissionNames.Pages_KhachHang)]
     public class KhachHangAppService : SPAAppServiceBase
     {
         private IRepository<DM_KhachHang, Guid> _repository;
         private readonly IKhachHangRespository _customerRepo;
+        private readonly IRepository<DM_NhomKhachHang, Guid> _nhomKhachHangRepository;
+        private readonly IRepository<DM_LoaiKhach,int> _loaiKhachHangRepository;
+        private readonly IRepository<DM_NguonKhach, Guid> _nguonKhachRepository;
 
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
-              IKhachHangRespository customerRepo)
+              IKhachHangRespository customerRepo,
+              IRepository<DM_NhomKhachHang,Guid> nhomKhachHangRepository,
+              IRepository<DM_LoaiKhach,int> loaiKhachRepository,
+              IRepository<DM_NguonKhach,Guid> nguonKhachRepository)
         {
             _repository = repository;
             _customerRepo = customerRepo;
+            _loaiKhachHangRepository= loaiKhachRepository;
+            _nguonKhachRepository = nguonKhachRepository;
+            _nhomKhachHangRepository = nhomKhachHangRepository;
         }
+
+        public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
+        {
+            var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
+            if (checkExist!=null)
+            {
+                return await EditKhachHang(dto,checkExist);
+            }
+            return await CreateKhachHang(dto);
+        }
+        [NonAction]
         public async Task<KhachHangDto> CreateKhachHang(CreateOrEditKhachHangDto dto)
         {
             KhachHangDto result = new KhachHangDto();
@@ -40,24 +60,36 @@ namespace BanHangBeautify.KhachHang.KhachHang
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
             return result;
         }
+        [NonAction]
+        public async Task<KhachHangDto> EditKhachHang(CreateOrEditKhachHangDto dto,DM_KhachHang khachHang)
+        {
+            KhachHangDto result = new KhachHangDto();
+            khachHang.TenKhachHang = dto.TenKhachHang;
+            khachHang.DiaChi = dto.DiaChi;
+            khachHang.IdLoaiKhach = dto.IdLoaiKhach;
+            khachHang.IdNhomKhach = dto.IdNhomKhach;
+            khachHang.IdNguonKhach = dto.IdNguonKhach;
+            khachHang.Email = dto.Email;
+            khachHang.SoDienThoai = dto.SoDienThoai;
+            khachHang.NgaySinh = dto.NgaySinh;
+            khachHang.TongTichDiem = dto.TongTichDiem;
+            khachHang.GioiTinhNam = dto.GioiTinh;
+            khachHang.Avatar = dto.Avatar;
+            khachHang.MoTa = dto.MoTa;
+            khachHang.LastModificationTime = DateTime.Now;
+            khachHang.LastModifierUserId = AbpSession.UserId;
+            await _repository.UpdateAsync(khachHang);
+            result = ObjectMapper.Map<KhachHangDto>(khachHang);
+
+            return result;
+        }
         public async Task<CreateOrEditKhachHangDto> GetKhachHang(Guid id)
         {
             var KhachHang = await _repository.GetAsync(id);
             var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
             return result;
         }
-        public async Task<KhachHangDto> EditKhachHang(CreateOrEditKhachHangDto dto)
-        {
-            KhachHangDto result = new KhachHangDto();
-            var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
-            khachHang.LastModificationTime = DateTime.Now;
-            khachHang.LastModifierUserId = AbpSession.UserId;
-            khachHang.TenantId = AbpSession.TenantId ?? 1;
-            await _repository.UpdateAsync(khachHang);
-            result = ObjectMapper.Map<KhachHangDto>(khachHang);
-
-            return result;
-        }
+        
         [HttpPost]
         public async Task<KhachHangDto> Delete(Guid id)
         {
@@ -109,7 +141,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input)
         {
             PagedResultDto<KhachHangView> ListResultDto = new PagedResultDto<KhachHangView>();
-            var lstData = await _repository.GetAll().Include(x=>x.NguonKhach).Include(x=>x.NhomKhach)
+            var lstData = await _repository.GetAll()
                 .Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             ListResultDto.TotalCount = lstData.Count;
             if (!string.IsNullOrEmpty(input.keyword))
@@ -129,20 +161,26 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
 
             lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-
-            var items = lstData.Select(x=>new KhachHangView()
+            List<KhachHangView> items = new List<KhachHangView>();
+            foreach (var item in lstData)
             {
-                Id = x.Id,
-                TenKhachHang = x.TenKhachHang,
-                CuocHenGanNhat = x.CreationTime,
-                GioiTinh = x.GioiTinhNam==null? "Khác": (x.GioiTinhNam==true?"Nam":"Nữ"),
-                SoDienThoai = x.SoDienThoai,
-                NhanVienPhuTrach = "",
-                TenNguonKhach = x.NguonKhach==null?"":x.NguonKhach.TenNguon,
-                TenNhomKhach = x.NhomKhach==null?"":x.NhomKhach.TenNhomKhach,
-                TongChiTieu = 0,
-                TongTichDiem = x.TongTichDiem
-            }).ToList();
+                KhachHangView rdo = new KhachHangView();
+                rdo.Id = item.Id;
+                rdo.MaKhachHang = item.MaKhachHang;
+                rdo.Avatar = item.Avatar;
+                rdo.TenKhachHang = item.TenKhachHang;
+                rdo.CuocHenGanNhat = item.CreationTime;
+                rdo.GioiTinh = item.GioiTinhNam == null ? "Khác" : (item.GioiTinhNam == true ? "Nam" : "Nữ");
+                rdo.SoDienThoai = item.SoDienThoai;
+                rdo.NhanVienPhuTrach = "";
+                var nguonKhach = _nguonKhachRepository.FirstOrDefault(x => x.Id == item.IdNguonKhach);
+                rdo.TenNguonKhach = nguonKhach == null ? "" : nguonKhach.TenNguon;
+                var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == item.IdNhomKhach);
+                rdo.TenNhomKhach = nhomKhach == null ? "" : nhomKhach.TenNhomKhach;
+                rdo.TongChiTieu = 0;
+                rdo.TongTichDiem = item.TongTichDiem;
+                items.Add(rdo);
+            }
             ListResultDto.Items = items;
             return ListResultDto;
         }
