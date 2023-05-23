@@ -4,28 +4,35 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.MauIn.Dto;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.MauIn
 {
-    [AbpAuthorize(PermissionNames.Pages_MauIn)]
-    public class MauInAppService: SPAAppServiceBase
+    //[AbpAuthorize(PermissionNames.Pages_MauIn)]
+    public class MauInAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_MauIn,Guid> _dmMauInRepository;
-        public MauInAppService(IRepository<DM_MauIn, Guid> dmMauInRepository)
+        private readonly IRepository<DM_MauIn, Guid> _dmMauInRepository;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        //public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        //public static readonly string Templates = Path.Combine(App, "Template");
+        public MauInAppService(IRepository<DM_MauIn, Guid> dmMauInRepository, IWebHostEnvironment hostEnvironment)
         {
             _dmMauInRepository = dmMauInRepository;
+            _hostEnvironment = hostEnvironment;
         }
         public async Task<MauInDto> CreateOrEdit(CreateOrEditMauInDto input)
         {
-            var checkExist = await _dmMauInRepository.FirstOrDefaultAsync(x=>x.Id== input.Id);
-            if (checkExist==null)
+            var checkExist = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (checkExist == null)
             {
                 return await Create(input);
             }
@@ -46,7 +53,7 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             return result;
         }
         [NonAction]
-        public async Task<MauInDto> Update(CreateOrEditMauInDto input,DM_MauIn oldData)
+        public async Task<MauInDto> Update(CreateOrEditMauInDto input, DM_MauIn oldData)
         {
             oldData.TenMauIn = input.TenMauIn;
             oldData.NoiDungMauIn = input.TenMauIn;
@@ -62,10 +69,10 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         public async Task<MauInDto> Delete(Guid id)
         {
             var data = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            if (data != null)
             {
                 data.IsDeleted = true;
-                data.DeleterUserId= AbpSession.UserId;
+                data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
                 _dmMauInRepository.Update(data);
                 return ObjectMapper.Map<MauInDto>(data);
@@ -74,8 +81,8 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         }
         public async Task<CreateOrEditMauInDto> GetForEdit(Guid id)
         {
-            var data = await _dmMauInRepository.FirstOrDefaultAsync(x=>x.Id==id);
-            if (data!=null)
+            var data = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateOrEditMauInDto>(data);
             }
@@ -84,13 +91,28 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         public async Task<PagedResultDto<MauInDto>> GetAll(PagedRequestDto input)
         {
             PagedResultDto<MauInDto> result = new PagedResultDto<MauInDto>();
-            input.Keyword= string.IsNullOrEmpty(input.Keyword)?"":input.Keyword;
-            input.SkipCount = input.SkipCount>0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
+            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
             var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = data.Count;
             var lstMauIn = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<MauInDto>>(lstMauIn);
             return result;
+        }
+        /// <summary>
+        /// read content from txt file
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public string GetFileMauIn(string file = "HoaDonBan.txt")
+        {
+            var contents = string.Empty;
+            var curFile = @".\Template\MauIn\" + file;
+            if (File.Exists(curFile))
+            {
+                contents = System.IO.File.ReadAllText(@".\Template\MauIn\" + file);
+            }
+            return contents;
         }
     }
 }

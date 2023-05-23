@@ -26,5 +26,6 @@
   <ItemGroup>
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
+    <Folder Include="Template\MauIn\" />
   </ItemGroup>
 </Project>

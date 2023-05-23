@@ -13,19 +13,27 @@ namespace BanHangBeautify.Entities
     {
         public int TenantId { get; set; }
         public Guid IdKhuyenMai { get; set; }
-        [ForeignKey(nameof(IdKhuyenMai))]
+        [ForeignKey("IdKhuyenMai")]
         public DM_KhuyenMai DM_KhuyenMai { get; set; }
 
-        public byte STT { get; set; }
-        public decimal TongTienHang { get; set; }
-        public decimal GiamGia { get; set; }
-        public bool GiamGiaTheoPhanTram { get; set; }
+        public int STT { get; set; }
+        public float? TongTienHang { get; set; } = 0;
+        public float? GiamGia { get; set; } = 0;
+        public bool? GiamGiaTheoPhanTram { get; set; } = true;
         public Guid? IdNhomHangMua { get; set; }
+        [ForeignKey("IdNhomHangMua")]
+        public DM_NhomHangHoa DM_NhomHangHoaMua { get; set; }
         public Guid? IdDonViQuiDoiMua { get; set; }
+        [ForeignKey("IdDonViQuiDoiMua")]
+        public DM_DonViQuiDoi DM_DonViQuiDoiMua { get; set; }
         public Guid? IdNhomHangTang { get; set; }
+        [ForeignKey("IdNhomHangTang")]
+        public DM_NhomHangHoa DM_NhomHangHoaTang { get; set; }
         public Guid? IdDonViQuiDoiTang { get; set; }
-        public decimal SoLuongMua { get; set; }
-        public decimal SoLuongTang { get; set; }
-        public decimal GiaKhuyenMai { get; set; }
+        [ForeignKey("IdDonViQuiDoiTang")]
+        public DM_DonViQuiDoi DM_DonViQuiDoiTang { get; set; }
+        public float? SoLuongMua { get; set; } = 0;
+        public float? SoLuongTang { get; set; } = 0;
+        public float? GiaKhuyenMai { get; set; } = 0;
     }
 }

@@ -45,4 +45,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Template\MauIn\" />
+  </ItemGroup>
 </Project>

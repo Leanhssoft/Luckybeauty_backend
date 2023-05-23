@@ -13,14 +13,14 @@ namespace BanHangBeautify.Entities
         public int TenantId { get; set; }
         public Guid IdCauHinh{set;get;}
         public HT_CauHinhPhanMem HT_CauHinhPhanMem { get; set; }
-        public decimal TyLeDoiDiem{set;get;}
-        public bool ChoPhepThanhToanBangDiem{set;get;}
-        public decimal DiemThanhToan{set;get;}
-        public decimal TienThanhToan{set;get;}
-        public bool KhongTichDiemHDGiamGia{set;get;}
-        public bool TichDiemHoaDonGiamGia{set;get;}
-        public bool KhongTichDiemSPGiamGia{set;get;}
-        public bool TatCaKhachHang{set;get;}
-        public int SoLanMua{set;get;}
+        public float? TyLeDoiDiem { set; get; } = 0;
+        public bool? ChoPhepThanhToanBangDiem { set; get; } = false;
+        public float? DiemThanhToan { set; get; } = 0;
+        public float? TienThanhToan { set; get; } = 0;
+        public bool? KhongTichDiemHDGiamGia{set;get;} = false;
+        public bool? TichDiemHoaDonGiamGia{set;get;} = false;
+        public bool? KhongTichDiemSPGiamGia { set; get; } = false;
+        public bool? TatCaKhachHang{set;get;}
+        public int? SoLanMua { set; get; } = 0;
     }
 }

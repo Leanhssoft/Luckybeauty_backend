@@ -2048,7 +2048,8 @@ namespace BanHangBeautify.Migrations
                         name: "FK_NS_NhanVien_DM_PhongBan_IdPhongBan",
                         column: x => x.IdPhongBan,
                         principalTable: "DM_PhongBan",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_NS_NhanVien_NS_ChucVu_IdChucVu",
                         column: x => x.IdChucVu,
@@ -2522,6 +2523,45 @@ namespace BanHangBeautify.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Booking_CheckIn_HoaDon",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    IdCheckIn = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdBooking = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IdHoaDon = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TrangThai = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Booking_CheckIn_HoaDon", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Booking_CheckIn_HoaDon_BH_HoaDon_IdHoaDon",
+                        column: x => x.IdHoaDon,
+                        principalTable: "BH_HoaDon",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Booking_CheckIn_HoaDon_Booking_IdBooking",
+                        column: x => x.IdBooking,
+                        principalTable: "Booking",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Booking_CheckIn_HoaDon_KH_CheckIn_IdCheckIn",
+                        column: x => x.IdCheckIn,
+                        principalTable: "KH_CheckIn",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "QuyHoaDon_ChiTiet",
                 columns: table => new
                 {
@@ -2671,9 +2711,9 @@ namespace BanHangBeautify.Migrations
                 columns: new[] { "Id", "CreationTime", "CreatorUserId", "DeleterUserId", "DeletionTime", "IsDeleted", "LastModificationTime", "LastModifierUserId", "MaLoaiHangHoa", "NguoiSua", "NguoiTao", "NguoiXoa", "TenLoaiHangHoa", "TenantId", "TrangThai" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7653), null, null, null, false, null, null, "HH", null, null, null, "Hàng Hóa", 0, 1 },
-                    { 2, new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7677), null, null, null, false, null, null, "DV", null, null, null, "Dịch Vụ", 0, 1 },
-                    { 3, new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7678), null, null, null, false, null, null, "CB", null, null, null, "Combo", 0, 1 }
+                    { 1, new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3679), null, null, null, false, null, null, "HH", null, null, null, "Hàng Hóa", 0, 1 },
+                    { 2, new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3699), null, null, null, false, null, null, "DV", null, null, null, "Dịch Vụ", 0, 1 },
+                    { 3, new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3701), null, null, null, false, null, null, "CB", null, null, null, "Combo", 0, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -2681,8 +2721,8 @@ namespace BanHangBeautify.Migrations
                 columns: new[] { "Id", "CreationTime", "CreatorUserId", "DeleterUserId", "DeletionTime", "IsDeleted", "LastModificationTime", "LastModifierUserId", "MaLoaiKhachHang", "NguoiSua", "NguoiTao", "NguoiXoa", "TenLoaiKhachHang", "TenantId", "TrangThai" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7910), null, null, null, false, null, null, "KH", null, null, null, "Khách hàng", 0, 1 },
-                    { 2, new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7914), null, null, null, false, null, null, "NCC", null, null, null, "Nhà cung cấp", 0, 1 }
+                    { 1, new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3954), null, null, null, false, null, null, "KH", null, null, null, "Khách hàng", 0, 1 },
+                    { 2, new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3959), null, null, null, false, null, null, "NCC", null, null, null, "Nhà cung cấp", 0, 1 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -3118,6 +3158,21 @@ namespace BanHangBeautify.Migrations
                 column: "IdKhachHang");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Booking_CheckIn_HoaDon_IdBooking",
+                table: "Booking_CheckIn_HoaDon",
+                column: "IdBooking");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Booking_CheckIn_HoaDon_IdCheckIn",
+                table: "Booking_CheckIn_HoaDon",
+                column: "IdCheckIn");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Booking_CheckIn_HoaDon_IdHoaDon",
+                table: "Booking_CheckIn_HoaDon",
+                column: "IdHoaDon");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BookingNhanVien_IdBooking",
                 table: "BookingNhanVien",
                 column: "IdBooking");
@@ -3489,6 +3544,9 @@ namespace BanHangBeautify.Migrations
                 name: "BH_NhanVienThucHien");
 
             migrationBuilder.DropTable(
+                name: "Booking_CheckIn_HoaDon");
+
+            migrationBuilder.DropTable(
                 name: "Booking_Color");
 
             migrationBuilder.DropTable(
@@ -3528,9 +3586,6 @@ namespace BanHangBeautify.Migrations
                 name: "HT_NhatKyThaoTac");
 
             migrationBuilder.DropTable(
-                name: "KH_CheckIn");
-
-            migrationBuilder.DropTable(
                 name: "NS_ChietKhauDichVu");
 
             migrationBuilder.DropTable(
@@ -3565,6 +3620,9 @@ namespace BanHangBeautify.Migrations
 
             migrationBuilder.DropTable(
                 name: "BH_HoaDon_ChiTiet");
+
+            migrationBuilder.DropTable(
+                name: "KH_CheckIn");
 
             migrationBuilder.DropTable(
                 name: "Booking");

@@ -21,4 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BanHangBeautify.Core\BanHangBeautify.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
 </Project>

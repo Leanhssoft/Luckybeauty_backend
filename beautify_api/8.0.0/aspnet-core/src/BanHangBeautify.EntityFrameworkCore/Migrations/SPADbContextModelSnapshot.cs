@@ -1708,7 +1708,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7653),
+                            CreationTime = new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3679),
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
@@ -1718,7 +1718,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7677),
+                            CreationTime = new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3699),
                             IsDeleted = false,
                             MaLoaiHangHoa = "DV",
                             TenLoaiHangHoa = "Dịch Vụ",
@@ -1728,7 +1728,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7678),
+                            CreationTime = new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3701),
                             IsDeleted = false,
                             MaLoaiHangHoa = "CB",
                             TenLoaiHangHoa = "Combo",
@@ -2424,6 +2424,59 @@ namespace BanHangBeautify.Migrations
                     b.ToTable("BookingService");
                 });
 
+            modelBuilder.Entity("BanHangBeautify.Entities.Booking_CheckIn_HoaDon", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("CreatorUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("DeleterUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("IdBooking")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("IdCheckIn")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("IdHoaDon")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastModifierUserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TrangThai")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdBooking");
+
+                    b.HasIndex("IdCheckIn");
+
+                    b.HasIndex("IdHoaDon");
+
+                    b.ToTable("Booking_CheckIn_HoaDon");
+                });
+
             modelBuilder.Entity("BanHangBeautify.Entities.Booking_Color", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3104,7 +3157,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7910),
+                            CreationTime = new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3954),
                             IsDeleted = false,
                             MaLoaiKhachHang = "KH",
                             TenLoaiKhachHang = "Khách hàng",
@@ -3114,7 +3167,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 19, 11, 22, 48, 632, DateTimeKind.Local).AddTicks(7914),
+                            CreationTime = new DateTime(2023, 5, 22, 21, 6, 4, 211, DateTimeKind.Local).AddTicks(3959),
                             IsDeleted = false,
                             MaLoaiKhachHang = "NCC",
                             TenLoaiKhachHang = "Nhà cung cấp",
@@ -5314,7 +5367,7 @@ namespace BanHangBeautify.Migrations
                         .IsRequired();
 
                     b.HasOne("BanHangBeautify.Entities.BH_HoaDon", "BH_HoaDon")
-                        .WithMany("BH_HoaDon_ChiTiet")
+                        .WithMany()
                         .HasForeignKey("IdHoaDon")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -5406,6 +5459,29 @@ namespace BanHangBeautify.Migrations
                     b.Navigation("Booking");
 
                     b.Navigation("DM_DonViQuiDoi");
+                });
+
+            modelBuilder.Entity("BanHangBeautify.Entities.Booking_CheckIn_HoaDon", b =>
+                {
+                    b.HasOne("BanHangBeautify.Entities.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("IdBooking");
+
+                    b.HasOne("BanHangBeautify.Entities.KH_CheckIn", "KH_CheckIn")
+                        .WithMany()
+                        .HasForeignKey("IdCheckIn")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BanHangBeautify.Entities.BH_HoaDon", "BH_HoaDon")
+                        .WithMany()
+                        .HasForeignKey("IdHoaDon");
+
+                    b.Navigation("BH_HoaDon");
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("KH_CheckIn");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.DM_ChiNhanh", b =>
@@ -5932,11 +6008,6 @@ namespace BanHangBeautify.Migrations
             modelBuilder.Entity("BanHangBeautify.Data.Entities.DM_HangHoa", b =>
                 {
                     b.Navigation("DonViQuiDois");
-                });
-
-            modelBuilder.Entity("BanHangBeautify.Entities.BH_HoaDon", b =>
-                {
-                    b.Navigation("BH_HoaDon_ChiTiet");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.QuyHoaDon", b =>

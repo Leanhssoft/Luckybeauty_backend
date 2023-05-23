@@ -18,6 +18,7 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<DichVu_NhanVien> DichVu_NhanVien { set; get; }
         public DbSet<KH_CheckIn> KH_CheckIn { get; set; }
         public DbSet<Booking_Color> Booking_Color { get; set; }
+        public DbSet<Booking_CheckIn_HoaDon> Booking_CheckIn_HoaDon { get; set; }
         #endregion
         #region Danh Mục
         public DbSet<DM_HangHoa> DM_HangHoa { set; get; }
