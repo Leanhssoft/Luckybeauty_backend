@@ -4,6 +4,7 @@ using BanHangBeautify.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BanHangBeautify.Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    partial class SPADbContextModelSnapshot : ModelSnapshot
+    [Migration("20230522020125_remove_foreignkey_loaikhach_nhomkhach_nguonkhach")]
+    partial class removeforeignkeyloaikhachnhomkhachnguonkhach
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1708,7 +1711,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 22, 14, 33, 41, 894, DateTimeKind.Local).AddTicks(5253),
+                            CreationTime = new DateTime(2023, 5, 22, 9, 1, 23, 273, DateTimeKind.Local).AddTicks(5047),
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
@@ -1718,7 +1721,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 22, 14, 33, 41, 894, DateTimeKind.Local).AddTicks(5281),
+                            CreationTime = new DateTime(2023, 5, 22, 9, 1, 23, 273, DateTimeKind.Local).AddTicks(5066),
                             IsDeleted = false,
                             MaLoaiHangHoa = "DV",
                             TenLoaiHangHoa = "Dịch Vụ",
@@ -1728,7 +1731,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 5, 22, 14, 33, 41, 894, DateTimeKind.Local).AddTicks(5284),
+                            CreationTime = new DateTime(2023, 5, 22, 9, 1, 23, 273, DateTimeKind.Local).AddTicks(5068),
                             IsDeleted = false,
                             MaLoaiHangHoa = "CB",
                             TenLoaiHangHoa = "Combo",
@@ -1842,6 +1845,9 @@ namespace BanHangBeautify.Migrations
                     b.Property<Guid>("IdChucVu")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("IdPhongBan")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1905,6 +1911,8 @@ namespace BanHangBeautify.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdChucVu");
+
+                    b.HasIndex("IdPhongBan");
 
                     b.ToTable("NS_NhanVien");
                 });
@@ -3093,7 +3101,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 5, 22, 14, 33, 41, 894, DateTimeKind.Local).AddTicks(5551),
+                            CreationTime = new DateTime(2023, 5, 22, 9, 1, 23, 273, DateTimeKind.Local).AddTicks(5360),
                             IsDeleted = false,
                             MaLoaiKhachHang = "KH",
                             TenLoaiKhachHang = "Khách hàng",
@@ -3103,7 +3111,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 5, 22, 14, 33, 41, 894, DateTimeKind.Local).AddTicks(5557),
+                            CreationTime = new DateTime(2023, 5, 22, 9, 1, 23, 273, DateTimeKind.Local).AddTicks(5365),
                             IsDeleted = false,
                             MaLoaiKhachHang = "NCC",
                             TenLoaiKhachHang = "Nhà cung cấp",
@@ -4715,13 +4723,10 @@ namespace BanHangBeautify.Migrations
                     b.Property<DateTime?>("DenNgay")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("IdChiNhanh")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("IdNhanVien")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("IdPhongBan")
+                    b.Property<Guid>("IdPhongBan")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
@@ -4751,12 +4756,14 @@ namespace BanHangBeautify.Migrations
                     b.Property<int>("TrangThai")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TuNgay")
+                    b.Property<DateTime?>("TuNgay")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("IdNhanVien");
+
+                    b.HasIndex("IdPhongBan");
 
                     b.ToTable("NS_QuaTrinh_CongTac");
                 });
@@ -5227,6 +5234,14 @@ namespace BanHangBeautify.Migrations
                         .HasForeignKey("IdChucVu")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BanHangBeautify.Data.Entities.DM_PhongBan", "DM_PhongBan")
+                        .WithMany()
+                        .HasForeignKey("IdPhongBan")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DM_PhongBan");
 
                     b.Navigation("NS_ChucVu");
                 });
@@ -5720,6 +5735,14 @@ namespace BanHangBeautify.Migrations
                         .HasForeignKey("IdNhanVien")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BanHangBeautify.Data.Entities.DM_PhongBan", "DM_PhongBan")
+                        .WithMany()
+                        .HasForeignKey("IdPhongBan")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DM_PhongBan");
 
                     b.Navigation("NS_NhanVien");
                 });

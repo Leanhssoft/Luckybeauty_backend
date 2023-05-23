@@ -20,10 +20,12 @@ namespace BanHangBeautify.NhanSu.NhanVien
     {
         private readonly IRepository<NS_NhanVien, Guid> _repository;
         private readonly IRepository<NS_ChucVu, Guid> _chucVuRepository;
-        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository, IRepository<NS_ChucVu, Guid> chucVuRepository)
+        private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTac;
+        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository, IRepository<NS_ChucVu, Guid> chucVuRepository, IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTac)
         {
             _repository = repository;
             _chucVuRepository = chucVuRepository;
+            _quaTrinhCongTac = quaTrinhCongTac;
         }
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
@@ -51,7 +53,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             NS_NhanVien nhanSu = new NS_NhanVien();
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
-            nhanSu.IdPhongBan = dto.IdPhongBan;
+            //nhanSu.IdPhongBan = dto.IdPhongBan;
             nhanSu.MaNhanVien = dto.MaNhanVien;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
@@ -72,16 +74,33 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.IsDeleted = false;
             var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
             result.NgayVaoLam = nhanSu.CreationTime;
-
             result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu).TenChucVu;
             await _repository.InsertAsync(nhanSu);
+            var qtct =  CreateFirstQuaTrinhCongTac(nhanSu.Id, dto.IdChiNhanh);
+            await _quaTrinhCongTac.InsertAsync(qtct);
             return result;
+        }
+        [NonAction]
+        public NS_QuaTrinh_CongTac CreateFirstQuaTrinhCongTac(Guid idNhanVien, Guid? idChiNhanh)
+        {
+            NS_QuaTrinh_CongTac qtct = new NS_QuaTrinh_CongTac();
+            qtct.Id = Guid.NewGuid();
+            qtct.IdNhanVien = idNhanVien;
+            qtct.IdChiNhanh = idChiNhanh;
+            qtct.TuNgay = DateTime.Now;
+            qtct.TrangThai = 0;
+            qtct.TenantId = AbpSession.TenantId ?? 1;
+            qtct.CreationTime = DateTime.Now;
+            qtct.CreatorUserId = AbpSession.UserId;
+            qtct.NgayTao = DateTime.Now;
+            qtct.IsDeleted = false;
+            return qtct;
         }
         [NonAction]
         public async Task<NhanSuItemDto> Edit(CreateOrEditNhanSuDto dto, NS_NhanVien nhanSu)
         {
             nhanSu.IdChucVu = dto.IdChucVu;
-            nhanSu.IdPhongBan = dto.IdPhongBan;
+            //nhanSu.IdPhongBan = dto.IdPhongBan;
             nhanSu.MaNhanVien = dto.MaNhanVien;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
@@ -132,7 +151,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         public async Task<PagedResultDto<NhanSuDto>> GetAll(PagedResultRequestDto input, string keyWord)
         {
             PagedResultDto<NhanSuDto> result = new PagedResultDto<NhanSuDto>();
-            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Include(x=>x.IdPhongBan).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstNhanSu.Count;
             if (!string.IsNullOrEmpty(keyWord))
             {
@@ -154,7 +173,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 {
                     keyWord = "";
                 }
-                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Include(x=>x.DM_PhongBan).
+                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).
                                            Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).
                                            OrderByDescending(x => x.CreationTime).
                                            ToListAsync();
@@ -174,7 +193,6 @@ namespace BanHangBeautify.NhanSu.NhanVien
                     CCCD = x.CCCD,
                     DiaChi = x.DiaChi,
                     TenChucVu = x.NS_ChucVu == null ? "" : x.NS_ChucVu.TenChucVu,
-                    TenPhongBan = x.DM_PhongBan==null ? "": x.DM_PhongBan.TenPhongBan,
                     KieuNgaySinh = x.KieuNgaySinh,
                     NgayCap = x.NgayCap,
                     NgaySinh = x.NgaySinh,

@@ -24,15 +24,15 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         public readonly IRepository<User, long> _userRepository;
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
-        private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;
+        private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
         public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,IRepository<User, long> userRepository,
             IRepository<NS_NhanVien,Guid> nhanSuRepository,
-            IRepository<DM_PhongBan,Guid> phongBanRepository)
+            IRepository<NS_QuaTrinh_CongTac,Guid> quaTrinhCongTacRepository)
         {
             _chiNhanhRepository = chiNhanhRepository;
             _userRepository = userRepository;
             _nhanSuRepository = nhanSuRepository;
-            _phongBanRepository = phongBanRepository;
+            _quaTrinhCongTacRepository = quaTrinhCongTacRepository;
         }
         [HttpGet]
         public async Task<ListResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedResultRequestDto input, string keyWord)
@@ -56,11 +56,11 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public async Task<List<SuggestChiNhanh>> GetByUserId(long userId)
         {
             List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();
-            var user =await _userRepository.FirstOrDefaultAsync(x => x.Id == userId && x.TenantId==(AbpSession.TenantId??1));
+            var user =await _userRepository.FirstOrDefaultAsync(x => x.Id == userId && x.TenantId==AbpSession.TenantId);
             var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x => x.Id == user.NhanSuId && x.TenantId == (AbpSession.TenantId??1));
             if (nhanSu==null)
             {
-                var chiNhanh = _chiNhanhRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
+                var chiNhanh = _chiNhanhRepository.GetAll().Where(x => x.IsDeleted == false).ToList();
                 foreach (var item in chiNhanh)
                 {
                     SuggestChiNhanh rdo = new SuggestChiNhanh();
@@ -71,7 +71,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             }
             else
             {
-                var idChiNhanh = _phongBanRepository.FirstOrDefault(x => x.Id == nhanSu.IdPhongBan).IdChiNhanh;
+                var idChiNhanh = _quaTrinhCongTacRepository.GetAll().Where(x=>x.IsDeleted==false&& x.TenantId==(AbpSession.TenantId??1)).OrderByDescending(x=>x.CreationTime).FirstOrDefault(x => x.IdNhanVien == nhanSu.Id).IdChiNhanh;
                 var chiNhanh = _chiNhanhRepository.FirstOrDefault(x => x.Id == idChiNhanh);
                 result.Add(new SuggestChiNhanh()
                 {

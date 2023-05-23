@@ -220,7 +220,6 @@ namespace BanHangBeautify.Users
         {
             identityResult.CheckErrors(LocalizationManager);
         }
-
         public async Task<bool> ChangePassword(ChangePasswordDto input)
         {
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
