@@ -18,8 +18,6 @@ namespace BanHangBeautify.Data.Entities
         public string TenLot { set; get; }
         [MaxLength(256)]
         public string TenNhanVien { get; set; }
-        [MaxLength(256)]
-        public string TenNhanVien_KhongDau { get; set; }
         [MaxLength(2000)]
         public string DiaChi { get; set; }
         [MaxLength(256)]
@@ -28,19 +26,21 @@ namespace BanHangBeautify.Data.Entities
         public string CCCD { get; set; }
         public DateTime? NgaySinh { get; set; }
         public byte? KieuNgaySinh { get; set; } = 0;
-        public byte? GioiTinh { get; set; } = 1;
+        public byte? GioiTinh { get; set; }
         [MaxLength(256)]
         public string NgayCap { get; set; }
         [MaxLength(2000)]
         public string NoiCap { get; set; }
         public byte[] Avatar { get; set; }
+
+        //public Guid? IdPhongBan { get; set; }
+        //[ForeignKey("IdPhongBan")]
+        //public DM_PhongBan DM_PhongBan { get; set; }
         public Guid? IdChucVu { set; get; }
         [ForeignKey("IdChucVu")]
         public NS_ChucVu NS_ChucVu { get; set; }
+
         public int TenantId { get; set; }
-        public Guid? NguoiTao { get; set; }
-        public Guid? NguoiSua { get; set; }
-        public Guid? NguoiXoa { get; set; }
 
         public static implicit operator string(NS_NhanVien v)
         {
