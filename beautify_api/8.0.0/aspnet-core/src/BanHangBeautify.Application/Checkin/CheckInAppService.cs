@@ -14,6 +14,7 @@ using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,13 +24,16 @@ namespace BanHangBeautify.Checkin
     public class CheckInAppService : SPAAppServiceBase
     {
         private readonly IRepository<KH_CheckIn, Guid> _khCheckIn;
+        private readonly IRepository<Booking_CheckIn_HoaDon, Guid> _checkInHoaDon;
         private readonly IKHCheckInRespository _repository;
 
         public CheckInAppService(IRepository<KH_CheckIn, Guid> khCheckIn,
+            IRepository<Booking_CheckIn_HoaDon, Guid> checkInHoaDon,
            IKHCheckInRespository checkInRepo
            )
         {
             _khCheckIn = khCheckIn;
+            _checkInHoaDon = checkInHoaDon;
             _repository = checkInRepo;
         }
 
@@ -113,5 +117,21 @@ namespace BanHangBeautify.Checkin
                 return ex.Message + ex.InnerException;
             }
         }
+
+        #region checkin + hoadon
+        public async Task<CheckInHoaDonDto> InsertCheckInHoaDon(CheckInHoaDonDto dto)
+        {
+            if (dto == null) { return new CheckInHoaDonDto(); };
+            Booking_CheckIn_HoaDon objNew = ObjectMapper.Map<Booking_CheckIn_HoaDon>(dto);
+            objNew.Id = Guid.NewGuid();
+            objNew.TenantId = AbpSession.TenantId ?? 1;
+            objNew.CreatorUserId = AbpSession.UserId;
+            objNew.CreationTime = DateTime.Now;
+            await _checkInHoaDon.InsertAsync(objNew);
+            var result = ObjectMapper.Map<CheckInHoaDonDto>(objNew);
+            return result;
+        }
+
+        #endregion
     }
 }

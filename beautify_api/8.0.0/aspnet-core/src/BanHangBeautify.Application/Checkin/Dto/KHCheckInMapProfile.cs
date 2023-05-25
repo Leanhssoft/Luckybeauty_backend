@@ -13,6 +13,7 @@ namespace BanHangBeautify.Checkin.Dto
         {
             CreateMap<KH_CheckIn, KHCheckInDto>().ReverseMap();
             CreateMap<KH_CheckIn, PageKhachHangCheckingDto>().ReverseMap();
+            CreateMap<Booking_CheckIn_HoaDon, CheckInHoaDonDto>().ReverseMap();
         }
     }
 }
