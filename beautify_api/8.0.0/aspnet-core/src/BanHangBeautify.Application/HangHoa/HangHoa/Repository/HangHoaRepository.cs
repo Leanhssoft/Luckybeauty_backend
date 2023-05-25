@@ -46,7 +46,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
             return new HangHoaDto();
         }
 
-        public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input, int? tenantId)
+        public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaRequestDto input, int? tenantId)
         {
             using (var command = CreateCommand("spGetDMHangHoa"))
             {

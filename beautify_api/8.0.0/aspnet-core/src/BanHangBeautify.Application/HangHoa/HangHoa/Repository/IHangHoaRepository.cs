@@ -14,7 +14,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
     public interface IHangHoaRepository
     {
         Task<HangHoaDto> GetDetailProduct(Guid idDonViQuyDoi, int? tenantId);
-        Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input, int? tenantId);
+        Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaRequestDto input, int? tenantId);
         Task<string> GetProductCode(int? loaiHangHoa, int? tenantId);
         Task<MaxCodeDto> SpGetProductCode(int? loaiHangHoa, int? tenantId);
     }

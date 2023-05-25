@@ -186,7 +186,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
         {
             return await _repository.GetDetailProduct(idDonViQuyDoi, AbpSession.TenantId ?? 1);
         }
-        public async Task<PagedResultDto<DM_HangHoa>> GetAll(HangHoaPagedResultRequestDto input)
+        public async Task<PagedResultDto<DM_HangHoa>> GetAll(HangHoaRequestDto input)
         {
             PagedResultDto<DM_HangHoa> result = new PagedResultDto<DM_HangHoa>();
             var lstHangHoa = await _dmHangHoa.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
@@ -203,12 +203,12 @@ namespace BanHangBeautify.HangHoa.HangHoa
             return result;
         }
         [HttpPost]
-        public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaPagedResultRequestDto input)
+        public async Task<PagedResultDto<HangHoaDto>> GetDMHangHoa(HangHoaRequestDto input)
         {
             return await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
         }
         [HttpPost]
-        public async Task<List<HangHoaGroupTheoNhomDto>> GetDMHangHoa_groupByNhom(HangHoaPagedResultRequestDto input)
+        public async Task<List<HangHoaGroupTheoNhomDto>> GetDMHangHoa_groupByNhom(HangHoaRequestDto input)
         {
             var data = await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
             var dataGroup = data.Items.GroupBy(x => new { x.IdNhomHangHoa, x.TenNhomHang, x.Color })
