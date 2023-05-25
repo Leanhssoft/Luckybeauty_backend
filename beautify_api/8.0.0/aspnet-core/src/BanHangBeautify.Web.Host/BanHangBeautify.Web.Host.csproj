@@ -47,5 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Template\MauIn\" />
+    <Folder Include="wwwroot\ExcelTemplate\" />
   </ItemGroup>
 </Project>

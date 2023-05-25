@@ -62,7 +62,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;
             nhanSu.SoDienThoai = dto.SoDienThoai;
-            nhanSu.NgaySinh = dto.NgaySinh;
+            nhanSu.NgaySinh = (DateTime)dto.NgaySinh;
             nhanSu.NgayCap = dto.NgayCap;
             nhanSu.NoiCap = dto.NoiCap;
             nhanSu.KieuNgaySinh = dto.KieuNgaySinh;
@@ -148,7 +148,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         public async Task<PagedResultDto<NhanSuDto>> GetAll(PagedResultRequestDto input, string keyWord)
         {
             PagedResultDto<NhanSuDto> result = new PagedResultDto<NhanSuDto>();
-            var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstNhanSu = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstNhanSu.Count;
             if (!string.IsNullOrEmpty(keyWord))
             {

@@ -5,7 +5,9 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
+using BanHangBeautify.KhachHang.KhachHang.Exporting;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,18 +25,21 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private readonly IRepository<DM_NhomKhachHang, Guid> _nhomKhachHangRepository;
         private readonly IRepository<DM_LoaiKhach,int> _loaiKhachHangRepository;
         private readonly IRepository<DM_NguonKhach, Guid> _nguonKhachRepository;
-
+        private readonly IKhachHangExcelExporter _khachHangExcelExporter;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
               IKhachHangRespository customerRepo,
               IRepository<DM_NhomKhachHang,Guid> nhomKhachHangRepository,
               IRepository<DM_LoaiKhach,int> loaiKhachRepository,
-              IRepository<DM_NguonKhach,Guid> nguonKhachRepository)
+              IRepository<DM_NguonKhach,Guid> nguonKhachRepository,
+              IKhachHangExcelExporter khachHangExcelExporter
+              )
         {
             _repository = repository;
             _customerRepo = customerRepo;
             _loaiKhachHangRepository= loaiKhachRepository;
             _nguonKhachRepository = nguonKhachRepository;
             _nhomKhachHangRepository = nhomKhachHangRepository;
+            _khachHangExcelExporter = khachHangExcelExporter;
         }
 
         public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
@@ -237,6 +242,17 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 }
             }
             return false;
+        }
+
+        public async Task<FileDto> ExportDanhSach(PagedKhachHangResultRequestDto input)
+        {
+            input.keyword = (input.keyword ?? string.Empty).Trim();
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await Search(input);
+            List<KhachHangView> model = new List<KhachHangView>();
+            model = (List<KhachHangView>)data.Items;
+            return _khachHangExcelExporter.ExportDanhSachKhachHang(model);
         }
     }
 }

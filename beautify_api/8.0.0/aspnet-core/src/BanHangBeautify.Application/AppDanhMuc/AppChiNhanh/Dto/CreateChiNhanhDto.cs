@@ -6,8 +6,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
 {
     public class CreateChiNhanhDto : EntityDto<Guid>
     {
-        public int TenantId { get; set; }
-        [Required]
         public Guid IdCongTy { set; get; }
         [MaxLength(50)]
         [Required]
@@ -21,7 +19,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
         [MaxLength(2000)]
         public string DiaChi { get; set; }
         [MaxLength(256)]
-        [Required]
         public string MaSoThue { get; set; }
         [MaxLength(2000)]
         public string Logo { get; set; }
@@ -30,7 +27,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
         public int TrangThai { get; set; }
         [Required]
         public DateTime NgayHetHan { get; set; }
-        [Required]
         public DateTime NgayApDung { get; set; }
 
 

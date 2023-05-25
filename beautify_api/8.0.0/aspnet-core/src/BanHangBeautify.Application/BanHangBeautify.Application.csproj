@@ -26,6 +26,10 @@
   <ItemGroup>
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
+    <Folder Include="DataExporting\Excel\NPOI\" />
     <Folder Include="Template\MauIn\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="6.2.4" />
   </ItemGroup>
 </Project>
