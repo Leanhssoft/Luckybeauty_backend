@@ -85,14 +85,19 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(khachHang);
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
-
             return result;
         }
         public async Task<CreateOrEditKhachHangDto> GetKhachHang(Guid id)
         {
             var KhachHang = await _repository.GetAsync(id);
-            var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
-            return result;
+            if (KhachHang!=null)
+            {
+                var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
+                result.GioiTinh = (bool)KhachHang.GioiTinhNam;
+                return result;
+            }
+            
+            return new CreateOrEditKhachHangDto();
         }
         
         [HttpPost]

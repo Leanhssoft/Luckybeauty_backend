@@ -44,7 +44,7 @@ namespace BanHangBeautify.Permissions
                     {
                         foreach (var item in rolePermissions)
                         {
-                            var permissions = item.Permissions.Select(x => x.Name).ToList();
+                            var permissions = item.Permissions.Where(x=>x.IsGranted==true).Select(x => x.Name).ToList();
                             foreach (var permission in permissions)
                             {
                                 listPermissison.Add(permission);
