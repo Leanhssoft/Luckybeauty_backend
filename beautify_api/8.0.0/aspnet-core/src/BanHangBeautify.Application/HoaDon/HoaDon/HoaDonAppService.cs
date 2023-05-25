@@ -19,6 +19,8 @@ using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
+using static BanHangBeautify.Common.CommonClass;
+using BanHangBeautify.HoaDon.NhanVienThucHien;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -28,20 +30,23 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
         private readonly IRepository<BH_HoaDon_ChiTiet, Guid> _hoaDonChiTietRepository;
         private readonly IRepository<BH_HoaDon_Anh, Guid> _hoaDonAnhRepository;
-        private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
+        private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
         private readonly IHoaDonRepository _repoHoaDon;
+        private readonly NhanVienThucHienAppService _nvthService;
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
-            IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
+            IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
+            NhanVienThucHienAppService nvthService,
             IHoaDonRepository repoHoaDon
         )
         {
             _hoaDonRepository = hoaDonRepository;
-            _loaiChungTuRepository = loaiChungTuRepository;
+            _nvThucHien = nvThucHien;
             _hoaDonChiTietRepository = hoaDonChiTietRepository;
             _hoaDonAnhRepository = hoaDonAnhRepository;
+            _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
         }
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
@@ -61,6 +66,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             }
             if (dto.HoaDonChiTiet != null)
             {
+                List<BH_NhanVienThucHien> lstNVTH = new();
                 foreach (var item in dto.HoaDonChiTiet)
                 {
                     BH_HoaDon_ChiTiet ctNew = ObjectMapper.Map<BH_HoaDon_ChiTiet>(item);
@@ -70,13 +76,23 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctNew.CreatorUserId = AbpSession.UserId;
                     ctNew.CreationTime = DateTime.Now;
                     lstCTHoaDon.Add(ctNew);
-                    // toddo NVThucHien
+
+                    foreach (var nvth in item.BH_NhanVienThucHien)
+                    {
+                        BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
+                        nvNew.Id = Guid.NewGuid();
+                        nvNew.IdHoaDon = objHD.Id;
+                        nvNew.TenantId = AbpSession.TenantId ?? 1;
+                        nvNew.CreatorUserId = AbpSession.UserId;
+                        nvNew.CreationTime = DateTime.Now;
+                        lstNVTH.Add(nvNew);
+                    }
                 }
                 await _hoaDonRepository.InsertAsync(objHD);
                 await _hoaDonChiTietRepository.InsertRangeAsync(lstCTHoaDon);
+                await _nvThucHien.InsertRangeAsync(lstNVTH);
             }
-            
-            //objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
+
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
             return result;
@@ -118,41 +134,70 @@ namespace BanHangBeautify.HoaDon.HoaDon
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
             return result;
         }
-        public async Task<string> UpdateHoaDon([FromBody] JObject data)
+
+        public async Task<ResultItemDtoAction<CreateHoaDonDto>> UpdateHoaDon(CreateHoaDonDto objUp)
         {
-            List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
-            BH_HoaDon objUp = ObjectMapper.Map<BH_HoaDon>(data["hoadon"].ToObject<BH_HoaDon>());
-            List<BH_HoaDon_ChiTiet> dataChiTietHD = ObjectMapper.Map<List<BH_HoaDon_ChiTiet>>(data["hoadonChiTiet"].ToObject<List<BH_HoaDon_ChiTiet>>());
-            if (data["hoadon"] == null)
+            ResultItemDtoAction<CreateHoaDonDto> result = new();
+            try
             {
-                return "object null";
-            }
-            objUp = await _hoaDonRepository.FirstOrDefaultAsync(objUp.Id);
+                List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
+                List<BH_NhanVienThucHien> lstNVTH = new();
+                BH_HoaDon objOld = await _hoaDonRepository.FirstOrDefaultAsync(objUp.Id);
 
-            if (objUp == null)
+                if (objOld == null)
+                {
+                    result.res = false;
+                    result.mes = "Data null";
+                    return result;
+                }
+
+                if (string.IsNullOrEmpty(objUp.MaHoaDon))
+                {
+                    objUp.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
+                }
+
+                objOld = ObjectMapper.Map<BH_HoaDon>(objUp);
+                objOld.LastModifierUserId = AbpSession.UserId;
+                objOld.LastModificationTime = DateTime.Now;
+
+                // remove all nvth of cthd + add again
+                foreach (var item in objUp.HoaDonChiTiet)
+                {
+                    BH_HoaDon_ChiTiet ctUpdate = await _hoaDonChiTietRepository.FirstOrDefaultAsync(item.Id);
+                    BH_HoaDon_ChiTiet ctUp = ObjectMapper.Map<BH_HoaDon_ChiTiet>(ctUpdate);
+                    ctUp.CreatorUserId = AbpSession.UserId;
+                    ctUp.CreationTime = DateTime.Now;
+                    await _hoaDonChiTietRepository.UpdateAsync(ctUp);
+
+                    _nvthService.DeleteNVThucHienDichVu(item.Id);
+
+                    foreach (var nvth in item.BH_NhanVienThucHien)
+                    {
+                        BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
+                        nvNew.Id = Guid.NewGuid();
+                        nvNew.IdHoaDonChiTiet = objOld.Id;
+                        nvNew.TenantId = AbpSession.TenantId ?? 1;
+                        nvNew.CreatorUserId = AbpSession.UserId;
+                        nvNew.CreationTime = DateTime.Now;
+                        lstNVTH.Add(nvNew);
+                    }
+                }
+                await _hoaDonRepository.UpdateAsync(objOld);
+                await _nvThucHien.InsertRangeAsync(lstNVTH);
+
+                var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objUp);
+                dataHD.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
+
+                result.Item = dataHD;
+                result.res = true;
+                return result;
+            }
+            catch (Exception ex)
             {
-                return "object null";
+                result.res = false;
+                result.mes = ex.InnerException + ex.Message;
+                return result;
             }
-
-            if (string.IsNullOrEmpty(objUp.MaHoaDon))
-            { 
-                objUp.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
-            }
-
-            objUp.LastModifierUserId = AbpSession.UserId;
-            objUp.LastModificationTime = DateTime.Now;
-
-            foreach (var item in dataChiTietHD)
-            {
-                BH_HoaDon_ChiTiet ctUpdate = await _hoaDonChiTietRepository.FirstOrDefaultAsync(item.Id);
-                BH_HoaDon_ChiTiet ctUp = ObjectMapper.Map<BH_HoaDon_ChiTiet>(ctUpdate);
-                ctUp.CreatorUserId = AbpSession.UserId;
-                ctUp.CreationTime = DateTime.Now;
-                await _hoaDonChiTietRepository.UpdateAsync(ctUp);
-                // toddo NVThucHien
-            }
-            await _hoaDonRepository.UpdateAsync(objUp);
-            return string.Empty;
         }
         [HttpPost]
         public async Task DeleteHoaDon(Guid id)

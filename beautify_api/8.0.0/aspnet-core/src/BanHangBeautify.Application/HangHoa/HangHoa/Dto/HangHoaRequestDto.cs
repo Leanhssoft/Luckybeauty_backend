@@ -3,7 +3,7 @@ using static BanHangBeautify.Common.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Dto
 {
-    public class HangHoaPagedResultRequestDto: ParamSearch
+    public class HangHoaRequestDto : ParamSearch
     {
         public string IdNhomHangHoas { set; get; }
     }
