@@ -25,24 +25,5 @@ namespace BanHangBeautify.Common
             public string FirstStr { get; set; } = string.Empty;
             public float? MaxVal { get; set; } = 1;
         }
-        public class PagedResultDtoAction<T> : PagedResultDto<T>
-        {
-            public bool? res { get; set; } = true;
-            public string mes { get; set; } = string.Empty;
-
-            public PagedResultDtoAction()
-            {
-            }
-        }
-        public class ResultItemDtoAction<T> 
-        {
-            public bool? res { get; set; } = true;
-            public string mes { get; set; } = string.Empty;
-            public T Item { get; set; }
-
-            public ResultItemDtoAction()
-            {
-            }
-        }
     }
 }

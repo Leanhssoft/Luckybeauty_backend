@@ -14,17 +14,17 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
 {
-    [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu)]
-    public class ChietKhauDichVuAppService:SPAAppServiceBase
+    //[AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu)]
+    public class ChietKhauDichVuAppService : SPAAppServiceBase
     {
-        private readonly IRepository<NS_ChietKhauDichVu, Guid> _repository;
+        private readonly IRepository<NS_ChietKhauDichVu, Guid> _hoahongDichVu;
         public ChietKhauDichVuAppService(IRepository<NS_ChietKhauDichVu, Guid> repository)
         {
-            _repository = repository;
+            _hoahongDichVu = repository;
         }
         public async Task<ChietKhauDichVuDto> CreateOrEdit(CreateOrEditChietKhauDichVuDto input)
         {
-            var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            var checkExist = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist != null)
             {
                 return await Create(input);
@@ -42,14 +42,15 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
             data.IsDeleted = false;
-            await _repository.InsertAsync(data);
+            await _hoahongDichVu.InsertAsync(data);
             result = ObjectMapper.Map<ChietKhauDichVuDto>(input);
             return result;
         }
         [NonAction]
-        public async Task<ChietKhauDichVuDto> Update(CreateOrEditChietKhauDichVuDto input, NS_ChietKhauDichVu oldData) { 
+        public async Task<ChietKhauDichVuDto> Update(CreateOrEditChietKhauDichVuDto input, NS_ChietKhauDichVu oldData)
+        {
             ChietKhauDichVuDto result = new ChietKhauDichVuDto();
-            oldData.IdDonViQuiDoi = input.IdDonViQuyDoi;
+            oldData.IdDonViQuiDoi = input.IdDonViQuiDoi;
             oldData.IdNhanVien = input.IdNhanVien;
             oldData.GiaTri = input.GiaTri;
             oldData.LaPhanTram = input.LaPhanTram;
@@ -57,27 +58,27 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             oldData.TrangThai = 1;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
-            await _repository.UpdateAsync(oldData);
+            await _hoahongDichVu.UpdateAsync(oldData);
             result = ObjectMapper.Map<ChietKhauDichVuDto>(oldData);
             return result;
         }
         [HttpPost]
         public async Task<ChietKhauDichVuDto> Delete(Guid id)
         {
-            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
                 data.IsDeleted = true;
                 data.DeletionTime = DateTime.Now;
                 data.DeleterUserId = AbpSession.UserId;
-                await _repository.UpdateAsync(data);
+                await _hoahongDichVu.UpdateAsync(data);
                 return ObjectMapper.Map<ChietKhauDichVuDto>(data);
             }
             return new ChietKhauDichVuDto();
         }
         public async Task<CreateOrEditChietKhauDichVuDto> GetForEdit(Guid id)
         {
-            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
                 return ObjectMapper.Map<CreateOrEditChietKhauDichVuDto>(data);
@@ -89,11 +90,39 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             PagedResultDto<ChietKhauDichVuDto> result = new PagedResultDto<ChietKhauDichVuDto>();
-            var lstData = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstData = await _hoahongDichVu.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstData.Count;
             lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<ChietKhauDichVuDto>>(lstData);
             return result;
+        }
+
+        public async Task<List<CreateOrEditChietKhauDichVuDto>> GetHoaHongNV_theoDichVu(Guid idNhanVien, Guid idDonViQuyDoi)
+        {
+            List<NS_ChietKhauDichVu> data = await _hoahongDichVu.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdNhanVien == idNhanVien && x.IdDonViQuiDoi == idDonViQuyDoi).ToListAsync();
+            if (data != null)
+            {
+                return ObjectMapper.Map<List<CreateOrEditChietKhauDichVuDto>>(data);
+            }
+            return new List<CreateOrEditChietKhauDichVuDto>();
+        }
+        public async Task<List<CreateOrEditChietKhauDichVuDto>> GetAllHoaHong_theoNhanVien(Guid idNhanVien)
+        {
+            var data = await _hoahongDichVu.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdNhanVien == idNhanVien).ToListAsync();
+            if (data != null)
+            {
+                return ObjectMapper.Map<List<CreateOrEditChietKhauDichVuDto>>(data);
+            }
+            return new List<CreateOrEditChietKhauDichVuDto>();
+        }
+        public async Task<List<CreateOrEditChietKhauDichVuDto>> GetAllHoaHong_theoDichVu(Guid idDonViQuyDoi)
+        {
+            var data = await _hoahongDichVu.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdDonViQuiDoi == idDonViQuyDoi).ToListAsync();
+            if (data != null)
+            {
+                return ObjectMapper.Map<List<CreateOrEditChietKhauDichVuDto>>(data);
+            }
+            return new List<CreateOrEditChietKhauDichVuDto>();
         }
     }
 }

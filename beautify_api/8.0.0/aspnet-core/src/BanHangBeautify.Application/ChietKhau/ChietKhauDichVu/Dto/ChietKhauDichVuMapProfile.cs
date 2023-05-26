@@ -14,7 +14,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto
         {
             CreateMap<ChietKhauDichVuDto, NS_ChietKhauDichVu>().ReverseMap();
             CreateMap<CreateOrEditChietKhauDichVuDto, NS_ChietKhauDichVu>().ReverseMap();
-            CreateMap<ChietKhauDichVuDto,CreateOrEditChietKhauDichVuDto>().ReverseMap();
+            CreateMap<ChietKhauDichVuDto, CreateOrEditChietKhauDichVuDto>().ReverseMap();
         }
     }
 }
