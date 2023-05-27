@@ -8,5 +8,6 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
 {
     public class PagedBookingResultRequestDto
     {
+        public Guid IdChiNhanh { get; set; }
     }
 }

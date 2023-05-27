@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -18,14 +19,16 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
     public class ChietKhauDichVuAppService:SPAAppServiceBase
     {
         private readonly IRepository<NS_ChietKhauDichVu, Guid> _repository;
-        public ChietKhauDichVuAppService(IRepository<NS_ChietKhauDichVu, Guid> repository)
+        private readonly IRepository<DM_HangHoa,Guid> _hangHoaRepository;
+        public ChietKhauDichVuAppService(IRepository<NS_ChietKhauDichVu, Guid> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository)
         {
             _repository = repository;
+            _hangHoaRepository = hangHoaRepository;
         }
         public async Task<ChietKhauDichVuDto> CreateOrEdit(CreateOrEditChietKhauDichVuDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
-            if (checkExist != null)
+            if (checkExist == null)
             {
                 return await Create(input);
             }
@@ -93,6 +96,53 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             result.TotalCount = lstData.Count;
             lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<ChietKhauDichVuDto>>(lstData);
+            return result;
+        }
+        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAccordingByNhanVien(PagedRequestDto input,Guid idNhanVien)
+        {
+            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
+            PagedResultDto<ChietKhauDichVuItemDto> result = new PagedResultDto<ChietKhauDichVuItemDto>();
+            var lstData = await _repository.GetAll().Include(x=>x.DM_DonViQuiDoi).
+                Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)&& x.IdNhanVien==idNhanVien).
+                OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = lstData.Count;
+            lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+            List<ChietKhauDichVuItemDto> items = new List<ChietKhauDichVuItemDto>();
+            foreach (var item in lstData)
+            {
+                ChietKhauDichVuItemDto rdo = new ChietKhauDichVuItemDto();
+                var hangHoa = await _hangHoaRepository.GetAll().Include(x => x.DM_NhomHangHoa).Where(x => x.Id == item.DM_DonViQuiDoi.IdHangHoa).FirstOrDefaultAsync();
+                rdo.Id = item.Id;
+                rdo.TenDichVu = hangHoa != null ? hangHoa.TenHangHoa : "";
+                rdo.TenNhomDichVu = hangHoa != null && hangHoa.DM_NhomHangHoa!=null ? hangHoa.DM_NhomHangHoa.TenNhomHang : "";
+                switch (item.LoaiChietKhau)
+                {
+                    case 1:
+                        rdo.HoaHongYeuCauThucHien = 0;
+                        rdo.HoaHongThucHien = item.GiaTri;
+                        rdo.HoaHongTuVan = 0;
+                        break;
+                    case 2:
+                        rdo.HoaHongYeuCauThucHien = item.GiaTri;
+                        rdo.HoaHongThucHien = 0;
+                        rdo.HoaHongTuVan = 0;
+                        break;
+                    case 3:
+                        rdo.HoaHongYeuCauThucHien = 0;
+                        rdo.HoaHongThucHien = 0;
+                        rdo.HoaHongTuVan = item.GiaTri;
+                        break;
+                    default:
+                        rdo.HoaHongYeuCauThucHien = 0;
+                        rdo.HoaHongThucHien = 0;
+                        rdo.HoaHongTuVan = 0;
+                        break;
+                }
+                rdo.GiaDichVu = item.DM_DonViQuiDoi.GiaBan??0;
+                items.Add(rdo);
+            }
+            result.Items = items;
             return result;
         }
     }
