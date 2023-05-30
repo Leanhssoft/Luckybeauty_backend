@@ -41,7 +41,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             NS_ChietKhauDichVu data = new NS_ChietKhauDichVu();
             data = ObjectMapper.Map<NS_ChietKhauDichVu>(input);
             data.Id = Guid.NewGuid();
-            data.IdDonViQuiDoi = input.IdDonViQuyDoi;
+            data.IdDonViQuiDoi = input.IdDonViQuiDoi;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
@@ -133,7 +133,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             PagedResultDto<ChietKhauDichVuItemDto> result = new PagedResultDto<ChietKhauDichVuItemDto>();
-            var lstData = await _repository.GetAll().Include(x=>x.DM_DonViQuiDoi).
+            var lstData = await _hoahongDichVu.GetAll().Include(x=>x.DM_DonViQuiDoi).
                 Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)&& x.IdNhanVien==idNhanVien).
                 OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstData.Count;
