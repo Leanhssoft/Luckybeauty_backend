@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.NhanVienThucHien
 {
-    [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien)]
+    //[AbpAuthorize(PermissionNames.Pages_NhanVienThucHien)]
     public class NhanVienThucHienAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
@@ -32,7 +32,7 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
                 List<BH_NhanVienThucHien> lstNVTH = new List<BH_NhanVienThucHien>();
                 foreach (var cthd in lstCTHD)
                 {
-                    foreach (var nvth in cthd.BH_NhanVienThucHien)
+                    foreach (var nvth in cthd.nhanVienThucHien)
                     {
                         BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
                         nvNew.Id = Guid.NewGuid();

@@ -171,7 +171,6 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             await _quyHoaDonRepository.InsertAsync(objHD);
             await _quyHoaDonChiTiet.InsertRangeAsync(lstCTQuy);
 
-            objHD.QuyHoaDon_ChiTiet = lstCTQuy;
             var result = ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(objHD);
             return result;
         }

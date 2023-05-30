@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
 using static BanHangBeautify.Common.CommonClass;
 using BanHangBeautify.HoaDon.NhanVienThucHien;
+using OfficeOpenXml.Style;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -76,18 +77,16 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctNew.CreatorUserId = AbpSession.UserId;
                     ctNew.CreationTime = DateTime.Now;
                     lstCTHoaDon.Add(ctNew);
-                    if (item.BH_NhanVienThucHien != null)
+
+                    foreach (var nvth in item.nhanVienThucHien)
                     {
-                        foreach (var nvth in item.BH_NhanVienThucHien)
-                        {
-                            BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
-                            nvNew.Id = Guid.NewGuid();
-                            nvNew.IdHoaDon = objHD.Id;
-                            nvNew.TenantId = AbpSession.TenantId ?? 1;
-                            nvNew.CreatorUserId = AbpSession.UserId;
-                            nvNew.CreationTime = DateTime.Now;
-                            lstNVTH.Add(nvNew);
-                        }
+                        BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
+                        nvNew.Id = Guid.NewGuid();
+                        nvNew.IdHoaDonChiTiet = ctNew.Id;
+                        nvNew.TenantId = AbpSession.TenantId ?? 1;
+                        nvNew.CreatorUserId = AbpSession.UserId;
+                        nvNew.CreationTime = DateTime.Now;
+                        lstNVTH.Add(nvNew);
                     }
                     
                 }
@@ -141,21 +140,13 @@ namespace BanHangBeautify.HoaDon.HoaDon
             return result;
         }
 
-        public async Task<ResultItemDtoAction<CreateHoaDonDto>> UpdateHoaDon(CreateHoaDonDto objUp)
+        public async Task<CreateHoaDonDto> UpdateHoaDon(CreateHoaDonDto objUp)
         {
-            ResultItemDtoAction<CreateHoaDonDto> result = new();
             try
             {
                 List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
                 List<BH_NhanVienThucHien> lstNVTH = new();
                 BH_HoaDon objOld = await _hoaDonRepository.FirstOrDefaultAsync(objUp.Id);
-
-                if (objOld == null)
-                {
-                    result.res = false;
-                    result.mes = "Data null";
-                    return result;
-                }
 
                 if (string.IsNullOrEmpty(objUp.MaHoaDon))
                 {
@@ -177,11 +168,11 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
                     _nvthService.DeleteNVThucHienDichVu(item.Id);
 
-                    foreach (var nvth in item.BH_NhanVienThucHien)
+                    foreach (var nvth in item.nhanVienThucHien)
                     {
                         BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
                         nvNew.Id = Guid.NewGuid();
-                        nvNew.IdHoaDonChiTiet = objOld.Id;
+                        nvNew.IdHoaDonChiTiet = ctUp.Id;
                         nvNew.TenantId = AbpSession.TenantId ?? 1;
                         nvNew.CreatorUserId = AbpSession.UserId;
                         nvNew.CreationTime = DateTime.Now;
@@ -193,16 +184,12 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
                 var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objUp);
                 dataHD.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
+                return dataHD;
 
-                result.Item = dataHD;
-                result.res = true;
-                return result;
             }
             catch (Exception ex)
             {
-                result.res = false;
-                result.mes = ex.InnerException + ex.Message;
-                return result;
+                return new CreateHoaDonDto();
             }
         }
         [HttpPost]

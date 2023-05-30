@@ -33,6 +33,6 @@ namespace BanHangBeautify.HoaDon.HoaDonChiTiet.Dto
         public float? TonLuyKe { get; set; } = 0;
         public string GhiChu { get; set; } = string.Empty;
         public int TrangThai { get; set; } = 1;// 0.Xóa, 1.Chưa xóa
-        public List<NhanVienThucHienDto> BH_NhanVienThucHien { get; set; }
+        public List<NhanVienThucHienDto> nhanVienThucHien { get; set; }
     }
 }
