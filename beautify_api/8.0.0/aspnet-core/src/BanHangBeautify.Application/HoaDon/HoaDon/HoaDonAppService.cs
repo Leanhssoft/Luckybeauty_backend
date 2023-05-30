@@ -76,21 +76,27 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctNew.CreatorUserId = AbpSession.UserId;
                     ctNew.CreationTime = DateTime.Now;
                     lstCTHoaDon.Add(ctNew);
-
-                    foreach (var nvth in item.BH_NhanVienThucHien)
+                    if (item.BH_NhanVienThucHien != null)
                     {
-                        BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
-                        nvNew.Id = Guid.NewGuid();
-                        nvNew.IdHoaDon = objHD.Id;
-                        nvNew.TenantId = AbpSession.TenantId ?? 1;
-                        nvNew.CreatorUserId = AbpSession.UserId;
-                        nvNew.CreationTime = DateTime.Now;
-                        lstNVTH.Add(nvNew);
+                        foreach (var nvth in item.BH_NhanVienThucHien)
+                        {
+                            BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
+                            nvNew.Id = Guid.NewGuid();
+                            nvNew.IdHoaDon = objHD.Id;
+                            nvNew.TenantId = AbpSession.TenantId ?? 1;
+                            nvNew.CreatorUserId = AbpSession.UserId;
+                            nvNew.CreationTime = DateTime.Now;
+                            lstNVTH.Add(nvNew);
+                        }
                     }
+                    
                 }
                 await _hoaDonRepository.InsertAsync(objHD);
                 await _hoaDonChiTietRepository.InsertRangeAsync(lstCTHoaDon);
-                await _nvThucHien.InsertRangeAsync(lstNVTH);
+                if (lstNVTH!=null && lstNVTH.Count > 0)
+                {
+                    await _nvThucHien.InsertRangeAsync(lstNVTH);
+                }
             }
 
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);

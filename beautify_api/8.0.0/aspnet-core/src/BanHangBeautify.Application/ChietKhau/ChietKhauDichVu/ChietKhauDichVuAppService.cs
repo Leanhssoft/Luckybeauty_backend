@@ -41,6 +41,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             NS_ChietKhauDichVu data = new NS_ChietKhauDichVu();
             data = ObjectMapper.Map<NS_ChietKhauDichVu>(input);
             data.Id = Guid.NewGuid();
+            data.IdDonViQuiDoi = input.IdDonViQuyDoi;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
