@@ -175,7 +175,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                         }
                     }
                 }
-
                 else
                 {
                     var qtct = _quaTrinhCongTacRepository.GetAll().
