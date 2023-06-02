@@ -155,5 +155,47 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             }
             return result;
         }
+        public async Task<List<SuggestChiNhanh>> GetChiNhanhByUser()
+        {
+            List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();
+            var user =await _userRepository.FirstOrDefaultAsync(x=>x.Id==AbpSession.UserId&&x.TenantId==AbpSession.TenantId);
+            if (user != null)
+            {
+                if (user.IsAdmin)
+                {
+                    var lst = await _chiNhanhRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+                    if (lst != null || lst.Count > 0)
+                    {
+                        foreach (var item in lst)
+                        {
+                            SuggestChiNhanh rdo = new SuggestChiNhanh();
+                            rdo.Id = item.Id;
+                            rdo.TenChiNhanh = item.TenChiNhanh;
+                            result.Add(rdo);
+                        }
+                    }
+                }
+
+                else
+                {
+                    var qtct = _quaTrinhCongTacRepository.GetAll().
+                        Include(x => x.NS_NhanVien).
+                        Where(x=>x.NS_NhanVien.Id==user.NhanSuId &&
+                            x.IsDeleted==false && x.TenantId == (AbpSession.TenantId??1)
+                            ).
+                        OrderByDescending(x => x.CreationTime).Take(1).ToList().FirstOrDefault();
+                    var chiNhanh =await _chiNhanhRepository.FirstOrDefaultAsync(x=>x.Id==qtct.IdChiNhanh);
+                    if (chiNhanh!=null)
+                    {
+                        result.Add(new SuggestChiNhanh()
+                        {
+                            Id = chiNhanh.Id,
+                            TenChiNhanh = chiNhanh.TenChiNhanh
+                        });
+                    }
+                }
+            }
+            return result;
+        }
     }
 }
