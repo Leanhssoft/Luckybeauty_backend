@@ -30,6 +30,7 @@ namespace BanHangBeautify.Users.Dto
 
         public bool IsActive { get; set; }
 
+        public bool IsAdmin { get; set; }
         public string FullName { get; set; }
 
         public DateTime? LastLoginTime { get; set; }

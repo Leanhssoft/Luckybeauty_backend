@@ -34,6 +34,7 @@ namespace BanHangBeautify.Users.Dto
         public string EmailAddress { get; set; }
 
         public bool IsActive { get; set; }
+        public bool? IsAdmin { get; set; }
 
         public string[] RoleNames { get; set; }
         public Guid? NhanSuId { set; get; } = Guid.Empty;

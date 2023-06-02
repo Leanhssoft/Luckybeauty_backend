@@ -17,6 +17,8 @@ namespace BanHangBeautify.Authorization.Users
         public override string EmailAddress { get; set; }
         public Guid? NhanSuId { get; set; }
 
+        public bool IsAdmin { set; get; }
+
         public static User CreateTenantAdminUser(int tenantId, string emailAddress)
         {
             var user = new User
@@ -26,6 +28,7 @@ namespace BanHangBeautify.Authorization.Users
                 Name = AdminUserName,
                 Surname = AdminUserName,
                 EmailAddress = emailAddress,
+                IsAdmin = true,
                 Roles = new List<UserRole>()
             };
 

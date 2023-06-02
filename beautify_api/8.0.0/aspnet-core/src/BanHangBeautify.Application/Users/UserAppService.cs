@@ -62,6 +62,7 @@ namespace BanHangBeautify.Users
             CheckCreatePermission();
 
             var user = ObjectMapper.Map<User>(input);
+            user.IsAdmin = input.IsAdmin ?? false;
             user.TenantId = AbpSession.TenantId;
             if (!string.IsNullOrEmpty(input.EmailAddress))
             {
@@ -109,7 +110,7 @@ namespace BanHangBeautify.Users
             CheckUpdatePermission();
 
             var user = await _userManager.GetUserByIdAsync(input.Id);
-
+            user.IsAdmin = input.IsAdmin??false;
             user.Surname = input.Surname;
             user.Name = input.Name;
             user.PhoneNumber = input.PhoneNumber;
