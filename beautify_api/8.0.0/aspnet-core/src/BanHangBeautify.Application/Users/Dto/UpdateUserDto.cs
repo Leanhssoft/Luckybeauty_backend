@@ -1,15 +1,20 @@
-using Abp.Application.Services.Dto;
+﻿using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using BanHangBeautify.Authorization.Users;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Users.Dto
 {
-    [AutoMapFrom(typeof(User))]
-    public class UserDto : EntityDto<long>
+    [AutoMapTo(typeof(User))]
+    public class UpdateUserDto
     {
+        public long Id { get; set; }
         [Required]
         [StringLength(AbpUserBase.MaxUserNameLength)]
         public string UserName { get; set; }
@@ -21,23 +26,23 @@ namespace BanHangBeautify.Users.Dto
         [Required]
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
-
-        [Required(AllowEmptyStrings = true)]
+        [Phone]
+        public string PhoneNumber { get; set; }
+        //[Required]
         //[EmailAddress]
         //[StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
-        public string PhoneNumber { get; set; }
 
         public bool IsActive { get; set; }
 
-        public string FullName { get; set; }
-
-        public DateTime? LastLoginTime { get; set; }
-
-        public DateTime CreationTime { get; set; }
-
         public string[] RoleNames { get; set; }
-
-        public Guid? NhanSuId { get; set; }
+        public Guid? NhanSuId { set; get; } = Guid.Empty;
+        public void Normalize()
+        {
+            if (RoleNames == null)
+            {
+                RoleNames = new string[0];
+            }
+        }
     }
 }

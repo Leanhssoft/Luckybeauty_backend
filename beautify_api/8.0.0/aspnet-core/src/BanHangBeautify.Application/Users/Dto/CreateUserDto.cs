@@ -22,7 +22,8 @@ namespace BanHangBeautify.Users.Dto
         [Required]
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
-
+        [Phone]
+        public string PhoneNumber { get; set; }
         //[Required]
         //[EmailAddress]
         //[StringLength(AbpUserBase.MaxEmailAddressLength)]

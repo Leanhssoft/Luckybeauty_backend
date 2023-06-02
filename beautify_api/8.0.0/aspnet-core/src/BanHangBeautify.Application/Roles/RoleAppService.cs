@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,7 +32,7 @@ namespace BanHangBeautify.Roles
             _roleManager = roleManager;
             _userManager = userManager;
         }
-
+        [NonAction]
         public override async Task<RoleDto> CreateAsync(CreateRoleDto input)
         {
             CheckCreatePermission();
@@ -63,7 +64,7 @@ namespace BanHangBeautify.Roles
 
             return new PagedResultDto<RoleListDto>(roles.Count,ObjectMapper.Map<List<RoleListDto>>(roles));
         }
-
+        [NonAction]
         public override async Task<RoleDto> UpdateAsync(RoleDto input)
         {
             CheckUpdatePermission();
@@ -83,28 +84,46 @@ namespace BanHangBeautify.Roles
 
             return MapToEntityDto(role);
         }
-        [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Create)]
-        [HttpPost]
-        public async Task<RoleDto> UpdateRole(RoleDto input)
+        [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Create,PermissionNames.Pages_Administration_Roles_Edit)]
+        public async Task<RoleDto> CreateOrUpdateRole(CreateOrUpdateRoleInput input)
+        {
+            if (input.Id.Value>0)
+            {
+                return await UpdateRole(input);
+            }
+            else
+            {
+                return await CreateRole(input);
+            }
+        }
+        
+        protected virtual async Task<RoleDto> CreateRole(CreateOrUpdateRoleInput input)
         {
             CheckUpdatePermission();
-
-            var role = await _roleManager.GetRoleByIdAsync(input.Id);
-
-            ObjectMapper.Map(input, role);
-
-            CheckErrors(await _roleManager.UpdateAsync(role));
-
-            var grantedPermissions = PermissionManager
-                .GetAllPermissions()
-                .Where(p => input.GrantedPermissions.Contains(p.Name))
-                .ToList();
-
-            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
-
+            var role = new Role(AbpSession.TenantId,input.Name, input.DisplayName) { };
+            role.SetNormalizedName();
+            CheckErrors(await _roleManager.CreateAsync(role));
+            await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
+            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
             return MapToEntityDto(role);
         }
-
+        protected virtual async Task<RoleDto> UpdateRole(CreateOrUpdateRoleInput input)
+        {
+            CheckUpdatePermission();
+            var role = await _roleManager.GetRoleByIdAsync(input.Id.Value);
+            role.DisplayName = input.DisplayName;
+            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
+            return MapToEntityDto(role);
+        }
+        private async Task UpdateGrantedPermissionsAsync(Role role, List<string> grantedPermissionNames)
+        {
+            var grantedPermissions = PermissionManager
+                .GetAllPermissions()
+                .Where(p => grantedPermissionNames.Contains(p.Name))
+                .ToList();
+            await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
+        }
+        [NonAction]
         public override async Task DeleteAsync(EntityDto<int> input)
         {
             CheckDeletePermission();
@@ -178,17 +197,17 @@ namespace BanHangBeautify.Roles
             identityResult.CheckErrors(LocalizationManager);
         }
 
-        public async Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input)
+        public async Task<CreateOrUpdateRoleInput> GetRoleForEdit(EntityDto input)
         {
             var permissions = PermissionManager.GetAllPermissions();
             var role = await _roleManager.GetRoleByIdAsync(input.Id);
             var grantedPermissions = (await _roleManager.GetGrantedPermissionsAsync(role)).ToArray();
-            var roleEditDto = ObjectMapper.Map<RoleEditDto>(role);
-
-            return new GetRoleForEditOutput
+            return new CreateOrUpdateRoleInput
             {
-                Role = roleEditDto,
-                Permissions = ObjectMapper.Map<List<FlatPermissionDto>>(permissions).OrderBy(p => p.DisplayName).ToList(),
+                Description= role.Description,
+                DisplayName = role.DisplayName,
+                Name = role.Name,
+                Id= role.Id,
                 GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
             };
         }

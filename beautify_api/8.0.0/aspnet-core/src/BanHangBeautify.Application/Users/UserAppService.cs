@@ -62,7 +62,6 @@ namespace BanHangBeautify.Users
             CheckCreatePermission();
 
             var user = ObjectMapper.Map<User>(input);
-
             user.TenantId = AbpSession.TenantId;
             if (!string.IsNullOrEmpty(input.EmailAddress))
             {
@@ -95,7 +94,6 @@ namespace BanHangBeautify.Users
             var user = await _userManager.GetUserByIdAsync(input.Id);
 
             MapToEntity(input, user);
-
             CheckErrors(await _userManager.UpdateAsync(user));
 
             if (input.RoleNames != null)
@@ -104,6 +102,31 @@ namespace BanHangBeautify.Users
             }
 
             return await GetAsync(input);
+        }
+        [HttpPost]
+        public async Task<UserDto> UpdateUser(UpdateUserDto input)
+        {
+            CheckUpdatePermission();
+
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+
+            user.Surname = input.Surname;
+            user.Name = input.Name;
+            user.PhoneNumber = input.PhoneNumber;
+            user.EmailAddress= input.EmailAddress;
+            user.IsActive = input.IsActive;
+            user.LastModificationTime = DateTime.Now;
+            user.LastModifierUserId = AbpSession.UserId;
+            user.SetNormalizedNames();
+
+            CheckErrors(await _userManager.UpdateAsync(user));
+
+            if (input.RoleNames != null)
+            {
+                CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
+            }
+            var result = ObjectMapper.Map<UserDto>(user);
+            return result;
         }
 
         public override async Task DeleteAsync(EntityDto<long> input)

@@ -1,4 +1,6 @@
-﻿using Abp.Authorization.Users;
+﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
+using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
@@ -60,5 +62,40 @@ namespace BanHangBeautify.Permissions
             }
             return data;
         }
+        public ListResultDto<PermissionTreeDto> GetAllPermissions()
+        {
+            var permissions = PermissionManager.GetAllPermissions();
+            permissions = permissions.Where(x => x.Name == "Pages").ToList();
+            var rootPermissions = permissions.Where(p => p.Parent == null);
+            var result = new List<PermissionTreeDto>();
+            foreach (var rootPermission in rootPermissions)
+            {
+                var level = 0;
+                AddPermission(rootPermission, permissions, result, level);
+            }
+
+            return new ListResultDto<PermissionTreeDto>
+            {
+                Items = result
+            };
+        }
+        private void AddPermission(Permission permission, IReadOnlyList<Permission> allPermissions, List<PermissionTreeDto> result, int level)
+        {
+            var flatPermission = ObjectMapper.Map<PermissionTreeDto>(permission);
+            result.Add(flatPermission);
+
+            if (permission.Children == null)
+            {
+                return;
+            }
+
+            var children = allPermissions.Where(p => p.Parent != null && p.Parent.Name == permission.Name).ToList();
+
+            foreach (var childPermission in children)
+            {
+                AddPermission(childPermission, allPermissions, result, level + 1);
+            }
+        }
     }
+
 }
