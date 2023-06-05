@@ -24,6 +24,8 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         private readonly IWebHostEnvironment _hostEnvironment;
         //public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         //public static readonly string Templates = Path.Combine(App, "Template");
+        //private readonly IHostingEnvironment _env;
+
         public MauInAppService(IRepository<DM_MauIn, Guid> dmMauInRepository, IWebHostEnvironment hostEnvironment)
         {
             _dmMauInRepository = dmMauInRepository;
@@ -107,10 +109,11 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         public string GetFileMauIn(string file = "HoaDonBan.txt")
         {
             var contents = string.Empty;
-            var curFile = @".\Template\MauIn\" + file;
-            if (File.Exists(curFile))
+            var pathFile = Path.Combine(_hostEnvironment.WebRootPath, @"Template\MauIn\", file);
+
+            if (File.Exists(pathFile))
             {
-                contents = System.IO.File.ReadAllText(@".\Template\MauIn\" + file);
+                contents = System.IO.File.ReadAllText(pathFile);
             }
             return contents;
         }
