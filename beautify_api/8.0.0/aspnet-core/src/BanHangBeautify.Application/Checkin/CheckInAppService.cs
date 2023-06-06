@@ -41,7 +41,7 @@ namespace BanHangBeautify.Checkin
         {
             if (idCheckIn != null && idCheckIn != Guid.Empty)
             {
-                var lst = await _khCheckIn.GetAllListAsync(x => x.Id != idCheckIn && x.IdKhachHang == idCus);
+                var lst = await _khCheckIn.GetAllListAsync(x => x.Id != idCheckIn && x.IdKhachHang == idCus && x.TrangThai == 1);
                 if (lst.Count > 0)
                 {
                     return true;
@@ -49,7 +49,7 @@ namespace BanHangBeautify.Checkin
             }
             else
             {
-                var lst = await _khCheckIn.GetAllListAsync(x => x.IdKhachHang == idCus);
+                var lst = await _khCheckIn.GetAllListAsync(x => x.IdKhachHang == idCus && x.TrangThai == 1);
                 if (lst.Count > 0)
                 {
                     return true;
@@ -70,7 +70,7 @@ namespace BanHangBeautify.Checkin
             var result = ObjectMapper.Map<KHCheckInDto>(objNew);
             return result;
         }
-        public async Task<string> UpdatetCustomerCheckIn(KHCheckInDto dto)
+        public async Task<string> UpdateCustomerCheckIn(KHCheckInDto dto)
         {
             if (dto == null) { return "Data null"; };
             KH_CheckIn objUp = await _khCheckIn.FirstOrDefaultAsync(dto.Id);

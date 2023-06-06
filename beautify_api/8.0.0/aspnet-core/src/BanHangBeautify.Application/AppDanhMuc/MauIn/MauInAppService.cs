@@ -24,6 +24,8 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         private readonly IWebHostEnvironment _hostEnvironment;
         //public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         //public static readonly string Templates = Path.Combine(App, "Template");
+        //private readonly IHostingEnvironment _env;
+
         public MauInAppService(IRepository<DM_MauIn, Guid> dmMauInRepository, IWebHostEnvironment hostEnvironment)
         {
             _dmMauInRepository = dmMauInRepository;
@@ -107,10 +109,22 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         public string GetFileMauIn(string file = "HoaDonBan.txt")
         {
             var contents = string.Empty;
-            var curFile = @".\Template\MauIn\" + file;
-            if (File.Exists(curFile))
+            var pathFile = Path.Combine(_hostEnvironment.WebRootPath, @"Template\MauIn\", file);
+
+            if (File.Exists(pathFile))
             {
-                contents = System.IO.File.ReadAllText(@".\Template\MauIn\" + file);
+                contents = System.IO.File.ReadAllText(pathFile);
+                //contents = contents.Replace("{start_hdchitiet}", " {hoadonChiTiet?.map((ct: any, index) => (");
+                //contents = contents.Replace("{end_hdchitiet}", "  ))}");
+
+                //contents = contents.Replace("{TenHangHoa}", "{ct.tenHangHoa}");
+                //contents = contents.Replace("{SoLuong}", "{ct.soLuong}");
+                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
+                //contents = contents.Replace("{GiaBan}", "{ct.thanhTien}");
+
+                //contents = contents.Replace("{MaHoaDon}", "{ct.giaBan}");
+                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
+                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
             }
             return contents;
         }

@@ -27,7 +27,6 @@
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
     <Folder Include="DataExporting\Excel\NPOI\" />
-    <Folder Include="Template\MauIn\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp.EntityFrameworkCore.EFPlus" Version="8.0.0" />
