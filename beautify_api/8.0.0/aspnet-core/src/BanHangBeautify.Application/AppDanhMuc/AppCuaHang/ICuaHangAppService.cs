@@ -8,8 +8,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
 {
     public interface ICuaHangAppService
     {
-        public Task<CuaHangDto> CreateCongTy(EditCuaHangDto dto);
+        public Task CreateCuaHangWithTenant(string tenCuaHang,int IdTenant);
         public Task<bool> DeleteCongTy(Guid id);
-        public Task<ListResultDto<HT_CongTy>> GetAllCongTy();
     }
 }

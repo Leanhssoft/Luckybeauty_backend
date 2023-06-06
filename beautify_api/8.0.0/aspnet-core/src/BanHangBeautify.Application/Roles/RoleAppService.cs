@@ -112,6 +112,7 @@ namespace BanHangBeautify.Roles
             CheckUpdatePermission();
             var role = await _roleManager.GetRoleByIdAsync(input.Id.Value);
             role.DisplayName = input.DisplayName;
+            role.Description = input.Description;
             await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
             return MapToEntityDto(role);
         }

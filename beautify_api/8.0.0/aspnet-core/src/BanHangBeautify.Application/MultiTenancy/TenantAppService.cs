@@ -7,6 +7,8 @@ using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
+using BanHangBeautify.AppDanhMuc.AppCuaHang;
+using BanHangBeautify.AppDanhMuc.AppCuaHang.Dto;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
@@ -27,14 +29,14 @@ namespace BanHangBeautify.MultiTenancy
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IAbpZeroDbMigrator _abpZeroDbMigrator;
-
+        private readonly ICuaHangAppService _cuaHangService;
         public TenantAppService(
             IRepository<Tenant, int> repository,
             TenantManager tenantManager,
             EditionManager editionManager,
             UserManager userManager,
             RoleManager roleManager,
-            IAbpZeroDbMigrator abpZeroDbMigrator)
+            IAbpZeroDbMigrator abpZeroDbMigrator,ICuaHangAppService cuaHangAppService)
             : base(repository)
         {
             _tenantManager = tenantManager;
@@ -42,6 +44,7 @@ namespace BanHangBeautify.MultiTenancy
             _userManager = userManager;
             _roleManager = roleManager;
             _abpZeroDbMigrator = abpZeroDbMigrator;
+            _cuaHangService = cuaHangAppService;
         }
 
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
@@ -94,6 +97,7 @@ namespace BanHangBeautify.MultiTenancy
 
                 // Assign admin user to role!
                 CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name));
+                await _cuaHangService.CreateCuaHangWithTenant(input.Name,tenant.Id);
                 await CurrentUnitOfWork.SaveChangesAsync();
             }
 

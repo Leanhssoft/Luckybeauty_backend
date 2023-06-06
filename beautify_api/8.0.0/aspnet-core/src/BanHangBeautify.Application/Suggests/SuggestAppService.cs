@@ -110,7 +110,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestLoaiKhach>> SuggestLoaiKhachHangs()
         {
             List<SuggestLoaiKhach> result = new List<SuggestLoaiKhach>();
-            var lst = await _loaiKhachRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+            var lst = await _loaiKhachRepository.GetAll().Where(x=> x.IsDeleted == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)
@@ -180,7 +180,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestLoaiHangHoa>> SuggestLoaiHangHoas()
         {
             List<SuggestLoaiHangHoa> result = new List<SuggestLoaiHangHoa>();
-            var lst = await _loaiHangHoaRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+            var lst = await _loaiHangHoaRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)

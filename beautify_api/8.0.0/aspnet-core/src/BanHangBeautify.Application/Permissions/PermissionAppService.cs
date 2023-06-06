@@ -65,8 +65,8 @@ namespace BanHangBeautify.Permissions
         public ListResultDto<PermissionTreeDto> GetAllPermissions()
         {
             var permissions = PermissionManager.GetAllPermissions();
-            permissions = permissions.Where(x => x.Name == "Pages").ToList();
-            var rootPermissions = permissions.Where(p => p.Parent == null);
+            var rootPermissions = permissions.Where(p => p.Parent == null).ToList();
+            permissions = permissions.Where(x => x.Name=="Pages").ToList();
             var result = new List<PermissionTreeDto>();
             foreach (var rootPermission in rootPermissions)
             {
