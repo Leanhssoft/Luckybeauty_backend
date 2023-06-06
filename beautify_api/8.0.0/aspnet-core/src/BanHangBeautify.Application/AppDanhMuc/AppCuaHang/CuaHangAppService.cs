@@ -41,6 +41,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             chiNhanh.CreationTime = DateTime.Now;
             chiNhanh.TenantId = idTenant;
             chiNhanh.CreatorUserId = AbpSession.UserId;
+            await _chiNhanhRepository.InsertAsync(chiNhanh);
         }
         public async Task<CuaHangDto> CreateCuaHang(CreateCuaHangDto dto)
         {
