@@ -114,6 +114,17 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             if (File.Exists(pathFile))
             {
                 contents = System.IO.File.ReadAllText(pathFile);
+                //contents = contents.Replace("{start_hdchitiet}", " {hoadonChiTiet?.map((ct: any, index) => (");
+                //contents = contents.Replace("{end_hdchitiet}", "  ))}");
+
+                //contents = contents.Replace("{TenHangHoa}", "{ct.tenHangHoa}");
+                //contents = contents.Replace("{SoLuong}", "{ct.soLuong}");
+                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
+                //contents = contents.Replace("{GiaBan}", "{ct.thanhTien}");
+
+                //contents = contents.Replace("{MaHoaDon}", "{ct.giaBan}");
+                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
+                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
             }
             return contents;
         }

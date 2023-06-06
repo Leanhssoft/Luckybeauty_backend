@@ -14,7 +14,6 @@
 <div><span style="font-size:12px;"><span style="font-family:Tahoma;">Điện thoại: {DienThoai}</div>
 
 
-
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 	<thead>
 		<tr>
@@ -34,7 +33,6 @@
 		</tr>
 	</tbody>
 </table>
-
 
 <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
 	<tbody>
