@@ -70,8 +70,7 @@ namespace BanHangBeautify.Permissions
             var result = new List<PermissionTreeDto>();
             foreach (var rootPermission in rootPermissions)
             {
-                var level = 0;
-                AddPermission(rootPermission, permissions, result, level);
+                AddPermission(rootPermission, permissions, result);
             }
 
             return new ListResultDto<PermissionTreeDto>
@@ -79,9 +78,13 @@ namespace BanHangBeautify.Permissions
                 Items = result
             };
         }
-        private void AddPermission(Permission permission, IReadOnlyList<Permission> allPermissions, List<PermissionTreeDto> result, int level)
+        private void AddPermission(Permission permission, IReadOnlyList<Permission> allPermissions, List<PermissionTreeDto> result)
         {
             var flatPermission = ObjectMapper.Map<PermissionTreeDto>(permission);
+            if (AbpSession.MultiTenancySide!=Abp.MultiTenancy.MultiTenancySides.Host)
+            {
+                flatPermission.Children = flatPermission.Children.Where(x => x.Name != "Pages.Tenants").ToList();
+            }
             result.Add(flatPermission);
 
             if (permission.Children == null)
@@ -93,7 +96,7 @@ namespace BanHangBeautify.Permissions
 
             foreach (var childPermission in children)
             {
-                AddPermission(childPermission, allPermissions, result, level + 1);
+                AddPermission(childPermission, allPermissions, result);
             }
         }
     }
