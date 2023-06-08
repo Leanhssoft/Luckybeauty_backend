@@ -6,6 +6,7 @@ using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Hosting;
+using NPOI.HPSF;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
@@ -36,19 +37,43 @@ namespace BanHangBeautify.KhachHang.KhachHang.Exporting
         }
         public FileDto ExportDanhSachKhachHang(List<KhachHangView> model)
         {
-            var pathTemplate = Path.Combine(_env.WebRootPath, $"ExcelTemplate", $"KhachHang_Export_Template.xlsx");
+            var pathTemplate = Path.Combine(_env.WebRootPath, "ExcelTemplate", "KhachHang_Export_Template.xlsx");
             var file = new FileDto("DanhSachKhachHang.xlsx", MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
             var template = new FileInfo(pathTemplate);
-            using (ExcelPackage excelpackage = new ExcelPackage(template, true))
+            using (ExcelPackage excelPackage = new ExcelPackage(template, true))
             {
-
-                BuildExcel(excelpackage, model);
-                Save(excelpackage, file);
+                BuildExcel(excelPackage, model);
+                var tempFilePath = SaveTempFile(excelPackage, file.FileName);
+                file.FileName = tempFilePath;
             }
-
+            CleanUpTempFiles();
             return file;
         }
+        private void CleanUpTempFiles()
+        {
+            var tempFolderPath = Path.Combine(_env.ContentRootPath, "App_Data", "TempFiles");
+            var tempFiles = Directory.GetFiles(tempFolderPath);
 
+            foreach (var tempFile in tempFiles)
+            {
+                var fileInfo = new FileInfo(tempFile);
+                if (fileInfo.LastAccessTime < DateTime.Now.AddMinutes(-5))
+                {
+                    fileInfo.Delete();
+                }
+            }
+        }
+        private string SaveTempFile(ExcelPackage excelPackage, string fileName)
+        {
+            MemoryStream stream = new MemoryStream();
+            excelPackage.SaveAs(stream);
+            var tempFolderPath = Path.Combine(_env.ContentRootPath, "App_Data", "TempFiles");
+            Directory.CreateDirectory(tempFolderPath);
+            var tempFilePath = Path.Combine(tempFolderPath, fileName);
+            File.WriteAllBytes(tempFilePath, stream.ToArray());
+
+            return tempFilePath;
+        }
         private void BuildExcel(ExcelPackage excelpackage, List<KhachHangView> input, int startRow = 5)
         {
             int firstRow = startRow;

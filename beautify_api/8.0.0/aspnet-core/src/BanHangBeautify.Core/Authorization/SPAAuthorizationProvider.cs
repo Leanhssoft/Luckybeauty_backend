@@ -23,7 +23,7 @@ namespace BanHangBeautify.Authorization
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Delete, L("DeleteBranch"));
 
             //Loại Hàng Hóa
-            var loaiHangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa, L("Branch"));
+            var loaiHangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa, L("LoaiHangHoa"));
             loaiHangHoa.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa_Create, L("CreateLoaiHangHoa"));
             loaiHangHoa.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa_Edit, L("EditLoaiHangHoa"));
             loaiHangHoa.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa_Delete, L("DeleteLoaiHangHoa"));
@@ -39,9 +39,9 @@ namespace BanHangBeautify.Authorization
             donViQuiDoi.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi_Edit, L("EditDonViQuiDoi"));
             donViQuiDoi.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi_Delete, L("DeleteDonViQuiDoi"));
             #region nhân viên
-            var nhanSu = pages.CreateChildPermission(PermissionNames.Pages_NhanSu, L("Pages_NhanSu"));
-            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Create, L("CreatePages_NhanSu"));
-            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Edit, L("EditPages_NhanSu"));
+            var nhanSu = pages.CreateChildPermission(PermissionNames.Pages_NhanSu, L("NhanSu"));
+            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Create, L("CreateNhanSu"));
+            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Edit, L("EditNhanSu"));
             nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Delete, L("DeleteNhanSu"));
 
             var phongBan = pages.CreateChildPermission(PermissionNames.Pages_PhongBan, L("PhongBan"));
@@ -61,7 +61,7 @@ namespace BanHangBeautify.Authorization
 
 
             var khachHang = pages.CreateChildPermission(PermissionNames.Pages_KhachHang, L("KhachHang"));
-            khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Create, L("CreateKhahHang"));
+            khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Create, L("CreateKhachHang"));
             khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Edit, L("EditKhachHang"));
             khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Delete, L("DeleteKhachHang"));
 
@@ -77,7 +77,7 @@ namespace BanHangBeautify.Authorization
             nguonKhach.CreateChildPermission(PermissionNames.Pages_NguonKhach_Delete, L("DeleteNguonKhachHang"));
 
             var nhomKhach = pages.CreateChildPermission(PermissionNames.Pages_NhomKhach, L("NhomKhachHang"));
-            nhomKhach.CreateChildPermission(PermissionNames.Pages_NhomKhach_Create, L("CreateNhomKhahHang"));
+            nhomKhach.CreateChildPermission(PermissionNames.Pages_NhomKhach_Create, L("CreateNhomKhachHang"));
             nhomKhach.CreateChildPermission(PermissionNames.Pages_NhomKhach_Edit, L("EditNhomKhachHang"));
             nhomKhach.CreateChildPermission(PermissionNames.Pages_NhomKhach_Delete, L("DeleteNhomKhachHang"));
 
@@ -94,32 +94,58 @@ namespace BanHangBeautify.Authorization
             #endregion
 
             #region other
-            /*var cauHinhPhanMem =*/ pages.CreateChildPermission(PermissionNames.Pages_CauHinhPhanMem, L("CauHinhPhanMem"));
-            /*var mauIn =*/ pages.CreateChildPermission(PermissionNames.Pages_MauIn, L("MauIn"));
-            /*var nganHang =*/ pages.CreateChildPermission(PermissionNames.Pages_NganHang, L("NganHang"));
-           /* var taiKhoanNganHang =*/ pages.CreateChildPermission(PermissionNames.Pages_TaiKhoanNganHang, L("TaiKhoanNganHang"));
-            /*var phong =*/ pages.CreateChildPermission(PermissionNames.Pages_Phong, L("Phong"));
-            /*var heThongSMS = */pages.CreateChildPermission(PermissionNames.Pages_HeThongSMS, L("HeThongSMS"));
-           /* var bookingColor =*/ pages.CreateChildPermission(PermissionNames.Pages_Booking_Color, L("BookingColor"));
-           /* var cauHinhChungTu =*/ pages.CreateChildPermission(PermissionNames.Pages_CauHinhChungTu, L("CauHinhChungTu"));
-           /* var cauHinhTichDiem = */pages.CreateChildPermission(PermissionNames.Pages_CauHinhTichDiem, L("CauHinhTichDiem"));
-           /* var checkIn = */pages.CreateChildPermission(PermissionNames.Pages_CheckIn, L("CheckIn"));
-            /*var chietKhauDichVu =*/ pages.CreateChildPermission(PermissionNames.Pages_ChietKhauDichVu, L("ChietKhauDichVu"));
-            /*var chietKhauHoaDon =*/ pages.CreateChildPermission(PermissionNames.Pages_ChietKhauHoaDon, L("ChietKhauHoaDon"));
-           /* var hoaDon = p*/pages.CreateChildPermission(PermissionNames.Pages_HoaDon, L("HoaDon"));
-           /* var hoaDonAnh = */pages.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh, L("AnhHoaDon"));
-            /*var loaiChungTu =*/ pages.CreateChildPermission(PermissionNames.Pages_LoaiChungTu, L("LoaiChungTu"));
-            /*var nhanVienThucHien =*/ pages.CreateChildPermission(PermissionNames.Pages_NhanVienThucHien, L("NhanVienThucHien"));
-            /*var nhomKhachDieuKien = */pages.CreateChildPermission(PermissionNames.Pages_NhomKhach_DieuKien, L("NangNhomKhach"));
-                /* var khuyenMai = */pages.CreateChildPermission(PermissionNames.Pages_KhuyenMai, L("KhuyenMai"));
-            /*var khuyenMaiApDung = */pages.CreateChildPermission(PermissionNames.Pages_KhuyenMai_ApDung, L("KhuyenMaiApDung"));
-            /*var lichLamViec =*/ pages.CreateChildPermission(PermissionNames.Pages_NhanSu_LichLamViec, L("LichLamViec"));
-                /* var lichLamViecCa =*/ pages.CreateChildPermission(PermissionNames.Pages_NhanSu_LichLamViec_Ca, L("LichLamViecCa"));
-            /*var ngayNghiLe = */pages.CreateChildPermission(PermissionNames.Pages_NhanSu_NgayNghiLe, L("NgayNghiLe"));
-            /*var timeOff =*/ pages.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff, L("NhanVienNghi"));
-          /*  var nhatKyThaoTac= */ pages.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac, L("NhatKyThaoTac"));
-            /*var quyHoaDon =*/ pages.CreateChildPermission(PermissionNames.Pages_QuyHoaDon, L("QuyHoaDon"));
-            /*var khoanThuChi = p*/ pages.CreateChildPermission(PermissionNames.Pages_KhoanThuChi, L("ThuChi"));
+            /*var cauHinhPhanMem =*/
+            pages.CreateChildPermission(PermissionNames.Pages_CauHinhPhanMem, L("CauHinhPhanMem"));
+            /*var mauIn =*/
+            pages.CreateChildPermission(PermissionNames.Pages_MauIn, L("MauIn"));
+            /*var nganHang =*/
+            pages.CreateChildPermission(PermissionNames.Pages_NganHang, L("NganHang"));
+            /* var taiKhoanNganHang =*/
+            pages.CreateChildPermission(PermissionNames.Pages_TaiKhoanNganHang, L("TaiKhoanNganHang"));
+            /*var phong =*/
+            pages.CreateChildPermission(PermissionNames.Pages_Phong, L("Phong"));
+            /*var heThongSMS = */
+            pages.CreateChildPermission(PermissionNames.Pages_HeThongSMS, L("HeThongSMS"));
+            /* var bookingColor =*/
+            pages.CreateChildPermission(PermissionNames.Pages_Booking_Color, L("BookingColor"));
+            /* var cauHinhChungTu =*/
+            pages.CreateChildPermission(PermissionNames.Pages_CauHinhChungTu, L("CauHinhChungTu"));
+            /* var cauHinhTichDiem = */
+            pages.CreateChildPermission(PermissionNames.Pages_CauHinhTichDiem, L("CauHinhTichDiem"));
+            /* var checkIn = */
+            pages.CreateChildPermission(PermissionNames.Pages_CheckIn, L("CheckIn"));
+            /*var chietKhauDichVu =*/
+            pages.CreateChildPermission(PermissionNames.Pages_ChietKhauDichVu, L("ChietKhauDichVu"));
+            /*var chietKhauHoaDon =*/
+            pages.CreateChildPermission(PermissionNames.Pages_ChietKhauHoaDon, L("ChietKhauHoaDon"));
+            /* var hoaDon = p*/
+            pages.CreateChildPermission(PermissionNames.Pages_HoaDon, L("HoaDon"));
+            /* var hoaDonAnh = */
+            pages.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh, L("AnhHoaDon"));
+            /*var loaiChungTu =*/
+            pages.CreateChildPermission(PermissionNames.Pages_LoaiChungTu, L("LoaiChungTu"));
+            /*var nhanVienThucHien =*/
+            pages.CreateChildPermission(PermissionNames.Pages_NhanVienThucHien, L("NhanVienThucHien"));
+            /*var nhomKhachDieuKien = */
+            pages.CreateChildPermission(PermissionNames.Pages_NhomKhach_DieuKien, L("NangNhomKhach"));
+            /* var khuyenMai = */
+            pages.CreateChildPermission(PermissionNames.Pages_KhuyenMai, L("KhuyenMai"));
+            /*var khuyenMaiApDung = */
+            pages.CreateChildPermission(PermissionNames.Pages_KhuyenMai_ApDung, L("KhuyenMaiApDung"));
+            /*var lichLamViec =*/
+            pages.CreateChildPermission(PermissionNames.Pages_NhanSu_LichLamViec, L("LichLamViec"));
+            /* var lichLamViecCa =*/
+            pages.CreateChildPermission(PermissionNames.Pages_NhanSu_LichLamViec_Ca, L("LichLamViecCa"));
+            /*var ngayNghiLe = */
+            pages.CreateChildPermission(PermissionNames.Pages_NhanSu_NgayNghiLe, L("NgayNghiLe"));
+            /*var timeOff =*/
+            pages.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff, L("NhanVienNghi"));
+            /*  var nhatKyThaoTac= */
+            pages.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac, L("NhatKyThaoTac"));
+            /*var quyHoaDon =*/
+            pages.CreateChildPermission(PermissionNames.Pages_QuyHoaDon, L("QuyHoaDon"));
+            /*var khoanThuChi = p*/
+            pages.CreateChildPermission(PermissionNames.Pages_KhoanThuChi, L("ThuChi"));
             #endregion
 
             //adminsitrantion

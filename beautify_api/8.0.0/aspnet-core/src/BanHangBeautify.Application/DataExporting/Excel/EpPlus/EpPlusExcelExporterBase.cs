@@ -64,7 +64,10 @@ namespace BanHangBeautify.DataExporting.Excel.EpPlus
                 }
             }
         }
-
+        protected void GetFile(string token)
+        {
+            _tempFileCacheManager.GetFileInfo(token);
+        }
         protected void Save(ExcelPackage excelPackage, FileDto file)
         {
             _tempFileCacheManager.SetFile(file.FileToken, excelPackage.GetAsByteArray());

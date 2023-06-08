@@ -1,9 +1,5 @@
 ﻿using Abp.Runtime.Caching;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.Storage
 {
@@ -21,6 +17,7 @@ namespace BanHangBeautify.Storage
         public void SetFile(string token, byte[] content)
         {
             _cache.Set(token, new TempFileInfo(content), TimeSpan.FromMinutes(1)); // expire time is 1 min by default
+            var fileInfo = GetFileInfo(token);
         }
 
         public byte[] GetFile(string token)
@@ -36,7 +33,8 @@ namespace BanHangBeautify.Storage
 
         public TempFileInfo GetFileInfo(string token)
         {
-            return _cache.GetOrDefault(token);
+           var file = _cache.GetOrDefault(token);
+           return file;
         }
     }
 }
