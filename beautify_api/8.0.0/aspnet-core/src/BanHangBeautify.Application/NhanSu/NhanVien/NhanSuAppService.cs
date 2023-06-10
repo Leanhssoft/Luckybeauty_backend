@@ -177,8 +177,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                                            (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord))).ToList();
 
                 result.TotalCount = lstNhanSu.Count;
-                input.MaxResultCount = 10;
-                input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
+                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
                 var items = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).Select(x => new NhanSuItemDto()
                 {
                     Id = x.Id,
