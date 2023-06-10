@@ -5,6 +5,7 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,6 +84,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                              IdParent = o.IdParent,
                              MaNhomHang = o.MaNhomHang,
                              TenNhomHang = o.TenNhomHang,
+                             LaNhomHangHoa = o.LaNhomHangHoa,
                              Color = o.Color,
                              MoTa = o.MoTa,
                              children = GetChildren(data, o.Id)
@@ -131,6 +133,27 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 objUp.MoTa = dto.MoTa;
                 objUp.LastModifierUserId = AbpSession.UserId;
                 objUp.LastModificationTime = DateTime.Now;
+                await _dmNhomHangHoa.UpdateAsync(objUp);
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                return string.Concat(ex.InnerException + ex.Message);
+            }
+        }
+
+        public async Task<string> XoaNhomHangHoa(Guid id)
+        {
+            try
+            {
+                DM_NhomHangHoa objUp = await _dmNhomHangHoa.FirstOrDefaultAsync(id);
+                if (objUp == null)
+                {
+                    return "object null";
+                }
+                objUp.IsDeleted = true;
+                objUp.DeletionTime= DateTime.Now;
+                objUp.DeleterUserId = AbpSession.UserId;
                 await _dmNhomHangHoa.UpdateAsync(objUp);
                 return string.Empty;
             }
