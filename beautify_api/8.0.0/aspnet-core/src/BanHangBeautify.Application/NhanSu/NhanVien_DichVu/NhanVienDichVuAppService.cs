@@ -30,6 +30,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
         public async override Task<PagedResultDto<DichVuNhanVienDto>> GetAllAsync(PagedDichVuNhanVienResultRequestDto input)
         {
             PagedResultDto<DichVuNhanVienDto> result = new PagedResultDto<DichVuNhanVienDto>();
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             result = await base.GetAllAsync(input);
             return result;
         }

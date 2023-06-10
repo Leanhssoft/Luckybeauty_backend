@@ -165,10 +165,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                     (x.Email != null && x.Email.Contains(input.keyword))
                    ).ToList();
             }
-            if (input.SkipCount > 0)
-            {
-                input.SkipCount = (input.SkipCount-1 )<=0?0 : (input.SkipCount-1)* input.MaxResultCount;
-            }
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
 
             lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             List<KhachHangView> items = new List<KhachHangView>();

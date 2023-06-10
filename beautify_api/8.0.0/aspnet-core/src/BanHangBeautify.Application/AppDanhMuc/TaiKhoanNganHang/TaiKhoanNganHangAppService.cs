@@ -80,7 +80,7 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
         }
         public async Task<PagedResultDto<TaiKhoanNganHangDto>> GetAll(PagedRequestDto input) {
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.SkipCount = input.SkipCount >0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<TaiKhoanNganHangDto> result = new PagedResultDto<TaiKhoanNganHangDto>();
             var lstData = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstData.Count;

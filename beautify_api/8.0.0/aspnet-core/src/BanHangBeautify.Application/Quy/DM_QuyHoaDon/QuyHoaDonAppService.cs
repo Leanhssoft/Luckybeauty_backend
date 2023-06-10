@@ -199,7 +199,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
         }
         public async Task<PagedResultDto<QuyHoaDonDto>> GetAll(PagedRequestDto input)
         {
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             PagedResultDto<QuyHoaDonDto> result = new PagedResultDto<QuyHoaDonDto>();
             var listData = await _quyHoaDonRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();

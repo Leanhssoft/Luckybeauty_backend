@@ -105,7 +105,7 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             {
                 lstQuaTrinhCongTac = lstQuaTrinhCongTac.ToList();
             }
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * 10 : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.MaxResultCount = 10;
             result.Items = lstQuaTrinhCongTac.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return result;

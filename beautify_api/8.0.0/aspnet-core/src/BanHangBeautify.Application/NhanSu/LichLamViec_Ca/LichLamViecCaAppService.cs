@@ -77,7 +77,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
             {
                 input.Keyword = "";
             }
-            input.SkipCount = input.SkipCount == 0 || input.SkipCount == 1 ? 0 : (input.SkipCount - 1) * input.MaxResultCount;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<NS_LichLamViec_Ca> result = new PagedResultDto<NS_LichLamViec_Ca>();
             var listData = await _lichLamViecCa.GetAllIncluding().Where(x=>x.TenantId==(AbpSession.TenantId??0)&& x.IsDeleted==false).OrderByDescending(x=>x.CreationTime).ToListAsync();
             result.TotalCount= listData.Count;

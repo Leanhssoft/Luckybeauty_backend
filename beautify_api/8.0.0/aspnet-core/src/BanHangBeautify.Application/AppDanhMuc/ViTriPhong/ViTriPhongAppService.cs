@@ -85,7 +85,7 @@ namespace BanHangBeautify.AppDanhMuc.ViTriPhong
         {
             PagedResultDto<ViTriPhongDto> result = new PagedResultDto<ViTriPhongDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.SkipCount = input.SkipCount>0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             var lstData = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstData.Count;
             var data = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

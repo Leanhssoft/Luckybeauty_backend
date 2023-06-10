@@ -83,7 +83,7 @@ namespace BanHangBeautify.AppDanhMuc.NganHang
         {
             PagedResultDto<NganHangDto> result = new PagedResultDto<NganHangDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             var listData = await _nganHangRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = listData.Count();
             var data = listData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

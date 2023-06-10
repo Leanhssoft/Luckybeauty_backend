@@ -94,7 +94,7 @@ namespace BanHangBeautify.Bookings.BookingColor
         public async Task<PagedResultDto<Booking_Color>> GetAll(PagedRequestDto input){
             PagedResultDto<Booking_Color> result = new PagedResultDto<Booking_Color>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "": input.Keyword ;
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount* input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             var data = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x=>x.CreationTime).ToListAsync();
             result.TotalCount = data.Count;
             result.Items = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

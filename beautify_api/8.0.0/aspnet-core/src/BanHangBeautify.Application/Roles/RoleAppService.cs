@@ -177,6 +177,7 @@ namespace BanHangBeautify.Roles
 
         protected override IQueryable<Role> CreateFilteredQuery(PagedRoleResultRequestDto input)
         {
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             return Repository.GetAllIncluding(x => x.Permissions)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.Name.Contains(input.Keyword)
                 || x.DisplayName.Contains(input.Keyword)

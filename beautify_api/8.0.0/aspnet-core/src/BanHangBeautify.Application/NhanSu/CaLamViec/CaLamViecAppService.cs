@@ -92,8 +92,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                     x.GioVao.ToString().Contains(keyWord) || x.GioRa.ToString().Contains(keyWord)
                     ).
                     ToList();
-            input.MaxResultCount = 10;
-            input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             result.Items = lstCaLamViec.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return result;
         }

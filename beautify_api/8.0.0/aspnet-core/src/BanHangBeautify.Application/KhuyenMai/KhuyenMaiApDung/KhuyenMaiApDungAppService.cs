@@ -101,7 +101,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
         }
         public async Task<PagedResultDto<KhuyenMaiApDungDto>> GetAll(PagedRequestDto input)
         {
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             PagedResultDto<KhuyenMaiApDungDto> result = new PagedResultDto<KhuyenMaiApDungDto>();
             var listData = await _khuyenMaiApDungRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
