@@ -44,7 +44,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 chiNhanhs = chiNhanhs.Where(x => x.MaSoThue.Contains(keyWord) || x.TenChiNhanh.Contains(keyWord) || x.DiaChi.Contains(keyWord) || x.SoDienThoai.Contains(keyWord)).ToList();
             }
             input.MaxResultCount = 10;
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * 10 : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount -1) * input.MaxResultCount : 0;
             chiNhanhs = chiNhanhs.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<ChiNhanhDto>>(chiNhanhs);
             return result;

@@ -87,7 +87,7 @@ namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
         }
         public async Task<PagedResultDto<NhomKhachDieuKienDto>> GetAll(PagedRequestDto input)
         {
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             PagedResultDto<NhomKhachDieuKienDto> result = new PagedResultDto<NhomKhachDieuKienDto>();
             var listData = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();

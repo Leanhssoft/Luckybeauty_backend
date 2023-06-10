@@ -94,7 +94,7 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         {
             PagedResultDto<MauInDto> result = new PagedResultDto<MauInDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = data.Count;
             var lstMauIn = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

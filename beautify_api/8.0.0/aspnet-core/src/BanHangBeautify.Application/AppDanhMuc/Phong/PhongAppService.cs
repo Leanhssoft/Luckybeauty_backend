@@ -85,7 +85,7 @@ namespace BanHangBeautify.AppDanhMuc.Phong
         public async Task<PagedResultDto<PhongDto>> GetAll(PagedRequestDto input) {
             PagedResultDto<PhongDto> result = new PagedResultDto<PhongDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             var data = await _phongRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = data.Count;
             var lstData = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

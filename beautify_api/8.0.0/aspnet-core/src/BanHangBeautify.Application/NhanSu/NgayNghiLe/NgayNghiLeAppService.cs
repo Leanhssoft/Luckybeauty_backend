@@ -25,7 +25,6 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
         public async Task<PagedResultDto<NgayNghiLeDto>> GetAll(PagedRequestDto input)
         {
             PagedResultDto<NgayNghiLeDto> result = new PagedResultDto<NgayNghiLeDto>();
-            input.MaxResultCount = 10;
             input.SkipCount = input.SkipCount == 0 || input.SkipCount == 1 ? 0 : ((input.SkipCount - 1) * 10);
             input.Keyword = !string.IsNullOrEmpty(input.Keyword) ? input.Keyword : "";
             var data =await _ngayNghiLeRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x=>x.CreationTime).ToListAsync();

@@ -32,10 +32,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             {
                 loaiHangHoas = loaiHangHoas.Where(x => x.TenLoaiHangHoa.Contains(input.Keyword) || x.MaLoaiHangHoa.Contains(input.Keyword)).ToList();
             }
-            if (input.SkipCount > 0)
-            {
-                input.SkipCount *= 10;
-            }
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             loaiHangHoas = loaiHangHoas.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             var data = ObjectMapper.Map<List<LoaiHangHoaDto>>(loaiHangHoas);
             result.Items = data;

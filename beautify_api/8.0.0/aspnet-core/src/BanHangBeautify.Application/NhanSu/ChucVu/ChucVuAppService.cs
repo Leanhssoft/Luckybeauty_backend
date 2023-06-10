@@ -98,8 +98,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
                 {
                     lstChucVu = lstChucVu.Where(x => x.TenChucVu.Contains(keyWord) || x.MaChucVu.Contains(keyWord)).ToList();
                 }
-                input.MaxResultCount = 10;
-                input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
+                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
                 result.Items = lstChucVu.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             }
             catch (Exception)

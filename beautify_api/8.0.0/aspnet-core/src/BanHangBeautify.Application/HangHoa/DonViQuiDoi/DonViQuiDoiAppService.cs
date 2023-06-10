@@ -84,11 +84,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
                         x.GiaBan.ToString().Contains(input.Keyword)
                     ).OrderByDescending(x => x.CreationTime).ToList();
             }
-            input.MaxResultCount = 10;
-            if (input.SkipCount > 0)
-            {
-                input.SkipCount *= input.MaxResultCount;
-            }
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<DM_DonViQuiDoi> result = new PagedResultDto<DM_DonViQuiDoi>();
             result.TotalCount = lstDonViQuiDoi.Count;   
             var getDonViQuiDoi = lstDonViQuiDoi.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();

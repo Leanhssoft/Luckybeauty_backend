@@ -154,8 +154,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             {
                 lstNhanSu = lstNhanSu.Where(x => x.TenNhanVien.Contains(keyWord) || x.MaNhanVien.Contains(keyWord) || x.NoiCap.Contains(keyWord)).ToList();
             }
-            input.MaxResultCount = 10;
-            input.SkipCount = input.SkipCount > 0 ? (input.SkipCount * 10) : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             lstNhanSu = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             var items = ObjectMapper.Map<List<NhanSuDto>>(lstNhanSu);
             result.Items = items;

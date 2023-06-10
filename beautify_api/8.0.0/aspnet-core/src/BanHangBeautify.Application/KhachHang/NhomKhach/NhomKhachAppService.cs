@@ -75,11 +75,7 @@ namespace BanHangBeautify.KhachHang.NhomKhach
             {
                 lstData = lstData.Where(x => x.MaNhomKhach.Contains(input.Keyword) || x.TenNhomKhach.Contains(input.Keyword)).ToList();
             }
-            input.MaxResultCount = 10;
-            if (input.SkipCount > 0)
-            {
-                input.SkipCount = input.SkipCount * 10;
-            }
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
 
             ListResultDto.Items = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return ListResultDto;

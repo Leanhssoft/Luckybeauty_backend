@@ -94,7 +94,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         }
         public async Task<PagedResultDto<LichLamViecDto>> GetAll(PagedRequestDto input) {
             input.MaxResultCount = input.MaxResultCount;
-            input.SkipCount = input.SkipCount == 0 || input.SkipCount == 1 ? 0 : (input.SkipCount - 1) * input.MaxResultCount;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<LichLamViecDto> result = new PagedResultDto<LichLamViecDto>();
             var data =await _lichLamViecRepository.GetAll()
                 .Where(x=>x.TenantId == (AbpSession.TenantId??1) && x.IsDeleted==false)

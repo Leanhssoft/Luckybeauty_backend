@@ -91,7 +91,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
         }
         public async Task<PagedResultDto<ChietKhauDichVuDto>> GetAll(PagedRequestDto input)
         {
-            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             PagedResultDto<ChietKhauDichVuDto> result = new PagedResultDto<ChietKhauDichVuDto>();
             var lstData = await _hoahongDichVu.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();

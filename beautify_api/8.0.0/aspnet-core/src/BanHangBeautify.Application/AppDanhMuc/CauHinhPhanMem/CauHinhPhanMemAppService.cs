@@ -88,8 +88,7 @@ namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
         {
             PagedResultDto<CauHinhPhanMemDto> result =new PagedResultDto<CauHinhPhanMemDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.MaxResultCount = input.MaxResultCount !=null ? input.MaxResultCount: 10;
-            input.SkipCount= input.SkipCount>0 ? input.SkipCount * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             var data = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0)).ToListAsync();
             result.TotalCount = data.Count();
             result.Items = ObjectMapper.Map<List<CauHinhPhanMemDto>>(data);

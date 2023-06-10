@@ -6,5 +6,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
     {
         public string keyword { get; set; }
         public int? LoaiDoiTuong { get; set; }
+        public string SortBy { set; get; }
     }
 }
