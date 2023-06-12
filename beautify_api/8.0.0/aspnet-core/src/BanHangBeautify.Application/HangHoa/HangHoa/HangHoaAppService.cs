@@ -239,6 +239,25 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
+        } 
+        [HttpPost]
+        public async Task<CreateOrEditHangHoaDto> RestoreProduct(Guid idHangHoa)
+        {
+            CreateOrEditHangHoaDto result = new();
+            var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == idHangHoa);
+            if (findHangHoa != null)
+            {
+                findHangHoa.IsDeleted = false;
+                findHangHoa.TrangThai = 1;
+                findHangHoa.LastModificationTime = null;
+                findHangHoa.LastModifierUserId = AbpSession.UserId;
+                _dmHangHoa.Update(findHangHoa);
+
+                _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == idHangHoa).ForEach(x => x.IsDeleted = false);
+
+                result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
+            }
+            return result;
         }
 
         [HttpGet]

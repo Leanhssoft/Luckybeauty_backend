@@ -18,10 +18,12 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
     public class NhomHangHoaAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_NhomHangHoa, Guid> _dmNhomHangHoa;
+        private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
 
-        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa)
+        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa, IRepository<DM_HangHoa, Guid> dmHangHoa)
         {
             _dmNhomHangHoa = dmNhomHangHoa;
+            _dmHangHoa = dmHangHoa;
         }
         public async Task<NhomHangHoaDto> GetNhomHangHoa_byID(Guid id)
         {
@@ -133,6 +135,12 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 objUp.MoTa = dto.MoTa;
                 objUp.LastModifierUserId = AbpSession.UserId;
                 objUp.LastModificationTime = DateTime.Now;
+
+                // update hanghoa thuocnhom
+                if (objUp.LaNhomHangHoa != dto.LaNhomHangHoa)
+                {
+                    _dmHangHoa.GetAllList(x => x.IdNhomHangHoa == dto.Id).ForEach(x => x.IdLoaiHangHoa = (dto.LaNhomHangHoa ?? false) ? 1 : 2);
+                }
                 await _dmNhomHangHoa.UpdateAsync(objUp);
                 return string.Empty;
             }
@@ -152,7 +160,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                     return "object null";
                 }
                 objUp.IsDeleted = true;
-                objUp.DeletionTime= DateTime.Now;
+                objUp.DeletionTime = DateTime.Now;
                 objUp.DeleterUserId = AbpSession.UserId;
                 await _dmNhomHangHoa.UpdateAsync(objUp);
                 return string.Empty;
