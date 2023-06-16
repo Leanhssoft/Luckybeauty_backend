@@ -5,6 +5,7 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,12 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
     public class NhomHangHoaAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_NhomHangHoa, Guid> _dmNhomHangHoa;
+        private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
 
-        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa)
+        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa, IRepository<DM_HangHoa, Guid> dmHangHoa)
         {
             _dmNhomHangHoa = dmNhomHangHoa;
+            _dmHangHoa = dmHangHoa;
         }
         public async Task<NhomHangHoaDto> GetNhomHangHoa_byID(Guid id)
         {
@@ -83,6 +86,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                              IdParent = o.IdParent,
                              MaNhomHang = o.MaNhomHang,
                              TenNhomHang = o.TenNhomHang,
+                             LaNhomHangHoa = o.LaNhomHangHoa,
                              Color = o.Color,
                              MoTa = o.MoTa,
                              children = GetChildren(data, o.Id)
@@ -131,6 +135,33 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 objUp.MoTa = dto.MoTa;
                 objUp.LastModifierUserId = AbpSession.UserId;
                 objUp.LastModificationTime = DateTime.Now;
+
+                // update hanghoa thuocnhom
+                if (objUp.LaNhomHangHoa != dto.LaNhomHangHoa)
+                {
+                    _dmHangHoa.GetAllList(x => x.IdNhomHangHoa == dto.Id).ForEach(x => x.IdLoaiHangHoa = (dto.LaNhomHangHoa ?? false) ? 1 : 2);
+                }
+                await _dmNhomHangHoa.UpdateAsync(objUp);
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                return string.Concat(ex.InnerException + ex.Message);
+            }
+        }
+
+        public async Task<string> XoaNhomHangHoa(Guid id)
+        {
+            try
+            {
+                DM_NhomHangHoa objUp = await _dmNhomHangHoa.FirstOrDefaultAsync(id);
+                if (objUp == null)
+                {
+                    return "object null";
+                }
+                objUp.IsDeleted = true;
+                objUp.DeletionTime = DateTime.Now;
+                objUp.DeleterUserId = AbpSession.UserId;
                 await _dmNhomHangHoa.UpdateAsync(objUp);
                 return string.Empty;
             }
