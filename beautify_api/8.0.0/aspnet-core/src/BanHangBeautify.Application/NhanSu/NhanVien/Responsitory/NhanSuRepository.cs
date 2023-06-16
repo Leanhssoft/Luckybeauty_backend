@@ -30,7 +30,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Responsitory
                 command.Parameters.Add(new SqlParameter("@Filter", input.Filter ?? ""));
                 command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
                 command.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
-                command.Parameters.Add(new SqlParameter("@SortType", input.SortBy ?? "desc"));
+                command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
                 command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
                 command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
 

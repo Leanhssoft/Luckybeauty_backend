@@ -197,16 +197,12 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return new CreateOrEditQuyHoaDonDto();
         }
-        public async Task<PagedResultDto<QuyHoaDonDto>> GetAll(PagedRequestDto input)
+        public async Task<PagedResultDto<QuyHoaDonViewItemDto>> GetAll(PagedQuyHoaDonRequestDto input)
         {
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            PagedResultDto<QuyHoaDonDto> result = new PagedResultDto<QuyHoaDonDto>();
-            var listData = await _quyHoaDonRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
-            result.TotalCount = listData.Count;
-            listData = listData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            result.Items = ObjectMapper.Map<List<QuyHoaDonDto>>(listData);
-            return result;
+            input.Filter = string.IsNullOrEmpty(input.Filter) ? "" : input.Filter;
+            input.TenantId = input.TenantId != null ? input.TenantId : (AbpSession.TenantId ?? 1);
+            return await _repoQuyHD.Search(input);
         }
     }
 }
