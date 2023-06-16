@@ -12,9 +12,9 @@ namespace BanHangBeautify.Authorization
 
             //Công ty
             var congTy = pages.CreateChildPermission(PermissionNames.Pages_CongTy, L("Company"));
-            congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Create, L("CreateCompany"));
+            congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Create, L("CreateCompany"), multiTenancySides: MultiTenancySides.Host);
             congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Edit, L("EditCompany"));
-            congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Delete, L("DeleteCompany"));
+            congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Delete, L("DeleteCompany"),multiTenancySides: MultiTenancySides.Host);
 
             //Chi nhánh
             var chiNhanh = pages.CreateChildPermission(PermissionNames.Pages_ChiNhanh, L("Branch"));

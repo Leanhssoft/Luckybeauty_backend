@@ -8,7 +8,6 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
     {
         public Guid IdCongTy { set; get; }
         [MaxLength(50)]
-        [Required]
         public string MaChiNhanh { get; set; }
         [MaxLength(2000)]
         [Required]

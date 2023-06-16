@@ -13,7 +13,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.AppDanhMuc.AppCuaHang
 {
-    //[AbpAuthorize(PermissionNames.Pages_CongTy)]
+    [AbpAuthorize(PermissionNames.Pages_CongTy)]
     public class CuaHangAppService : SPAAppServiceBase, ICuaHangAppService
     {
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
@@ -23,6 +23,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_CongTy_Create)]
         public async Task CreateCuaHangWithTenant(string tenCuaHang,int idTenant)
         {
             HT_CongTy data = new HT_CongTy();
@@ -43,6 +44,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             chiNhanh.CreatorUserId = AbpSession.UserId;
             await _chiNhanhRepository.InsertAsync(chiNhanh);
         }
+        [AbpAuthorize(PermissionNames.Pages_CongTy_Create)]
         public async Task<CuaHangDto> CreateCuaHang(CreateCuaHangDto dto)
         {
             HT_CongTy data = new HT_CongTy();
@@ -83,6 +85,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             //store = ObjectMapper.Map<CuaHangDto>(dto);
             //return store;
         }
+        [AbpAuthorize(PermissionNames.Pages_CongTy_Edit)]
         public async Task<CuaHangDto> EditCuaHang(EditCuaHangDto dto)
         {
             CuaHangDto store = new CuaHangDto();

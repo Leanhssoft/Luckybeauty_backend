@@ -122,34 +122,15 @@ namespace BanHangBeautify.KhachHang.KhachHang
             return KhachHang;
         }
 
-        public async Task<PagedResultDto<DM_KhachHang>> GetAll(PagedKhachHangResultRequestDto input)
-        {
-            PagedResultDto<DM_KhachHang> ListResultDto = new PagedResultDto<DM_KhachHang>();
-            var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
-            ListResultDto.TotalCount = lstData.Count;
-            if (!string.IsNullOrEmpty(input.keyword))
-            {
-                lstData = lstData.Where(
-                    x => (x.TenKhachHang!=null && x.TenKhachHang.Contains(input.keyword)) ||
-                    (x.MaKhachHang!=null&& x.MaKhachHang.Contains(input.keyword)) ||
-                    (x.MaSoThue != null && x.MaSoThue.Contains(input.keyword)) || 
-                    (x.SoDienThoai != null && x.SoDienThoai.Contains(input.keyword)) ||
-                    (x.DiaChi != null && x.DiaChi.Contains(input.keyword)) || 
-                    (x.Email != null && x.Email.Contains(input.keyword))
-                   ).ToList();
-            }
-            if (input.SkipCount > 0)
-            {
-                input.SkipCount = input.SkipCount * 10;
-            }
-
-            lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            ListResultDto.Items = lstData;
-            return ListResultDto;
-        }
-
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input)
         {
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            int tenantId = AbpSession.TenantId ?? 1;
+            return await _customerRepo.Search(input,tenantId);
+        }
+
+        public async Task<PagedResultDto<KhachHangView>> GetAll(PagedKhachHangResultRequestDto input)
+            {
             PagedResultDto<KhachHangView> ListResultDto = new PagedResultDto<KhachHangView>();
             var lstData = await _repository.GetAll()
                 .Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();

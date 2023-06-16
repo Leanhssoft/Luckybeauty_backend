@@ -20,7 +20,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public string TenNhomKhach { get; set; }
         public string GioiTinh { get; set; }
         public string NhanVienPhuTrach { get; set; }
-        public decimal TongChiTieu { get; set; }
+        public float TongChiTieu { get; set; }
         public DateTime? CuocHenGanNhat { get; set; }
         public string TenNguonKhach { get; set; }
         public float? TongTichDiem { get; set; }
