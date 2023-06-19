@@ -86,7 +86,6 @@ namespace BanHangBeautify.Permissions
                 flatPermission.Children = flatPermission.Children.Where(x => x.Name != "Pages.Tenants").ToList();
             }
             result.Add(flatPermission);
-
             if (permission.Children == null)
             {
                 return;

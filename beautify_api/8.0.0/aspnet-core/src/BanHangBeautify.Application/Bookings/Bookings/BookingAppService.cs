@@ -113,11 +113,11 @@ namespace BanHangBeautify.Bookings.Bookings
             var findBooking = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (findBooking != null)
             {
-                findBooking.SoDienThoai = dto.SoDienThoai;
+                findBooking.SoDienThoai = string.IsNullOrEmpty(dto.SoDienThoai)?findBooking.SoDienThoai:dto.SoDienThoai;
                 findBooking.StartTime = dto.StartTime;
                 findBooking.GhiChu = dto.GhiChu;
                 findBooking.LoaiBooking = dto.LoaiBooking;
-                findBooking.TenKhachHang = dto.TenKhachHang;
+                findBooking.TenKhachHang = string.IsNullOrEmpty(dto.TenKhachHang) ? findBooking.TenKhachHang : dto.TenKhachHang;
                 findBooking.TrangThai = dto.TrangThai;
                 findBooking.LastModificationTime = DateTime.Now;
                 findBooking.LastModifierUserId = AbpSession.UserId;
@@ -130,7 +130,7 @@ namespace BanHangBeautify.Bookings.Bookings
             return new Booking();
 
         }
-        [NonAction]
+        [NonAction] 
         public async Task UpdateBookingService(Guid idBooking, Guid idDichVuQuiDoi)
         {
             var bookingService = await _bookingServiceRepository.FirstOrDefaultAsync(x => x.IdBooking == idBooking && x.IsDeleted == false);

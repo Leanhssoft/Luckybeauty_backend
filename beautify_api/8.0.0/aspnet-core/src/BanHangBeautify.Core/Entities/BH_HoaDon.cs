@@ -1,10 +1,6 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BanHangBeautify.Data.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;

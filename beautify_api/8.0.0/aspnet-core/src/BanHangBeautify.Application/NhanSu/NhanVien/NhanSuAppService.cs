@@ -5,6 +5,7 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
+using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +22,17 @@ namespace BanHangBeautify.NhanSu.NhanVien
         private readonly IRepository<NS_NhanVien, Guid> _repository;
         private readonly IRepository<NS_ChucVu, Guid> _chucVuRepository;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTac;
-        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository, IRepository<NS_ChucVu, Guid> chucVuRepository, IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTac)
+        private readonly INhanSuRepository _nhanSuRepository;
+        public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository,
+            IRepository<NS_ChucVu, Guid> chucVuRepository, 
+            IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTac,
+            INhanSuRepository nhanSuRepository
+         )
         {
             _repository = repository;
             _chucVuRepository = chucVuRepository;
             _quaTrinhCongTac = quaTrinhCongTac;
+            _nhanSuRepository = nhanSuRepository;
         }
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
@@ -62,7 +69,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;
             nhanSu.SoDienThoai = dto.SoDienThoai;
-            nhanSu.NgaySinh = (DateTime)dto.NgaySinh;
+            nhanSu.NgaySinh = dto.NgaySinh;
             nhanSu.NgayCap = dto.NgayCap;
             nhanSu.NoiCap = dto.NoiCap;
             nhanSu.KieuNgaySinh = dto.KieuNgaySinh;
@@ -70,6 +77,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.TenantId = AbpSession.TenantId ?? 1;
             nhanSu.CreationTime = DateTime.Now;
             nhanSu.CreatorUserId = AbpSession.UserId;
+            nhanSu.LastModificationTime = DateTime.Now;
+            nhanSu.LastModifierUserId = AbpSession.UserId;
             nhanSu.IsDeleted = false;
             var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
             result.NgayVaoLam = nhanSu.CreationTime;
@@ -141,24 +150,22 @@ namespace BanHangBeautify.NhanSu.NhanVien
         [HttpPost]
         public async Task<CreateOrEditNhanSuDto> GetNhanSu(Guid id)
         {
-            var nhanSu= await _repository.GetAsync(id);
-            var result = ObjectMapper.Map<CreateOrEditNhanSuDto>(nhanSu);
-            return result;
-        }
-        public async Task<PagedResultDto<NhanSuDto>> GetAll(PagedResultRequestDto input, string keyWord)
-        {
-            PagedResultDto<NhanSuDto> result = new PagedResultDto<NhanSuDto>();
-            var lstNhanSu = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
-            result.TotalCount = lstNhanSu.Count;
-            if (!string.IsNullOrEmpty(keyWord))
+            var nhanSu =await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (nhanSu != null)
             {
-                lstNhanSu = lstNhanSu.Where(x => x.TenNhanVien.Contains(keyWord) || x.MaNhanVien.Contains(keyWord) || x.NoiCap.Contains(keyWord)).ToList();
+                var result = ObjectMapper.Map<CreateOrEditNhanSuDto>(nhanSu);
+                return result;
             }
+            
+            return new CreateOrEditNhanSuDto();
+        }
+        public async Task<PagedResultDto<NhanSuItemDto>> GetAll(PagedNhanSuRequestDto input)
+        {
+            input.Filter = (input.Filter ?? string.Empty).Trim();
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            lstNhanSu = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            var items = ObjectMapper.Map<List<NhanSuDto>>(lstNhanSu);
-            result.Items = items;
-            return result;
+            input.MaxResultCount = input.MaxResultCount;
+            input.TenantId = input.TenantId != null ? input.TenantId :(AbpSession.TenantId??1);
+            return await _nhanSuRepository.GetAllNhanSu(input);
         }
         public async Task<PagedResultDto<NhanSuItemDto>> Search(PagedResultRequestDto input, string keyWord)
         {

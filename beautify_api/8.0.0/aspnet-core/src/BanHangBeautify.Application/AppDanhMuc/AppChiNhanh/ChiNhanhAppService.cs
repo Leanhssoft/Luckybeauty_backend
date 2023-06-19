@@ -107,7 +107,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
             chiNhanh.Id = Guid.NewGuid();
             var chiNhanhCount = _chiNhanhRepository.GetAll().Where(x=>x.TenantId==(AbpSession.TenantId??1)&&x.IdCongTy==dto.IdCongTy).Count() + 1;
-            chiNhanh.MaChiNhanh = "CN_0" + chiNhanhCount.ToString();
+            chiNhanh.MaChiNhanh =string.IsNullOrEmpty(dto.MaChiNhanh)? "CN_0" + chiNhanhCount.ToString(): dto.MaChiNhanh;
             chiNhanh.TenChiNhanh = dto.TenChiNhanh;
             chiNhanh.MaSoThue = dto.MaSoThue;
             chiNhanh.DiaChi = dto.DiaChi;
