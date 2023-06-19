@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.CheckIn.Dto
+namespace BanHangBeautify.DataExporting.Checkin.Dto
 {
     public class KHCheckInDto
     {

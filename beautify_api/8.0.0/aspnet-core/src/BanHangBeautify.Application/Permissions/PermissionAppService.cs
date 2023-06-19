@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Permissions.Dto;
@@ -66,37 +67,69 @@ namespace BanHangBeautify.Permissions
         {
             var permissions = PermissionManager.GetAllPermissions();
             var rootPermissions = permissions.Where(p => p.Parent == null).ToList();
-            permissions = permissions.Where(x => x.Name=="Pages").ToList();
+            //permissions = permissions.Where(x => x.Name=="Pages").ToList();
             var result = new List<PermissionTreeDto>();
             foreach (var rootPermission in rootPermissions)
             {
                 AddPermission(rootPermission, permissions, result);
             }
+            result = RemovePermissionNull(result[0].Children);
 
             return new ListResultDto<PermissionTreeDto>
             {
                 Items = result
             };
         }
+
+        private List<PermissionTreeDto> RemovePermissionNull(List<PermissionTreeDto> data)
+        {
+            List<PermissionTreeDto> result = new List<PermissionTreeDto>();
+            if (result!=null || result.Count > 0)
+            {
+                foreach (var item in data)
+                {
+                    if (item.ParentNode!=null)
+                    {
+                        result.Add(item);
+                    }
+                    else
+                    {
+                        RemovePermissionNull(item.Children);
+                    }
+                }
+            }
+            return result;
+        }
         private void AddPermission(Permission permission, IReadOnlyList<Permission> allPermissions, List<PermissionTreeDto> result)
         {
             var flatPermission = ObjectMapper.Map<PermissionTreeDto>(permission);
-            if (AbpSession.MultiTenancySide!=Abp.MultiTenancy.MultiTenancySides.Host)
+            flatPermission.ParentNode = permission.Name== PermissionNames.Pages ? "" : permission.Name;
+            if (AbpSession.MultiTenancySide != Abp.MultiTenancy.MultiTenancySides.Host)
             {
                 flatPermission.Children = flatPermission.Children.Where(x => x.Name != "Pages.Tenants").ToList();
             }
-            result.Add(flatPermission);
-            if (permission.Children == null)
+            
+            if (permission.Children == null || permission.Children.Count==0)
             {
+                result.Add(flatPermission);
                 return;
             }
 
-            var children = allPermissions.Where(p => p.Parent != null && p.Parent.Name == permission.Name).ToList();
-
+            var children = flatPermission.Children.ToList();
             foreach (var childPermission in children)
             {
-                AddPermission(childPermission, allPermissions, result);
+                var child = allPermissions.Where(x=>x.Name== childPermission.Name).FirstOrDefault();
+                if (childPermission.ParentNode == null || childPermission.ParentNode=="")
+                {
+                    result.Remove(childPermission);
+                }
+                AddPermission(child, allPermissions, flatPermission.Children);
             }
+            if (flatPermission.ParentNode != null)
+            {
+                result.Add(flatPermission);
+            }
+            
         }
     }
 

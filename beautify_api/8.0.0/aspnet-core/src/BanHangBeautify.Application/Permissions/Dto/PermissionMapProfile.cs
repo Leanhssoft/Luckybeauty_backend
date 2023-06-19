@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Permissions.Dto
 {
-    internal class PermissionMapProfile: Profile
+    public class PermissionMapProfile: Profile
     {
         public PermissionMapProfile()
         {

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.Checkin.Dto
+namespace BanHangBeautify.DataExporting.Checkin.Dto
 {
-    public class PageKhachHangCheckingDto: KhachHangView
+    public class PageKhachHangCheckingDto : KhachHangView
     {
         public Guid? IdCheckIn { get; set; }
         public Guid? IdChiNhanh { get; set; }

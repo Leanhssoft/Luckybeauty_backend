@@ -1,10 +1,9 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.Checkin.Dto;
-using BanHangBeautify.Checkin.Repository;
-using BanHangBeautify.CheckIn.Dto;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.DataExporting.Checkin.Dto;
+using BanHangBeautify.DataExporting.Checkin.Repository;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
@@ -18,7 +17,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.Checkin
+namespace BanHangBeautify.DataExporting.Checkin
 {
     //[AbpAuthorize(PermissionNames.Pages_CheckIn)]
     public class CheckInAppService : SPAAppServiceBase

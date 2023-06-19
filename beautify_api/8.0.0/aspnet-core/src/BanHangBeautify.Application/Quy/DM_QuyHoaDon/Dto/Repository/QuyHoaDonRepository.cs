@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
-using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
@@ -42,7 +41,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
                 command.Parameters.Add(new SqlParameter("@Filter", input.Filter ?? ""));
                 command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
                 command.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
-                command.Parameters.Add(new SqlParameter("@SortType", input.SortBy ?? "desc"));
+                command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
                 command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
                 command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
 
@@ -58,7 +57,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
                         {
                             var tongTienThu = ds.Tables[0].Rows[i]["TongTienThu"].ToString();
                             data[i].TongTienThu = decimal.Parse(string.IsNullOrEmpty(tongTienThu) ? "0" : tongTienThu);
-                            data[i].ThoiGianTao =ds.Tables[0].Rows[i]["ThoiGianTao"].ToString();
+                            data[i].ThoiGianTao = DateTime.Parse(ds.Tables[0].Rows[i]["ThoiGianTao"].ToString()).ToString("yyyy-MM-dd HH:mm:ss");
                         }
                         return new PagedResultDto<QuyHoaDonViewItemDto>()
                         {
