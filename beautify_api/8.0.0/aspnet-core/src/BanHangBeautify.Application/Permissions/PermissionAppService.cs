@@ -73,7 +73,7 @@ namespace BanHangBeautify.Permissions
             {
                 AddPermission(rootPermission, permissions, result);
             }
-            result = RemovePermissionNull(result[0].Children);
+            result[0].Children = RemovePermissionNull(result[0].Children);
 
             return new ListResultDto<PermissionTreeDto>
             {
@@ -88,13 +88,14 @@ namespace BanHangBeautify.Permissions
             {
                 foreach (var item in data)
                 {
-                    if (item.ParentNode!=null)
+                    if (item.ParentNode==null)
                     {
-                        result.Add(item);
+                        continue;
                     }
-                    else
+                    result.Add(item);
+                    if (item.Children!=null || item.Children.Count>0)
                     {
-                        RemovePermissionNull(item.Children);
+                        item.Children = RemovePermissionNull(item.Children);
                     }
                 }
             }
@@ -103,7 +104,7 @@ namespace BanHangBeautify.Permissions
         private void AddPermission(Permission permission, IReadOnlyList<Permission> allPermissions, List<PermissionTreeDto> result)
         {
             var flatPermission = ObjectMapper.Map<PermissionTreeDto>(permission);
-            flatPermission.ParentNode = permission.Name== PermissionNames.Pages ? "" : permission.Name;
+            flatPermission.ParentNode = permission.Parent!=null ? permission.Parent.Name: "";
             if (AbpSession.MultiTenancySide != Abp.MultiTenancy.MultiTenancySides.Host)
             {
                 flatPermission.Children = flatPermission.Children.Where(x => x.Name != "Pages.Tenants").ToList();
@@ -119,10 +120,6 @@ namespace BanHangBeautify.Permissions
             foreach (var childPermission in children)
             {
                 var child = allPermissions.Where(x=>x.Name== childPermission.Name).FirstOrDefault();
-                if (childPermission.ParentNode == null || childPermission.ParentNode=="")
-                {
-                    result.Remove(childPermission);
-                }
                 AddPermission(child, allPermissions, flatPermission.Children);
             }
             if (flatPermission.ParentNode != null)
