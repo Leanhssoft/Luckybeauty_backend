@@ -22,6 +22,7 @@ using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
 using static BanHangBeautify.Common.CommonClass;
 using BanHangBeautify.HoaDon.NhanVienThucHien;
 using OfficeOpenXml.Style;
+using Abp.Application.Services.Dto;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -228,6 +229,10 @@ namespace BanHangBeautify.HoaDon.HoaDon
             }
         }
         public async Task GetHoaDon(Guid id) { }
-        public async Task GetllHoaDon() { }
+
+        [HttpPost]
+        public async Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param) {
+            return await _repoHoaDon.GetListHoaDon(param, AbpSession.TenantId ?? 1);
+        }
     }
 }
