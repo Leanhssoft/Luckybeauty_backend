@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
-using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;

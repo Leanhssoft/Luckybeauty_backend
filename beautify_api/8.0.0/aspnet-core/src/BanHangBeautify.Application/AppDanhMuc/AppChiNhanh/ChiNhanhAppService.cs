@@ -163,7 +163,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             {
                 if (user.IsAdmin)
                 {
-                    var lst = await _chiNhanhRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+                    var lst = await _chiNhanhRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x=>x.CreationTime).ToListAsync();
                     if (lst != null || lst.Count > 0)
                     {
                         foreach (var item in lst)
@@ -194,6 +194,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                     }
                 }
             }
+            result.Reverse();
             return result;
         }
     }

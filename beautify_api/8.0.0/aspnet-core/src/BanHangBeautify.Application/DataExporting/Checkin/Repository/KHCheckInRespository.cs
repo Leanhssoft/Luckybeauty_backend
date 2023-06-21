@@ -1,6 +1,6 @@
 ﻿using Abp.EntityFrameworkCore;
-using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Common;
+using BanHangBeautify.DataExporting.Checkin.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.Checkin.Repository
+namespace BanHangBeautify.DataExporting.Checkin.Repository
 {
     public class KHCheckInRespository : SPARepositoryBase<DM_KhachHang, Guid>, IKHCheckInRespository
     {
