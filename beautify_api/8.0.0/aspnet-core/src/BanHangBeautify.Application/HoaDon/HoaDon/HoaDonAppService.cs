@@ -228,7 +228,12 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 await _hoaDonRepository.UpdateAsync(hoaDon);
             }
         }
-        public async Task GetHoaDon(Guid id) { }
+        public async Task<List<PageHoaDonDto>> GetInforHoaDon_byId(Guid id) {
+            return await _repoHoaDon.GetInforHoaDon_byId(id);
+        }
+        public async Task<List<PageHoaDonChiTietDto>> GetChiTietHoaDon_byIdHoaDon(Guid idHoaDon) {
+            return await _repoHoaDon.GetChiTietHoaDon_byIdHoaDon(idHoaDon);
+        }
 
         [HttpPost]
         public async Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param) {
