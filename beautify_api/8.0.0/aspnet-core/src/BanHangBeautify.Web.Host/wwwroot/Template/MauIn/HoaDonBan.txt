@@ -1,53 +1,65 @@
-﻿<div id="iframePrint">
-
-<div style="border-bottom:1px dashed black;">&nbsp;</div>
-
-<div><span style="font-size:12px;"><span style="font-family:Tahoma;">Ng&agrave;y b&aacute;n: {NgayBan}</span></span></div>
-
-<div style="text-align: center;"><span style="font-size:12px;"><span style="font-family:Tahoma;"><strong>HO&Aacute; ĐƠN B&Aacute;N H&Agrave;NG</strong></span></span></div>
-
-<div style="text-align: center;"><span style="font-size:12px;"><span style="font-family:Tahoma;"><b>{MaHoaDon}</b></span></span></div>
-
-<div><span style="font-size:12px;"><span style="font-family:Tahoma;">Kh&aacute;ch h&agrave;ng: {TenKhachHang}</span></span></div>
-
-
-<div><span style="font-size:12px;"><span style="font-family:Tahoma;">Điện thoại: {DienThoai}</div>
-
-
-<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
-	<thead>
-		<tr>
-			<td style="border-bottom: 1px dashed black; width: 35%;"><span style="font-size:12px;"><span style="font-family:Tahoma;"><strong>Đơn gi&aacute;</strong></span></span></td>
-			<td style="border-bottom:1px dashed black;text-align:center; width:15%"><span style="font-size:12px;"><span style="font-family:Tahoma;"><strong>SL</strong></span></span></td>
-			<td style="border-bottom: 1px dashed black; text-align: right; width: 50%;"><span style="font-size:12px;"><span style="font-family:Tahoma;"><strong>TT</strong></span></span></td>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td colspan="3"><span style="font-size:12px;"><span style="font-family:Tahoma;">{TenHangHoa}</span></span></td>
-		</tr>
-		<tr>
-			<td style="border-bottom:1px dashed black;"><span style="font-size:12px;"><span style="font-family:Tahoma;">{GiaBan}</span></span></td>
-			<td style="border-bottom:1px dashed black;text-align:center"><span style="font-size:12px;"><span style="font-family:Tahoma;">{SoLuong}</span></span></td>
-			<td style="border-bottom:1px dashed black;text-align:right"><span style="font-size:12px;"><span style="font-family:Tahoma;">{ThanhTien}</span></span></td>
-		</tr>
-	</tbody>
+﻿<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="width: 8%; text-align: center;" rowspan="2"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><img data-bind="attr: {src: InforHDprintf().LogoCuaHang}" style="width:100%" /></span></span></td>
+<td style="width: 3%; text-align: center;" rowspan="2"><span style="font-size: 12px;"><span style="font-family: Tahoma;">&nbsp;</span></span></td>
+<td style="width: 45%; text-align: center;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: InforHDprintf().TenChiNhanh"></span></span></span></td>
+<td style="width: 13%; text-align: center;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">&nbsp;</span></span></td>
+</tr>
+<tr>
+<td style="width: 45%; text-align: center;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">Điện thoại: <span data-bind="text: InforHDprintf().DienThoaiChiNhanh"></span></span></span></td>
+<td style="width: 15%; text-align: center;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">&nbsp;</span></span></td>
+</tr>
+</tbody>
 </table>
-
-<table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
-	<tbody>
-		<tr>
-			<td style="text-align:right;"><span style="font-size:12px;"><span style="font-family:Tahoma;">Tổng tiền h&agrave;ng:</span></span></td>
-			<td style="text-align:right;"><span style="font-size:12px;"><span style="font-family:Tahoma;">{TongTienHang}</span></span></td>
-		</tr>
-	
-		
-		<tr>
-			<td style="text-align:right;"><span style="font-size:12px;"><span style="font-family:Tahoma;">Tiền khách đưa:</span></span></td>
-			<td style="text-align:right;"><span style="font-size:12px;"><span style="font-family:Tahoma;">{DaThanhToan}</span></span></td>
-		</tr>
-		
-	</tbody>
+<div style="border-bottom: 1px dashed black;">&nbsp;</div>
+<div style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">Ng&agrave;y b&aacute;n: <span data-bind="text: InforHDprintf().NgayLapHoaDon"></span></span></span></div>
+<div style="text-align: center;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><strong>HO&Aacute; ĐƠN B&Aacute;N H&Agrave;NG</strong></span></span></div>
+<div style="text-align: center;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><strong><span data-bind="text: InforHDprintf().MaHoaDon"></span></strong></span></span></div>
+<div><span style="font-size: 12px;"><span style="font-family: Tahoma;">Kh&aacute;ch h&agrave;ng: <span data-bind="text: InforHDprintf().TenDoiTuong"></span></span></span></div>
+<div><span style="font-size: 12px;"><span style="font-family: Tahoma;">Điện thoại: <span data-bind="text: InforHDprintf().DienThoaiKhachHang"></span></span></span><br />&nbsp;</div>
+<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0">
+<thead>
+<tr>
+<td style="border-bottom: 1px dashed black; width: 35%;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><strong>Đơn gi&aacute;</strong></span></span></td>
+<td style="border-bottom: 1px dashed black; text-align: center; width: 15%;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><strong>SL</strong></span></span></td>
+<td style="border-bottom: 1px dashed black; text-align: right; width: 50%;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><strong>TT</strong></span></span></td>
+</tr>
+</thead>
+<tbody>
+ <!--ko foreach: $data.CTHoaDonPrint --> <tr>
+<td colspan="3"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: TenHangHoa"></span></span></span></td>
+</tr>
+<tr>
+<td style="border-bottom: 1px dashed black;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: formatNumber(DonGia)"></span></span></span></td>
+<td style="border-bottom: 1px dashed black; text-align: center;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: formatNumber(SoLuong)"></span></span></span></td>
+<td style="border-bottom: 1px dashed black; text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: formatNumber(ThanhTien)"></span></span></span></td>
+</tr>
+<!--/ko--></tbody>
 </table>
-<span style="font-size:12px;"><span style="font-family:Tahoma;">Ti&ecirc;̀n bằng chữ: {TienBangChu}</span></span>
-</div>
+<p>&nbsp;</p>
+<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">Tổng tiền h&agrave;ng:</span></span></td>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: formatNumber($root.InforHDprintf().TongTienHang,2)"></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">Chiết khấu:</span></span></td>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: formatNumber($root.InforHDprintf().TongGiamGia,2)"></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align: right;"><strong><span style="font-size: 12px;"><span style="font-family: Tahoma;">Tổng cộng:</span></span></strong></td>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><strong><span data-bind="text: formatNumber($root.InforHDprintf().TongCong,2)"></span></strong></span></span></td>
+</tr>
+<tr>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">Tiền kh&aacute;ch đưa:</span></span></td>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: formatNumber($root.InforHDprintf().DaThanhToan,2)"></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;">C&ograve;n nợ:</span></span></td>
+<td style="text-align: right;"><span style="font-size: 12px;"><span style="font-family: Tahoma;"><span data-bind="text: formatNumber($root.InforHDprintf().TienKhachThieu,2)"></span></span></span></td>
+</tr>
+</tbody>
+</table>
+<p><span style="font-size: 12px;"><span style="font-family: Tahoma;">Ti&ecirc;̀n bằng chữ: <span data-bind="text: $root.InforHDprintf().TienBangChu"></span></span></span></p>
