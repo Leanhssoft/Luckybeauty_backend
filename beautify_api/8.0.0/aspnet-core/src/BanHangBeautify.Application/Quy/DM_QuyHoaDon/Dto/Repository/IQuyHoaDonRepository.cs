@@ -12,5 +12,6 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
     {
         Task<string> FnGetMaPhieuThuChi(int tenantId, Guid? idChiNhanh, int idLoaiChungTu, DateTime? ngayLapHoaDon);
         Task<PagedResultDto<QuyHoaDonViewItemDto>> Search(PagedQuyHoaDonRequestDto input);
+        Task<List<QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoadonLienQuan);
     }
 }

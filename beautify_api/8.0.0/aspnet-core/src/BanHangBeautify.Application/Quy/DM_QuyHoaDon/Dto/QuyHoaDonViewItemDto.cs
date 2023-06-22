@@ -6,18 +6,13 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
 {
-    public class QuyHoaDonViewItemDto
+    public class QuyHoaDonViewItemDto: QuyHoaDonDto
     {
-        public Guid Id { get; set; }
-        public Guid? IdChiNhanh { get; set; }
-        public string LoaiPhieu { get; set; }
-        public string MaPhieu { get; set; }
-        public string ThoiGianTao { get; set; }
-        public string LoaiThuChi { get; set; }
-        public decimal TongTienThu { get; set; }
-        public string HinhThucThanhToan { get; set; }
-        public string MaNguoiNhan { get; set; }
-        public string TenNguoiNhan { get; set; }
-        public string TrangThai { get; set; }
+        public string SLoaiPhieu { get; set; }// 11.thu/12.chi
+        public string SHinhThucThanhToan { get; set; }
+        public string MaNguoiNop { get; set; }
+        public string TenNguoiNop { get; set; }
+        public string STrangThai { get; set; }
+        public string TenKhoanThuChi { get; set; }
     }
 }

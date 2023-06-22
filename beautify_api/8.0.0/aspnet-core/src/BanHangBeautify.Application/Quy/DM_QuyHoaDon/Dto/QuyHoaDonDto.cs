@@ -15,6 +15,6 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
         public DateTime NgayLapHoaDon { set; get; }
         public float? TongTienThu { set; get; } = 0;
         public string NoiDungThu { set; get; }
-        public bool HachToanKinhDoanh { set; get; }
+        public bool? HachToanKinhDoanh { set; get; } = true;
     }
 }

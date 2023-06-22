@@ -197,9 +197,10 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return new CreateOrEditQuyHoaDonDto();
         }
-        public void GetNhatKyThanhToan_ofHoaDon(Guid idHoadonLienQuan)
+        public async Task<List<QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoadonLienQuan)
         {
-           
+            var data = await _repoQuyHD.GetNhatKyThanhToan_ofHoaDon(idHoadonLienQuan);
+            return data;
         }
     }
 }

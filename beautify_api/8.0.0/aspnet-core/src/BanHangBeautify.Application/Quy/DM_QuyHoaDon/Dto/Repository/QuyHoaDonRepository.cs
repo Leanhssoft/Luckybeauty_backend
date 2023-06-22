@@ -53,12 +53,6 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillCollection<QuyHoaDonViewItemDto>(ds.Tables[0]);
-                        for (int i = 0; i < data.Count; i++)
-                        {
-                            var tongTienThu = ds.Tables[0].Rows[i]["TongTienThu"].ToString();
-                            data[i].TongTienThu = decimal.Parse(string.IsNullOrEmpty(tongTienThu) ? "0" : tongTienThu);
-                            data[i].ThoiGianTao = DateTime.Parse(ds.Tables[0].Rows[i]["ThoiGianTao"].ToString()).ToString("yyyy-MM-dd HH:mm:ss");
-                        }
                         return new PagedResultDto<QuyHoaDonViewItemDto>()
                         {
                             TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
@@ -67,6 +61,25 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
                     }
                 }
                 return new PagedResultDto<QuyHoaDonViewItemDto>();
+            }
+        }
+        public async Task<List< QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoaDonLienQuan)
+        {
+            using (var command = CreateCommand("spGetNhatKyThanhToan_ofHoaDon"))
+            {
+                command.Parameters.Add(new SqlParameter("@IdHoaDonLienQuan", idHoaDonLienQuan));
+                using (var dataReader = await command.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<QuyHoaDonViewItemDto>(ds.Tables[0]);
+                        return data;
+                    }
+                }
+                return new List<QuyHoaDonViewItemDto>();
             }
         }
     }
