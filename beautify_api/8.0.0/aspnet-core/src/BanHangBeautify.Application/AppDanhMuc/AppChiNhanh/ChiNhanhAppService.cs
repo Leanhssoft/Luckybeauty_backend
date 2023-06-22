@@ -9,6 +9,7 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.PhongBan.Dto;
 using BanHangBeautify.Suggests.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
 {
-    [AbpAuthorize(PermissionNames.Pages_ChiNhanh)]
+    [AbpAuthorize]
     public class ChiNhanhAppService : SPAAppServiceBase
     {
         public readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
@@ -82,6 +83,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             return result;
 
         }
+        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Edit)]
         public async Task<CreateChiNhanhDto> GetForEdit(Guid id)
         {
             var data = await _chiNhanhRepository.GetAsync(id);
@@ -92,6 +94,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             return new CreateChiNhanhDto();
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Edit,PermissionNames.Pages_ChiNhanh_Create)]
         public async Task<ChiNhanhDto> CreateOrEditChiNhanh(CreateChiNhanhDto dto)
         {
             var exits = await _chiNhanhRepository.FirstOrDefaultAsync(dto.Id);
@@ -141,6 +144,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Delete)]
         public async Task<bool> DeleteChiNhanh(Guid Id)
         {
             bool result = false;

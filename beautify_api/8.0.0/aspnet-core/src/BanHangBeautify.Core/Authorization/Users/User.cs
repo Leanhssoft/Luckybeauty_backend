@@ -33,7 +33,6 @@ namespace BanHangBeautify.Authorization.Users
             };
 
             user.SetNormalizedNames();
-
             return user;
         }
     }

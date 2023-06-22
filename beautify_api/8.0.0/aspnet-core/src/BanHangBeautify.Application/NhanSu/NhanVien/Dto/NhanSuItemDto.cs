@@ -25,7 +25,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         [MaxLength(2000)]
         public string NoiCap { get; set; }
         public DateTime? NgayVaoLam { set; get; }
-        public byte[] Avatar { get; set; }
+        public string Avatar { get; set; }
         public string TenChucVu { set; get; }
         public string TrangThai { get; set; }
         //public string TenPhongBan { set; get; }

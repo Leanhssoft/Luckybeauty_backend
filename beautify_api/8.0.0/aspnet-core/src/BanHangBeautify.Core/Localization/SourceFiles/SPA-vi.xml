@@ -95,6 +95,7 @@
     <text name="Skins">Giao diện</text>
     <text name="Settings">Cài đặt</text>
     <text name="Filter">Lọc</text>
+    <text name="IncorrectPassword">Mật khẩu không chính xác</text>
     <text name="CurrentPassword">Mật khẩu hiện tại</text>
     <text name="NewPassword">Mật khẩu mới</text>
     <text name="ConfirmNewPassword">Xác nhận mật khẩu mới</text>

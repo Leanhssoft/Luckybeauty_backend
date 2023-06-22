@@ -4,16 +4,19 @@ using BanHangBeautify.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BanHangBeautify.Migrations
+namespace BanHangBeautify.SPMigrations
 {
     [DbContext(typeof(SPADbContext))]
-    partial class SPADbContextModelSnapshot : ModelSnapshot
+    [Migration("20230620093324_update_avatar_nhanSu")]
+    partial class updateavatarnhanSu
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1711,11 +1714,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-<<<<<<< .mine
                             CreationTime = new DateTime(2023, 6, 20, 16, 33, 22, 832, DateTimeKind.Local).AddTicks(6083),
-=======
-                            CreationTime = new DateTime(2023, 6, 22, 8, 39, 33, 513, DateTimeKind.Local).AddTicks(6887),
->>>>>>> .theirs
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
@@ -3170,7 +3169,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 11,
-                            CreationTime = new DateTime(2023, 6, 22, 8, 39, 33, 513, DateTimeKind.Local).AddTicks(7386),
+                            CreationTime = new DateTime(2023, 6, 20, 16, 33, 22, 832, DateTimeKind.Local).AddTicks(6386),
                             IsDeleted = false,
                             MaLoaiChungTu = "SQPT",
                             TenLoaiChungTu = "Phiếu thu",

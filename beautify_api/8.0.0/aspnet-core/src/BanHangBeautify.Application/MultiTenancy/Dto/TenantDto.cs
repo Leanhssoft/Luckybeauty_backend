@@ -16,7 +16,7 @@ namespace BanHangBeautify.MultiTenancy.Dto
         [Required]
         [StringLength(AbpTenantBase.MaxNameLength)]
         public string Name { get; set; }
-
+        public string ConnectionString { set; get; }
         public bool IsActive { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace BanHangBeautify.Data.Entities
         public string NgayCap { get; set; }
         [MaxLength(2000)]
         public string NoiCap { get; set; }
-        public byte[] Avatar { get; set; }
+        public string Avatar { get; set; }
 
         //public Guid? IdPhongBan { get; set; }
         //[ForeignKey("IdPhongBan")]
