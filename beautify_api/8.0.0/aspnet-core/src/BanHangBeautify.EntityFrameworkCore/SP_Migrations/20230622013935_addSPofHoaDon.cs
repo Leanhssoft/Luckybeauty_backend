@@ -199,6 +199,42 @@ BEGIN
 		left join NS_NhanVien nv on hd.IdNhanVien= nv.id
 		where hd.Id= @Id
 END");
+
+            migrationBuilder.Sql(@"CREATE PROCEDURE spGetNhatKyThanhToan_ofHoaDon
+	@IdHoaDonLienQuan uniqueidentifier 
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+	select 
+		qhd.*,
+		iif(qhd.IdLoaiChungTu=11,N'Phiếu thu',N'Phiếu chi') as sLoaiPhieu,
+		CASE WHEN qhd.TrangThai = 1 THEN N'Đã thanh toán' ELSE N'Đã hủy' END AS sTrangThai,
+		STUFF(qct.sPhuongThucTT,len(qct.sPhuongThucTT),1,'') as sHinhThucThanhToan ----- (STUFF: xoa ki tu cuoi cung cua chuoi)
+	from QuyHoaDon qhd
+	join 
+	(
+		select qct.IdQuyHoaDon,
+			(
+			select		
+				(case qct.HinhThucThanhToan
+					when 1 then N'Tiền mặt'
+					when 2 then N'Pos'
+					when 3 then N'Chuyển khoản'
+					when 4 then N'Thẻ giá trị'
+					when 5 then N'Sử dụng điểm'
+				else ''
+				end) + ', ' AS [text()]
+			from QuyHoaDon_ChiTiet qct
+			where IdHoaDonLienQuan= @IdHoaDonLienQuan
+			For XML PATH ('') 
+			) sPhuongThucTT 
+		from QuyHoaDon_ChiTiet qct
+		where IdHoaDonLienQuan= @IdHoaDonLienQuan
+		group by qct.IdQuyHoaDon
+	) qct on qhd.Id= qct.IdQuyHoaDon
+END");
         }
 
         /// <inheritdoc />
@@ -207,6 +243,7 @@ END");
             migrationBuilder.Sql("DROP PROCEDURE spGetListHoaDon");
             migrationBuilder.Sql("DROP PROCEDURE spGetChiTietHoaDon_byIdHoaDon");
             migrationBuilder.Sql("DROP PROCEDURE spGetInforHoaDon_byId");
+            migrationBuilder.Sql("DROP PROCEDURE spGetNhatKyThanhToan_ofHoaDon");
         }
     }
 }
