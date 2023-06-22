@@ -11,13 +11,14 @@ namespace BanHangBeautify.Common
     {
         public class ParamSearch
         {
+            public List<string> IdChiNhanhs { get; set; }
             public string TextSearch { get; set; } = string.Empty;
             public int? CurrentPage { get; set; } = 0;
             public int? PageSize { get; set; } = 10;
             public string ColumnSort { get; set; } = "CreationTime";
             public string TypeSort { get; set; } = "DESC";
-            public DateTime? DateFrom { get; set; }
-            public DateTime? DateTo { get; set; }
+            public DateTime? FromDate { get; set; }
+            public DateTime? ToDate { get; set; }
         }
 
         public class MaxCodeDto

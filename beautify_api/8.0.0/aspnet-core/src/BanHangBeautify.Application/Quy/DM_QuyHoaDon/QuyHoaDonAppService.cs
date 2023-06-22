@@ -197,12 +197,10 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return new CreateOrEditQuyHoaDonDto();
         }
-        public async Task<PagedResultDto<QuyHoaDonViewItemDto>> GetAll(PagedQuyHoaDonRequestDto input)
+        public async Task<List<QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoadonLienQuan)
         {
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            input.Filter = string.IsNullOrEmpty(input.Filter) ? "" : input.Filter;
-            input.TenantId = input.TenantId != null ? input.TenantId : (AbpSession.TenantId ?? 1);
-            return await _repoQuyHD.Search(input);
+            var data = await _repoQuyHD.GetNhatKyThanhToan_ofHoaDon(idHoadonLienQuan);
+            return data;
         }
     }
 }
