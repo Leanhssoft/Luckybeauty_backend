@@ -104,7 +104,7 @@ namespace BanHangBeautify.Roles
             role.SetNormalizedName();
             CheckErrors(await _roleManager.CreateAsync(role));
             await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
-            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
+            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
             return MapToEntityDto(role);
         }
         protected virtual async Task<RoleDto> UpdateRole(CreateOrUpdateRoleInput input)
@@ -113,7 +113,7 @@ namespace BanHangBeautify.Roles
             var role = await _roleManager.GetRoleByIdAsync(input.Id.Value);
             role.DisplayName = input.DisplayName;
             role.Description = input.Description;
-            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissionNames);
+            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
             return MapToEntityDto(role);
         }
         private async Task UpdateGrantedPermissionsAsync(Role role, List<string> grantedPermissionNames)
@@ -210,7 +210,7 @@ namespace BanHangBeautify.Roles
                 DisplayName = role.DisplayName,
                 Name = role.Name,
                 Id= role.Id,
-                GrantedPermissionNames = grantedPermissions.Select(p => p.Name).ToList()
+                GrantedPermissions = grantedPermissions.Select(p => p.Name).ToList()
             };
         }
     }

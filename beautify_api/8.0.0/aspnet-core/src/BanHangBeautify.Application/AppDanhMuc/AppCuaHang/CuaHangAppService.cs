@@ -9,12 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.AppDanhMuc.AppCuaHang
 {
     [AbpAuthorize(PermissionNames.Pages_CongTy)]
-    public class CuaHangAppService : SPAAppServiceBase, ICuaHangAppService
+    public class CuaHangAppService : SPAAppServiceBase
     {
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
@@ -23,27 +22,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_CongTy_Create)]
-        public async Task CreateCuaHangWithTenant(string tenCuaHang,int idTenant)
-        {
-            HT_CongTy data = new HT_CongTy();
-            data.Id = Guid.NewGuid();
-            data.TenCongTy = tenCuaHang;
-            data.TenantId = idTenant;
-            data.CreatorUserId = AbpSession.UserId;
-            data.CreationTime = DateTime.Now;
-            await _congTyRepository.InsertAsync(data);
-            await _congTyRepository.InsertAsync(data);
-            DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
-            chiNhanh.Id = Guid.NewGuid();
-            chiNhanh.MaChiNhanh = "CN_01";
-            chiNhanh.TenChiNhanh = tenCuaHang;
-            chiNhanh.IdCongTy = data.Id;
-            chiNhanh.CreationTime = DateTime.Now;
-            chiNhanh.TenantId = idTenant;
-            chiNhanh.CreatorUserId = AbpSession.UserId;
-            await _chiNhanhRepository.InsertAsync(chiNhanh);
-        }
+        
         [AbpAuthorize(PermissionNames.Pages_CongTy_Create)]
         public async Task<CuaHangDto> CreateCuaHang(CreateCuaHangDto dto)
         {

@@ -28,7 +28,6 @@ namespace BanHangBeautify.Entities
         public float? TongTichDiem { get; set; } = 0;
         [MaxLength(256)]
         public string MaSoThue { get; set; }
-        [MaxLength(2000)]
         public string Avatar { get; set; }
         public DateTime? NgaySinh { get; set; }
         public int? KieuNgaySinh { get; set; } = 0;

@@ -36,7 +36,7 @@ namespace BanHangBeautify
 
         protected virtual Task<Tenant> GetCurrentTenantAsync()
         {
-            return TenantManager.GetByIdAsync(AbpSession.GetTenantId());
+            return TenantManager.GetByIdAsync(AbpSession.TenantId??1);
         }
 
         protected virtual void CheckErrors(IdentityResult identityResult)

@@ -17,6 +17,6 @@ namespace BanHangBeautify.Roles.Dto
         public string Description { get; set; }
 
         [Required]
-        public List<string> GrantedPermissionNames { get; set; }
+        public List<string> GrantedPermissions { get; set; }
     }
 }

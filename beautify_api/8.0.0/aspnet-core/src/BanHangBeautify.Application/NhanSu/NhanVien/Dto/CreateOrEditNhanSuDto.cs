@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using BanHangBeautify.NewFolder;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -27,7 +28,8 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public string NgayCap { get; set; }
         [MaxLength(2000)]
         public string NoiCap { get; set; }
-        public byte[] Avatar { get; set; }
+        public string Avatar { get; set; }
+        public AvatarFile AvatarFile { set; get; }
 
         //public Guid IdPhongBan { get; set; }
         public Guid? IdChiNhanh { set; get; }

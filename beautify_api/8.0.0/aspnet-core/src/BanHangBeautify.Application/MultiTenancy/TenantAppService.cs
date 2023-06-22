@@ -13,10 +13,14 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Editions;
+using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.MultiTenancy
@@ -29,14 +33,17 @@ namespace BanHangBeautify.MultiTenancy
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IAbpZeroDbMigrator _abpZeroDbMigrator;
-        private readonly ICuaHangAppService _cuaHangService;
+        private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
+        private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         public TenantAppService(
             IRepository<Tenant, int> repository,
             TenantManager tenantManager,
             EditionManager editionManager,
             UserManager userManager,
             RoleManager roleManager,
-            IAbpZeroDbMigrator abpZeroDbMigrator,ICuaHangAppService cuaHangAppService)
+            IAbpZeroDbMigrator abpZeroDbMigrator,
+            IRepository<HT_CongTy, Guid> congTyRepository,
+            IRepository<DM_ChiNhanh, Guid> chiNhanhRepository)
             : base(repository)
         {
             _tenantManager = tenantManager;
@@ -44,9 +51,10 @@ namespace BanHangBeautify.MultiTenancy
             _userManager = userManager;
             _roleManager = roleManager;
             _abpZeroDbMigrator = abpZeroDbMigrator;
-            _cuaHangService = cuaHangAppService;
+            _congTyRepository = congTyRepository;
+            _chiNhanhRepository = chiNhanhRepository;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
         {
             string dbName = input.TenancyName;
@@ -97,15 +105,71 @@ namespace BanHangBeautify.MultiTenancy
 
                 // Assign admin user to role!
                 CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name));
-                await _cuaHangService.CreateCuaHangWithTenant(input.Name,tenant.Id);
                 await CurrentUnitOfWork.SaveChangesAsync();
+
+                await CreateCuaHangWithTenant(input.Name, tenant.Id);
             }
 
             return MapToEntityDto(tenant);
         }
+        [NonAction]
+        public async Task CreateCuaHangWithTenant(string tenCuaHang, int idTenant)
+        {
+            HT_CongTy data = new HT_CongTy();
+            data.Id = Guid.NewGuid();
+            data.TenCongTy = tenCuaHang;
+            data.TenantId = idTenant;
+            data.CreatorUserId = AbpSession.UserId;
+            data.CreationTime = DateTime.Now;
+            await _congTyRepository.InsertAsync(data);
+            await _congTyRepository.InsertAsync(data);
+            DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
+            chiNhanh.Id = Guid.NewGuid();
+            chiNhanh.MaChiNhanh = "CN_01";
+            chiNhanh.TenChiNhanh = tenCuaHang;
+            chiNhanh.IdCongTy = data.Id;
+            chiNhanh.CreationTime = DateTime.Now;
+            chiNhanh.TenantId = idTenant;
+            chiNhanh.CreatorUserId = AbpSession.UserId;
+            await _chiNhanhRepository.InsertAsync(chiNhanh);
+        }
+
+        [AbpAuthorize(PermissionNames.Pages_Tenants_Edit)]
+        public async Task<TenantDto> GetTenantForEdit(EntityDto input)
+        {
+            var tenantEditDto = ObjectMapper.Map<TenantDto>(await _tenantManager.GetByIdAsync(input.Id));
+            tenantEditDto.ConnectionString = SimpleStringCipher.Instance.Decrypt(tenantEditDto.ConnectionString);
+            return tenantEditDto;
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Tenants_Edit)]
+        public async Task UpdateTenant(TenantDto input)
+        {
+            CheckDeletePermission();
+            var tenant = await _tenantManager.GetByIdAsync(input.Id);
+            tenant.IsActive = input.IsActive;
+            tenant.Name = input.Name;
+            tenant.TenancyName = input.TenancyName;
+            if (!string.IsNullOrEmpty(input.ConnectionString))
+            {
+                tenant.ConnectionString = SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
+            }
+            await _tenantManager.UpdateAsync(tenant);
+        }
+
+        [HttpPost]
+        public async Task DeleteTenant(int id)
+        {
+            CheckDeletePermission();
+            var tenant = await _tenantManager.GetByIdAsync(id);
+            await _tenantManager.DeleteAsync(tenant);
+        }
+        
+
 
         protected override IQueryable<Tenant> CreateFilteredQuery(PagedTenantResultRequestDto input)
         {
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             return Repository.GetAll()
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.TenancyName.Contains(input.Keyword) || x.Name.Contains(input.Keyword))
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
@@ -125,24 +189,6 @@ namespace BanHangBeautify.MultiTenancy
             var tenant = await _tenantManager.GetByIdAsync(input.Id);
             await _tenantManager.DeleteAsync(tenant);
         }
-        [HttpPost]
-        public async Task DeleteTenant(int id)
-        {
-            CheckDeletePermission();
-            var tenant = await _tenantManager.GetByIdAsync(id);
-            await _tenantManager.DeleteAsync(tenant);
-        }
-        [HttpPost]
-        public async Task UpdateTenant(TenantDto input)
-        {
-            CheckDeletePermission();
-            var tenant = await _tenantManager.GetByIdAsync(input.Id);
-            tenant.IsActive = input.IsActive;
-            tenant.Name = input.Name;
-            tenant.TenancyName = input.TenancyName;
-            await _tenantManager.UpdateAsync(tenant);
-        }
-
         private void CheckErrors(IdentityResult identityResult)
         {
             identityResult.CheckErrors(LocalizationManager);

@@ -120,7 +120,11 @@ namespace BanHangBeautify.Permissions
             foreach (var childPermission in children)
             {
                 var child = allPermissions.Where(x=>x.Name== childPermission.Name).FirstOrDefault();
-                AddPermission(child, allPermissions, flatPermission.Children);
+                if (child != null)
+                {
+                    AddPermission(child, allPermissions, flatPermission.Children);
+                }
+                
             }
             if (flatPermission.ParentNode != null)
             {

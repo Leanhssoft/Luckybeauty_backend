@@ -4,13 +4,16 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Suggests.Dto;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,18 +24,20 @@ namespace BanHangBeautify.NhanSu.NhanVien
     {
         private readonly IRepository<NS_NhanVien, Guid> _repository;
         private readonly IRepository<NS_ChucVu, Guid> _chucVuRepository;
+        private readonly IHostingEnvironment _env;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTac;
         private readonly INhanSuRepository _nhanSuRepository;
         public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository,
             IRepository<NS_ChucVu, Guid> chucVuRepository, 
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTac,
-            INhanSuRepository nhanSuRepository
+            INhanSuRepository nhanSuRepository, IHostingEnvironment env
          )
         {
             _repository = repository;
             _chucVuRepository = chucVuRepository;
             _quaTrinhCongTac = quaTrinhCongTac;
             _nhanSuRepository = nhanSuRepository;
+            _env = env;
         }
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
@@ -61,10 +66,24 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
             //nhanSu.IdPhongBan = dto.IdPhongBan;
+            var curentTenant =await GetCurrentTenantAsync();
+            string tenantName = "";
+            if (curentTenant==null)
+            {
+                tenantName = "AdminTenant";
+            }
+            else
+            {
+                tenantName = curentTenant.TenancyName;
+            }
             nhanSu.MaNhanVien = dto.MaNhanVien;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
             nhanSu.TenNhanVien = dto.Ho + " " + dto.TenLot;
+            if (dto.AvatarFile != null && !string.IsNullOrWhiteSpace(dto.AvatarFile.FileBase64))
+            {
+                nhanSu.Avatar = SaveFile(dto.AvatarFile, tenantName + "/NhanSu/" + nhanSu.TenNhanVien);
+            }
             nhanSu.CCCD = dto.CCCD;
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;
@@ -212,6 +231,28 @@ namespace BanHangBeautify.NhanSu.NhanVien
             
            
             return result;
+        }
+        private string SaveFile(AvatarFile file, string thumuc = "")
+        {
+            String path = _env.ContentRootPath + "/Common/" + thumuc; //Path
+
+            //Check if directory exist
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path); //Create directory if it doesn't exist
+            }
+
+            var timeStamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+            var filename = Path.GetFileNameWithoutExtension(file.FileName).Trim();
+            var newFileName = $"{filename}_{timeStamp}{Path.GetExtension(file.FileName)}";
+            //set the image path
+            string filePath = Path.Combine(path, newFileName);
+
+            byte[] fileBytes = Convert.FromBase64String(file.FileBase64);
+
+            File.WriteAllBytes(filePath, fileBytes);
+
+            return $"/Common/{thumuc}/{newFileName}";
         }
     }
 }
