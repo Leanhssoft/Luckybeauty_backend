@@ -154,7 +154,8 @@ namespace BanHangBeautify.SPMigrations
 			case when @TypeSort <> 'DESC' then 0
 			when @ColumnSort='DaThanhToan' then DaThanhToan end DESC
 		OFFSET (@CurrentPage* @PageSize) ROWS
-		FETCH NEXT @PageSize ROWS ONLY");
+		FETCH NEXT @PageSize ROWS ONLY
+END");
 
 			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetChiTietHoaDon_byIdHoaDon]
 	@IdHoaDon uniqueidentifier
