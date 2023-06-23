@@ -59,6 +59,8 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.Id = Guid.NewGuid();
             khachHang.CreationTime = DateTime.Now;
             khachHang.CreatorUserId = AbpSession.UserId;
+            khachHang.LastModificationTime = DateTime.Now;
+            khachHang.LastModifierUserId = AbpSession.UserId;
             khachHang.TenantId = AbpSession.TenantId ?? 1;
             khachHang.IsDeleted = false;
             await _repository.InsertAsync(khachHang);

@@ -73,7 +73,8 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.TenantId = AbpSession.TenantId ?? 1;
             hangHoa.CreatorUserId = AbpSession.UserId;
             hangHoa.CreationTime = DateTime.Now;
-
+            hangHoa.LastModificationTime = DateTime.Now;
+            hangHoa.LastModifierUserId = AbpSession.UserId;
             if (dto.DonViQuiDois != null && dto.DonViQuiDois.Count > 0)
             {
                 float? max = 1;

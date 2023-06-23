@@ -69,6 +69,7 @@ namespace BanHangBeautify.DataExporting.Checkin
             var result = ObjectMapper.Map<KHCheckInDto>(objNew);
             return result;
         }
+        [HttpPost]
         public async Task<string> UpdateCustomerCheckIn(KHCheckInDto dto)
         {
             if (dto == null) { return "Data null"; };
@@ -98,6 +99,7 @@ namespace BanHangBeautify.DataExporting.Checkin
                 return new List<PageKhachHangCheckingDto>();
             }
         }
+        [HttpPost]
         public async Task<string> UpdateTrangThaiCheckin(Guid idCheckIn, int trangThai = 1)
         {
             try

@@ -1711,11 +1711,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-<<<<<<< .mine
                             CreationTime = new DateTime(2023, 6, 20, 16, 33, 22, 832, DateTimeKind.Local).AddTicks(6083),
-=======
-                            CreationTime = new DateTime(2023, 6, 22, 8, 39, 33, 513, DateTimeKind.Local).AddTicks(6887),
->>>>>>> .theirs
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
