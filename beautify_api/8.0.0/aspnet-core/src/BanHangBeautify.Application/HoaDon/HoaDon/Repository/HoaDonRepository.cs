@@ -61,7 +61,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
             {
                 idChiNhanhs = string.Join(",", param.IdChiNhanhs);
             }
-            if (param.IdChiNhanhs != null && param.IdChiNhanhs.Count > 0)
+            if (param.IdLoaiChungTus != null && param.IdLoaiChungTus.Count > 0)
             {
                 idLoaiChungTus = string.Join(",", param.IdLoaiChungTus);
             }
