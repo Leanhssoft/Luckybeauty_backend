@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
+using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository;
 using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +21,11 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
     public class ChietKhauHoaDonAppService:SPAAppServiceBase
     {
         private readonly IRepository<NS_ChietKhauHoaDon, Guid> _repository;
-        public ChietKhauHoaDonAppService(IRepository<NS_ChietKhauHoaDon, Guid> repository)
+        private readonly IChietKhauHoaDonRepository _chietKhauHoaDonRepository;
+        public ChietKhauHoaDonAppService(IRepository<NS_ChietKhauHoaDon, Guid> repository,IChietKhauHoaDonRepository chietKhauHoaDonRepository)
         {
             _repository = repository;
+            _chietKhauHoaDonRepository = chietKhauHoaDonRepository;
         }
         public async Task<ChietKhauHoaDonDto> CreateOrEdit(CreateOrEditChietKhauHDDto input)
         {
@@ -87,38 +90,11 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             }
             return new CreateOrEditChietKhauHDDto();
         }
-        public async Task<PagedResultDto<ChietKhauHoaDonItemDto>> GetAll(PagedRequestDto input)
+        public async Task<PagedResultDto<ChietKhauHoaDonItemDto>> GetAll(PagedRequestDto input,Guid? idChiNhanh)
         {
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount -1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            PagedResultDto<ChietKhauHoaDonItemDto> result = new PagedResultDto<ChietKhauHoaDonItemDto>();
-            var lstData = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
-            result.TotalCount = lstData.Count;
-            lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            List<ChietKhauHoaDonItemDto> items = new List<ChietKhauHoaDonItemDto>();
-            foreach (var item in lstData)
-            {
-                ChietKhauHoaDonItemDto rdo = new ChietKhauHoaDonItemDto();
-                switch (item.LoaiChietKhau)
-                {
-                    case LoaiChietKhauHoaDonConst.ThucThu:
-                        rdo.GiaTriChietKhau =item.GiaTriChietKhau.Value.ToString()+ " % thực thu";
-                        break;
-                    case LoaiChietKhauHoaDonConst.DoanhThu:
-                        rdo.GiaTriChietKhau = item.GiaTriChietKhau.Value.ToString() + " % doanh thu";
-                        break;
-                    case LoaiChietKhauHoaDonConst.VND:
-                        rdo.GiaTriChietKhau = item.GiaTriChietKhau.Value.ToString() + " VNĐ";
-                        break;
-                    default:
-                        rdo.GiaTriChietKhau = "0";
-                        break;
-                }
-                rdo.ChungTuApDung = item.ChungTuApDung;
-                items.Add(rdo);
-            }
-            result.Items = items;
-            return result;
+            return await _chietKhauHoaDonRepository.GetAll(input, AbpSession.TenantId ?? 1, idChiNhanh);
         }
     }
 }
