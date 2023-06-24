@@ -141,7 +141,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
             return result;
         }
-
+        [HttpPost]
         public async Task<CreateHoaDonDto> UpdateHoaDon(CreateHoaDonDto objUp)
         {
             try

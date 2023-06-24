@@ -50,7 +50,7 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
                 return false;
             }
         }
-
+        [HttpPost]
         public async Task<bool> UpdateNVThucHienDichVu([FromBody] JObject data, Guid idHoaDonChiTiet)
         {
             try
@@ -95,7 +95,7 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
             }
             return new NhanVienThucHienDto();
         }
-
+        [HttpPost]
         public bool DeleteNVThucHienDichVu(Guid idHoaDonChiTiet)
         {
             try
@@ -108,7 +108,9 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
             {
                 return false;
             }
-        } 
+        }
+        [HttpPost] 
+        
         public bool DeleteNVThucHienHoaDon(Guid idHoaDon)
         {
             try

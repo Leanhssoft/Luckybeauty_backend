@@ -33,7 +33,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
             var code = (await command.ExecuteScalarAsync()).ToString();
             return code;
         }
-        public async Task<PagedResultDto<QuyHoaDonViewItemDto>> Search(PagedQuyHoaDonRequestDto input)
+        public async Task<PagedResultDto<GetAllQuyHoaDonItemDto>> Search(PagedQuyHoaDonRequestDto input)
         {
             using (var command = CreateCommand("prc_SoQuy_GetAll"))
             {
@@ -52,15 +52,15 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
                     ds.Load(dataReader, LoadOption.OverwriteChanges, array);
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
-                        var data = ObjectHelper.FillCollection<QuyHoaDonViewItemDto>(ds.Tables[0]);
-                        return new PagedResultDto<QuyHoaDonViewItemDto>()
+                        var data = ObjectHelper.FillCollection<GetAllQuyHoaDonItemDto>(ds.Tables[0]);
+                        return new PagedResultDto<GetAllQuyHoaDonItemDto>()
                         {
                             TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
                             Items = data
                         };
                     }
                 }
-                return new PagedResultDto<QuyHoaDonViewItemDto>();
+                return new PagedResultDto<GetAllQuyHoaDonItemDto>();
             }
         }
         public async Task<List< QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoaDonLienQuan)

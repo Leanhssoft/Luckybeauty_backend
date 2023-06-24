@@ -10,8 +10,11 @@ using BanHangBeautify.Identity;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
 using BanHangBeautify.Storage;
 using Castle.Facilities.Logging;
+using IdentityServer4.AspNetIdentity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -44,7 +47,8 @@ namespace BanHangBeautify.Web.Host.Startup
         {
             //MVC
             services.AddControllersWithViews(
-                options => { options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute()); }
+                options => { options.Filters.Add(new AbpAutoValidateAntiforgeryTokenAttribute());
+                }
             ).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new AbpMvcContractResolver(IocManager.Instance)
@@ -55,7 +59,7 @@ namespace BanHangBeautify.Web.Host.Startup
 
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
-
+            
             services.AddSignalR();
 
             // Configure CORS for angular2 UI
