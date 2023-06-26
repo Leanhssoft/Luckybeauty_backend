@@ -42,13 +42,13 @@ BEGIN
 		)
 	ORDER BY 
 		CASE WHEN @SortBy = 'tenNgayLe' AND @SortType = 'desc' THEN TenNgayLe END DESC,
-		CASE WHEN @SortBy = 'tuNgay' AND @SortType = 'desc' THEN TenNgayLe END DESC,
-		CASE WHEN @SortBy = 'denNgay' AND @SortType = 'desc' THEN TenNgayLe END DESC,
-		CASE WHEN @SortBy = 'tongSoNgay' AND @SortType = 'desc' THEN TenNgayLe END DESC,
+		CASE WHEN @SortBy = 'tuNgay' AND @SortType = 'desc' THEN TuNgay END DESC,
+		CASE WHEN @SortBy = 'denNgay' AND @SortType = 'desc' THEN DenNgay END DESC,
+		CASE WHEN @SortBy = 'tongSoNgay' AND @SortType = 'desc' THEN TongSoNgay END DESC,
 		CASE WHEN @SortBy = 'tenNgayLe' AND @SortType = 'asc' THEN TenNgayLe END ASC,
-		CASE WHEN @SortBy = 'tuNgay' AND @SortType = 'asc' THEN TenNgayLe END ASC,
-		CASE WHEN @SortBy = 'denNgay' AND @SortType = 'asc' THEN TenNgayLe END ASC,
-		CASE WHEN @SortBy = 'tongSoNgay' AND @SortType = 'asc' THEN TenNgayLe END ASC
+		CASE WHEN @SortBy = 'tuNgay' AND @SortType = 'asc' THEN TuNgay END ASC,
+		CASE WHEN @SortBy = 'denNgay' AND @SortType = 'asc' THEN DenNgay END ASC,
+		CASE WHEN @SortBy = 'tongSoNgay' AND @SortType = 'asc' THEN TongSoNgay END ASC
 	OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY;
 	SELECT COUNT(*) as TotalCount FROM DM_NgayNghiLe WHERE TenantId = @TenantId
 		AND IsDeleted = 0
