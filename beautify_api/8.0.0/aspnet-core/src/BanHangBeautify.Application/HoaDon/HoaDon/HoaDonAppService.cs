@@ -23,6 +23,7 @@ using static BanHangBeautify.Common.CommonClass;
 using BanHangBeautify.HoaDon.NhanVienThucHien;
 using OfficeOpenXml.Style;
 using Abp.Application.Services.Dto;
+using NPOI.OpenXmlFormats.Wordprocessing;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -192,6 +193,96 @@ namespace BanHangBeautify.HoaDon.HoaDon
             {
                 return new CreateHoaDonDto();
             }
+        }
+        /// <summary>
+        /// chỉ cập nhật thông tin hóa đơn, không cập nhật chi tiết hóa đơn
+        /// </summary>
+        /// <param name="objUp"></param>
+        public async Task<CreateHoaDonDto> Update_InforHoaDon(CreateHoaDonDto objUp)
+        {
+            BH_HoaDon objOld = await _hoaDonRepository.FirstOrDefaultAsync(objUp.Id);
+            if (string.IsNullOrEmpty(objUp.MaHoaDon))
+            {
+                objOld.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
+            }
+            else
+            {
+                objOld.MaHoaDon = objUp.MaHoaDon;
+            }
+            objOld.NgayLapHoaDon = objUp.NgayLapHoaDon;
+            objOld.NgayApDung = objUp.NgayApDung;   
+            objOld.NgayHetHan = objUp.NgayHetHan;
+            objOld.IdChiNhanh = objUp.IdChiNhanh;  
+            objOld.IdKhachHang = objUp.IdKhachHang;
+            objOld.IdNhanVien = objUp.IdNhanVien;  
+            objOld.IdPhong = objUp.IdViTriPhong;  
+            objOld.IdHoaDon = objUp.IdHoaDon;
+            objOld.TongTienHangChuaChietKhau = objUp.TongTienHangChuaChietKhau;
+            objOld.PTChietKhauHang = objUp.PTChietKhauHang;   
+            objOld.TongChietKhauHangHoa = objUp.TongChietKhauHangHoa;
+            objOld.TongTienHang = objUp.TongTienHang;
+            objOld.PTThueHD = objUp.PTThueHD;
+            objOld.TongTienThue = objUp.TongTienThue;
+            objOld.TongTienHDSauVAT = objUp.TongTienHDSauVAT;
+            objOld.PTGiamGiaHD = objUp.PTGiamGiaHD;
+            objOld.TongGiamGiaHD = objUp.TongGiamGiaHD;
+            objOld.ChiPhiTraHang = objUp.ChiPhiTraHang;
+            objOld.TongThanhToan = objUp.TongThanhToan;
+            objOld.ChiPhiHD = objUp.ChiPhiHD;
+            objOld.ChiPhi_GhiChu = objUp.ChiPhi_GhiChu;
+            objOld.DiemGiaoDich = objUp.DiemGiaoDich;
+            objOld.GhiChuHD = objUp.GhiChuHD;
+            objOld.TrangThai = objUp.TrangThai;
+            objOld.LastModifierUserId = AbpSession.UserId;
+            objOld.LastModificationTime = DateTime.Now;
+           
+            await _hoaDonRepository.UpdateAsync(objOld);
+            var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objOld);
+            return dataHD;
+        } 
+        public async void Update_ChiTietHoaDon(List<HoaDonChiTietDto> lstCT)
+        {
+            List<BH_NhanVienThucHien> lstNVTH = new();
+            foreach (var item in lstCT)
+            {
+                BH_HoaDon_ChiTiet ctUpdate = await _hoaDonChiTietRepository.FirstOrDefaultAsync(item.Id);
+                if (ctUpdate != null)
+                {
+                    ctUpdate.STT= item.STT;
+                    ctUpdate.SoLuong= item.STT;
+                    ctUpdate.IdDonViQuyDoi= item.IdDonViQuyDoi;
+                    ctUpdate.IdChiTietHoaDon= item.IdChiTietHoaDon;
+                    ctUpdate.DonGiaTruocCK= item.DonGiaTruocCK;
+                    ctUpdate.ThanhTienTruocCK= item.ThanhTienTruocCK;
+                    ctUpdate.PTChietKhau= item.PTChietKhau;
+                    ctUpdate.TienChietKhau= item.TienChietKhau;
+                    ctUpdate.DonGiaSauCK= item.DonGiaSauCK;
+                    ctUpdate.ThanhTienSauCK= item.ThanhTienSauCK;
+                    ctUpdate.PTThue= item.PTThue;
+                    ctUpdate.TienThue= item.TienThue;
+                    ctUpdate.DonGiaSauVAT= item.DonGiaSauVAT;
+                    ctUpdate.ThanhTienSauVAT= item.ThanhTienSauVAT;
+                    ctUpdate.GhiChu= item.GhiChu;
+                    ctUpdate.TrangThai= item.TrangThai;
+                    ctUpdate.LastModifierUserId = AbpSession.UserId;
+                    ctUpdate.LastModificationTime = DateTime.Now;
+                    await _hoaDonChiTietRepository.UpdateAsync(ctUpdate);
+
+                    _nvthService.DeleteNVThucHienDichVu(item.Id);
+
+                    foreach (var nvth in item.nhanVienThucHien)
+                    {
+                        BH_NhanVienThucHien nvNew = ObjectMapper.Map<BH_NhanVienThucHien>(nvth);
+                        nvNew.Id = Guid.NewGuid();
+                        nvNew.IdHoaDonChiTiet = ctUpdate.Id;
+                        nvNew.TenantId = AbpSession.TenantId ?? 1;
+                        nvNew.CreatorUserId = AbpSession.UserId;
+                        nvNew.CreationTime = DateTime.Now;
+                        lstNVTH.Add(nvNew);
+                    }
+                }
+            }
+            await _nvThucHien.InsertRangeAsync(lstNVTH);
         }
         [HttpPost]
         public async Task DeleteHoaDon(Guid id)

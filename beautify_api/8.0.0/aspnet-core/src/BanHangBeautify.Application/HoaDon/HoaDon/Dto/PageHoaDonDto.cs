@@ -8,6 +8,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Dto
 {
     public class PageHoaDonDto: CreateHoaDonDto
     {
+        public string UserName { get; set; }// user lapphieu
         public string MaKhachHang { get; set; }
         public string TenKhachHang { get; set; }
         public string TenChiNhanh { get; set; }
