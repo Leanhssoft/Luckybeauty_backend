@@ -1,19 +1,17 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System;
-using System.Threading.Tasks;
 using Abp.Configuration;
 using Abp.Runtime.Session;
 using Abp.Zero.Configuration;
-using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 using BanHangBeautify.Authorization.Accounts.Dto;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.MultiTenancy;
-using BanHangBeautify.Sessions.Dto;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Authorization.Accounts
 {
@@ -46,7 +44,7 @@ namespace BanHangBeautify.Authorization.Accounts
             {
                 return new IsTenantAvailableOutput(TenantAvailabilityState.InActive);
             }
-            
+
             return new IsTenantAvailableOutput(TenantAvailabilityState.Available, tenant.Id);
         }
 
@@ -73,7 +71,7 @@ namespace BanHangBeautify.Authorization.Accounts
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            
+
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 _config["Jwt:Audience"],
                 expires: DateTime.Now.AddYears(5),

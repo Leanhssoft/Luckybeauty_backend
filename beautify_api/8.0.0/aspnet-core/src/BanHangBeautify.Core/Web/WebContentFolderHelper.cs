@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Abp.Reflection.Extensions;
+using System;
 using System.IO;
 using System.Linq;
-using Abp.Reflection.Extensions;
 
 namespace BanHangBeautify.Web
 {
     /// <summary>
     /// This class is used to find root path of the web project in;
-    /// unit tests (to find views) and entity framework core command line commands (to find conn string).
+    /// unit texts (to find views) and entity framework core command line commands (to find conn string).
     /// </summary>
     public static class WebContentDirectoryFinder
     {

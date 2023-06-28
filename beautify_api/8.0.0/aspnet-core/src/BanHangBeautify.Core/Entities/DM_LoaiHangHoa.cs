@@ -1,24 +1,25 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Data.Entities
 {
-    public class DM_LoaiHangHoa : FullAuditedEntity<Guid>, IMustHaveTenant
+    public class DM_LoaiHangHoa : FullAuditedEntity<int>, IMustHaveTenant
     {
-        public string  MaLoai { get; set; }
-        public string TenLoai{ get; set; }
-        public int TenantId { get ; set ; }
-        public int TrangThai { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Castle.Components.DictionaryAdapter.Key("Id")]
+        override
+        public int Id { get; set; }
+        [MaxLength(10)]
+        public string MaLoaiHangHoa { get; set; }
+        [MaxLength(256)]
+        public string TenLoaiHangHoa { get; set; }
+        public int TenantId { get; set; }
+        public int TrangThai { get; set; } = 1;
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }
-        public DateTime NgayTao { get; set; }
-        public DateTime? NgaySua { get; set; }
         public Guid? NguoiXoa { get; set; }
-        public DateTime? NgayXoa { get; set; }
     }
 }

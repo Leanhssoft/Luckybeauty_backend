@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Entities;
@@ -12,16 +7,23 @@ using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.Localization;
+using Abp.Runtime.Security;
 using Abp.Runtime.Session;
 using Abp.UI;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.Authorization.Accounts;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Roles.Dto;
+using BanHangBeautify.Suggests.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Users
 {
@@ -34,6 +36,7 @@ namespace BanHangBeautify.Users
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
+        private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -42,7 +45,8 @@ namespace BanHangBeautify.Users
             IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
-            LogInManager logInManager)
+            LogInManager logInManager,
+            IRepository<NS_NhanVien,Guid> nhanVienRepository)
             : base(repository)
         {
             _userManager = userManager;
@@ -51,20 +55,22 @@ namespace BanHangBeautify.Users
             _passwordHasher = passwordHasher;
             _abpSession = abpSession;
             _logInManager = logInManager;
+            _nhanVienRepository = nhanVienRepository;
         }
-
+        
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
 
             var user = ObjectMapper.Map<User>(input);
-
+            user.IsAdmin = input.IsAdmin ?? false;
             user.TenantId = AbpSession.TenantId;
             if (!string.IsNullOrEmpty(input.EmailAddress))
             {
                 user.IsEmailConfirmed = true;
             }
-            else {
+            else
+            {
                 user.IsEmailConfirmed = false;
             }
 
@@ -82,7 +88,7 @@ namespace BanHangBeautify.Users
 
             return MapToEntityDto(user);
         }
-
+        [HttpPost]
         public override async Task<UserDto> UpdateAsync(UserDto input)
         {
             CheckUpdatePermission();
@@ -90,7 +96,6 @@ namespace BanHangBeautify.Users
             var user = await _userManager.GetUserByIdAsync(input.Id);
 
             MapToEntity(input, user);
-
             CheckErrors(await _userManager.UpdateAsync(user));
 
             if (input.RoleNames != null)
@@ -100,12 +105,59 @@ namespace BanHangBeautify.Users
 
             return await GetAsync(input);
         }
+        [HttpPost]
+        public async Task<UserDto> UpdateUser(UpdateUserDto input)
+        {
+            CheckUpdatePermission();
+
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            user.IsAdmin = input.IsAdmin??false;
+            user.Surname = input.Surname;
+            user.Name = input.Name;
+            user.PhoneNumber = input.PhoneNumber;
+            user.EmailAddress= input.EmailAddress;
+            user.IsActive = input.IsActive;
+            user.LastModificationTime = DateTime.Now;
+            user.LastModifierUserId = AbpSession.UserId;
+            user.SetNormalizedNames();
+
+            CheckErrors(await _userManager.UpdateAsync(user));
+
+            if (input.RoleNames != null)
+            {
+                CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
+            }
+            var result = ObjectMapper.Map<UserDto>(user);
+            return result;
+        }
 
         public override async Task DeleteAsync(EntityDto<long> input)
         {
             var user = await _userManager.GetUserByIdAsync(input.Id);
             await _userManager.DeleteAsync(user);
         }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Delete)]
+        public async Task<bool> DeleteUser(EntityDto<long> input)
+        {
+            bool result = false;
+            try
+            {
+                var user = await _userManager.GetUserByIdAsync(input.Id);
+                user.IsActive = false;
+                user.IsDeleted = true;
+                user.DeleterUserId = AbpSession.UserId;
+                user.DeletionTime = DateTime.Now;
+                await _userManager.UpdateAsync(user);
+                result = true;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            return result;
+        }
+
 
         [AbpAuthorize(PermissionNames.Pages_Users_Activation)]
         public async Task Activate(EntityDto<long> user)
@@ -167,6 +219,7 @@ namespace BanHangBeautify.Users
 
         protected override IQueryable<User> CreateFilteredQuery(PagedUserResultRequestDto input)
         {
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             return Repository.GetAllIncluding(x => x.Roles)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
@@ -193,7 +246,6 @@ namespace BanHangBeautify.Users
         {
             identityResult.CheckErrors(LocalizationManager);
         }
-
         public async Task<bool> ChangePassword(ChangePasswordDto input)
         {
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
@@ -203,7 +255,7 @@ namespace BanHangBeautify.Users
             {
                 throw new Exception("There is no current user!");
             }
-            
+
             if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
             {
                 CheckErrors(await _userManager.ChangePasswordAsync(user, input.NewPassword));
@@ -218,26 +270,87 @@ namespace BanHangBeautify.Users
 
             return true;
         }
-
+        public async Task<ProfileDto> GetForUpdateProfile()
+        {
+            var user = _userManager.GetUserById(AbpSession.UserId ?? 0);
+            
+            if (user!=null)
+            {
+                var result = new ProfileDto();
+                result.Id = user.Id;
+                result.NhanSuId = user.NhanSuId;
+                result.Surname = user.Surname;
+                result.Name = user.Name;
+                result.UserName = user.UserName;
+                result.PhoneNumber = user.PhoneNumber;
+                result.EmailAddress = user.EmailAddress;
+                var nhanSu =await _nhanVienRepository.FirstOrDefaultAsync(x=>x.Id==user.NhanSuId);
+                if (nhanSu!=null)
+                {
+                    result.Avatar = nhanSu.Avatar;
+                    result.CCCD = nhanSu.CCCD;
+                    result.NgayCap = nhanSu.NgayCap;
+                    result.NoiCap = nhanSu.NoiCap;
+                    result.GioiTinh = nhanSu.GioiTinh;
+                    result.DiaChi = nhanSu.DiaChi;
+                }
+                return result;
+            }
+            return new ProfileDto();
+        }
+        [HttpPost]
+        public async Task<bool> UpdateProfile(ProfileDto input)
+        {
+            var user = _userManager.GetUserById(input.Id);
+            if (user==null)
+            {
+                return false;
+            }
+            user.Name = input.Name;
+            user.Surname = input.Surname;
+            user.PhoneNumber = input.PhoneNumber; 
+            user.EmailAddress = input.EmailAddress;
+            if (user.NhanSuId!=null)
+            {
+                var nhanSu = await _nhanVienRepository.FirstOrDefaultAsync(x=>x.Id==input.NhanSuId);
+                if (nhanSu!=null)
+                {
+                    nhanSu.Avatar = input.Avatar;
+                    nhanSu.SoDienThoai = input.PhoneNumber;
+                    nhanSu.Ho = input.Name;
+                    nhanSu.TenLot = input.Surname;
+                    nhanSu.TenNhanVien = nhanSu.Ho + " " + nhanSu.TenLot;
+                    nhanSu.CCCD = input.CCCD;
+                    nhanSu.NgayCap = input.NgayCap;
+                    if (!string.IsNullOrEmpty(input.NgaySinh))
+                    {
+                        nhanSu.NgaySinh = DateTime.Parse(input.NgaySinh);
+                    }
+                    await _nhanVienRepository.UpdateAsync(nhanSu);
+                }
+            }
+            await _userManager.UpdateAsync(user);
+            return true;
+        }
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)
             {
                 throw new UserFriendlyException("Please log in before attempting to reset password.");
             }
-            
+
             var currentUser = await _userManager.GetUserByIdAsync(_abpSession.GetUserId());
             var loginAsync = await _logInManager.LoginAsync(currentUser.UserName, input.AdminPassword, shouldLockout: false);
             if (loginAsync.Result != AbpLoginResultType.Success)
             {
                 throw new UserFriendlyException("Your 'Admin Password' did not match the one on record.  Please try again.");
             }
-            
+
             if (currentUser.IsDeleted || !currentUser.IsActive)
             {
                 return false;
             }
-            
+
             var roles = await _userManager.GetRolesAsync(currentUser);
             if (!roles.Contains(StaticRoleNames.Tenants.Admin))
             {
@@ -253,6 +366,7 @@ namespace BanHangBeautify.Users
 
             return true;
         }
+        
     }
 }
 

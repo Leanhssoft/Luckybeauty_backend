@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Abp.Modules;
+﻿using Abp.Modules;
 using Abp.Reflection.Extensions;
 using BanHangBeautify.Configuration;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace BanHangBeautify.Web.Host.Startup
 {
     [DependsOn(
        typeof(SPAWebCoreModule))]
-    public class SPAWebHostModule: AbpModule
+    public class SPAWebHostModule : AbpModule
     {
         private readonly IWebHostEnvironment _env;
         private readonly IConfigurationRoot _appConfiguration;

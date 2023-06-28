@@ -2,6 +2,8 @@
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore;
 using Abp.EntityFrameworkCore.Repositories;
+using System.Data.Common;
+using System.Data;
 
 namespace BanHangBeautify.EntityFrameworkCore.Repositories
 {
@@ -19,6 +21,15 @@ namespace BanHangBeautify.EntityFrameworkCore.Repositories
         }
 
         // Add your common methods for all repositories
+        public DbCommand CreateCommand(string commandText, CommandType commandType = CommandType.StoredProcedure)
+        {
+            var command = GetConnection().CreateCommand();
+            //command.CommandTimeout = 60 * 30;
+            command.CommandText = commandText;
+            command.CommandType = commandType;
+            command.Transaction = GetTransaction();
+            return command;
+        }
     }
 
     /// <summary>

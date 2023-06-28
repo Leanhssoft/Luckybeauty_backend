@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Abp.Auditing;
+﻿using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.Extensions;
 using BanHangBeautify.Validation;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Authorization.Accounts.Dto
 {

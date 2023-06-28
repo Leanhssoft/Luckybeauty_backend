@@ -1,10 +1,6 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Entities
@@ -13,17 +9,17 @@ namespace BanHangBeautify.Entities
     {
         public int TenantId { get; set; }
         [MaxLength(50)]
-        public string MaNhom { get; set; }
+        public string MaNhomKhach { get; set; }
         [MaxLength(256)]
-        public string Tennhom { get; set; }
+        public string TenNhomKhach { get; set; }
+        public float? GiamGia { get; set; } = 0;
+        public bool? LaPhamTram { get; set; } = false;
+        public bool? TuDongCapNhat { get; set; } = false;
         [MaxLength(2000)]
         public string MoTa { get; set; }
-        public int TrangThai { get; set; }
+        public int? TrangThai { get; set; } = 1;
         public Guid? NguoiTao { get; set; }
         public Guid? NguoiSua { get; set; }
-        public DateTime NgayTao { get; set; }
-        public DateTime? NgaySua { get; set; }
         public Guid? NguoiXoa { get; set; }
-        public DateTime? NgayXoa { get; set; }
     }
 }

@@ -3,6 +3,7 @@ class CreateTenantDto {
   late String? name;
   late String? adminEmailAddress;
   late String? connectionString;
+  late String? password;
   late bool? isActive;
 
   CreateTenantDto(
@@ -10,6 +11,7 @@ class CreateTenantDto {
       this.name,
       this.adminEmailAddress,
       this.connectionString,
+      this.password,
       this.isActive});
 
   CreateTenantDto.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class CreateTenantDto {
     name = json['name'];
     adminEmailAddress = json['adminEmailAddress'];
     connectionString = json['connectionString'];
+    password = json['password'];
     isActive = json['isActive'];
   }
 
@@ -26,6 +29,7 @@ class CreateTenantDto {
     data['name'] = name;
     data['adminEmailAddress'] = adminEmailAddress;
     data['connectionString'] = connectionString;
+    data['password'] = password;
     data['isActive'] = isActive;
     return data;
   }

@@ -1,9 +1,9 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using BanHangBeautify.Authorization.Users;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Users.Dto
 {
@@ -22,13 +22,15 @@ namespace BanHangBeautify.Users.Dto
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
 
-        [Required(AllowEmptyStrings =true)]
+        [Required(AllowEmptyStrings = true)]
         //[EmailAddress]
         //[StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
+        public string PhoneNumber { get; set; }
 
         public bool IsActive { get; set; }
 
+        public bool IsAdmin { get; set; }
         public string FullName { get; set; }
 
         public DateTime? LastLoginTime { get; set; }
@@ -36,7 +38,7 @@ namespace BanHangBeautify.Users.Dto
         public DateTime CreationTime { get; set; }
 
         public string[] RoleNames { get; set; }
-        
+
         public Guid? NhanSuId { get; set; }
     }
 }

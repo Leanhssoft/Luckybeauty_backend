@@ -1,13 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.LoaiHangHoa.Dto
 {
-    public class CreateOrEditLoaiHangHoaDto : EntityDto<Guid>
+    public class CreateOrEditLoaiHangHoaDto : EntityDto<int>
     {
         public string MaLoai { get; set; }
         public string TenLoai { get; set; }

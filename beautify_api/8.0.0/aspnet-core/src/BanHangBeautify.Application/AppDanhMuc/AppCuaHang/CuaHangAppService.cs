@@ -1,104 +1,101 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
-using BanHangBeautify.AppDanhMuc.AppChiNhanh;
-using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
 using BanHangBeautify.AppDanhMuc.AppCuaHang.Dto;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.AppDanhMuc.AppCuaHang
 {
     [AbpAuthorize(PermissionNames.Pages_CongTy)]
-    public class CuaHangAppService:SPAAppServiceBase//, ICuaHangAppService
+    public class CuaHangAppService : SPAAppServiceBase
     {
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
-        public CuaHangAppService(IRepository<HT_CongTy,Guid> congTyRepository, IRepository<DM_ChiNhanh, Guid> chiNhanhRepository)
+        public CuaHangAppService(IRepository<HT_CongTy, Guid> congTyRepository, IRepository<DM_ChiNhanh, Guid> chiNhanhRepository)
         {
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
         }
-        public async Task CreateCongTy(CreateOrEditCuaHangDto dto)
+        
+        [AbpAuthorize(PermissionNames.Pages_CongTy_Create)]
+        public async Task<CuaHangDto> CreateCuaHang(CreateCuaHangDto dto)
         {
-            var findExist =await _congTyRepository.FirstOrDefaultAsync(dto.Id);
-            if (findExist == null)
-            {
-                await CreateCuaHang(dto);
-            }
-            else
-            {
-                 await EditCuaHang(dto, findExist);
-            }
-        }
-        [NonAction]
-        public async Task CreateCuaHang(CreateOrEditCuaHangDto dto)
-        {
-                HT_CongTy data = new HT_CongTy();
-                data.Id = Guid.NewGuid();
-                data.TenCongTy = dto.TenCongTy;
-                data.DiaChi = dto.DiaChi;
-                data.GhiChu = dto.GhiChu;
-                data.MaSoThue = dto.MaSoThue;
-                data.Logo = dto.Logo;
-                data.TenantId = AbpSession.TenantId ?? 1;
-                data.CreatorUserId = AbpSession.UserId;
-                data.CreationTime = DateTime.Now;
-                data.NgayTao = DateTime.Now;
-                await _congTyRepository.InsertAsync(data);
-                DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
-                chiNhanh.Id = Guid.NewGuid();
-                chiNhanh.MaChiNhanh = dto.MaChiNhanh;
-                chiNhanh.TenChiNhanh = dto.TenChiNhanh;
-                chiNhanh.MaSoThue = dto.MaSoThue;
-                chiNhanh.DiaChi = dto.DiaChi;
-                chiNhanh.GhiChu = dto.GhiChu;
-                chiNhanh.Logo = dto.Logo;
-                chiNhanh.NgayApDung = dto.NgayApDung?? DateTime.Now;
-                chiNhanh.NgayHetHan = dto.NgayHetHan?? DateTime.Now.AddDays(7);
-                chiNhanh.TenantId = AbpSession.TenantId ?? 1;
-                chiNhanh.CreatorUserId = AbpSession.UserId;
-                chiNhanh.NgayTao = DateTime.Now;
-                chiNhanh.IdCongTy = data.Id;
-                chiNhanh.CreationTime = DateTime.Now;
-                await _chiNhanhRepository.InsertAsync(chiNhanh);
-                //CuaHangDto store = new CuaHangDto();
-                //store = ObjectMapper.Map<CuaHangDto>(dto);
-                //return store;
-        }
-        [NonAction]
-        public async Task EditCuaHang(CreateOrEditCuaHangDto dto,HT_CongTy item)
-        {
-            item.TenCongTy = dto.TenCongTy;
-            item.DiaChi = dto.DiaChi;
-            item.GhiChu = dto.GhiChu;
-            item.MaSoThue = dto.MaSoThue;
-            item.Logo = dto.Logo;
-            item.TenantId = AbpSession.TenantId ?? 1;
-            item.CreatorUserId = AbpSession.UserId;
-            item.CreationTime = DateTime.Now;
-            item.NgayTao = DateTime.Now;
-            await _congTyRepository.UpdateAsync(item);
+            HT_CongTy data = new HT_CongTy();
+            data.Id = Guid.NewGuid();
+            data.TenCongTy = dto.TenCongTy;
+            data.DiaChi = dto.DiaChi;
+            data.GhiChu = dto.GhiChu;
+            data.SoDienThoai = dto.SoDienThoai;
+            data.MaSoThue = dto.MaSoThue;
+            data.Logo = dto.Logo;
+            data.Website = dto.Website;
+            data.Facebook = dto.Facebook;
+            data.Twitter = dto.Twitter;
+            data.Instagram = dto.Instagram;
+            data.TenantId = AbpSession.TenantId ?? 1;
+            data.CreatorUserId = AbpSession.UserId;
+            data.CreationTime = DateTime.Now;
+            await _congTyRepository.InsertAsync(data);
+            DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
+            chiNhanh.Id = Guid.NewGuid();
+            chiNhanh.MaChiNhanh = dto.MaChiNhanh;
+            chiNhanh.TenChiNhanh = dto.TenChiNhanh;
+            chiNhanh.SoDienThoai = dto.SoDienThoai;
+            chiNhanh.MaSoThue = dto.MaSoThue;
+            chiNhanh.DiaChi = dto.DiaChi;
+            chiNhanh.GhiChu = dto.GhiChu;
+            chiNhanh.Logo = dto.Logo;
+            chiNhanh.NgayApDung = dto.NgayApDung ?? DateTime.Now;
+            chiNhanh.NgayHetHan = dto.NgayHetHan ?? DateTime.Now.AddDays(7);
+            chiNhanh.TenantId = AbpSession.TenantId ?? 1;
+            chiNhanh.CreatorUserId = AbpSession.UserId;
+            chiNhanh.IdCongTy = data.Id;
+            chiNhanh.CreationTime = DateTime.Now;
+            var result = ObjectMapper.Map<CuaHangDto>(data);
+            await _chiNhanhRepository.InsertAsync(chiNhanh);
+            return result;
             //CuaHangDto store = new CuaHangDto();
             //store = ObjectMapper.Map<CuaHangDto>(dto);
             //return store;
         }
+        [AbpAuthorize(PermissionNames.Pages_CongTy_Edit)]
+        public async Task<CuaHangDto> EditCuaHang(EditCuaHangDto dto)
+        {
+            CuaHangDto store = new CuaHangDto();
+            var item = await _congTyRepository.FirstOrDefaultAsync(dto.Id);
+            if (item != null)
+            {
+                item.TenCongTy = dto.TenCongTy;
+                item.DiaChi = dto.DiaChi;
+                item.SoDienThoai = dto.SoDienThoai;
+                item.GhiChu = dto.GhiChu;
+                item.MaSoThue = dto.MaSoThue;
+                item.Logo = dto.Logo;
+                item.Website = dto.Website;
+                item.Facebook = dto.Facebook;
+                item.Twitter = dto.Twitter;
+                item.Instagram = dto.Instagram;
+                item.LastModifierUserId = AbpSession.UserId;
+                item.LastModificationTime = DateTime.Now;
+                store = ObjectMapper.Map<CuaHangDto>(item);
+                await _congTyRepository.UpdateAsync(item);
+            }
+            return store;
+        }
 
         [AbpAuthorize(PermissionNames.Pages_CongTy_Delete)]
+        [HttpPost]
         public async Task<bool> DeleteCongTy(Guid id)
         {
             bool result = false;
-            var congTy =await _congTyRepository.GetAsync(id);
-            if (congTy.Id==id)
+            var congTy = await _congTyRepository.GetAsync(id);
+            if (congTy.Id == id)
             {
                 congTy.IsDeleted = true;
                 await _congTyRepository.UpdateAsync(congTy);
@@ -106,11 +103,42 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             }
             return result;
         }
-        public async Task<ListResultDto<HT_CongTy>> GetAllCongTy()
+        public async Task<HT_CongTy> GetCongTy(Guid id)
+        {
+            return await _congTyRepository.GetAsync(id);
+        }
+        public async Task<EditCuaHangDto> GetCongTyForEdit(Guid idChiNhanh)
+        {
+            var chiNhanh = _chiNhanhRepository.FirstOrDefault(x => x.Id == idChiNhanh);
+            if (chiNhanh!=null)
+            {
+                var cuaHang =  await _congTyRepository.GetAsync(chiNhanh.IdCongTy);
+                return new EditCuaHangDto() {
+                    Id = cuaHang.Id,
+                    DiaChi = cuaHang.DiaChi,
+                    Facebook = cuaHang.Facebook,
+                    GhiChu = cuaHang.GhiChu ,
+                    Instagram = cuaHang.Instagram ,
+                    Logo = cuaHang.Logo ,
+                    MaSoThue = cuaHang.MaSoThue ,SoDienThoai=cuaHang.SoDienThoai,
+                    TenCongTy = cuaHang.TenCongTy ,
+                    Twitter= cuaHang.Twitter ,
+                    Website =cuaHang.Website
+                };
+            }
+            return new EditCuaHangDto();
+        }
+        public async Task<ListResultDto<HT_CongTy>> GetAllCongTy(PagedResultRequestDto input, string keyWord)
         {
             ListResultDto<HT_CongTy> result = new ListResultDto<HT_CongTy>();
-            var congTys = await _congTyRepository.GetAllListAsync();
-            result.Items = congTys.Where(x => x.IsDeleted == false).ToList();
+            var congTys = await _congTyRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            if (!string.IsNullOrEmpty(keyWord))
+            {
+                congTys = congTys.Where(x => x.MaSoThue.Contains(keyWord) || x.TenCongTy.Contains(keyWord) || x.DiaChi.Contains(keyWord) || x.SoDienThoai.Contains(keyWord)).ToList();
+            }
+            input.MaxResultCount = 10;
+            input.SkipCount = input.SkipCount > 0 ? input.SkipCount * 10 : 0;
+            result.Items = congTys.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return result;
         }
     }

@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using Abp.Web.Security.AntiForgery;
-using Microsoft.AspNetCore.Antiforgery;
 using BanHangBeautify.Controllers;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace BanHangBeautify.Web.Host.Controllers
 {

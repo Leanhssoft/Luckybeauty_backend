@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Abp.Authorization.Users;
+using Abp.Extensions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Abp.Authorization.Users;
-using Abp.Extensions;
 
 namespace BanHangBeautify.Authorization.Users
 {
@@ -13,9 +13,11 @@ namespace BanHangBeautify.Authorization.Users
         {
             return Guid.NewGuid().ToString("N").Truncate(16);
         }
-        [Required(AllowEmptyStrings =true)]
+        [Required(AllowEmptyStrings = true)]
         public override string EmailAddress { get; set; }
         public Guid? NhanSuId { get; set; }
+
+        public bool IsAdmin { set; get; }
 
         public static User CreateTenantAdminUser(int tenantId, string emailAddress)
         {
@@ -26,11 +28,11 @@ namespace BanHangBeautify.Authorization.Users
                 Name = AdminUserName,
                 Surname = AdminUserName,
                 EmailAddress = emailAddress,
+                IsAdmin = true,
                 Roles = new List<UserRole>()
             };
 
             user.SetNormalizedNames();
-
             return user;
         }
     }

@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
 {
     public class ChiNhanhDto
     {
-        [Required]
+        public Guid Id { set;get; }
         public Guid IdCongTy { get; set; }
         public string MaChiNhanh { get; set; }
         public string TenChiNhanh { get; set; }

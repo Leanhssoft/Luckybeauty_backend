@@ -1,9 +1,10 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
 
 import 'package:beautify_app/Models/TenanlModels/CreateTenantDto.dart';
+import 'package:beautify_app/components/CustomTextFormField.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../Service/TenantService.dart';
+import 'TenantService.dart';
 
 class CreateTenantModal extends StatefulWidget {
   final String headerModel;
@@ -19,11 +20,14 @@ class _CreateTenantModalState extends State<CreateTenantModal> {
   final _nameController = TextEditingController();
   final _connectionStringController = TextEditingController();
   final _adminEmailController = TextEditingController();
+  final _passwordController = TextEditingController(text: '123qwe');
+  var isDefaultPassword = false;
   final _createTenantInput = CreateTenantDto(
       tenancyName: '',
       name: '',
       connectionString: '',
       adminEmailAddress: '',
+      password: '123qwe',
       isActive: true);
   @override
   Widget build(BuildContext context) {
@@ -243,6 +247,42 @@ class _CreateTenantModalState extends State<CreateTenantModal> {
                     Padding(
                       padding: const EdgeInsets.only(
                           top: 4, bottom: 8, right: 16, left: 16),
+                      child: CheckboxListTile(
+                          subtitle: Text("Mật khẩu mặc định"),
+                          value: isDefaultPassword,
+                          onChanged: (bool? check) {
+                            setState(() {
+                              isDefaultPassword = check ?? false;
+                            });
+                          }),
+                    ),
+                    if (isDefaultPassword == false)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 4, bottom: 8, right: 16, left: 16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Mật khẩu",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  color: Color(0xff4C4B4C),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (isDefaultPassword == false)
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CustomTextFormField(
+                            controller: _passwordController,
+                          )),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 4, bottom: 8, right: 16, left: 16),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: const [
@@ -337,16 +377,36 @@ class _CreateTenantModalState extends State<CreateTenantModal> {
           ElevatedButton.icon(
             icon: const Icon(Icons.save),
             label: const Text("Lưu"),
-            onPressed: () {
+            onPressed: () async {
               _createTenantInput.adminEmailAddress = _adminEmailController.text;
               _createTenantInput.connectionString =
                   _connectionStringController.text;
               _createTenantInput.name = _nameController.text;
               _createTenantInput.tenancyName = _tenantNameController.text;
-              print(_createTenantInput.toString());
-              TenantService().CreateTenant(_createTenantInput);
+              _createTenantInput.password = _passwordController.text;
+              var result =
+                  await TenantService().CreateTenant(_createTenantInput);
               // Đóng form
-              Navigator.of(context).pop();
+              if (result == true) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text(
+                        'Thêm mới tenant thành công !',
+                        textAlign: TextAlign.center,
+                      ),
+                      backgroundColor: Color(0xFF64B5F6)),
+                );
+                Navigator.of(context).pop();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text(
+                        'Có lỗi sảy ra !',
+                        textAlign: TextAlign.center,
+                      ),
+                      backgroundColor: Color(0xFFFC4F4F)),
+                );
+              }
             },
           ),
         ],

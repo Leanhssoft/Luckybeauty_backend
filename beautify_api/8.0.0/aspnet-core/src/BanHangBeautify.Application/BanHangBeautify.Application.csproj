@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <VersionPrefix>1.0.0.0</VersionPrefix>
     <TargetFramework>net7.0</TargetFramework>
@@ -12,11 +12,26 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="HoaDon\Dto\**" />
+    <Compile Remove="HoaDon\Repository\**" />
+    <EmbeddedResource Remove="HoaDon\Dto\**" />
+    <EmbeddedResource Remove="HoaDon\Repository\**" />
+    <None Remove="HoaDon\Dto\**" />
+    <None Remove="HoaDon\Repository\**" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\BanHangBeautify.Core\BanHangBeautify.Core.csproj" />
     <ProjectReference Include="..\BanHangBeautify.EntityFrameworkCore\BanHangBeautify.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NhanSu\QuaTrinhCongTac\" />
-    <Folder Include="PhongBan\" />
+    <Folder Include="Bookings\BookingService\" />
+    <Folder Include="Bookings\BookingNhanVien\" />
+    <Folder Include="DataExporting\Excel\NPOI\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Abp.EntityFrameworkCore.EFPlus" Version="8.0.0" />
+    <PackageReference Include="EPPlus" Version="6.2.4" />
+    <PackageReference Include="NPOI" Version="2.5.3" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
   </ItemGroup>
 </Project>

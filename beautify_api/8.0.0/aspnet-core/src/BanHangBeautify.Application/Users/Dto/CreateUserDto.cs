@@ -1,10 +1,10 @@
-using System;
-using System.ComponentModel.DataAnnotations;
 using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using Abp.Runtime.Validation;
 using BanHangBeautify.Authorization.Users;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Users.Dto
 {
@@ -22,13 +22,15 @@ namespace BanHangBeautify.Users.Dto
         [Required]
         [StringLength(AbpUserBase.MaxSurnameLength)]
         public string Surname { get; set; }
-
+        public string PhoneNumber { get; set; }
         //[Required]
         //[EmailAddress]
         //[StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
 
         public bool IsActive { get; set; }
+
+        public bool? IsAdmin { get; set; }
 
         public string[] RoleNames { get; set; }
 

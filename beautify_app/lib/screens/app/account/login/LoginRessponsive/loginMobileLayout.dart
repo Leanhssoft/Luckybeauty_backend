@@ -1,10 +1,9 @@
-// ignore_for_file: use_build_context_synchronously
-
-import 'package:beautify_app/screens/main/HomeScreen.dart';
+// ignore_for_file: use_build_context_synchronousl, use_build_context_synchronously
 import 'package:flutter/material.dart';
 
 import '../../../../../Service/LoginService.dart';
 
+// ignore: camel_case_types
 class loginMobileLayout extends StatefulWidget {
   const loginMobileLayout({super.key});
 
@@ -25,6 +24,37 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
   double? heightTenantId = 45;
   double? heightPassword = 45;
   final _loginService = LoginService();
+
+  void _login() async {
+    if (_formKey.currentState!.validate()) {
+      // If the form is valid, display a snackbar. In the real world,
+      // you'd often call a server or save the information in a database.
+      var result = await LoginService().login(_tenantNameController.text,
+          _userNameController.text, _passwordController.text, rememberMe);
+
+      if (result == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                'Đăng nhập thành công !',
+                textAlign: TextAlign.center,
+              ),
+              backgroundColor: Color(0xFF64B5F6)),
+        );
+        Navigator.pushNamed(context, "/home");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text(
+                'Tài khoản hoặc mật khẩu không chính xác !',
+                textAlign: TextAlign.center,
+              ),
+              backgroundColor: Color(0xFFA80707)),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,7 +140,8 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                           borderRadius:
                                               BorderRadius.circular(15)),
                                       errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                           borderSide: const BorderSide(
                                               color: Colors.red))),
                                   onTapOutside: (event) async {
@@ -129,6 +160,7 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                       });
                                     }
                                   },
+                                  onEditingComplete: _login,
                                 ),
                               ),
                             ),
@@ -168,7 +200,8 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                           borderRadius:
                                               BorderRadius.circular(15)),
                                       errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                           borderSide: const BorderSide(
                                               color: Colors.red))),
                                   validator: (value) {
@@ -180,6 +213,7 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                     }
                                     return null;
                                   },
+                                  onEditingComplete: _login,
                                 ),
                               ),
                             ),
@@ -216,7 +250,8 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                             : const Icon(Icons.visibility_off),
                                         onPressed: () {
                                           setState(() {
-                                            _passwordVisible = !_passwordVisible;
+                                            _passwordVisible =
+                                                !_passwordVisible;
                                           });
                                         },
                                       ),
@@ -230,7 +265,8 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                           borderRadius:
                                               BorderRadius.circular(15)),
                                       errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius:
+                                              BorderRadius.circular(15),
                                           borderSide: const BorderSide(
                                               color: Colors.red))),
                                   validator: (value) {
@@ -247,13 +283,16 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                     }
                                     return null;
                                   },
+                                  onEditingComplete: _login,
                                 ),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 2, right: 16),
+                              padding:
+                                  const EdgeInsets.only(left: 2, right: 16),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
@@ -295,52 +334,7 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                 width: MediaQuery.of(context).size.width,
                                 height: 45,
                                 child: OutlinedButton(
-                                  onPressed: () async {
-                                    // Validate returns true if the form is valid, or false otherwise.
-                                    if (_formKey.currentState!.validate()) {
-                                      // If the form is valid, display a snackbar. In the real world,
-                                      // you'd often call a server or save the information in a database.
-                                      var result = await LoginService().login(
-                                          _tenantNameController.text,
-                                          _userNameController.text,
-                                          _passwordController.text,
-                                          rememberMe);
-      
-                                      if (result == true) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                              content: Text(
-                                                'Đăng nhập thành công !',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              backgroundColor: Color(0xFF64B5F6)),
-                                        );
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const HomeScreen()),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                              content: Text(
-                                                'Tài khoản hoặc mật khẩu không chính xác !',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              backgroundColor: Color(0xFFA80707)),
-                                        );
-                                      }
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) =>
-                                      //           const HomeScreen()),
-                                      // );
-                                    }
-                                  },
+                                  onPressed: _login,
                                   style: ButtonStyle(
                                     shape: MaterialStateProperty.all<
                                         RoundedRectangleBorder>(
@@ -354,7 +348,8 @@ class _loginMobileLayoutState extends State<loginMobileLayout> {
                                     //backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
                                   ),
                                   child: const Text('Đăng nhập',
-                                      style: TextStyle(color: Color(0xFFFFFFFF))),
+                                      style:
+                                          TextStyle(color: Color(0xFFFFFFFF))),
                                 ),
                               ),
                             ),

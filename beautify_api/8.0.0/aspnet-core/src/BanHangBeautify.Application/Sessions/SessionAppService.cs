@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Abp.Auditing;
+﻿using Abp.Auditing;
 using BanHangBeautify.Sessions.Dto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Sessions
 {

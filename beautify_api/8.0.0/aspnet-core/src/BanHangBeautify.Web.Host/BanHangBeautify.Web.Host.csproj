@@ -17,6 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="wwwroot\Template\MauIn\HoaDonBan.txt" />
     <None Update="Dockerfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -44,5 +45,8 @@
     <EmbeddedResource Include="wwwroot\swagger\ui\index.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\ExcelTemplate\" />
   </ItemGroup>
 </Project>

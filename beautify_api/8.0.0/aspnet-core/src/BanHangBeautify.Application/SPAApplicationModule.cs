@@ -6,7 +6,7 @@ using BanHangBeautify.Authorization;
 namespace BanHangBeautify
 {
     [DependsOn(
-        typeof(SPACoreModule), 
+        typeof(SPACoreModule),
         typeof(AbpAutoMapperModule))]
     public class SPAApplicationModule : AbpModule
     {

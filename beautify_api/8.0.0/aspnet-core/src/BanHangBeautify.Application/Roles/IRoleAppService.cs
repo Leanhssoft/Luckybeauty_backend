@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Abp.Application.Services;
+﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using BanHangBeautify.Roles.Dto;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Roles
 {
@@ -9,8 +9,8 @@ namespace BanHangBeautify.Roles
     {
         Task<ListResultDto<PermissionDto>> GetAllPermissions();
 
-        Task<GetRoleForEditOutput> GetRoleForEdit(EntityDto input);
+        Task<CreateOrUpdateRoleInput> GetRoleForEdit(EntityDto input);
 
-        Task<ListResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
+        Task<PagedResultDto<RoleListDto>> GetRolesAsync(GetRolesInput input);
     }
 }

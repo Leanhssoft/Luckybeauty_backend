@@ -1,0 +1,33 @@
+[{
+        "id": "1",
+        "maHangHoa": "m1",
+        "tenHangHoa": "h1",
+        "giaBan": 100000,
+        "loaiHangHoa": "hang hoa",
+        "trangthaiText": "active"
+    },
+    {
+        "id": "2",
+        "maHangHoa": "m2",
+        "tenHangHoa": "h1",
+        "giaBan": 100000,
+        "loaiHangHoa": "hang hoa",
+        "trangthaiText": "active"
+    },
+    {
+        "id": "3",
+        "maHangHoa": "m3",
+        "tenHangHoa": "h1",
+        "giaBan": 100000,
+        "loaiHangHoa": "hang hoa",
+        "trangthaiText": "active"
+    },
+    {
+        "id": "1",
+        "maHangHoa": "m4",
+        "tenHangHoa": "h1",
+        "giaBan": 100000,
+        "loaiHangHoa": "hang hoa",
+        "trangthaiText": "active"
+    }
+]
