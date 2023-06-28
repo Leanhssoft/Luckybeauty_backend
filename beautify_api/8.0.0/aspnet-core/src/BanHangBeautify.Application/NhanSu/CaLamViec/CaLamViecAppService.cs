@@ -38,7 +38,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
         public async Task<CaLamViecDto> Create(CreateOrEditCaLamViecDto dto)
         {
             NS_CaLamViec data = new NS_CaLamViec();
-            var count =await  _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToListAsync();
+            var count =await  _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1)).ToListAsync();
             data.Id = Guid.NewGuid();
             data.MaCa = "MS00"+ (count.Count+1).ToString();
             data.TenCa = dto.TenCa;
@@ -47,7 +47,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             data.TrangThai = 0;
             data.GioVao = DateTime.Parse(dto.GioVao.ToString());
             data.GioRa = DateTime.Parse(dto.GioRa.ToString());
-            data.TongGioCong = (float)(data.GioVao.Subtract(data.GioRa).TotalMinutes / 60);
+            data.TongGioCong = (float)(data.GioRa.Subtract(data.GioVao).TotalMinutes / 60);
             data.CreationTime = DateTime.Now;
             var result = ObjectMapper.Map<CaLamViecDto>(data);
             await _repository.InsertAsync(data);
