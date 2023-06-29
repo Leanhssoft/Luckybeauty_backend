@@ -67,7 +67,7 @@ namespace BanHangBeautify.SP_Migrations
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'gioiTinh' THEN GioiTinh END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'tenNhomKhach' THEN TenNhomKhach END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'tongChiTieu' THEN TongChiTieu END,
-						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'tongTchDiem' THEN TongTichDiem END,
+						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'tongTichDiem' THEN TongTichDiem END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'cuocHenGanNhat' THEN CuocHenGanNhat END,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tenKhachHang' THEN TenKhachHang END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'soDienThoai' THEN SoDienThoai END DESC,
@@ -77,7 +77,7 @@ namespace BanHangBeautify.SP_Migrations
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'gioiTinh' THEN GioiTinh END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tenNhomKhach' THEN TenNhomKhach END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tongChiTieu' THEN TongChiTieu END DESC,
-						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tongTchDiem' THEN TongTichDiem END DESC,
+						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tongTichDiem' THEN TongTichDiem END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'cuocHenGanNhat' THEN CuocHenGanNhat END DESC,
 						CASE WHEN LOWER(ISNULL(@SortType,'')) = '' THEN CreationTime END DESC
 					OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY;

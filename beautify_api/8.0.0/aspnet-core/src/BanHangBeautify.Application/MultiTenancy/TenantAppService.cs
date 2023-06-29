@@ -62,7 +62,10 @@ namespace BanHangBeautify.MultiTenancy
             string userId = "sa";
             string password = "123";
             string connecStringInServer = $"data source={dataSource};initial catalog={dbName};persist security info=True;user id={userId};password={password};multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
-            input.ConnectionString = connecStringInServer;
+            if (string.IsNullOrEmpty(input.ConnectionString))
+            {
+                input.ConnectionString = connecStringInServer;
+            }
             input.IsActive = true;
             CheckCreatePermission();
 
@@ -81,12 +84,11 @@ namespace BanHangBeautify.MultiTenancy
             await _tenantManager.CreateAsync(tenant);
             await CurrentUnitOfWork.SaveChangesAsync(); // To get new tenant's id.
 
-            // Create tenant database
-            _abpZeroDbMigrator.CreateOrMigrateForTenant(tenant);
-
             // We are working entities of new tenant, so changing tenant filter
             using (CurrentUnitOfWork.SetTenantId(tenant.Id))
             {
+                // Create tenant database
+                _abpZeroDbMigrator.CreateOrMigrateForTenant(tenant);
                 // Create static roles for new tenant
                 CheckErrors(await _roleManager.CreateStaticRoles(tenant.Id));
 

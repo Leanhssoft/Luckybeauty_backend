@@ -1,4 +1,6 @@
-﻿namespace BanHangBeautify.Models.TokenAuth
+﻿using System;
+
+namespace BanHangBeautify.Models.TokenAuth
 {
     public class AuthenticateResultModel
     {
@@ -9,5 +11,6 @@
         public int ExpireInSeconds { get; set; }
 
         public long UserId { get; set; }
+        public Guid? IdNhanVien { get; set; }
     }
 }

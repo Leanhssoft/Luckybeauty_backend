@@ -81,12 +81,12 @@ namespace BanHangBeautify.SP_Migrations
 
                     SELECT COUNT(*) AS TotalCount
                     FROM QuyHoaDon qhd
-                    JOIN QuyHoaDon_ChiTiet qhd_ct ON qhd_ct.IdQuyHoaDon = qhd.id
+		            JOIN QuyHoaDon_ChiTiet qhd_ct ON qhd_ct.IdQuyHoaDon = qhd.id and qhd_ct.IsDeleted = 0
                     JOIN DM_LoaiChungTu lct ON lct.id = qhd.IdLoaiChungTu
                     LEFT JOIN DM_KhoanThuChi ktc ON ktc.id = qhd_ct.IdKhoanThuChi
                     WHERE qhd.TenantId = @TenantId
                         AND (qhd.IdChiNhanh = @IdChiNhanh OR @IdChiNhanh IS NULL)
-		                AND qhd.IsDeleted = 0
+			            AND qhd.IsDeleted = 0
                         AND (ISNULL(@Filter, '') = ''
                             OR LOWER(CASE WHEN qhd_ct.IdKhoanThuChi IS NULL THEN qhd.MaHoaDon ELSE ktc.MaKhoanThuChi + qhd.MaHoaDon END) LIKE N'%' + LOWER(@Filter) + '%'
                             OR LOWER(ktc.TenKhoanThuChi) LIKE N'%'+LOWER(@Filter)+'%'
@@ -98,7 +98,8 @@ namespace BanHangBeautify.SP_Migrations
                                     ELSE N'' END) LIKE N'%'+LOWER(@Filter) +'%'
                             OR LOWER(CASE WHEN qhd.TrangThai = 1 THEN N'Đã thanh toán' ELSE N'Đã hủy' END) LIKE N'%' + LOWER(@Filter) + '%'
                             OR LOWER(ktc.TenKhoanThuChi) LIKE N'%' + LOWER(@Filter) + '%'
-                            OR LOWER(lct.TenLoaiChungTu) LIKE N'%' + LOWER(@Filter) + '%');
+                            OR LOWER(lct.TenLoaiChungTu) LIKE N'%' + LOWER(@Filter) + '%'
+                        );
                     END;");
 
         }

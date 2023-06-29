@@ -36,7 +36,7 @@ namespace BanHangBeautify.Permissions
             {
                 var userIdSession = AbpSession.UserId;
                 List<string> listPermissison = new List<string>();
-                var user = await _userRepository.GetAsync(UserId);
+                var user = await _userRepository.FirstOrDefaultAsync(UserId);
                 if (user != null)
                 {
                     data.Name = user.Name;

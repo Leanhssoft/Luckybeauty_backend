@@ -12,6 +12,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto
         public string TenDichVu { get; set; }
         public string TenNhomDichVu { get; set; }
         public float GiaTri { get; set; }
+        public bool LaPhanTram { set; get; }
         public float? HoaHongThucHien { get; set; }
         public float? HoaHongYeuCauThucHien { get; set; }
         public float? HoaHongTuVan { get; set; }

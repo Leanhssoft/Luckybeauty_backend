@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NgayNghiLe.Dto;
+using BanHangBeautify.NhanSu.NgayNghiLe.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,27 +18,25 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
     [AbpAuthorize(PermissionNames.Pages_NhanSu_NgayNghiLe)]
     public class NgayNghiLeAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_NgayNghiLe, Guid> _ngayNghiLeRepository;
-        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeRepository)
+        private readonly IRepository<DM_NgayNghiLe, Guid> _ngayNghiLeService;
+        private readonly INgayNghiLeRepository _ngayNghiLeReponsitory;
+        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeService, INgayNghiLeRepository ngayNghiLeReponsitory)
         {
-            _ngayNghiLeRepository = ngayNghiLeRepository;
+            _ngayNghiLeService = ngayNghiLeService;
+            _ngayNghiLeReponsitory = ngayNghiLeReponsitory;
         }
         public async Task<PagedResultDto<NgayNghiLeDto>> GetAll(PagedRequestDto input)
         {
-            PagedResultDto<NgayNghiLeDto> result = new PagedResultDto<NgayNghiLeDto>();
-            input.SkipCount = input.SkipCount == 0 || input.SkipCount == 1 ? 0 : ((input.SkipCount - 1) * 10);
+            input.SkipCount = input.SkipCount == 0 || input.SkipCount == 1 ? 0 : ((input.SkipCount - 1) * input.MaxResultCount);
             input.Keyword = !string.IsNullOrEmpty(input.Keyword) ? input.Keyword : "";
-            var data =await _ngayNghiLeRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x=>x.CreationTime).ToListAsync();
-            result.TotalCount = data.Count;
-            data = data.Where(x=>x.TenNgayLe.Contains(input.Keyword)).Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            result.Items = ObjectMapper.Map<List<NgayNghiLeDto>>(data);
-            return result;
+
+            return await _ngayNghiLeReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
         }
         [HttpPost]
         public async Task<CreateOrEditNgayNghiLeDto> GetForEdit(Guid id)
         {
             CreateOrEditNgayNghiLeDto result = new CreateOrEditNgayNghiLeDto();
-            var data =await _ngayNghiLeRepository.FirstOrDefaultAsync(x=>x.Id== id);
+            var data =await _ngayNghiLeService.FirstOrDefaultAsync(x=>x.Id== id);
             if (data!=null)
             {
                 result = ObjectMapper.Map<CreateOrEditNgayNghiLeDto>(data);
@@ -48,7 +47,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
         public async Task<NgayNghiLeDto> CreateOrEdit(CreateOrEditNgayNghiLeDto input)
         {
             NgayNghiLeDto result = new NgayNghiLeDto();
-            var checkExists =await _ngayNghiLeRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            var checkExists =await _ngayNghiLeService.FirstOrDefaultAsync(x => x.Id == input.Id);
             result = checkExists == null ? await Create(input) : await Edit(input,checkExists);
             return result;
         }
@@ -68,7 +67,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             dto.TenantId = AbpSession.TenantId ?? 1;
             dto.IsDeleted = false;
             dto.TrangThai = 0;
-            _ngayNghiLeRepository.Insert(dto);
+            _ngayNghiLeService.Insert(dto);
             var result = ObjectMapper.Map<NgayNghiLeDto>(dto);
             return result;
         }
@@ -83,7 +82,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             oldData.TongSoNgay = (int)day; // Directly cast the rounded value to an int
             oldData.LastModifierUserId = AbpSession.UserId;
             oldData.LastModificationTime = DateTime.Now;
-            _ngayNghiLeRepository.Update(oldData);
+            _ngayNghiLeService.Update(oldData);
             var result = ObjectMapper.Map<NgayNghiLeDto>(oldData);
             return result;
         }
@@ -91,13 +90,13 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
         public async Task<bool> Delete(Guid id)
         {
             bool result = false;
-            var checkExists =await _ngayNghiLeRepository.FirstOrDefaultAsync(x => x.Id == id);
+            var checkExists =await _ngayNghiLeService.FirstOrDefaultAsync(x => x.Id == id);
             if (checkExists!=null)
             {
                 checkExists.IsDeleted= true;
                 checkExists.DeletionTime= DateTime.Now;
                 checkExists.DeleterUserId = AbpSession.UserId;
-                _ngayNghiLeRepository.Update(checkExists);
+                _ngayNghiLeService.Update(checkExists);
                 result = true;
             }
             return result;

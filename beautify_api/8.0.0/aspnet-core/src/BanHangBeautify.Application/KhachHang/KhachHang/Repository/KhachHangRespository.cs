@@ -1,10 +1,10 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
 using BanHangBeautify.Common;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using Microsoft.Data.SqlClient;
