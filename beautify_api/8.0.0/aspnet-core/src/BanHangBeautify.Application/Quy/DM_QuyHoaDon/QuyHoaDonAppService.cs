@@ -7,9 +7,11 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository;
+using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
+using NPOI.POIFS.Crypt.Dsig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +21,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace BanHangBeautify.Quy.DM_QuyHoaDon
 {
     //[AbpAuthorize(PermissionNames.Pages_QuyHoaDon)]
-    public class QuyHoaDonAppService: SPAAppServiceBase
+    public class QuyHoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<QuyHoaDon, Guid> _repository;
         private readonly IRepository<QuyHoaDon_ChiTiet, Guid> _quyHoaDonChiTiet;
@@ -43,10 +45,10 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return await Create(input);
         }
-       
+
         public async Task<QuyHoaDonDto> Create(CreateOrEditQuyHoaDonDto input)
         {
-            List<QuyHoaDon_ChiTiet> lstCT = new ();
+            List<QuyHoaDon_ChiTiet> lstCT = new();
 
             if (string.IsNullOrEmpty(input.MaHoaDon))
             {
@@ -60,7 +62,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             data.TenantId = AbpSession.TenantId ?? 1;
 
             // insert quyct
-            if (input.QuyHoaDon_ChiTiet!=null && input.QuyHoaDon_ChiTiet.Count> 0)
+            if (input.QuyHoaDon_ChiTiet != null && input.QuyHoaDon_ChiTiet.Count > 0)
             {
                 foreach (var item in input.QuyHoaDon_ChiTiet)
                 {
@@ -184,16 +186,40 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                 data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
                 await _repository.UpdateAsync(data);
-                return ObjectMapper.Map<QuyHoaDonDto>(data);    
+                return ObjectMapper.Map<QuyHoaDonDto>(data);
             }
             return new QuyHoaDonDto();
+        }
+        public async Task HuyPhieuThuChi_ofHoaDonLienQuan(Guid idHoaDonLienQuan)
+        {
+            var lstQCT = await _quyHoaDonChiTiet.GetAllListAsync(x => x.IdHoaDonLienQuan == idHoaDonLienQuan);
+            if (lstQCT != null && lstQCT.Count > 0)
+            {
+                Guid idQuyHD = lstQCT.FirstOrDefault().IdQuyHoaDon;
+                var quyHD = await _repository.FirstOrDefaultAsync(x => x.Id == idQuyHD);
+                if (quyHD != null)
+                {
+                    quyHD.DeleterUserId = AbpSession.UserId;
+                    quyHD.DeletionTime = DateTime.Now;
+                    quyHD.TrangThai = 0;
+                    await _repository.UpdateAsync(quyHD);
+                }
+                lstQCT.ForEach(x => { x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; });
+            }
         }
         public async Task<CreateOrEditQuyHoaDonDto> GetForEdit(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
-                return ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(data);
+                // get ctquy
+                var ctQuy = await _quyHoaDonChiTiet.GetAllListAsync(x => x.IdQuyHoaDon == id);
+                var result = ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(data);
+                if (ctQuy != null)
+                {
+                    result.QuyHoaDon_ChiTiet = ObjectMapper.Map<List<QuyHoaDonChiTietDto>>(ctQuy);
+                }
+                return result;
             }
             return new CreateOrEditQuyHoaDonDto();
         }
@@ -204,7 +230,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
         }
         public async Task<PagedResultDto<GetAllQuyHoaDonItemDto>> GetAll(PagedQuyHoaDonRequestDto input)
         {
-            input.SkipCount = input.SkipCount>1 ?(input.SkipCount-1) * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             if (string.IsNullOrEmpty(input.Filter))
             {
                 input.Filter = "";
