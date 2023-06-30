@@ -107,6 +107,7 @@ namespace BanHangBeautify.DataExporting.Excel.NPOI
             {
                 excelPackage.Write(stream);
                 _tempFileCacheManager.SetFile(file.FileToken, stream.ToArray());
+                var fileFinfo = _tempFileCacheManager.GetFile(file.FileToken);
             }
         }
 

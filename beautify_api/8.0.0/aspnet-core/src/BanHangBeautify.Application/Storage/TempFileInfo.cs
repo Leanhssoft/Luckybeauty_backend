@@ -11,7 +11,8 @@ namespace BanHangBeautify.Storage
         public string FileName { get; set; }
         public string FileType { get; set; }
         public byte[] File { get; set; }
-
+        
+        public string FilePath { set; get; }
         public TempFileInfo()
         {
         }

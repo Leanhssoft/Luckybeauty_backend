@@ -36,5 +36,10 @@ namespace BanHangBeautify.Storage
            var file = _cache.GetOrDefault(token);
            return file;
         }
+        public string GetFilePath(string token)
+        {
+            var fileInfo = _cache.GetOrDefault(token);
+            return fileInfo?.FileName;
+        }
     }
 }

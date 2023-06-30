@@ -88,7 +88,6 @@ namespace BanHangBeautify.Web.Host.Controllers
             }
 
             var loginResult = await GetLoginResultAsync(model.UserNameOrEmailAddress, model.Password, model.TenancyName);
-
             //if (loginResult.User.ShouldChangePasswordOnNextLogin)
             //{
             //    throw new UserFriendlyException(L("RequiresPasswordChange"));
