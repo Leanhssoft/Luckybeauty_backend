@@ -7,7 +7,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
     public class HangHoaDto
     {
         public Guid Id { get; set; }
-        public Guid? IdHangHoa { get { return Id; }}
+        public Guid? IdHangHoa { get; set; }
         public Guid IdDonViQuyDoi { get; set; }
         public Guid? IdNhomHangHoa { get; set; }
         public string MaHangHoa { get; set; }

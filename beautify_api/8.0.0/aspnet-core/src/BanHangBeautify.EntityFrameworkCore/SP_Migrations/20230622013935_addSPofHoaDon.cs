@@ -11,6 +11,11 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[spGetListHoaDon]");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[spGetChiTietHoaDon_byIdHoaDon]");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[spGetInforHoaDon_byId]");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[spGetNhatKyThanhToan_ofHoaDon]");
+
             migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetListHoaDon]
 			@TenantId int =1,
 			@IdChiNhanhs nvarchar(max)=null,
