@@ -20,14 +20,17 @@ namespace BanHangBeautify.NhanSu.LichLamViec
     public class LichLamViecAppService: SPAAppServiceBase
     {
         private readonly IRepository<NS_LichLamViec,Guid> _lichLamViecService;
+        private readonly IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaService;
         private readonly ILichLamViecRespository _lichLamViecRespository;
         public LichLamViecAppService(
             IRepository<NS_LichLamViec,Guid> lichLamViecService,
-            ILichLamViecRespository lichLamViecRespository
+            ILichLamViecRespository lichLamViecRespository,
+             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaService
          )
         {
             _lichLamViecService = lichLamViecService;
             _lichLamViecRespository = lichLamViecRespository;
+            _lichLamViecCaService = lichLamViecCaService;
         }
 
         public async Task<LichLamViecDto> CreateOrEdit(CreateOrEditLichLamViecDto input) {
@@ -43,12 +46,32 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             LichLamViecDto result = new LichLamViecDto();
             NS_LichLamViec data = new NS_LichLamViec();
             data = ObjectMapper.Map<NS_LichLamViec>(input);
+            data.Id = Guid.NewGuid();
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
+            data.NgayLamViecTrongTuan = string.Join(";", input.NgayLamViec);
             data.TrangThai = 0;
             result = ObjectMapper.Map<LichLamViecDto>(data);
             await _lichLamViecService.InsertAsync(data);
+            var tongSoNgay = data.DenNgay.Value.Subtract(data.TuNgay).TotalDays;
+            for (int i = 0; i < tongSoNgay; i++)
+            {
+                var day = data.TuNgay.AddDays(i);
+                if (input.NgayLamViec.Contains(day.DayOfWeek.ToString()))
+                {
+                    NS_LichLamViec_Ca rdo = new NS_LichLamViec_Ca();
+                    rdo.Id = Guid.NewGuid();
+                    rdo.IdCaLamViec = input.IdCaLamViec;
+                    rdo.IdLichLamViec = data.Id;
+                    rdo.NgayLamViec = DateTime.Parse(day.ToString("yyyy-MM-dd"));
+                    rdo.TenantId = AbpSession.TenantId ?? 1;
+                    rdo.CreatorUserId= AbpSession.UserId;
+                    rdo.IsDeleted = false;
+                    await _lichLamViecCaService.InsertAsync(rdo);
+                }
+            }
+
             return result;
         }
         [NonAction]

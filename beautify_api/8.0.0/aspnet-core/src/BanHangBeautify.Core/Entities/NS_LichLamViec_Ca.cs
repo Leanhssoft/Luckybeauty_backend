@@ -16,7 +16,9 @@ namespace BanHangBeautify.Entities
         [ForeignKey("IdCaLamViec")]
         public NS_CaLamViec NS_CaLamViec { get; set; }
         [ForeignKey("IdLichLamViec")]
+        public Guid IdLichLamViec { set; get; }
         public NS_LichLamViec NS_LichLamViec { get; set; }
-        public string GiaTri { set;get;}   
+
+        public DateTime NgayLamViec { get; set; }
     }
 }

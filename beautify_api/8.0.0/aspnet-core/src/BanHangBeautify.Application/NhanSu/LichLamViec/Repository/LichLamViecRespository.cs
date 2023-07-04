@@ -28,6 +28,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec.Repository
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
+                command.Parameters.Add(new SqlParameter("@IdNhanVien", input.IdNhanVien));
                 command.Parameters.Add(new SqlParameter("@DateFrom", input.DateFrom));
                 command.Parameters.Add(new SqlParameter("@DateTo", input.DateTo));
                 command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
@@ -43,7 +44,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillCollection<LichLamViecNhanVien>(ds.Tables[0]);
-                        return new PagedResultDto<LichLamViecNhanVien>()
+                            return new PagedResultDto<LichLamViecNhanVien>()
                         {
                             TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
                             Items = data

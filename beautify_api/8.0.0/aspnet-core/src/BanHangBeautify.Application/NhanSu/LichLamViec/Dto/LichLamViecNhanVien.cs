@@ -8,6 +8,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec.Dto
 {
     public class LichLamViecNhanVien
     {
+        public Guid Id { get; set; }
         public Guid IdNhanVien { get; set; }
         public string Avatar { get; set; }
         public string TenNhanVien { get; set; }
