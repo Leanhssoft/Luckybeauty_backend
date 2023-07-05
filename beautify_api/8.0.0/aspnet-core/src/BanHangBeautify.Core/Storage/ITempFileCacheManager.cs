@@ -1,4 +1,5 @@
 ﻿using Abp.Dependency;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.Storage
 {
@@ -10,6 +11,6 @@ namespace BanHangBeautify.Storage
 
         void SetFile(string token, TempFileInfo info);
 
-        TempFileInfo GetFileInfo(string token);
+        Task<TempFileInfo> GetFileInfo(string token);
     }
 }

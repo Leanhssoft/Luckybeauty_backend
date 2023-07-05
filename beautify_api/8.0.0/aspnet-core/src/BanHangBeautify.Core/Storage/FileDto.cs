@@ -1,32 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Storage
 {
-    public class TempFileInfo
+    public class FileDto
     {
+        [Required]
         public string FileName { get; set; }
+
         public string FileType { get; set; }
-        public byte[] File { get; set; }
-        
-        public string FilePath { set; get; }
-        public TempFileInfo()
-        {
-        }
 
-        public TempFileInfo(byte[] file)
-        {
-            File = file;
-        }
+        [Required]
+        public string FileToken { get; set; }
 
-        public TempFileInfo(string fileName, string fileType, byte[] file)
+        public FileDto()
+        {
+
+        }
+        public FileDto(string fileName, string fileType)
         {
             FileName = fileName;
             FileType = fileType;
-            File = file;
+            FileToken = Guid.NewGuid().ToString("N");
         }
     }
 }

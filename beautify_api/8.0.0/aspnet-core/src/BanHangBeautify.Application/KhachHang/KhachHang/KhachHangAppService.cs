@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.KhachHang
@@ -26,12 +28,14 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private readonly IRepository<DM_LoaiKhach,int> _loaiKhachHangRepository;
         private readonly IRepository<DM_NguonKhach, Guid> _nguonKhachRepository;
         private readonly IKhachHangExcelExporter _khachHangExcelExporter;
+        ITempFileCacheManager _tempFileCacheManager;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
               IKhachHangRespository customerRepo,
               IRepository<DM_NhomKhachHang,Guid> nhomKhachHangRepository,
               IRepository<DM_LoaiKhach,int> loaiKhachRepository,
               IRepository<DM_NguonKhach,Guid> nguonKhachRepository,
-              IKhachHangExcelExporter khachHangExcelExporter
+              IKhachHangExcelExporter khachHangExcelExporter,
+              ITempFileCacheManager tempFileCacheManager
               )
         {
             _repository = repository;
@@ -40,6 +44,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _nguonKhachRepository = nguonKhachRepository;
             _nhomKhachHangRepository = nhomKhachHangRepository;
             _khachHangExcelExporter = khachHangExcelExporter;
+            _tempFileCacheManager = tempFileCacheManager;
         }
 
         public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
@@ -237,7 +242,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             var data = await Search(input);
             List<KhachHangView> model = new List<KhachHangView>();
             model = (List<KhachHangView>)data.Items;
-            return _khachHangExcelExporter.ExportDanhSachKhachHang(model);
+            return  _khachHangExcelExporter.ExportDanhSachKhachHang(model);
         }
     }
 }
