@@ -108,6 +108,11 @@
         public const string Pages_ChietKhauHoaDon = "Pages.ChietKhauHoaDon";
         public const string Pages_HoaDon_Anh = "Pages.HoaDon_Anh";
         public const string Pages_HoaDon = "Pages.HoaDon";
+        public const string Pages_HoaDon_Create = "Pages.HoaDon.Create";
+        public const string Pages_HoaDon_Edit = "Pages.HoaDon.Edit";
+        public const string Pages_HoaDon_Delete = "Pages.HoaDon.Delete";
+        public const string Pages_HoaDon_Import = "Pages.HoaDon.Import";
+        public const string Pages_HoaDon_Export = "Pages.HoaDon.Export";
         public const string Pages_LoaiChungTu = "Pages.LoaiChungTu";
         public const string Pages_NhanVienThucHien = "Pages.NhanVienThucHien";
         public const string Pages_NhomKhach_DieuKien = "Pages.NhomKhachDieuKien";

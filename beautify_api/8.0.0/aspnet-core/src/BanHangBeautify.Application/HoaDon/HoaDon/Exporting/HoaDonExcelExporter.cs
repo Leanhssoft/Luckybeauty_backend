@@ -61,22 +61,20 @@ namespace BanHangBeautify.HoaDon.HoaDon.Exporting
                     ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.NgayLapHoaDon.ToString("dd/MM/yyyy hh:mm"));
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TenKhachHang);
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.SumTongThanhToan);
-                   
-                    ws.Cells[startRow, 6].Value = ConvertHelper.ToDateTime(item.SumTongGiamGiaHD).ToString("dd/MM/yyyy");
-                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.SumTongThanhToan == 1 ? "Nam" : "Nữ");
+                    ws.Cells[startRow, 6].Value = ConvertHelper.ToDateTime(item.SumTongGiamGiaHD);
+                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.SumTongThanhToan);
                     ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.SumDaThanhToan);
                     ws.Cells[startRow, 9].Value = ConvertHelper.ToString(item.ConNo);
                     ws.Cells[startRow, 10].Value = ConvertHelper.ToString(item.TrangThai);
-                    
                     startRow++;
                     stt++;
                 }
                 if (input.Count > 0)
                 {
-                    ws.Cells[firstRow, 1, startRow - 1, 12].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 12].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 12].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 12].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 10].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 10].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 10].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 10].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 }
             }
             catch (Exception ex)
