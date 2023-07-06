@@ -11,6 +11,6 @@ namespace BanHangBeautify.Storage
 
         void SetFile(string token, TempFileInfo info);
 
-        Task<TempFileInfo> GetFileInfo(string token);
+        TempFileInfo GetFileInfo(string token);
     }
 }

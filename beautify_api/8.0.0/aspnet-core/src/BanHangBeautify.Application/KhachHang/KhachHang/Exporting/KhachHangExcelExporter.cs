@@ -47,6 +47,12 @@ namespace BanHangBeautify.KhachHang.KhachHang.Exporting
             }
             return file;
         }
+
+        public FileDto ExportDanhSachKhachHangLoi(List<CreateOrEditKhachHangDto> model)
+        {
+            throw new NotImplementedException();
+        }
+
         private void BuildExcel(ExcelPackage excelpackage, List<KhachHangView> input, int startRow = 5)
         {
             int firstRow = startRow;
@@ -80,10 +86,10 @@ namespace BanHangBeautify.KhachHang.KhachHang.Exporting
                 }
                 if (input.Count > 0)
                 {
-                    ws.Cells[firstRow, 1, startRow - 1, 18].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 18].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 18].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 18].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 }
             }
             catch (Exception ex)

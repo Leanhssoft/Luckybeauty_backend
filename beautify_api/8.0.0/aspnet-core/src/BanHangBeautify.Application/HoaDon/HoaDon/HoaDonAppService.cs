@@ -24,6 +24,8 @@ using BanHangBeautify.HoaDon.NhanVienThucHien;
 using OfficeOpenXml.Style;
 using Abp.Application.Services.Dto;
 using NPOI.OpenXmlFormats.Wordprocessing;
+using BanHangBeautify.NhanSu.NhanVien.Dto;
+using BanHangBeautify.Storage;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -394,6 +396,16 @@ namespace BanHangBeautify.HoaDon.HoaDon
         public async Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param)
         {
             return await _repoHoaDon.GetListHoaDon(param, AbpSession.TenantId ?? 1);
+        }
+        public async Task<FileDto> ExportDanhSach(HoaDonRequestDto input)
+        {
+            input.TextSearch = (input.TextSearch ?? string.Empty).Trim();
+            input.CurrentPage = 0;
+            input.PageSize = int.MaxValue;
+            var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
+            List<PageHoaDonDto> model = new List<PageHoaDonDto>();
+            model = (List<PageHoaDonDto>)data.Items;
+            return _nhanVienExcelExporter.ExportDanhSachKhachHang(model);
         }
     }
 }

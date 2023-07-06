@@ -219,5 +219,7 @@
     <text name="CreateCompany">Tạo công ty</text>
     <text name="Company">Công ty</text>
     <text name ="KhuyenMai">Khuyễn mại</text>
+    <text name="Import">Import</text>
+    <text name ="Export">Export</text>
   </texts>
 </localizationDictionary>

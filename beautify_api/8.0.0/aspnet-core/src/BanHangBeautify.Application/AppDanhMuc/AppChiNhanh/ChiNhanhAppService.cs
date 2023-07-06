@@ -91,7 +91,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Edit,PermissionNames.Pages_ChiNhanh_Create)]
-        public async Task<ChiNhanhDto> CreateOrEditChiNhanh(CreateChiNhanhDto dto)
+        public async Task<ExecuteResultDto> CreateOrEditChiNhanh(CreateChiNhanhDto dto)
         {
             var exits = await _chiNhanhService.FirstOrDefaultAsync(dto.Id);
             if (exits == null)
@@ -101,49 +101,89 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             else return await Edit(dto, exits);
         }
         [NonAction]
-        public async Task<ChiNhanhDto> Create(CreateChiNhanhDto dto)
+        public async Task<ExecuteResultDto> Create(CreateChiNhanhDto dto)
         {
-            DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
-            chiNhanh.Id = Guid.NewGuid();
-            var chiNhanhCount = _chiNhanhService.GetAll().Where(x=>x.TenantId==(AbpSession.TenantId??1)&&x.IdCongTy==dto.IdCongTy).Count() + 1;
-            chiNhanh.MaChiNhanh =string.IsNullOrEmpty(dto.MaChiNhanh)? "CN_0" + chiNhanhCount.ToString(): dto.MaChiNhanh;
-            chiNhanh.TenChiNhanh = dto.TenChiNhanh;
-            chiNhanh.MaSoThue = dto.MaSoThue;
-            chiNhanh.DiaChi = dto.DiaChi;
-            chiNhanh.GhiChu = dto.GhiChu;
-            chiNhanh.Logo = dto.Logo;
-            chiNhanh.NgayApDung = dto.NgayApDung;
-            chiNhanh.NgayHetHan = dto.NgayHetHan;
-            chiNhanh.TenantId = AbpSession.TenantId ?? 1;
-            chiNhanh.CreatorUserId = AbpSession.UserId;
-            chiNhanh.IdCongTy = dto.IdCongTy;
-            chiNhanh.CreationTime = DateTime.Now;
-            var result = ObjectMapper.Map<ChiNhanhDto>(chiNhanh);
-            await _chiNhanhService.InsertAsync(chiNhanh);
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
+                var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh == dto.TenChiNhanh);
+                if (checkTenChiNhanh == null)
+                {
+                    chiNhanh.Id = Guid.NewGuid();
+                    var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
+                    chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
+                    chiNhanh.TenChiNhanh = dto.TenChiNhanh;
+                    chiNhanh.MaSoThue = dto.MaSoThue;
+                    chiNhanh.DiaChi = dto.DiaChi;
+                    chiNhanh.GhiChu = dto.GhiChu;
+                    chiNhanh.Logo = dto.Logo;
+                    chiNhanh.NgayApDung = dto.NgayApDung;
+                    chiNhanh.NgayHetHan = dto.NgayHetHan;
+                    chiNhanh.TenantId = AbpSession.TenantId ?? 1;
+                    chiNhanh.CreatorUserId = AbpSession.UserId;
+                    chiNhanh.IdCongTy = dto.IdCongTy;
+                    chiNhanh.CreationTime = DateTime.Now;
+                    await _chiNhanhService.InsertAsync(chiNhanh);
+                    result.Message = "Thêm mới chi nhánh thành công!";
+                    result.Status = "success";
+                }
+                else
+                {
+                    result.Message = "Tên chi nhánh đã tồn tại!";
+                    result.Status = "error";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Thêm mới chi nhánh thất bại!";
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
             return result;
-            //return ObjectMapper.Map<ChiNhanhDto>(dto);
         }
         [NonAction]
-        public async Task<ChiNhanhDto> Edit(CreateChiNhanhDto dto, DM_ChiNhanh chiNhanh)
+        public async Task<ExecuteResultDto> Edit(CreateChiNhanhDto dto, DM_ChiNhanh chiNhanh)
         {
-            chiNhanh.TenChiNhanh = dto.TenChiNhanh;
-            chiNhanh.MaSoThue = dto.MaSoThue;
-            chiNhanh.DiaChi = dto.DiaChi;
-            chiNhanh.GhiChu = dto.GhiChu;
-            chiNhanh.Logo = dto.Logo;
-            chiNhanh.NgayApDung = dto.NgayApDung;
-            chiNhanh.NgayHetHan = dto.NgayHetHan;
-            chiNhanh.TenantId = AbpSession.TenantId ?? 1;
-            chiNhanh.LastModifierUserId = AbpSession.UserId;
-            var result = ObjectMapper.Map<ChiNhanhDto>(chiNhanh);
-            await _chiNhanhService.UpdateAsync(chiNhanh);
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh == dto.TenChiNhanh);
+                if (checkTenChiNhanh==null)
+                {
+                    chiNhanh.TenChiNhanh = dto.TenChiNhanh;
+                    chiNhanh.MaSoThue = dto.MaSoThue;
+                    chiNhanh.DiaChi = dto.DiaChi;
+                    chiNhanh.GhiChu = dto.GhiChu;
+                    chiNhanh.Logo = dto.Logo;
+                    chiNhanh.NgayApDung = dto.NgayApDung;
+                    chiNhanh.NgayHetHan = dto.NgayHetHan;
+                    chiNhanh.TenantId = AbpSession.TenantId ?? 1;
+                    chiNhanh.LastModifierUserId = AbpSession.UserId;
+                    await _chiNhanhService.UpdateAsync(chiNhanh);
+                    result.Message = "Cập nhật thông tin chi nhánh thành công!";
+                    result.Status = "success";
+                }
+                else
+                {
+                    result.Message = "Tên chi nhánh đã tồn tại!";
+                    result.Status = "error";
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Thêm mới chi nhánh thất bại!";
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
             return result;
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Delete)]
-        public async Task<bool> DeleteChiNhanh(Guid Id)
+        public async Task<ExecuteResultDto> DeleteChiNhanh(Guid Id)
         {
-            bool result = false;
+            ExecuteResultDto result = new ExecuteResultDto();
             var findBranch = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == Id);
             if (findBranch != null)
             {
@@ -151,9 +191,19 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 findBranch.DeleterUserId = AbpSession.UserId;
                 findBranch.DeletionTime = DateTime.Now;
                 _chiNhanhService.Update(findBranch);
-                result = true;
+                return new ExecuteResultDto()
+                {
+                    Status = "success",
+                    Message = "Xóa chi nhánh thành công!",
+                    Detail = ""
+                };
             }
-            return result;
+            return new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Xóa chi nhánh thất bại!",
+                Detail = ""
+            };
         }
         public async Task<List<SuggestChiNhanh>> GetChiNhanhByUser()
         {

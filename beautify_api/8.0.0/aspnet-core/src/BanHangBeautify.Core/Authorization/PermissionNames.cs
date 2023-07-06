@@ -61,6 +61,8 @@
         public const string Pages_KhachHang_Create = "Pages.KhachHang.Create";
         public const string Pages_KhachHang_Edit = "Pages.KhachHang.Edit";
         public const string Pages_KhachHang_Delete = "Pages.KhachHang.Delete";
+        public const string Pages_KhachHang_Import = "Pages.KhachHang.Import";
+        public const string Pages_KhachHang_Export = "Pages.KhachHang.Export";
         #endregion
 
         #region Nhân viên
@@ -68,6 +70,8 @@
         public const string Pages_NhanSu_Create = "Pages.NhanSu.Create";
         public const string Pages_NhanSu_Edit = "Pages.NhanSu.Edit";
         public const string Pages_NhanSu_Delete = "Pages.NhanSu.Delete";
+        public const string Pages_NhanSu_Import = "Pages.NhanSu.Import";
+        public const string Pages_NhanSu_Export = "Pages.NhanSu.Export";
 
         public const string Pages_CaLamViec = "Pages.CaLamViec";
         public const string Pages_CaLamViec_Create = "Pages.CaLamViec.Create";

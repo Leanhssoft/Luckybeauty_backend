@@ -15,9 +15,9 @@ namespace BanHangBeautify.Storage
             _cache = cacheManager.GetCache<string, TempFileInfo>(TempFileCacheName);
         }
 
-        public async void SetFile(string token, byte[] content)
+        public void SetFile(string token, byte[] content)
         {
-            await _cache.SetAsync(token, new TempFileInfo(content), TimeSpan.FromMinutes(5)); // expire time is 5 min by default
+            _cache.Set(token, new TempFileInfo(content), TimeSpan.FromMinutes(5)); // expire time is 5 min by default
         }
 
         public byte[] GetFile(string token)
@@ -26,19 +26,19 @@ namespace BanHangBeautify.Storage
             return cache?.File;
         }
 
-        public async void SetFile(string token, TempFileInfo info)
+        public  void SetFile(string token, TempFileInfo info)
         {
-            await _cache.SetAsync(token, info, TimeSpan.FromMinutes(1)); // expire time is 1 min by default
+             _cache.Set(token, info, TimeSpan.FromMinutes(1)); // expire time is 1 min by default
         }
 
-        public async Task<TempFileInfo> GetFileInfo(string token)
+        public  TempFileInfo GetFileInfo(string token)
         {
-           var file = await _cache.GetOrDefaultAsync(token);
+           var file =  _cache.GetOrDefault(token);
            return file;
         }
-        public async Task<string> GetFilePath(string token)
+        public string GetFilePath(string token)
         {
-            var fileInfo =await _cache.GetOrDefaultAsync(token);
+            var fileInfo = _cache.GetOrDefault(token);
             return fileInfo?.FileName;
         }
     }
