@@ -230,11 +230,6 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
         }
         public async Task<PagedResultDto<GetAllQuyHoaDonItemDto>> GetAll(PagedQuyHoaDonRequestDto input)
         {
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            if (string.IsNullOrEmpty(input.Filter))
-            {
-                input.Filter = "";
-            }
             input.TenantId = AbpSession.TenantId ?? 1;
             return await _repoQuyHD.Search(input);
         }
