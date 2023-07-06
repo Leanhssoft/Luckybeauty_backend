@@ -11,6 +11,7 @@ namespace BanHangBeautify.Common
     {
         public class ParamSearch
         {
+            public int? TenantId { get; set; }
             public List<string> IdChiNhanhs { get; set; }
             public string TextSearch { get; set; } = string.Empty;
             public int? CurrentPage { get; set; } = 0;
