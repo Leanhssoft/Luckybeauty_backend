@@ -12,16 +12,16 @@ namespace BanHangBeautify.SPMigrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
+ ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
                 @TenantId INT = 7,
                 @IdChiNhanh NVARCHAR(MAX) ='4ea9b488-0f53-416b-be8b-041f255114ba',
 				@FromDate datetime = null,
 				@ToDate datetime = null,
                 @Filter NVARCHAR(MAX) ='',
-                @SortBy VARCHAR(50) ='ngayLapHoaDon', 
+                @SortBy VARCHAR(50) ='tongTienThu', 
                 @SortType VARCHAR(4)='desc', 
                 @SkipCount INT = 1,
-                @MaxResultCount INT = 20
+                @MaxResultCount INT = 1000
             AS
             BEGIN
 			if(ISNULL(@ToDate,'')!='') set @ToDate = DATEADD(DAY,1,@ToDate)
@@ -128,8 +128,7 @@ ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
                         CASE WHEN @SortBy = 'tongTienThu' AND LOWER(@SortType) = 'asc' THEN TongTienThu END ASC,
                         CASE WHEN @SortBy = 'maHoaDon' AND LOWER(@SortType) = 'asc' THEN MaHoaDon END ASC,
                         CASE WHEN @SortBy = 'phuongThucTT' AND LOWER(@SortType) = 'asc' THEN sPhuongThuc END ASC,
-                        CASE WHEN @SortBy = 'trangThai' AND LOWER(@SortType) = 'asc' THEN tbl.TrangThai END ASC,
-                     
+                        CASE WHEN @SortBy = 'trangThai' AND LOWER(@SortType) = 'asc' THEN tbl.TrangThai END ASC,                     
 						CASE WHEN @SortBy = 'ngayLapHoaDon' AND LOWER(@SortType) = 'asc' THEN NgayLapHoaDon END asc,
 
                         CASE WHEN @SortBy = 'loaiPhieu' AND LOWER(@SortType) = 'desc' THEN LoaiPhieu END DESC,
@@ -140,7 +139,10 @@ ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
 
                         CASE WHEN @SortBy = 'ngayLapHoaDon' AND LOWER(@SortType) = 'desc' THEN NgayLapHoaDon END DESC
 
-						 OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY
+						OFFSET (@SkipCount* @MaxResultCount) ROWS
+						FETCH NEXT @MaxResultCount ROWS ONLY
+					
+END;
                 ");
         }
 
