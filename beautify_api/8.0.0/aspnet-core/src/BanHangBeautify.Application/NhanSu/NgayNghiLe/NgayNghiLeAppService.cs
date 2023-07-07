@@ -1,17 +1,25 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NewFolder;
+using BanHangBeautify.NhanSu.CaLamViec.Dto;
 using BanHangBeautify.NhanSu.NgayNghiLe.Dto;
+using BanHangBeautify.NhanSu.NgayNghiLe.Exporting;
 using BanHangBeautify.NhanSu.NgayNghiLe.Repository;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BanHangBeautify.NhanSu.NgayNghiLe
 {
@@ -20,10 +28,12 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
     {
         private readonly IRepository<DM_NgayNghiLe, Guid> _ngayNghiLeService;
         private readonly INgayNghiLeRepository _ngayNghiLeReponsitory;
-        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeService, INgayNghiLeRepository ngayNghiLeReponsitory)
+        private readonly INgayNghiLeExcelExporter _ngayNghiLeExcelExporter;
+        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeService, INgayNghiLeRepository ngayNghiLeReponsitory,INgayNghiLeExcelExporter ngayNghiLeExcelExporter)
         {
             _ngayNghiLeService = ngayNghiLeService;
             _ngayNghiLeReponsitory = ngayNghiLeReponsitory;
+            _ngayNghiLeExcelExporter = ngayNghiLeExcelExporter;
         }
         public async Task<PagedResultDto<NgayNghiLeDto>> GetAll(PagedRequestDto input)
         {
@@ -99,6 +109,71 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                 _ngayNghiLeService.Update(checkExists);
                 result = true;
             }
+            return result;
+        }
+        public async Task<FileDto> ExportToExcel(PagedRequestDto input)
+        {
+            if (string.IsNullOrEmpty(input.Keyword))
+            {
+                input.Keyword = "";
+
+            }
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await _ngayNghiLeReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
+            return _ngayNghiLeExcelExporter.ExportDanhSachNgayNghiLe(data.Items.ToList());
+        }
+        [HttpPost]
+        [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                int countImportData = 0;
+                int countImportLoi = 0;
+                if (file.Type == ".xlsx")
+                {
+                    using (MemoryStream stream = new MemoryStream(file.File))
+                    {
+                        using (var package = new ExcelPackage())
+                        {
+                            package.Load(stream);
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
+
+                            int rowCount = worksheet.Dimension.Rows;
+
+                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
+                            {
+                                CreateOrEditNgayNghiLeDto data = new CreateOrEditNgayNghiLeDto();
+                                data.Id = Guid.NewGuid();
+                                data.TenNgayLe = worksheet.Cells[row, 2].Value?.ToString();
+                                data.TuNgay = DateTime.Parse(worksheet.Cells[row, 3].Value?.ToString());
+                                data.DenNgay = DateTime.Parse(worksheet.Cells[row, 4].Value?.ToString());
+                                await Create(data);
+                                countImportData++;
+                            }
+                        }
+                    }
+                    if (countImportData > 0)
+                    {
+                        result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
+                        result.Status = "success";
+                    }
+                    else
+                    {
+                        result.Message = "Không có dữ liệu được nhập";
+                        result.Status = "info";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
+
             return result;
         }
     }

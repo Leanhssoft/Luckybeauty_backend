@@ -230,7 +230,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
 
                             int rowCount = worksheet.Dimension.Rows;
 
-                            for (int row = 3; row < rowCount; row++) // Assuming the first row is the header row
+                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
                             {
                                 CreateOrEditNhanSuDto data = new CreateOrEditNhanSuDto();
                                 data.Id = Guid.NewGuid();
