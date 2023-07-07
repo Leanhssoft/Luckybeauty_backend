@@ -26,6 +26,7 @@ using Abp.Application.Services.Dto;
 using NPOI.OpenXmlFormats.Wordprocessing;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.Storage;
+using BanHangBeautify.HoaDon.HoaDon.Exporting;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -38,13 +39,14 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
         private readonly IHoaDonRepository _repoHoaDon;
         private readonly NhanVienThucHienAppService _nvthService;
+        private readonly IHoaDonExcelExporter _hoaDonExcelExporter;
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
             IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             NhanVienThucHienAppService nvthService,
-            IHoaDonRepository repoHoaDon
+            IHoaDonRepository repoHoaDon, IHoaDonExcelExporter hoaDonExcelExporter
         )
         {
             _hoaDonRepository = hoaDonRepository;
@@ -53,6 +55,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _hoaDonAnhRepository = hoaDonAnhRepository;
             _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
+            _hoaDonExcelExporter = hoaDonExcelExporter
         }
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
         {
@@ -405,7 +408,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
             List<PageHoaDonDto> model = new List<PageHoaDonDto>();
             model = (List<PageHoaDonDto>)data.Items;
-            return _nhanVienExcelExporter.ExportDanhSachKhachHang(model);
+            return _hoaDonExcelExporter.ExportDanhSachHoaDon(model);
         }
     }
 }
