@@ -37,7 +37,8 @@ namespace BanHangBeautify.HoaDon.HoaDon.Exporting
         public FileDto ExportDanhSachHoaDon(List<PageHoaDonDto> data)
         {
             var pathTemplate = Path.Combine(_env.WebRootPath, $"ExcelTemplate", $"GiaoDichThanhToan_Export_Template.xlsx");
-            var file = new FileDto("DanhSachGiaoDich.xlsx", MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
+            string fileName = "DanhSachGiaoDichThanhToan_" + DateTime.Now.Ticks.ToString() + ".xlsx";
+            var file = new FileDto(fileName, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
             var template = new FileInfo(pathTemplate);
             using (ExcelPackage excelPackage = new ExcelPackage(template, true))
             {
@@ -60,10 +61,10 @@ namespace BanHangBeautify.HoaDon.HoaDon.Exporting
                     ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.MaHoaDon);
                     ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.NgayLapHoaDon.ToString("dd/MM/yyyy hh:mm"));
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TenKhachHang);
-                    ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.SumTongThanhToan);
-                    ws.Cells[startRow, 6].Value = ConvertHelper.ToDateTime(item.SumTongGiamGiaHD);
-                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.SumTongThanhToan);
-                    ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.SumDaThanhToan);
+                    ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.TongTienHang);
+                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.TongGiamGiaHD);
+                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.TongThanhToan);
+                    ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.DaThanhToan);
                     ws.Cells[startRow, 9].Value = ConvertHelper.ToString(item.ConNo);
                     ws.Cells[startRow, 10].Value = ConvertHelper.ToString(item.TrangThai);
                     startRow++;

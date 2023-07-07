@@ -403,7 +403,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         public async Task<FileDto> ExportDanhSach(HoaDonRequestDto input)
         {
             input.TextSearch = (input.TextSearch ?? string.Empty).Trim();
-            input.CurrentPage = 0;
+            input.CurrentPage = 1;
             input.PageSize = int.MaxValue;
             var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
             List<PageHoaDonDto> model = new List<PageHoaDonDto>();

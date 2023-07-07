@@ -140,7 +140,8 @@ ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
 
                         CASE WHEN @SortBy = 'ngayLapHoaDon' AND LOWER(@SortType) = 'desc' THEN NgayLapHoaDon END DESC
 
-						 OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY
+						 OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY;
+            END;
                 ");
         }
 

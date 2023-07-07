@@ -208,7 +208,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             var data = await GetAll(input);
             List<NhanSuItemDto> model = new List<NhanSuItemDto>();
             model = (List<NhanSuItemDto>)data.Items;
-            return _nhanVienExcelExporter.ExportDanhSachKhachHang(model);
+            return _nhanVienExcelExporter.ExportDanhSachNhanVien(model);
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]

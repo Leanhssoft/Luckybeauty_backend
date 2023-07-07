@@ -36,10 +36,11 @@ namespace BanHangBeautify.NhanSu.NhanVien.Exporting
             _env = env;
         }
 
-        public FileDto ExportDanhSachKhachHang(List<NhanSuItemDto> data)
+        public FileDto ExportDanhSachNhanVien(List<NhanSuItemDto> data)
         {
             var pathTemplate = Path.Combine(_env.WebRootPath, $"ExcelTemplate", $"NhanVien_Export_Template.xlsx");
-            var file = new FileDto("DanhSachNhanVien.xlsx", MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
+            string fileName = "DanhSachNhanVien_" + DateTime.Now.Ticks.ToString() + ".xlsx";
+            var file = new FileDto(fileName, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
             var template = new FileInfo(pathTemplate);
             using (ExcelPackage excelPackage = new ExcelPackage(template, true))
             {

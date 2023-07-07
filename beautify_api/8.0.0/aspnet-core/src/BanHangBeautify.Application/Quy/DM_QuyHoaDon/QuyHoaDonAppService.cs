@@ -7,7 +7,9 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository;
+using BanHangBeautify.Quy.DM_QuyHoaDon.Exporting;
 using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -27,14 +29,17 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
         private readonly IRepository<QuyHoaDon_ChiTiet, Guid> _quyHoaDonChiTiet;
         private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
         private readonly IQuyHoaDonRepository _repoQuyHD;
+        private readonly IQuyHoaDonExcelExporter _quyHoaDonExcelExport;
         public QuyHoaDonAppService(IRepository<QuyHoaDon, Guid> repository, IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
             IRepository<QuyHoaDon_ChiTiet, Guid> quyHoaDonChiTiet,
+            IQuyHoaDonExcelExporter quyHoaDonExcelExporter,
             IQuyHoaDonRepository repoQuyHD)
         {
             _quyHoaDon = repository;
             _loaiChungTuRepository = loaiChungTuRepository;
             _quyHoaDonChiTiet = quyHoaDonChiTiet;
             _repoQuyHD = repoQuyHD;
+            _quyHoaDonExcelExport = quyHoaDonExcelExporter;
         }
         public async Task<QuyHoaDonDto> Create(CreateOrEditQuyHoaDonDto input)
         {
@@ -218,7 +223,16 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             input.TenantId = AbpSession.TenantId ?? 1;
             return await _repoQuyHD.Search(input);
         }
-
+        public async Task<FileDto> ExportToExcel(PagedQuyHoaDonRequestDto input)
+        {
+            input.TenantId = AbpSession.TenantId ?? 1;
+            input.CurrentPage = 0;
+            input.PageSize = int.MaxValue;
+            var data = await _repoQuyHD.Search(input);
+            List<GetAllQuyHoaDonItemDto> model = new List<GetAllQuyHoaDonItemDto>();
+            model = (List<GetAllQuyHoaDonItemDto>)data.Items;
+            return _quyHoaDonExcelExport.ExportDanhSachQuyHoaDon(model);
+        }
         [HttpGet]
         public async Task<bool> CheckExistsMaPhieuThuChi(string maphieu, Guid? id = null)
         {

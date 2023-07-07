@@ -11,6 +11,6 @@ namespace BanHangBeautify.NhanSu.NhanVien.Exporting
 {
     public interface INhanVienExcelExporter
     {
-        FileDto ExportDanhSachKhachHang(List<NhanSuItemDto> data);
+        FileDto ExportDanhSachNhanVien(List<NhanSuItemDto> data);
     }
 }

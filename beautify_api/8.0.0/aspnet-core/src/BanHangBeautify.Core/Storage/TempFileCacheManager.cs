@@ -17,7 +17,7 @@ namespace BanHangBeautify.Storage
 
         public void SetFile(string token, byte[] content)
         {
-            _cache.Set(token, new TempFileInfo(content), TimeSpan.FromMinutes(5)); // expire time is 5 min by default
+            _cache.Set(token, new TempFileInfo(content), TimeSpan.FromMinutes(1)); // expire time is 1 min by default
         }
 
         public byte[] GetFile(string token)

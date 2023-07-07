@@ -175,9 +175,6 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 rdo.CuocHenGanNhat = item.CreationTime;
                 rdo.GioiTinh = item.GioiTinhNam == null ? "Khác" : (item.GioiTinhNam == true ? "Nam" : "Nữ");
                 rdo.SoDienThoai = item.SoDienThoai;
-                rdo.NhanVienPhuTrach = "";
-                var nguonKhach = _nguonKhachRepository.FirstOrDefault(x => x.Id == item.IdNguonKhach);
-                rdo.TenNguonKhach = nguonKhach == null ? "" : nguonKhach.TenNguon;
                 var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == item.IdNhomKhach);
                 rdo.TenNhomKhach = nhomKhach == null ? "" : nhomKhach.TenNhomKhach;
                 rdo.TongChiTieu = 0;
