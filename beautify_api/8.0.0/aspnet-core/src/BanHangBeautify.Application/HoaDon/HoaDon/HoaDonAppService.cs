@@ -55,7 +55,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _hoaDonAnhRepository = hoaDonAnhRepository;
             _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
-            _hoaDonExcelExporter = hoaDonExcelExporter
+            _hoaDonExcelExporter = hoaDonExcelExporter;
         }
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
         {
