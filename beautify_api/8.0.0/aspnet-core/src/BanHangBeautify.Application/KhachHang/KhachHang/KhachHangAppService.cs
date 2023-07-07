@@ -1,19 +1,26 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
+using BanHangBeautify.NewFolder;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BanHangBeautify.KhachHang.KhachHang
 {
@@ -23,31 +30,34 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private IRepository<DM_KhachHang, Guid> _repository;
         private readonly IKhachHangRespository _customerRepo;
         private readonly IRepository<DM_NhomKhachHang, Guid> _nhomKhachHangRepository;
-        private readonly IRepository<DM_LoaiKhach,int> _loaiKhachHangRepository;
+        private readonly IRepository<DM_LoaiKhach, int> _loaiKhachHangRepository;
         private readonly IRepository<DM_NguonKhach, Guid> _nguonKhachRepository;
         private readonly IKhachHangExcelExporter _khachHangExcelExporter;
+        ITempFileCacheManager _tempFileCacheManager;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
               IKhachHangRespository customerRepo,
-              IRepository<DM_NhomKhachHang,Guid> nhomKhachHangRepository,
-              IRepository<DM_LoaiKhach,int> loaiKhachRepository,
-              IRepository<DM_NguonKhach,Guid> nguonKhachRepository,
-              IKhachHangExcelExporter khachHangExcelExporter
+              IRepository<DM_NhomKhachHang, Guid> nhomKhachHangRepository,
+              IRepository<DM_LoaiKhach, int> loaiKhachRepository,
+              IRepository<DM_NguonKhach, Guid> nguonKhachRepository,
+              IKhachHangExcelExporter khachHangExcelExporter,
+              ITempFileCacheManager tempFileCacheManager
               )
         {
             _repository = repository;
             _customerRepo = customerRepo;
-            _loaiKhachHangRepository= loaiKhachRepository;
+            _loaiKhachHangRepository = loaiKhachRepository;
             _nguonKhachRepository = nguonKhachRepository;
             _nhomKhachHangRepository = nhomKhachHangRepository;
             _khachHangExcelExporter = khachHangExcelExporter;
+            _tempFileCacheManager = tempFileCacheManager;
         }
 
         public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
-            if (checkExist!=null)
+            if (checkExist != null)
             {
-                return await EditKhachHang(dto,checkExist);
+                return await EditKhachHang(dto, checkExist);
             }
             return await CreateKhachHang(dto);
         }
@@ -55,8 +65,10 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<KhachHangDto> CreateKhachHang(CreateOrEditKhachHangDto dto)
         {
             KhachHangDto result = new KhachHangDto();
+            var checkMa = _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.Id = Guid.NewGuid();
+            khachHang.MaKhachHang = "KH00" + checkMa.Count;
             khachHang.CreationTime = DateTime.Now;
             khachHang.CreatorUserId = AbpSession.UserId;
             khachHang.LastModificationTime = DateTime.Now;
@@ -68,7 +80,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             return result;
         }
         [NonAction]
-        public async Task<KhachHangDto> EditKhachHang(CreateOrEditKhachHangDto dto,DM_KhachHang khachHang)
+        public async Task<KhachHangDto> EditKhachHang(CreateOrEditKhachHangDto dto, DM_KhachHang khachHang)
         {
             KhachHangDto result = new KhachHangDto();
             khachHang.TenKhachHang = dto.TenKhachHang;
@@ -92,20 +104,21 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<CreateOrEditKhachHangDto> GetKhachHang(Guid id)
         {
             var KhachHang = await _repository.GetAsync(id);
-            if (KhachHang!=null)
+            if (KhachHang != null)
             {
                 var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
                 result.GioiTinh = (bool)KhachHang.GioiTinhNam;
                 return result;
             }
-            
+
             return new CreateOrEditKhachHangDto();
         }
-        
+
         [HttpPost]
         public async Task<KhachHangDto> Delete(Guid id)
         {
             KhachHangDto result = new KhachHangDto();
+           
             var delete = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (delete != null)
             {
@@ -128,11 +141,11 @@ namespace BanHangBeautify.KhachHang.KhachHang
         {
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             int tenantId = AbpSession.TenantId ?? 1;
-            return await _customerRepo.Search(input,tenantId);
+            return await _customerRepo.Search(input, tenantId);
         }
 
         public async Task<PagedResultDto<KhachHangView>> GetAll(PagedKhachHangResultRequestDto input)
-            {
+        {
             PagedResultDto<KhachHangView> ListResultDto = new PagedResultDto<KhachHangView>();
             var lstData = await _repository.GetAll()
                 .Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
@@ -140,11 +153,11 @@ namespace BanHangBeautify.KhachHang.KhachHang
             if (!string.IsNullOrEmpty(input.keyword))
             {
                 lstData = lstData.Where(
-                    x => (x.TenKhachHang!=null && x.TenKhachHang.Contains(input.keyword)) ||
-                    (x.MaKhachHang!=null&& x.MaKhachHang.Contains(input.keyword))||
-                    (x.MaSoThue!=null&&x.MaSoThue.Contains(input.keyword)) || 
-                    (x.SoDienThoai!=null&&x.SoDienThoai.Contains(input.keyword)) ||
-                    (x.DiaChi!=null&&x.DiaChi.Contains(input.keyword)) || 
+                    x => (x.TenKhachHang != null && x.TenKhachHang.Contains(input.keyword)) ||
+                    (x.MaKhachHang != null && x.MaKhachHang.Contains(input.keyword)) ||
+                    (x.MaSoThue != null && x.MaSoThue.Contains(input.keyword)) ||
+                    (x.SoDienThoai != null && x.SoDienThoai.Contains(input.keyword)) ||
+                    (x.DiaChi != null && x.DiaChi.Contains(input.keyword)) ||
                     (x.Email != null && x.Email.Contains(input.keyword))
                    ).ToList();
             }
@@ -238,6 +251,85 @@ namespace BanHangBeautify.KhachHang.KhachHang
             List<KhachHangView> model = new List<KhachHangView>();
             model = (List<KhachHangView>)data.Items;
             return _khachHangExcelExporter.ExportDanhSachKhachHang(model);
+        }
+
+        [HttpPost]
+        [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                int countImportData = 0;
+                int countImportLoi = 0;
+                if (file.Type == ".xlsx")
+                {
+                    using (MemoryStream stream = new MemoryStream(file.File))
+                    {
+                        using (var package = new ExcelPackage())
+                        {
+                            package.Load(stream);
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
+
+                            int rowCount = worksheet.Dimension.Rows;
+
+                            for (int row = 3; row < rowCount; row++) // Assuming the first row is the header row
+                            {
+                                CreateOrEditKhachHangDto data = new CreateOrEditKhachHangDto();
+                                data.Id = Guid.NewGuid();
+                                data.TenKhachHang = worksheet.Cells[row, 2].Value?.ToString();
+                                data.SoDienThoai = worksheet.Cells[row, 3].Value?.ToString();
+                                var checkPhoneNumber = await _repository.FirstOrDefaultAsync(x => x.SoDienThoai == data.SoDienThoai);
+                                await UnitOfWorkManager.Current.SaveChangesAsync();
+                                if (checkPhoneNumber != null || data.TenKhachHang == null || data.SoDienThoai == null)
+                                {
+                                    countImportLoi++;
+                                    continue;
+                                }
+                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 4].Value?.ToString()))
+                                {
+                                    data.NgaySinh = DateTime.Parse(worksheet.Cells[row, 4].Value.ToString());
+                                }
+
+                                data.DiaChi = worksheet.Cells[row, 5].Value?.ToString();
+                                data.Email = worksheet.Cells[row, 7].Value?.ToString();
+                                if (worksheet.Cells[row, 6].Value?.ToString().ToLower() == "nam")
+                                {
+                                    data.GioiTinh = true;
+                                }
+                                else
+                                {
+                                    data.GioiTinh = false;
+                                }
+                                data.TongTichDiem = 0;
+                                data.TrangThai = 1;
+                                data.KieuNgaySinh = 1;
+                                await CreateKhachHang(data);
+                                countImportData++;
+                            }
+
+                        }
+                        if (countImportData >0 )
+                        {
+                            result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
+                            result.Status = "success";
+                        }
+                        else
+                        {
+                            result.Message = "Không có dữ liệu được nhập";
+                            result.Status = "info";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
+
+            return result;
         }
     }
 }

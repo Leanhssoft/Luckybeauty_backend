@@ -26,9 +26,9 @@
   <ItemGroup>
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
-    <Folder Include="DataExporting\Excel\NPOI\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Abp.AspNetCore.SignalR" Version="8.0.0" />
     <PackageReference Include="Abp.EntityFrameworkCore.EFPlus" Version="8.0.0" />
     <PackageReference Include="EPPlus" Version="6.2.4" />
     <PackageReference Include="NPOI" Version="2.5.3" />

@@ -220,5 +220,7 @@
     <text name="EditCompany">Sửa công ty</text>
     <text name="CreateCompany">Tạo công ty</text>
     <text name="Company">Công ty</text>
+    <text name="Import">Nhập dữ liệu</text>
+    <text name="Export">Xuất dữ liệu</text>
   </texts>
 </localizationDictionary>

@@ -1,21 +1,28 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
+using BanHangBeautify.NhanSu.NhanVien.Exporting;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
+using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.Record.Chart;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BanHangBeautify.NhanSu.NhanVien
 {
@@ -27,10 +34,14 @@ namespace BanHangBeautify.NhanSu.NhanVien
         private readonly IHostingEnvironment _env;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTac;
         private readonly INhanSuRepository _nhanSuRepository;
+        private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhService;
+        private readonly INhanVienExcelExporter _nhanVienExcelExporter;
         public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository,
             IRepository<NS_ChucVu, Guid> chucVuRepository, 
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTac,
-            INhanSuRepository nhanSuRepository, IHostingEnvironment env
+            INhanSuRepository nhanSuRepository, IHostingEnvironment env,
+            IRepository<DM_ChiNhanh, Guid> chiNhanhService,
+            INhanVienExcelExporter nhanVienExcelExporter
          )
         {
             _repository = repository;
@@ -38,6 +49,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
             _quaTrinhCongTac = quaTrinhCongTac;
             _nhanSuRepository = nhanSuRepository;
             _env = env;
+            _chiNhanhService = chiNhanhService;
+            _nhanVienExcelExporter = nhanVienExcelExporter;
         }
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
@@ -76,10 +89,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
             {
                 tenantName = curentTenant.TenancyName;
             }
-            nhanSu.MaNhanVien = dto.MaNhanVien;
+            var countNhanVien = _repository.GetAll().Where(x=>x.TenantId==AbpSession.TenantId).ToList().Count();
+            nhanSu.MaNhanVien = "NS00" + countNhanVien + 1;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
-            nhanSu.TenNhanVien = dto.Ho + " " + dto.TenLot;
+            nhanSu.TenNhanVien = dto.TenNhanVien;
             if (dto.AvatarFile != null && !string.IsNullOrWhiteSpace(dto.AvatarFile.FileBase64))
             {
                 nhanSu.Avatar = SaveFile(dto.AvatarFile, tenantName + "/NhanSu/" + nhanSu.TenNhanVien);
@@ -186,50 +200,94 @@ namespace BanHangBeautify.NhanSu.NhanVien
             input.TenantId = input.TenantId != null ? input.TenantId :(AbpSession.TenantId??1);
             return await _nhanSuRepository.GetAllNhanSu(input);
         }
-        public async Task<PagedResultDto<NhanSuItemDto>> Search(PagedResultRequestDto input, string keyWord)
+        public async Task<FileDto> ExportDanhSach(PagedNhanSuRequestDto input)
         {
-            PagedResultDto<NhanSuItemDto> result = new PagedResultDto<NhanSuItemDto>();
+            input.Filter = (input.Filter ?? string.Empty).Trim();
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await GetAll(input);
+            List<NhanSuItemDto> model = new List<NhanSuItemDto>();
+            model = (List<NhanSuItemDto>)data.Items;
+            return _nhanVienExcelExporter.ExportDanhSachKhachHang(model);
+        }
+        [HttpPost]
+        [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
             try
             {
-                if (string.IsNullOrEmpty(keyWord))
+                int countImportData = 0;
+                int countImportLoi = 0;
+                if (file.Type == ".xlsx")
                 {
-                    keyWord = "";
-                }
-                var lstNhanSu = await _repository.GetAll().Include(x => x.NS_ChucVu).
-                                           Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).
-                                           OrderByDescending(x => x.CreationTime).
-                                           ToListAsync();
-                lstNhanSu = lstNhanSu.Where(x => (x.TenNhanVien != null && x.TenNhanVien.Contains(keyWord)) ||
-                                           (x.MaNhanVien != null && x.MaNhanVien.Contains(keyWord))).ToList();
+                    using (MemoryStream stream = new MemoryStream(file.File))
+                    {
+                        using (var package = new ExcelPackage())
+                        {
+                            package.Load(stream);
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
 
-                result.TotalCount = lstNhanSu.Count;
-                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-                var items = lstNhanSu.Skip(input.SkipCount).Take(input.MaxResultCount).Select(x => new NhanSuItemDto()
-                {
-                    Id = x.Id,
-                    MaNhanVien = x.MaNhanVien,
-                    TenNhanVien = x.TenNhanVien,
-                    GioiTinh = x.GioiTinh,
-                    Avatar = x.Avatar,
-                    CCCD = x.CCCD,
-                    DiaChi = x.DiaChi,
-                    TenChucVu = x.NS_ChucVu == null ? "" : x.NS_ChucVu.TenChucVu,
-                    KieuNgaySinh = x.KieuNgaySinh,
-                    NgayCap = x.NgayCap,
-                    NgaySinh = x.NgaySinh,
-                    NgayVaoLam = x.CreationTime,
-                    NoiCap = x.NoiCap,
-                    SoDienThoai = x.SoDienThoai
-                }).ToList();
-                result.Items = items;
+                            int rowCount = worksheet.Dimension.Rows;
+
+                            for (int row = 3; row < rowCount; row++) // Assuming the first row is the header row
+                            {
+                                CreateOrEditNhanSuDto data = new CreateOrEditNhanSuDto();
+                                data.Id = Guid.NewGuid();
+                                data.TenNhanVien = worksheet.Cells[row, 2].Value?.ToString();
+                                data.SoDienThoai = worksheet.Cells[row, 3].Value?.ToString();
+                                var checkPhoneNumber = await _repository.FirstOrDefaultAsync(x => x.SoDienThoai == data.SoDienThoai);
+                                await UnitOfWorkManager.Current.SaveChangesAsync();
+                                string tenChiNhanh = worksheet.Cells[row, 10].Value?.ToString();
+                                var checkChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh.Trim() ==tenChiNhanh.Trim());
+                                await UnitOfWorkManager.Current.SaveChangesAsync();
+                                if (checkPhoneNumber != null|| data.TenNhanVien==null || data.SoDienThoai==null || checkChiNhanh==null)
+                                {
+                                    countImportLoi++;
+                                    continue;
+                                }
+                                data.IdChiNhanh = checkChiNhanh.Id;
+                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 4].Value?.ToString()))
+                                {
+                                    data.NgaySinh = DateTime.Parse(worksheet.Cells[row, 4].Value.ToString());
+                                }
+                                if (worksheet.Cells[row, 5].Value?.ToString().ToLower() == "nam")
+                                {
+                                    data.GioiTinh = 1;
+                                }
+                                else
+                                {
+                                    data.GioiTinh = 2;
+                                }
+                                data.DiaChi = worksheet.Cells[row, 6].Value?.ToString();
+                                data.CCCD = worksheet.Cells[row, 7].Value?.ToString();
+                                data.NgayCap = worksheet.Cells[row, 8].Value?.ToString();
+                                data.NoiCap = worksheet.Cells[row, 9].Value?.ToString();
+                                data.KieuNgaySinh = 1;
+                                await Create(data);
+                                countImportData++;
+                            }
+                        }
+                    }
+                    if (countImportData > 0)
+                    {
+                        result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
+                        result.Status = "success";
+                    }
+                    else
+                    {
+                        result.Message = "Không có dữ liệu được nhập";
+                        result.Status = "info";
+                    }
+                }
             }
             catch (Exception ex)
             {
-                result.TotalCount= 0;
-                result.Items = null;
+                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Status = "error";
+                result.Detail = ex.Message;
             }
-            
-           
+
             return result;
         }
         private string SaveFile(AvatarFile file, string thumuc = "")

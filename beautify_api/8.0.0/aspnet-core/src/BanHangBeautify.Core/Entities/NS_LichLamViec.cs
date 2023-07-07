@@ -20,7 +20,7 @@ namespace BanHangBeautify.Entities
         public Guid IdNhanVien { set; get; }
         [ForeignKey("IdNhanVien")]
         public NS_NhanVien NS_NhanVien{set;get ;}
-        public DateTime TuNgay    {set;get;}
+        public DateTime TuNgay  {set;get;}
         public DateTime? DenNgay   {set;get;}
         [MaxLength(2000)]
         public string GhiChu    {set;get;}
@@ -28,5 +28,6 @@ namespace BanHangBeautify.Entities
         public bool LapLai    {set;get;}
         public int KieuLapLai{set;get;}
         public int GiaTriLap { get; set; }
+        public string NgayLamViecTrongTuan { set; get; }
     }
 }

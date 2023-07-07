@@ -43,6 +43,8 @@ namespace BanHangBeautify.Authorization
             nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Create, L("CreateNhanSu"));
             nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Edit, L("EditNhanSu"));
             nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Delete, L("DeleteNhanSu"));
+            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Import, L("Import"));
+            nhanSu.CreateChildPermission(PermissionNames.Pages_NhanSu_Export, L("Export"));
 
             var phongBan = pages.CreateChildPermission(PermissionNames.Pages_PhongBan, L("PhongBan"));
             phongBan.CreateChildPermission(PermissionNames.Pages_PhongBan_Create, L("CreatePhongBan"));
@@ -64,6 +66,8 @@ namespace BanHangBeautify.Authorization
             khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Create, L("CreateKhachHang"));
             khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Edit, L("EditKhachHang"));
             khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Delete, L("DeleteKhachHang"));
+            khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Import, L("Import"));
+            khachHang.CreateChildPermission(PermissionNames.Pages_KhachHang_Export, L("Export"));
 
 
             var loaiKhachHang = pages.CreateChildPermission(PermissionNames.Pages_LoaiKhach, L("LoaiKhachHang"));
@@ -119,7 +123,12 @@ namespace BanHangBeautify.Authorization
             /*var chietKhauHoaDon =*/
             pages.CreateChildPermission(PermissionNames.Pages_ChietKhauHoaDon, L("ChietKhauHoaDon"));
             /* var hoaDon = p*/
-            pages.CreateChildPermission(PermissionNames.Pages_HoaDon, L("HoaDon"));
+            var hoaDon = pages.CreateChildPermission(PermissionNames.Pages_HoaDon, L("HoaDon"));
+            hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Create, L("CreateHoaDon"));
+            hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Edit, L("EditHoaDon"));
+            hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Delete, L("DeleteHoaDon"));
+            hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Import, L("Import"));
+            hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Export, L("Export"));
             /* var hoaDonAnh = */
             pages.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh, L("AnhHoaDon"));
             /*var loaiChungTu =*/

@@ -5,6 +5,7 @@ using Abp.Castle.Logging.Log4Net;
 using Abp.Dependency;
 using Abp.Extensions;
 using Abp.Json;
+using BanHangBeautify.Bookings.Bookings;
 using BanHangBeautify.Configuration;
 using BanHangBeautify.Identity;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
@@ -123,6 +124,7 @@ namespace BanHangBeautify.Web.Host.Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
+                endpoints.MapHub<BookingHub>("/booking-hub");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
             });

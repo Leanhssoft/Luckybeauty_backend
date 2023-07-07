@@ -1,10 +1,14 @@
-﻿using Abp.Authorization;
+﻿using Abp.AspNetCore.SignalR.Hubs;
+using Abp.Authorization;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
+using Abp.Runtime.Session;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Bookings.Bookings.Dto;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,7 +19,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Bookings.Bookings
 {
     [AbpAuthorize(PermissionNames.Pages_Booking)]
-    public class BookingAppService : SPAAppServiceBase
+    public class BookingAppService : SPAAppServiceBase,IBookingAppService
     {
         private readonly IRepository<Booking, Guid> _repository;
         private readonly IRepository<BookingNhanVien, Guid> _bookingNhanVienRepository;
@@ -38,6 +42,7 @@ namespace BanHangBeautify.Bookings.Bookings
             _dichVuRepository = dichVuRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
         }
+
         public async Task<Booking> CreateBooking(CreateBookingDto dto)
         {
             var startTime = dto.StartTime + " " + dto.StartHours;
@@ -274,6 +279,23 @@ namespace BanHangBeautify.Bookings.Bookings
                 result = true;
             }
             return result;
+        }
+    }
+    public class BookingHub: Hub, ITransientDependency
+    {
+        public IAbpSession AbpSession { get; set; }
+        public readonly IBookingAppService _bookingAppService;
+        public BookingHub(IBookingAppService bookingAppService)
+        {
+            AbpSession = NullAbpSession.Instance;
+            _bookingAppService = bookingAppService;
+        }
+        public async Task SendAllBookings(PagedBookingResultRequestDto input)
+        {
+            var bookings = await _bookingAppService.GetAll(input);
+
+            // Gửi danh sách bookings cho tất cả các kết nối máy khách
+            await Clients.All.SendAsync("ReceiveAllBookings", bookings);
         }
     }
 }

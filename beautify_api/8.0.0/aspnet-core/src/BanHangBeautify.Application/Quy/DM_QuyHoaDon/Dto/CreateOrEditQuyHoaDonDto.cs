@@ -19,6 +19,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
         public string NoiDungThu{set;get;}
         public bool HachToanKinhDoanh { set; get; }
         public bool? IsDelete { set; get; } = false;
+        public int? TrangThai { set; get; } = 1;
         public List<QuyHoaDonChiTietDto> QuyHoaDon_ChiTiet { get; set; }
 
     }

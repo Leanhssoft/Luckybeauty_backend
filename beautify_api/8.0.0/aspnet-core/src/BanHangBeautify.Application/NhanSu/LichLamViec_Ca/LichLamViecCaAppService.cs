@@ -50,7 +50,6 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
         public async Task<LichLamViecCaDto> Update(CreateOrEditLichLamViecCaDto input,NS_LichLamViec_Ca oldData)
         {
             LichLamViecCaDto result = new LichLamViecCaDto();
-            oldData.GiaTri = input.GiaTri;
             oldData.IdCaLamViec = input.IdCaLamViec;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;

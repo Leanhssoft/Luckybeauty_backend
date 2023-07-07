@@ -8,7 +8,7 @@ using OfficeOpenXml;
 
 namespace BanHangBeautify.DataExporting.Excel.EpPlus
 {
-    public abstract class EpPlusExcelExporterBase: SPAAppServiceBase, ITransientDependency
+    public abstract class EpPlusExcelExporterBase: ITransientDependency
     {
         private readonly ITempFileCacheManager _tempFileCacheManager;
 
