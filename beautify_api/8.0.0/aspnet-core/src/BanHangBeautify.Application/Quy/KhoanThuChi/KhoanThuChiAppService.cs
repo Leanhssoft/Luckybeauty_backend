@@ -22,6 +22,7 @@ namespace BanHangBeautify.Quy.KhoanThuChi
         {
             _khoanThuChiRepository = khoanThuChiRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_KhoanThuChi_Create,PermissionNames.Pages_KhoanThuChi_Edit)]
         public async Task<KhoanThuChiDto> CreateOrEdit(CreateOrEditKhoanThuChiDto input)
         {
             var checkExist = await _khoanThuChiRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -60,6 +61,7 @@ namespace BanHangBeautify.Quy.KhoanThuChi
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_KhoanThuChi_Delete)]
         public async Task<KhoanThuChiDto> Delete(Guid id)
         {
             var data = await _khoanThuChiRepository.FirstOrDefaultAsync(x => x.Id == id);

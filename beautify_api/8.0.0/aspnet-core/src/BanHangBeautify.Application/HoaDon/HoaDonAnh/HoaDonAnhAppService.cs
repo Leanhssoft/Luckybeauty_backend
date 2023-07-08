@@ -21,6 +21,7 @@ namespace BanHangBeautify.HoaDon.HoaDonAnh
         {
             _hoaDonAnhRepository = hoaDonAnhRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Anh_Create,PermissionNames.Pages_HoaDon_Anh_Update)]
         public async Task<HoaDonAnhDto> CreateOrEdit(CreateOrEditHoaDonAnhDto input)
         {
             var checkExist = await _hoaDonAnhRepository.FirstOrDefaultAsync(x=>x.Id== input.Id);
@@ -63,6 +64,7 @@ namespace BanHangBeautify.HoaDon.HoaDonAnh
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Anh_Delete)]
         public async Task<HoaDonAnhDto> Delete(Guid id)
         {
             HoaDonAnhDto result = new HoaDonAnhDto();

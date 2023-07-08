@@ -66,7 +66,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Exporting
                     }
                     
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.TenKhoanThuChi);
-                    ws.Cells[startRow, 6].Value = ConvertHelper.ToDateTime(item.TongTienThu);
+                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.TongTienThu);
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.SHinhThucThanhToan);
                     ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.TxtTrangThai);
                     startRow++;

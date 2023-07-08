@@ -22,6 +22,8 @@ namespace BanHangBeautify.HoaDon.ChungTu
         {
             _loaiChungTuRepository = loaiChungTuRepository;
         }
+
+        [AbpAuthorize(PermissionNames.Pages_LoaiChungTu_Create,PermissionNames.Pages_LoaiChungTu_Delete)]
         public async Task<LoaiChungTuDto> CreateOrEdit(CreateOrEditLoaiChungTuDto input)
         {
             var checkExist =await _loaiChungTuRepository.FirstOrDefaultAsync(x=>x.Id== input.Id);
@@ -62,6 +64,7 @@ namespace BanHangBeautify.HoaDon.ChungTu
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_LoaiChungTu_Delete)]
         public async Task<LoaiChungTuDto> Delete(int id)
         {
             var checkExist = await _loaiChungTuRepository.FirstOrDefaultAsync(x=> x.Id == id);

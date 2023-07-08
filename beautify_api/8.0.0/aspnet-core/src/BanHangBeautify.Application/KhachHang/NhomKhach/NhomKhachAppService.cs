@@ -21,6 +21,7 @@ namespace BanHangBeautify.KhachHang.NhomKhach
             _repository = repository;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhomKhach_Create)]
         public async Task<NhomKhachDto> CreateNhomKhach(CreateOrEditNhomKhachDto dto)
         {
             NhomKhachDto result = new NhomKhachDto();
@@ -46,6 +47,7 @@ namespace BanHangBeautify.KhachHang.NhomKhach
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhomKhach_Delete)]
         public async Task<NhomKhachDto> Delete(Guid id)
         {
             NhomKhachDto result = new NhomKhachDto();

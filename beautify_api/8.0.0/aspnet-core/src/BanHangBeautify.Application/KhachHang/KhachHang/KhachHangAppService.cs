@@ -51,7 +51,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _khachHangExcelExporter = khachHangExcelExporter;
             _tempFileCacheManager = tempFileCacheManager;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_KhachHang_Create,PermissionNames.Pages_KhachHang_Edit)]
         public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -238,7 +238,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
             return false;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_KhachHang_Export)]
         public async Task<FileDto> ExportDanhSach(PagedKhachHangResultRequestDto input)
         {
             input.keyword = (input.keyword ?? string.Empty).Trim();
@@ -251,6 +251,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_KhachHang_Import)]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
         public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
         {
@@ -270,7 +271,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
 
                             int rowCount = worksheet.Dimension.Rows;
 
-                            for (int row = 3; row < rowCount; row++) // Assuming the first row is the header row
+                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
                             {
                                 CreateOrEditKhachHangDto data = new CreateOrEditKhachHangDto();
                                 data.Id = Guid.NewGuid();

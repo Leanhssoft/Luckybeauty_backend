@@ -3,40 +3,51 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
+using BanHangBeautify.HangHoa.HangHoa.Exporting;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
+using BanHangBeautify.NewFolder;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Transactions;
 using static BanHangBeautify.Common.CommonClass;
 
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
-    //[AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa)]
+    [AbpAuthorize(PermissionNames.Pages_DM_HangHoa)]
     public class HangHoaAppService : SPAAppServiceBase, IHangHoaAppService
     {
         private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _dmDonViQuiDoi;
         private readonly IHangHoaRepository _repository;
+        private readonly IHangHoaExcelExporter _hangHoaExcelExporter;
         public HangHoaAppService(IRepository<DM_HangHoa, Guid> repository,
             IHangHoaRepository productRepo,
-            IRepository<DM_DonViQuiDoi, Guid> dvqd
+            IRepository<DM_DonViQuiDoi, Guid> dvqd,
+            IHangHoaExcelExporter hangHoaExcelExporter
             )
         {
             _dmHangHoa = repository;
             _dmDonViQuiDoi = dvqd;
             _repository = productRepo;
+            _hangHoaExcelExporter = hangHoaExcelExporter;
         }
 
         public string FormatMaHangHoa(string firstChar, float? maxVal=0)
@@ -50,7 +61,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 return string.Concat(firstChar,  maxVal);
             }
         }
-
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Create,PermissionNames.Pages_DM_HangHoa_Edit)]
         public async Task<CreateOrEditHangHoaDto> CreateOrEdit(CreateOrEditHangHoaDto dto)
         {
             var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == dto.Id);
@@ -72,6 +83,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.Id = productId;
             hangHoa.TenantId = AbpSession.TenantId ?? 1;
             hangHoa.CreatorUserId = AbpSession.UserId;
+            hangHoa.SoPhutThucHien = dto.SoPhutThucHien;
             hangHoa.CreationTime = DateTime.Now;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
@@ -223,6 +235,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             return dataGroup;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Delete)]
         public async Task<CreateOrEditHangHoaDto> Delete(Guid id)
         {
             CreateOrEditHangHoaDto result = new();
@@ -281,6 +294,99 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 }
             }
             return false;
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Export)]
+        public async Task<FileDto> ExportToExcel(HangHoaRequestDto input)
+        {
+            input.CurrentPage = 1;
+            input.PageSize = int.MaxValue;
+            var data = await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
+            return _hangHoaExcelExporter.ExportHangHoaToExcel(data.Items.ToList());
+        }
+        [HttpPost]
+        [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Import)]
+        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                int countImportData = 0;
+                int countImportLoi = 0;
+                if (file.Type == ".xlsx")
+                {
+                    using (MemoryStream stream = new MemoryStream(file.File))
+                    {
+                        using (var package = new ExcelPackage())
+                        {
+                            package.Load(stream);
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
+                            int rowCount = worksheet.Dimension.Rows;
+
+                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
+                            {
+                                CreateOrEditHangHoaDto data = new CreateOrEditHangHoaDto();
+                                data.Id = Guid.NewGuid();
+                                data.TenHangHoa = worksheet.Cells[row, 3].Value?.ToString();
+                                switch (worksheet.Cells[row, 6].Value?.ToString())
+                                {
+                                    case "HH":
+                                        data.IdLoaiHangHoa = 1;
+                                        break;
+                                    case "DV":
+                                        data.IdLoaiHangHoa = 2;
+                                        break;
+                                    case "CB":
+                                        data.IdLoaiHangHoa = 3;
+                                        break;
+                                    default:
+                                        data.IdLoaiHangHoa = 1;
+                                        break;
+                                }
+                                data.DonViQuiDois = new List<DonViQuiDoiDto>()
+                                {
+                                    new DonViQuiDoiDto(){
+                                        GiaBan = float.Parse(worksheet.Cells[row,4].Value?.ToString()??"0"),
+                                        LaDonViTinhChuan = 1,
+                                        TyLeChuyenDoi = 1,
+                                        MaHangHoa = worksheet.Cells[row, 2].Value?.ToString(),
+                                        
+                                    }
+                                };
+                                float soPhutThucHien = float.Parse(worksheet.Cells[row, 5].Value?.ToString() ?? "0");
+                                if (soPhutThucHien>0)
+                                {
+                                    data.SoPhutThucHien = soPhutThucHien;
+                                }
+                                data.MoTa = worksheet.Cells[row, 7].Value?.ToString();
+                                await Create(data);
+                                countImportData++;
+                            }
+
+                        }
+                        if (countImportData > 0)
+                        {
+                            result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
+                            result.Status = "success";
+                        }
+                        else
+                        {
+                            result.Message = "Không có dữ liệu được nhập";
+                            result.Status = "info";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
+
+            return result;
         }
     }
 }

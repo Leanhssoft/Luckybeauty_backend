@@ -1,5 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
@@ -15,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.NhomHangHoa
 {
+    [AbpAuthorize(PermissionNames.Pages_DM_NhomHangHoa)]
     public class NhomHangHoaAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_NhomHangHoa, Guid> _dmNhomHangHoa;
@@ -97,6 +100,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
         /// </summary>
         /// <param name="dto"></param>
         /// <returns></returns>
+        [AbpAuthorize(PermissionNames.Pages_DM_NhomHangHoa_Create)]
         public NhomHangHoaDto CreateNhomHangHoa(NhomHangHoaDto dto)
         {
             if (dto == null) { return new NhomHangHoaDto(); };
@@ -116,6 +120,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
         /// <returns></returns>
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_DM_NhomHangHoa_Edit)]
         public async Task<string> UpdateNhomHangHoa(NhomHangHoaDto dto)
         {
             try
@@ -149,7 +154,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 return string.Concat(ex.InnerException + ex.Message);
             }
         }
-
+        [AbpAuthorize(PermissionNames.Pages_DM_NhomHangHoa_Delete)]
         public async Task<string> XoaNhomHangHoa(Guid id)
         {
             try

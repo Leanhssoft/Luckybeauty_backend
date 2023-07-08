@@ -32,7 +32,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             _lichLamViecRespository = lichLamViecRespository;
             _lichLamViecCaService = lichLamViecCaService;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Create,PermissionNames.Pages_NhanSu_Edit)]
         public async Task<LichLamViecDto> CreateOrEdit(CreateOrEditLichLamViecDto input) {
             var isExist = await _lichLamViecService.FirstOrDefaultAsync(x=>x.Id== input.Id);
             if (isExist==null)
@@ -92,6 +92,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
 
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_Delete)]
         public async Task<LichLamViecDto> Delete(Guid id) { 
             var checkExist =await _lichLamViecService.FirstOrDefaultAsync(x=>x.Id==id);
             if (checkExist!=null)

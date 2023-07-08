@@ -23,6 +23,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Create,PermissionNames.Pages_KhuyenMai_Edit)]
         public async Task<KhuyenMaiChiTietDto> CreateOrEdit(CreateOrEditKhuyenMaiChiTietDto input) {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist!=null)
@@ -67,6 +68,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Delete)]
         public async Task<KhuyenMaiChiTietDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
@@ -80,7 +82,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet
             }
             return new KhuyenMaiChiTietDto();
         }
-        public async Task<CreateOrEditKhuyenMaiChiTietDto> GetFOrEdit(Guid id)
+        public async Task<CreateOrEditKhuyenMaiChiTietDto> GetForEdit(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)

@@ -22,6 +22,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
         {
             _khuyenMaiRepository = khuyenMaiRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Create,PermissionNames.Pages_KhuyenMai_Edit)]
         public async Task<KhuyenMaiDto> CreateOrEdit(CreateOrEditKhuyenMaiDto input)
         {
             var checkExist = await _khuyenMaiRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -70,6 +71,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Delete)]
         public async Task<KhuyenMaiDto> Delete(Guid id)
         {
             var data = await _khuyenMaiRepository.FirstOrDefaultAsync(x => x.Id == id);

@@ -52,6 +52,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             _chiNhanhService = chiNhanhService;
             _nhanVienExcelExporter = nhanVienExcelExporter;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_Create,PermissionNames.Pages_NhanSu_Edit)]
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
             try
@@ -163,6 +164,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_Delete)]
         public async Task<NhanSuItemDto> Delete(Guid id)
         {
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == id);
@@ -230,7 +232,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
 
                             int rowCount = worksheet.Dimension.Rows;
 
-                            for (int row = 3; row < rowCount; row++) // Assuming the first row is the header row
+                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
                             {
                                 CreateOrEditNhanSuDto data = new CreateOrEditNhanSuDto();
                                 data.Id = Guid.NewGuid();

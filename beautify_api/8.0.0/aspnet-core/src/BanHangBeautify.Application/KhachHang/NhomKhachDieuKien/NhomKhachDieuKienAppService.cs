@@ -22,6 +22,7 @@ namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhomKhach_DieuKien_Create,PermissionNames.Pages_NhomKhach_DieuKien_Edit)]
         public async Task<NhomKhachDieuKienDto> CreateOrEdit(CreateOrEditNhomKhachDieuKienDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -63,6 +64,7 @@ namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhomKhach_DieuKien_Delete)]
         public async Task<NhomKhachDieuKienDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);

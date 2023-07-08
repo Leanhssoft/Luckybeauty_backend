@@ -20,6 +20,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_ChucVu_Create,PermissionNames.Pages_ChucVu_Edit)]
         public async Task<ChucVuDto> CreateOrEdit(CreateOrEditChucVuDto dto)
         {
             try
@@ -68,6 +69,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChucVu_Delete)]
         public async Task<ChucVuDto> Delete(Guid Id)
         {
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == Id);

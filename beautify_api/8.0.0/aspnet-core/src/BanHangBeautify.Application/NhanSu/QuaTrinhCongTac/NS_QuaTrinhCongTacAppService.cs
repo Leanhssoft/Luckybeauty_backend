@@ -20,6 +20,7 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_QuaTrinhCongTac_Create,PermissionNames.Pages_QuaTrinhCongTac_Edit)]
         public async Task<QuaTrinhConTacDto> CreateOrEdit(CreateOrEditQuaTrinhConTacDto dto)
         {
             var quaTrinhCongTac = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -64,6 +65,7 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_QuaTrinhCongTac_Delete)]
         public async Task<QuaTrinhConTacDto> Delete(Guid Id)
         {
             var quaTrinhCongTac = await _repository.FirstOrDefaultAsync(x => x.Id == Id);

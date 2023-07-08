@@ -203,6 +203,7 @@ namespace BanHangBeautify.Migrations
 			qd.MaHangHoa,
 			hh.TenHangHoa,
 			isnull(qd.GiaBan,cast (0 as float)) as GiaBan,
+            hh.SoPhutThucHien,
 			hh.TrangThai,
 			hh.MoTa,
 			hh.NguoiTao,
