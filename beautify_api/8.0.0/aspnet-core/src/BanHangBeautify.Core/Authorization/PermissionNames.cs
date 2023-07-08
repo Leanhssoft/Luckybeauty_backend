@@ -80,10 +80,10 @@
         public const string Pages_NhanSu_Import = "Pages.NhanSu.Import";
         public const string Pages_NhanSu_Export = "Pages.NhanSu.Export";
 
-        public const string Pages_NhanVien_DichVu = "Pages.NhanSu";
-        public const string Pages_NhanVien_DichVu_Create = "Pages.NhanSu.Create";
-        public const string Pages_NhanVien_DichVu_Edit = "Pages.NhanSu.Edit";
-        public const string Pages_NhanVien_DichVu_Delete = "Pages.NhanSu.Delete";
+        public const string Pages_NhanVien_DichVu = "Pages.NhanVienDichVu";
+        public const string Pages_NhanVien_DichVu_Create = "Pages.NhanVienDichVu.Create";
+        public const string Pages_NhanVien_DichVu_Edit = "Pages.NhanVienDichVu.Edit";
+        public const string Pages_NhanVien_DichVu_Delete = "Pages.NhanVienDichVu.Delete";
 
         public const string Pages_CaLamViec = "Pages.CaLamViec";
         public const string Pages_CaLamViec_Create = "Pages.CaLamViec.Create";
@@ -126,9 +126,9 @@
         public const string Pages_TaiKhoanNganHang_Delete = "Pages.TaiKhoanNganHang.Delete";
 
         public const string Pages_Phong = "Pages.Phong";
-        public const string Pages_Phong_Create = "Pages.Phong";
-        public const string Pages_Phong_Edit = "Pages.Phong";
-        public const string Pages_Phong_Delete = "Pages.Phong";
+        public const string Pages_Phong_Create = "Pages.Phong.Create";
+        public const string Pages_Phong_Edit = "Pages.Phong.Edit";
+        public const string Pages_Phong_Delete = "Pages.Phong.Delete";
 
         public const string Pages_HeThongSMS = "Pages.HeThongSMS";
         public const string Pages_HeThongSMS_Create = "Pages.HeThongSMS.Create";
@@ -143,9 +143,9 @@
         public const string Pages_Booking_Color = "Pages.Booking_Color";
 
         public const string Pages_CauHinhChungTu = "Pages_CauHinhChungTu";
-        public const string Pages_CauHinhChungTu_Create = "Pages_CauHinhChungTu";
-        public const string Pages_CauHinhChungTu_Edit = "Pages_CauHinhChungTu";
-        public const string Pages_CauHinhChungTu_Delete = "Pages_CauHinhChungTu";
+        public const string Pages_CauHinhChungTu_Create = "Pages_CauHinhChungTu.Create";
+        public const string Pages_CauHinhChungTu_Edit = "Pages_CauHinhChungTu.Edit";
+        public const string Pages_CauHinhChungTu_Delete = "Pages_CauHinhChungTu.Delete";
 
         public const string Pages_CauHinhTichDiem = "Pages_CauHinhTichDiem";
         public const string Pages_CauHinhTichDiem_Create = "Pages_CauHinhTichDiem.Create";
@@ -236,7 +236,7 @@
         public const string Pages_QuyHoaDon_Create = "Pages.QuyHoaDon.Create";
         public const string Pages_QuyHoaDon_Edit = "Pages.QuyHoaDon.Edit";
         public const string Pages_QuyHoaDon_Delete = "Pages.QuyHoaDon.Delete";
-        public const string Pages_QuyHoaDon_Export = "Pages.QuyHoaDon.Delete";
+        public const string Pages_QuyHoaDon_Export = "Pages.QuyHoaDon.Export";
 
         public const string Pages_KhoanThuChi = "Pages.KhoanThuChi";
         public const string Pages_KhoanThuChi_Create = "Pages.KhoanThuChi.Create";
