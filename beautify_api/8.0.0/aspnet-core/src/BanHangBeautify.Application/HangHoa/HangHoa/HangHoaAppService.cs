@@ -31,7 +31,7 @@ using static BanHangBeautify.Common.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
-    //[AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa)]
+    [AbpAuthorize(PermissionNames.Pages_DM_HangHoa)]
     public class HangHoaAppService : SPAAppServiceBase, IHangHoaAppService
     {
         private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
@@ -61,7 +61,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 return string.Concat(firstChar,  maxVal);
             }
         }
-
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Create,PermissionNames.Pages_DM_HangHoa_Edit)]
         public async Task<CreateOrEditHangHoaDto> CreateOrEdit(CreateOrEditHangHoaDto dto)
         {
             var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == dto.Id);
@@ -235,6 +235,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             return dataGroup;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Delete)]
         public async Task<CreateOrEditHangHoaDto> Delete(Guid id)
         {
             CreateOrEditHangHoaDto result = new();
@@ -296,6 +297,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Export)]
         public async Task<FileDto> ExportToExcel(HangHoaRequestDto input)
         {
             input.CurrentPage = 1;
@@ -305,6 +307,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Import)]
         public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
         {
             ExecuteResultDto result = new ExecuteResultDto();

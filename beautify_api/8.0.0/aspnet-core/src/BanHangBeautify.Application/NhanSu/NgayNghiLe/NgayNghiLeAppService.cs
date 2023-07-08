@@ -54,6 +54,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_NgayNghiLe_Create,PermissionNames.Pages_NhanSu_NgayNghiLe_Edit)]
         public async Task<NgayNghiLeDto> CreateOrEdit(CreateOrEditNgayNghiLeDto input)
         {
             NgayNghiLeDto result = new NgayNghiLeDto();
@@ -97,6 +98,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_NgayNghiLe_Delete)]
         public async Task<bool> Delete(Guid id)
         {
             bool result = false;

@@ -42,6 +42,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
         {
             return await _repository.GetAsync(id);
         }
+        [AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa_Create,PermissionNames.Pages_DM_LoaiHangHoa_Edit)]
         public async Task<LoaiHangHoaDto> CreateOrEdit(CreateOrEditLoaiHangHoaDto dto)
         {
             var checkExist = _repository.FirstOrDefault(dto.Id);
@@ -87,6 +88,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_DM_LoaiHangHoa_Delete)]
         public async Task<LoaiHangHoaDto> Delete(int id)
         {
             LoaiHangHoaDto result = new LoaiHangHoaDto();

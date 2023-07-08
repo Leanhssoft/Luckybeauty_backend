@@ -23,6 +23,7 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
         {
             _quyHoaDonCTRepository = quyHoaDonCTRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Create,PermissionNames.Pages_QuyHoaDon_Edit)]
         public async Task<QuyHoaDonChiTietDto> CreateOrEdit(QuyHoaDonChiTietDto input)
         {
             var checkExist = await _quyHoaDonCTRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -68,6 +69,7 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Delete)]
         public async Task<QuyHoaDonChiTietDto> Delete(Guid id)
         {
             var data = await _quyHoaDonCTRepository.FirstOrDefaultAsync(x => x.Id == id);

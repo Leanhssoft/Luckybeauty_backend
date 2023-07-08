@@ -23,6 +23,8 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem_Create,PermissionNames.Pages_CauHinhTichDiem_Edit)]
+
         public async Task<CauHinhTichDiemDto> CreateOrEdit(CreateOrEditCauHinhTichDiemDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -67,6 +69,7 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem_Delete)]
         public async Task<CauHinhTichDiemDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x=>x.Id ==id);

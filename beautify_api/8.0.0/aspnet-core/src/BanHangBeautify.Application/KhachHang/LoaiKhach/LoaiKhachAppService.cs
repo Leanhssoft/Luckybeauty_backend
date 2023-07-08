@@ -20,6 +20,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_LoaiKhach_Create)]
         public async Task<LoaiKhachDto> CreateLoaiKhach(CreateOrEditLoaiKhachDto dto)
         {
             LoaiKhachDto result = new LoaiKhachDto();
@@ -33,6 +34,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             result = ObjectMapper.Map<LoaiKhachDto>(loaiKhach);
             return result;
         }
+        [AbpAuthorize(PermissionNames.Pages_LoaiKhach_Edit)]
         public async Task<LoaiKhachDto> EditLoaiKhach(CreateOrEditLoaiKhachDto dto)
         {
             LoaiKhachDto result = new LoaiKhachDto();
@@ -45,6 +47,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_LoaiKhach_Delete)]
         public async Task<LoaiKhachDto> Delete(int id)
         {
             LoaiKhachDto result = new LoaiKhachDto();

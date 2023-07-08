@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien_DichVu.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.NhanVien_DichVu
 {
+    [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu)]
     public class NhanVienDichVuAppService : AsyncCrudAppService<DichVu_NhanVien, DichVuNhanVienDto, Guid, PagedDichVuNhanVienResultRequestDto, CreateOrUpdateDichVuNhanVienDto, DichVuNhanVienDto>
     {
         IRepository<DichVu_NhanVien, Guid> _repository;
@@ -17,11 +20,13 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
             _repository = repository;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Create)]
         public override Task<DichVuNhanVienDto> CreateAsync(CreateOrUpdateDichVuNhanVienDto input)
         {
             return base.CreateAsync(input);
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Delete)]
         public override Task DeleteAsync(EntityDto<Guid> input)
         {
             return base.DeleteAsync(input);
@@ -40,6 +45,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
             return base.GetAsync(input);
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Edit)]
         public override Task<DichVuNhanVienDto> UpdateAsync(DichVuNhanVienDto input)
         {
             return base.UpdateAsync(input);

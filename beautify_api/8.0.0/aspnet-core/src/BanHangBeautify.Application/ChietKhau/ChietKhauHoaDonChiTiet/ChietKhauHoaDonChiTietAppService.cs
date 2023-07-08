@@ -24,6 +24,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDonChiTiet
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_ChietKhauHoaDon_Create,PermissionNames.Pages_ChietKhauHoaDon_Edit)]
         public async Task<ChietKhauHDCTDto> CreateOrEdit(CreateOrEditChietKhauHDCTDto input)
         {
             var check = await _repository.FirstOrDefaultAsync(x=>x.Id== input.Id);
@@ -54,6 +55,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDonChiTiet
             };
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChietKhauHoaDon_Delete)]
         public async Task<ChietKhauHDCTDto> Delete(Guid id)
         {
             var check = await _repository.FirstOrDefaultAsync(x=>x.Id==id);

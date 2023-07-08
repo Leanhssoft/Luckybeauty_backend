@@ -23,6 +23,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
         {
             _lichLamViecCa = lichLamViecCa;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Ca_Create,PermissionNames.Pages_NhanSu_LichLamViec_Ca_Edit)]
         public async Task<LichLamViecCaDto> CreateOrEdit(CreateOrEditLichLamViecCaDto input)
         {
             var check = await _lichLamViecCa.FirstOrDefaultAsync(x=>x.Id==input.Id);
@@ -58,6 +59,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Ca_Delete)]
         public async Task<LichLamViecCaDto> Delete(Guid id)
         {
             var check =await _lichLamViecCa.FirstOrDefaultAsync(x => x.Id == id);

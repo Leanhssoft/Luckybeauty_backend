@@ -25,6 +25,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
         {
             _nhanVienTimeOffRepository = nhanVienTimeOffRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_TimeOff_Create,PermissionNames.Pages_NhanSu_TimeOff_Edit)]
         public async Task<NhanVienTimeOffDto> CreateOrEdit(CreateOrEditNhanVienTimeOffDto input)
         {
             var check =await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -67,6 +68,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_TimeOff_Delete)]
         public async Task<NhanVienTimeOffDto> Delete(Guid id)
         {
             var check = await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x => x.Id == id);

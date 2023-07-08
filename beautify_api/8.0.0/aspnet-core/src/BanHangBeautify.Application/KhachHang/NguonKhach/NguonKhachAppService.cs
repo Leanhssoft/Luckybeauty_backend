@@ -21,6 +21,7 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             _repository = repository;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NguonKhach_Create)]
         public async Task<NguonKhachDto> CreateNguonKhach(CreateOrEditNguonKhachDto dto)
         {
             NguonKhachDto result = new NguonKhachDto();
@@ -34,6 +35,7 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             result = ObjectMapper.Map<NguonKhachDto>(nguonKhach);
             return result;
         }
+        [AbpAuthorize(PermissionNames.Pages_NguonKhach_Edit)]
         public async Task<NguonKhachDto> EditNguonKhach(CreateOrEditNguonKhachDto dto)
         {
             NguonKhachDto result = new NguonKhachDto();
@@ -46,6 +48,7 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NguonKhach_Delete)]
         public async Task<NguonKhachDto> Delete(Guid id)
         {
             NguonKhachDto result = new NguonKhachDto();

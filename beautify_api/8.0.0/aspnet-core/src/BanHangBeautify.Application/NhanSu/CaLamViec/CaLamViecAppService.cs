@@ -35,6 +35,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             _caLamViecRepository = caLamViecRepository;
             _caLamViecExcelExporter = caLamViecExcelExporter;
         }
+        [AbpAuthorize(PermissionNames.Pages_CaLamViec_Create,PermissionNames.Pages_CaLamViec_Edit)]
         public async Task<CaLamViecDto> CreateOrEdit(CreateOrEditCaLamViecDto dto)
         {
             var caLamViec = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -79,6 +80,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_CaLamViec_Delete)]
         public async Task<CaLamViecDto> Delete(Guid Id)
         {
             var caLamViec = await _repository.FirstOrDefaultAsync(x => x.Id == Id);

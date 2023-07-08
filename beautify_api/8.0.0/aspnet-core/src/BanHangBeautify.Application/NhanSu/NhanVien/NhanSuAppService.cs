@@ -52,6 +52,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             _chiNhanhService = chiNhanhService;
             _nhanVienExcelExporter = nhanVienExcelExporter;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_Create,PermissionNames.Pages_NhanSu_Edit)]
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
             try
@@ -163,6 +164,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_Delete)]
         public async Task<NhanSuItemDto> Delete(Guid id)
         {
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == id);

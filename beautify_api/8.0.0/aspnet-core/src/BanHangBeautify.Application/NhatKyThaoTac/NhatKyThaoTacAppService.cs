@@ -30,7 +30,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             _repository = repository;
             _userRepository = userRepository;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac_Create)]
         public async Task<NhatKyThaoTacDto> CreateNhatKyHoatDong(CreateNhatKyThaoTacDto input)
         {
             HT_NhatKyThaoTac data = new HT_NhatKyThaoTac();
@@ -45,6 +45,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac_Delete)]
         public async Task<NhatKyThaoTacDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);

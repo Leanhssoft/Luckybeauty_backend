@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
 {
-    //[AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu)]
+    [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu)]
     public class ChietKhauDichVuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_ChietKhauDichVu, Guid> _hoahongDichVu;
@@ -30,6 +30,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             _hangHoaRepository = hangHoaRepository;
             _chietKhauDichVuRepository = chietKhauDichVuRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Create,PermissionNames.Pages_ChietKhauDichVu_Edit)]
         public async Task<ChietKhauDichVuDto> CreateOrEdit(CreateOrEditChietKhauDichVuDto input)
         {
             var checkExist = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -72,6 +73,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Delete)]
         public async Task<ChietKhauDichVuDto> Delete(Guid id)
         {
             var data = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == id);

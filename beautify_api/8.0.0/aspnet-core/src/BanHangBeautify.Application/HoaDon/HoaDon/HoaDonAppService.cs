@@ -30,7 +30,7 @@ using BanHangBeautify.HoaDon.HoaDon.Exporting;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
-    //[AbpAuthorize(PermissionNames.Pages_HoaDon)]
+    [AbpAuthorize(PermissionNames.Pages_HoaDon)]
     public class HoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
@@ -57,6 +57,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _repoHoaDon = repoHoaDon;
             _hoaDonExcelExporter = hoaDonExcelExporter;
         }
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
         {
             List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
@@ -111,7 +112,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
             return result;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon2([FromBody] JObject data)
         {
             List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
@@ -149,6 +150,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
         public async Task<CreateHoaDonDto> UpdateHoaDon(CreateHoaDonDto objUp)
         {
             try
@@ -208,6 +210,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         /// chỉ cập nhật thông tin hóa đơn, không cập nhật chi tiết hóa đơn
         /// </summary>
         /// <param name="objUp"></param>
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
         public async Task<CreateHoaDonDto> Update_InforHoaDon(CreateHoaDonDto objUp)
         {
             BH_HoaDon objOld = await _hoaDonRepository.FirstOrDefaultAsync(objUp.Id);
@@ -260,6 +263,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         /// <param name="lstCT"></param>
         /// <param name="idHoadon"></param>
         /// <returns></returns>
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
         public async Task Update_ChiTietHoaDon(List<HoaDonChiTietDto> lstCT, Guid idHoadon)
         {
             var userID = AbpSession.UserId;
@@ -350,6 +354,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             }
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Delete)]
         public async Task DeleteHoaDon(Guid id)
         {
             var hoaDon = _hoaDonRepository.FirstOrDefault(x => x.Id == id);
@@ -400,6 +405,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         {
             return await _repoHoaDon.GetListHoaDon(param, AbpSession.TenantId ?? 1);
         }
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Export)]
         public async Task<FileDto> ExportDanhSach(HoaDonRequestDto input)
         {
             input.TextSearch = (input.TextSearch ?? string.Empty).Trim();

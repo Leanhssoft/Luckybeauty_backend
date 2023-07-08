@@ -22,7 +22,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon
 {
-    //[AbpAuthorize(PermissionNames.Pages_QuyHoaDon)]
+    [AbpAuthorize(PermissionNames.Pages_QuyHoaDon)]
     public class QuyHoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<QuyHoaDon, Guid> _quyHoaDon;
@@ -41,6 +41,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             _repoQuyHD = repoQuyHD;
             _quyHoaDonExcelExport = quyHoaDonExcelExporter;
         }
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Create)]
         public async Task<QuyHoaDonDto> Create(CreateOrEditQuyHoaDonDto input)
         {
             List<QuyHoaDon_ChiTiet> lstCT = new();
@@ -77,6 +78,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Edit)]
         public async Task<QuyHoaDonDto> UpdateQuyHoaDon(CreateOrEditQuyHoaDonDto input)
         {
             var oldData = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -158,6 +160,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Delete)]
         public async Task<QuyHoaDonDto> Delete(Guid id)
         {
             var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == id);
@@ -223,6 +226,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             input.TenantId = AbpSession.TenantId ?? 1;
             return await _repoQuyHD.Search(input);
         }
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Export)]
         public async Task<FileDto> ExportToExcel(PagedQuyHoaDonRequestDto input)
         {
             input.TenantId = AbpSession.TenantId ?? 1;

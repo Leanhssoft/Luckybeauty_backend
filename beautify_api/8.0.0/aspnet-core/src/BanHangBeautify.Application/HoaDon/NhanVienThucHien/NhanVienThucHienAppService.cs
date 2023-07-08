@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.NhanVienThucHien
 {
-    //[AbpAuthorize(PermissionNames.Pages_NhanVienThucHien)]
+    [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien)]
     public class NhanVienThucHienAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
@@ -25,6 +25,7 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
         {
             _nvThucHien = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien_Create)]
         public async Task<bool> InsertListNVThucHien_DichVu(List<HoaDonChiTietDto> lstCTHD)
         {
             try
@@ -51,6 +52,7 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
             }
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien_Edit)]
         public async Task<bool> UpdateNVThucHienDichVu([FromBody] JObject data, Guid idHoaDonChiTiet)
         {
             try
@@ -82,6 +84,7 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
             }
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien_Delete)]
         public async Task<NhanVienThucHienDto> Delete(Guid id)
         {
             var data = await _nvThucHien.FirstOrDefaultAsync(x => x.Id == id);
@@ -96,6 +99,7 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
             return new NhanVienThucHienDto();
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien_Delete)]
         public bool DeleteNVThucHienDichVu(Guid idHoaDonChiTiet)
         {
             try
@@ -109,8 +113,8 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
                 return false;
             }
         }
-        [HttpPost] 
-        
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien_Delete)]
         public bool DeleteNVThucHienHoaDon(Guid idHoaDon)
         {
             try
