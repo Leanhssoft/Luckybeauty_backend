@@ -33,6 +33,13 @@ namespace BanHangBeautify.Authorization
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Create, L("CreateHangHoa"));
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Edit, L("EditHangHoa"));
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Delete, L("DeleteHangHoa"));
+
+            //Nhóm hàng hóa
+            var nhomhangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_NhomHangHoa, L("NhomHangHoa"));
+            nhomhangHoa.CreateChildPermission(PermissionNames.Pages_DM_NhomHangHoa_Create, L("CreateNhomHangHoa"));
+            nhomhangHoa.CreateChildPermission(PermissionNames.Pages_DM_NhomHangHoa_Edit, L("EditNhomHangHoa"));
+            nhomhangHoa.CreateChildPermission(PermissionNames.Pages_DM_NhomHangHoa_Delete, L("DeleteNhomHangHoa"));
+
             //Đơn Vị Qui Đổi
             var donViQuiDoi = pages.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi, L("DonViQuiDoi"));
             donViQuiDoi.CreateChildPermission(PermissionNames.Pages_DonViQuiDoi_Create, L("CreateDonViQuiDoi"));
