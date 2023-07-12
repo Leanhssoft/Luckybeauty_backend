@@ -57,7 +57,7 @@ namespace BanHangBeautify.Users
             _logInManager = logInManager;
             _nhanVienRepository = nhanVienRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Create)]
+        
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -89,7 +89,6 @@ namespace BanHangBeautify.Users
             return MapToEntityDto(user);
         }
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Edit)]
         public override async Task<UserDto> UpdateAsync(UserDto input)
         {
             CheckUpdatePermission();

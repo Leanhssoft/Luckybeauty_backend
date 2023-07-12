@@ -34,6 +34,8 @@ namespace BanHangBeautify.Permissions
             GetPermissionDto data = new GetPermissionDto();
             try
             {
+
+                await UnitOfWorkManager.Current.SaveChangesAsync();
                 var userIdSession = AbpSession.UserId;
                 List<string> listPermissison = new List<string>();
                 var user = await _userRepository.FirstOrDefaultAsync(UserId);

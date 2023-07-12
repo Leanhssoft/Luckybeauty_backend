@@ -160,7 +160,7 @@ namespace BanHangBeautify.Migrations
                 columns: new[] { "CreationTime", "DeletionTime", "LastModificationTime" },
                 values: new object[] { new DateTime(2023, 5, 27, 10, 37, 15, 534, DateTimeKind.Local).AddTicks(8610), null, null });
 
-            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetDMHangHoa]
+            migrationBuilder.Sql(@"ALTER PROCEDURE spGetDMHangHoa
 			@TenantId int =1,
 			@TextSearch nvarchar(max)=null,
 			@IdNhomHangHoas nvarchar(max)=null,
@@ -203,7 +203,7 @@ namespace BanHangBeautify.Migrations
 			qd.MaHangHoa,
 			hh.TenHangHoa,
 			isnull(qd.GiaBan,cast (0 as float)) as GiaBan,
-            hh.SoPhutThucHien,
+			isnull(hh.SoPhutThucHien,cast (0 as float)) as SoPhutThucHien,
 			hh.TrangThai,
 			hh.MoTa,
 			hh.NguoiTao,
@@ -250,9 +250,9 @@ namespace BanHangBeautify.Migrations
 			case when @TypeSort <> 'DESC' then 0
 			when @ColumnSort='GiaBan' then GiaBan end DESC
 		OFFSET (@CurrentPage* @PageSize) ROWS
-		FETCH NEXT @PageSize ROWS ONLY
+		FETCH NEXT @PageSize ROWS ONLY;
 
- END 
+ END;
 ");
         }
 
