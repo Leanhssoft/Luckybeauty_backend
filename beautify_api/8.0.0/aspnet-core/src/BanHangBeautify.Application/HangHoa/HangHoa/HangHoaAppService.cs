@@ -149,6 +149,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TenHangHoa_KhongDau = dto.TenHangHoa_KhongDau;
+            hangHoa.MoTa = dto.MoTa;
             hangHoa.TrangThai = dto.TrangThai;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
