@@ -13,12 +13,12 @@ namespace BanHangBeautify.HoaDon.HoaDon.Dto
         public string TenKhachHang { get; set; }
         public string TenChiNhanh { get; set; }
         public string TxtTrangThaiHD { get; set; }
-        public float? DaThanhToan { get; set; }
-        public float? ConNo { get; set; }
+        public double? DaThanhToan { get; set; }
+        public double? ConNo { get; set; }
 
-        public float? SumTongTienHang { get; set; }
-        public float? SumTongGiamGiaHD { get; set; }
-        public float? SumTongThanhToan { get; set; }
-        public float? SumDaThanhToan { get; set; }
+        public double? SumTongTienHang { get; set; }
+        public double? SumTongGiamGiaHD { get; set; }
+        public double? SumTongThanhToan { get; set; }
+        public double? SumDaThanhToan { get; set; }
     }
 }

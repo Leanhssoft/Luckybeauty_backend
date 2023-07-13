@@ -264,10 +264,11 @@ namespace BanHangBeautify.HoaDon.HoaDon
         /// <param name="idHoadon"></param>
         /// <returns></returns>
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
-        public async Task Update_ChiTietHoaDon(List<HoaDonChiTietDto> lstCT, Guid idHoadon)
+        public async Task<List<HoaDonChiTietDto>> Update_ChiTietHoaDon(List<HoaDonChiTietDto> lstCT, Guid idHoadon)
         {
             var userID = AbpSession.UserId;
             List<BH_NhanVienThucHien> lstNVTH = new();
+            List<BH_HoaDon_ChiTiet> ctAfter = new();
 
             #region Delete ct if not exist
             // comapre old & new
@@ -288,7 +289,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 if (ctUpdate != null)
                 {
                     ctUpdate.STT = item.STT;
-                    ctUpdate.SoLuong = item.STT;
+                    ctUpdate.SoLuong = item.SoLuong;
                     ctUpdate.IdDonViQuyDoi = item.IdDonViQuyDoi;
                     ctUpdate.IdChiTietHoaDon = item.IdChiTietHoaDon;
                     ctUpdate.DonGiaTruocCK = item.DonGiaTruocCK;
@@ -306,6 +307,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctUpdate.LastModifierUserId = userID;
                     ctUpdate.LastModificationTime = DateTime.Now;
                     await _hoaDonChiTietRepository.UpdateAsync(ctUpdate);
+                    ctAfter.Add(ctUpdate);
 
                     _nvthService.DeleteNVThucHienDichVu(item.Id);
 
@@ -332,6 +334,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctNew.CreatorUserId = AbpSession.UserId;
                     ctNew.CreationTime = DateTime.Now;
                     await _hoaDonChiTietRepository.InsertAsync(ctNew);
+                    ctAfter.Add(ctNew);
 
                     if (item.nhanVienThucHien != null)
                     {
@@ -352,6 +355,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             {
                 await _nvThucHien.InsertRangeAsync(lstNVTH);
             }
+            return ObjectMapper.Map<List<HoaDonChiTietDto>>(ctAfter);
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Delete)]

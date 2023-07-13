@@ -35,21 +35,21 @@ namespace BanHangBeautify.Entities
         public Guid? IdHoaDon { get; set; }
         [ForeignKey("IdHoaDon")]
         public BH_HoaDon BH_HoaDonParent { get; set; }
-        public float? TongTienHangChuaChietKhau { get; set; } = 0;
-        public float? PTChietKhauHang { get; set; } = 0;
-        public float? TongChietKhauHangHoa { get; set; } = 0;
-        public float? TongTienHang { get; set; } = 0;
-        public float? PTThueHD { get; set; } = 0;
-        public float? TongTienThue { get; set; } = 0;
-        public float? TongTienHDSauVAT { get; set; } = 0;
-        public float? PTGiamGiaHD { get; set; } = 0;
-        public float? TongGiamGiaHD { get; set; } = 0;
-        public float? ChiPhiTraHang { get; set; } = 0; // Áp dụng khi khách trả hàng, và khách phải trả thêm khoản phí này
-        public float? TongThanhToan { get; set; } = 0;// tong tien khach can thanh toan
-        public float? ChiPhiHD { get; set; } = 0;// Chi phí cửa hàng phải trả cho bên thứ 3 (VNĐ) (VD: chi phí vận chuyển)
+        public double? TongTienHangChuaChietKhau { get; set; } = 0;
+        public double? PTChietKhauHang { get; set; } = 0;
+        public double? TongChietKhauHangHoa { get; set; } = 0;
+        public double? TongTienHang { get; set; } = 0;
+        public double? PTThueHD { get; set; } = 0;
+        public double? TongTienThue { get; set; } = 0;
+        public double? TongTienHDSauVAT { get; set; } = 0;
+        public double? PTGiamGiaHD { get; set; } = 0;
+        public double? TongGiamGiaHD { get; set; } = 0;
+        public double? ChiPhiTraHang { get; set; } = 0; // Áp dụng khi khách trả hàng, và khách phải trả thêm khoản phí này
+        public double? TongThanhToan { get; set; } = 0;// tong tien khach can thanh toan
+        public double? ChiPhiHD { get; set; } = 0;// Chi phí cửa hàng phải trả cho bên thứ 3 (VNĐ) (VD: chi phí vận chuyển)
         [MaxLength(4000)]
         public string ChiPhi_GhiChu { get; set; } = string.Empty;
-        public float? DiemGiaoDich { get; set; } = 0; // Số điểm khách hàng tích được khi mua hàng theo hóa đơn này
+        public double? DiemGiaoDich { get; set; } = 0; // Số điểm khách hàng tích được khi mua hàng theo hóa đơn này
         [MaxLength(4000)]
         public string GhiChuHD { get; set; } = string.Empty;
         public int TrangThai { get; set; } = 3;// 0.Xóa, 1.Tạm lưu, 2.Đang xử lý, 3.Hoàn thành

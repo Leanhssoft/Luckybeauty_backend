@@ -10,7 +10,7 @@ namespace BanHangBeautify.HoaDon.HoaDonChiTiet.Dto
     {
         public Guid? IdHangHoa { get; set; }
         public Guid? IdNhomHangHoa { get; set; }
-        public float? GiaBan { get; set; }
+        public double? GiaBan { get; set; }
         public string MaHangHoa { get; set; }
         public string TenHangHoa { get; set; }
         public string TenNhomHang { get; set; }

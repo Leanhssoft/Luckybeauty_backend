@@ -23,7 +23,7 @@ namespace BanHangBeautify.Entities
         [ForeignKey("IdDonViQuiDoi")]
         public DM_DonViQuiDoi DM_DonViQuiDoi { get; set; }
         public byte? LoaiChietKhau { get; set; } = 1;
-        public float? GiaTri { get; set; } = 0;
+        public double? GiaTri { get; set; } = 0;
         public bool? LaPhanTram { get; set; } = true;
         public int TrangThai { get; set; } = 1;
     }
