@@ -17,7 +17,8 @@ namespace BanHangBeautify.SP_Migrations
         {
             migrationBuilder.Sql(@"CREATE PROCEDURE prc_SuggestNhanVienDichVu
 	@TenantId INT,
-	@IdChiNhanh UNIQUEIDENTIFIER = NULL
+	@IdChiNhanh UNIQUEIDENTIFIER,
+	@IdNhanVien UNIQUEIDENTIFIER = NULL
 AS
 BEGIN
 	SELECT nv.Id,nv.Avatar,nv.TenNhanVien,nv.SoDienThoai,cv.TenChucVu as ChucVu
@@ -30,7 +31,8 @@ BEGIN
 	LEFT JOIN NS_ChucVu cv on cv.Id = nv.IdChucVu
 	WHERE nv.TenantId = @TenantId
 	AND nv.IsDeleted = 0
-	AND (qtct.IdChiNhanh = @IdChiNhanh OR @IdChiNhanh IS NULL)
+	AND qtct.IdChiNhanh = @IdChiNhanh
+	AND (@IdNhanVien IS NULL OR (nv.Id = @IdNhanVien AND @IdNhanVien IS NOT NULL))
 	;
 END;");
         }

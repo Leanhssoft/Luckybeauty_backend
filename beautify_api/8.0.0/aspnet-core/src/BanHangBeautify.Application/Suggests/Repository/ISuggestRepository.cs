@@ -9,6 +9,6 @@ namespace BanHangBeautify.Suggests.Repository
 {
     public interface ISuggestRepository
     {
-        Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(int tenantId, Guid idChiNhanh);
+        Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(int tenantId, Guid idChiNhanh,Guid? idNhanVien);
     }
 }

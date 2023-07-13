@@ -97,10 +97,10 @@ namespace BanHangBeautify.Suggests
 
         }
         [HttpPost]
-        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(Guid idChiNhanh)
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(Guid idChiNhanh,Guid? idNhanVien)
         {
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
-            var lstNhanSu = await _suggestRepository.SuggestNhanVienThucHienDichVu(AbpSession.TenantId??1,idChiNhanh);
+            var lstNhanSu = await _suggestRepository.SuggestNhanVienThucHienDichVu(AbpSession.TenantId??1,idChiNhanh,idNhanVien);
             foreach (var item in lstNhanSu)
             {
                 var nhanVienDichVu = await  _dichVuNhanVienRespository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false&& x.IdNhanVien==item.Id).ToListAsync();

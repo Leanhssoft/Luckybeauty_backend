@@ -23,12 +23,14 @@ namespace BanHangBeautify.Suggests.Repository
         {
         }
 
-        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(int tenantId, Guid idChiNhanh)
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(int tenantId, Guid idChiNhanh, Guid? idNhanVien)
         {
             using(var cmd = CreateCommand("prc_SuggestNhanVienDichVu"))
             {
                 cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
+                
+                cmd.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanVien));
                 using (var dataReader = await cmd.ExecuteReaderAsync())
                 {
                     string[] array = { "Data", "TotalCount" };
