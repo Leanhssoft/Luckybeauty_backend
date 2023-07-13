@@ -37,11 +37,11 @@ namespace BanHangBeautify.Entities
 
         // Dùng khi khách quẹt thẻ, và phải trả thêm 1 khoản phí gọi là Phí cà thẻ
         // ---> khi đó, phải cài đặt thêm phí ở DM_NganHang"				
-        public float? LaPTChiPhiNganHang { get; set; } = 0;
-        public float? ChiPhiNganHang { get; set; } = 0;
-        public float? ThuPhiTienGui { get; set; } = 0;
+        public double? LaPTChiPhiNganHang { get; set; } = 0;
+        public double? ChiPhiNganHang { get; set; } = 0;
+        public double? ThuPhiTienGui { get; set; } = 0;
         // Nếu khách thanh toán = đổi điểm, DiemThanhToan = số điểm quy đổi, TienThu = số tiền quy đổi từ điểm)
-        public float? DiemThanhToan { get; set; } = 0;
+        public double? DiemThanhToan { get; set; } = 0;
         // HinhThucThanhToan
         // 1. Tiền mặt	
         // 2. Pos	
@@ -49,6 +49,6 @@ namespace BanHangBeautify.Entities
         // 4. Thẻ giá trị(khách nạp sẵn tiền vào Thẻ, sau đó dùng thẻ này để thanh toán)
         // 5. Sử dụng điểm
         public byte HinhThucThanhToan { get; set; } = 1; // byte (C#) = tinyint (sql)
-        public float? TienThu { get; set; } = 0;
+        public double? TienThu { get; set; } = 0;
     }
 }

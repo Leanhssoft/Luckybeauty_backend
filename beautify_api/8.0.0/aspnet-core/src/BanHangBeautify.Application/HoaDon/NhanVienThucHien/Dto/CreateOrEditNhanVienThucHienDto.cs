@@ -13,10 +13,10 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien.Dto
         public Guid IdHoaDon { set; get; }
         public Guid IdChiTietHoaDon { set; get; }
         public Guid IdQuyHoaDon { set; get; }
-        public float? PTChietKhau { set; get; }
-        public float? TienChietKhau { set; get; }
+        public double? PTChietKhau { set; get; }
+        public double? TienChietKhau { set; get; }
         public bool ChiaDeuChietKhau { set; get; }
-        public float? HeSo { set; get; }
+        public double? HeSo { set; get; }
         public bool TinhHoaHongTruocCK { set; get; }
         public byte LoaiChietKhau { set; get; }
     }

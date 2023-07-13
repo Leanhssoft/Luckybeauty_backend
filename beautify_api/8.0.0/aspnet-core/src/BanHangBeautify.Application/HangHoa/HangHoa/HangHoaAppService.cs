@@ -50,18 +50,18 @@ namespace BanHangBeautify.HangHoa.HangHoa
             _hangHoaExcelExporter = hangHoaExcelExporter;
         }
 
-        public string FormatMaHangHoa(string firstChar, float? maxVal=0)
+        public string FormatMaHangHoa(string firstChar, float? maxVal = 0)
         {
-            if (maxVal <9)
+            if (maxVal < 10)
             {
-                return string.Concat(firstChar, "0",  maxVal);
+                return string.Concat(firstChar, "0", maxVal);
             }
             else
             {
-                return string.Concat(firstChar,  maxVal);
+                return string.Concat(firstChar, maxVal);
             }
         }
-        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Create,PermissionNames.Pages_DM_HangHoa_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Create, PermissionNames.Pages_DM_HangHoa_Edit)]
         public async Task<CreateOrEditHangHoaDto> CreateOrEdit(CreateOrEditHangHoaDto dto)
         {
             var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == dto.Id);
@@ -118,7 +118,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     IdHangHoa = productId,
                     TenantId = hangHoa.TenantId,
                     MaHangHoa = FormatMaHangHoa(objMax.FirstStr, objMax.MaxVal),
-                TenDonViTinh = string.Empty,
+                    TenDonViTinh = string.Empty,
                 };
                 lstDVT.Add(dvt);
             }
@@ -149,6 +149,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TenHangHoa_KhongDau = dto.TenHangHoa_KhongDau;
+            hangHoa.MoTa = dto.MoTa;
             hangHoa.TrangThai = dto.TrangThai;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
@@ -253,7 +254,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
-        } 
+        }
         [HttpPost]
         public async Task<CreateOrEditHangHoaDto> RestoreProduct(Guid idHangHoa)
         {
@@ -352,11 +353,11 @@ namespace BanHangBeautify.HangHoa.HangHoa
                                         LaDonViTinhChuan = 1,
                                         TyLeChuyenDoi = 1,
                                         MaHangHoa = worksheet.Cells[row, 2].Value?.ToString(),
-                                        
+
                                     }
                                 };
                                 float soPhutThucHien = float.Parse(worksheet.Cells[row, 5].Value?.ToString() ?? "0");
-                                if (soPhutThucHien>0)
+                                if (soPhutThucHien > 0)
                                 {
                                     data.SoPhutThucHien = soPhutThucHien;
                                 }

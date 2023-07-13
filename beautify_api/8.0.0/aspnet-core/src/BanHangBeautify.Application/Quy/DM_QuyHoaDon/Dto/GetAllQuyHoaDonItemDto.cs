@@ -13,7 +13,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
         public string LoaiPhieu { get; set; }// 11.thu/12.chi
         public string MaHoaDon { get; set; }
         public DateTime? NgayLapHoaDon { get; set; }
-        public float TongTienThu { get; set; }
+        public double TongTienThu { get; set; }
         public string TenNguoiNop { get; set; }
         public DateTime CreationTime { get; set; }
         public string TenKhoanThuChi { get; set; }

@@ -24,7 +24,7 @@ namespace BanHangBeautify.Entities
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
         public DM_ChiNhanh DM_ChiNhanh { get; set; }
-        public float? TongTienThu { get; set; } = 0;
+        public double? TongTienThu { get; set; } = 0;
         [MaxLength(4000)]
         public string NoiDungThu { get; set; } = string.Empty;
         public bool? HachToanKinhDoanh { get; set; } = true;

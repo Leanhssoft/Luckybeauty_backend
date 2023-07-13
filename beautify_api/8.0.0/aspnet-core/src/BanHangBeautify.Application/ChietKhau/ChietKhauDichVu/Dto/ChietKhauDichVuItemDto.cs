@@ -11,11 +11,11 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto
         public Guid Id { get; set; }
         public string TenDichVu { get; set; }
         public string TenNhomDichVu { get; set; }
-        public float GiaTri { get; set; }
+        public double GiaTri { get; set; }
         public bool LaPhanTram { set; get; }
-        public float? HoaHongThucHien { get; set; }
-        public float? HoaHongYeuCauThucHien { get; set; }
-        public float? HoaHongTuVan { get; set; }
-        public float GiaDichVu { get; set; }
+        public double? HoaHongThucHien { get; set; }
+        public double? HoaHongYeuCauThucHien { get; set; }
+        public double? HoaHongTuVan { get; set; }
+        public double GiaDichVu { get; set; }
     }
 }

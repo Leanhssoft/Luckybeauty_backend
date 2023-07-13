@@ -11,7 +11,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto
         public Guid Id { set; get; }
         public Guid IdChiNhanh { set; get; }
         public byte LoaiChietKhau { set; get; }
-        public float? GiaTriChietKhau { set; get; } = 0;
+        public double? GiaTriChietKhau { set; get; } = 0;
         public List<string> ChungTuApDung { set; get; }
     }
 }
