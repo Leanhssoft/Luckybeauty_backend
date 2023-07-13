@@ -13,6 +13,7 @@ using BanHangBeautify.Storage;
 using Castle.Facilities.Logging;
 using IdentityServer4.AspNetIdentity;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -65,31 +66,31 @@ namespace BanHangBeautify.Web.Host.Startup
 
             // Configure CORS for angular2 UI
 
-            //services.AddCors(
-            //    options => options.AddPolicy(
-            //        _defaultCorsPolicyName,
-            //        builder => builder
-            //            .WithOrigins(
-            //                //App: CorsOrigins in appsettings.json can contain more than one address separated by comma.
-            //                _appConfiguration["App:CorsOrigins"]
-            //                    .Split(",", StringSplitOptions.RemoveEmptyEntries)
-            //                    .Select(o => o.RemovePostFix("/"))
-            //                    .ToArray()
-            //            )
-            //            .AllowAnyHeader()
-            //            .AllowAnyMethod()
-            //            .AllowCredentials()
-            //    )
-            //);
-            services.AddCors(options =>
-             {
-                 options.AddPolicy(_defaultCorsPolicyName, builder =>
-                 {
-                     builder.AllowAnyOrigin()
-                         .AllowAnyHeader()
-                         .AllowAnyMethod();
-                 });
-             });
+            services.AddCors(
+                options => options.AddPolicy(
+                    _defaultCorsPolicyName,
+                    builder => builder
+                        .WithOrigins(
+                            //App: CorsOrigins in appsettings.json can contain more than one address separated by comma.
+                            _appConfiguration["App:CorsOrigins"]
+                                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                                .Select(o => o.RemovePostFix("/"))
+                                .ToArray()
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                )
+            );
+            //services.AddCors(options =>
+            // {
+            //     options.AddPolicy(_defaultCorsPolicyName, builder =>
+            //     {
+            //         builder.AllowAnyOrigin()
+            //             .AllowAnyHeader()
+            //             .AllowAnyMethod();
+            //     });
+            // });
 
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             ConfigureSwagger(services);
@@ -111,7 +112,6 @@ namespace BanHangBeautify.Web.Host.Startup
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             app.UseCors(_defaultCorsPolicyName); // Enable CORS!
-
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -124,7 +124,7 @@ namespace BanHangBeautify.Web.Host.Startup
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<AbpCommonHub>("/signalr");
-                endpoints.MapHub<BookingHub>("/booking-hub");
+                endpoints.MapHub<BookingHub>("/bookingHub");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
             });

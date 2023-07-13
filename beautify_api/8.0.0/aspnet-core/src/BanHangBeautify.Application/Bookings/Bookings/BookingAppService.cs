@@ -4,12 +4,14 @@ using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Bookings.Bookings.BookingRepository;
 using BanHangBeautify.Bookings.Bookings.Dto;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,28 +21,34 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Bookings.Bookings
 {
     [AbpAuthorize(PermissionNames.Pages_Booking)]
-    public class BookingAppService : SPAAppServiceBase,IBookingAppService
+    public class BookingAppService : SPAAppServiceBase, IBookingAppService
     {
         private readonly IRepository<Booking, Guid> _repository;
+        private readonly IBookingRepository _bookingRepository;
         private readonly IRepository<BookingNhanVien, Guid> _bookingNhanVienRepository;
         private readonly IRepository<BookingService, Guid> _bookingServiceRepository;
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
+        private readonly IHubContext<BookingHub> _bookingHubContext;
         public BookingAppService(
             IRepository<Booking, Guid> repository,
+            IBookingRepository bookingRepository,
             IRepository<BookingNhanVien, Guid> bookingNhanVienRepository,
             IRepository<BookingService, Guid> bookingServiceRepository,
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             IRepository<DM_HangHoa, Guid> dichVuRepository,
-            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository)
+            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
+            IHubContext<BookingHub> bookingHubContext)
         {
             _repository = repository;
+            _bookingRepository = bookingRepository;
             _bookingNhanVienRepository = bookingNhanVienRepository;
             _bookingServiceRepository = bookingServiceRepository;
             _khachHangRepository = khachHangRepository;
             _dichVuRepository = dichVuRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
+            _bookingHubContext = bookingHubContext;
         }
 
         public async Task<Booking> CreateBooking(CreateBookingDto dto)
@@ -56,7 +64,7 @@ namespace BanHangBeautify.Bookings.Bookings
             }
             booking.IdChiNhanh = dto.IdChiNhanh;
             booking.StartTime = DateTime.Parse(startTime);
-            booking.BookingDate = DateTime.Now;
+            booking.BookingDate = DateTime.Parse(dto.StartTime);
             booking.CreationTime = DateTime.Now;
             booking.TenantId = AbpSession.TenantId ?? 1;
             booking.CreatorUserId = AbpSession.UserId;
@@ -84,7 +92,7 @@ namespace BanHangBeautify.Bookings.Bookings
                 bookingService.IdDonViQuiDoi = idDichVuQuiDoi;
                 bookingService.IsDeleted = false;
                 bookingService.CreationTime = DateTime.Now;
-                bookingService.CreatorUserId= AbpSession.UserId;
+                bookingService.CreatorUserId = AbpSession.UserId;
             }
             catch (Exception)
             {
@@ -118,7 +126,7 @@ namespace BanHangBeautify.Bookings.Bookings
             var findBooking = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
             if (findBooking != null)
             {
-                findBooking.SoDienThoai = string.IsNullOrEmpty(dto.SoDienThoai)?findBooking.SoDienThoai:dto.SoDienThoai;
+                findBooking.SoDienThoai = string.IsNullOrEmpty(dto.SoDienThoai) ? findBooking.SoDienThoai : dto.SoDienThoai;
                 findBooking.StartTime = dto.StartTime;
                 findBooking.GhiChu = dto.GhiChu;
                 findBooking.LoaiBooking = dto.LoaiBooking;
@@ -135,7 +143,7 @@ namespace BanHangBeautify.Bookings.Bookings
             return new Booking();
 
         }
-        [NonAction] 
+        [NonAction]
         public async Task UpdateBookingService(Guid idBooking, Guid idDichVuQuiDoi)
         {
             var bookingService = await _bookingServiceRepository.FirstOrDefaultAsync(x => x.IdBooking == idBooking && x.IsDeleted == false);
@@ -166,7 +174,7 @@ namespace BanHangBeautify.Bookings.Bookings
         [NonAction]
         public async Task UpdateEndTimeBooking(Booking rdo)
         {
-            var idDichVus = await _bookingServiceRepository.GetAll().Include(x=>x.DM_DonViQuiDoi).Where(x => x.IdBooking == rdo.Id && x.IsDeleted==false).Select(x => x.DM_DonViQuiDoi.IdHangHoa).ToListAsync();
+            var idDichVus = await _bookingServiceRepository.GetAll().Include(x => x.DM_DonViQuiDoi).Where(x => x.IdBooking == rdo.Id && x.IsDeleted == false).Select(x => x.DM_DonViQuiDoi.IdHangHoa).ToListAsync();
             var dichVus = await _dichVuRepository.GetAll().Where(x => idDichVus.Contains(x.Id)).ToListAsync();
             var time = dichVus.Select(x => x.SoPhutThucHien).ToList();
             float totalTimeService = 0;
@@ -212,28 +220,38 @@ namespace BanHangBeautify.Bookings.Bookings
                 findBooking.DeletionTime = DateTime.Now;
                 findBooking.DeleterUserId = AbpSession.UserId;
                 await _repository.DeleteAsync(findBooking);
-                
+
                 result = true;
             }
             return result;
         }
-        public async Task<List<BookingDto>> GetAll(PagedBookingResultRequestDto input)
+        public async Task<List<BookingGetAllItemDto>> GetAll(PagedBookingResultRequestDto input)
         {
-            List<BookingDto> result = new List<BookingDto>();
-            var bookings = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false&& x.IdChiNhanh==input.IdChiNhanh).ToListAsync();
-            foreach (var item in bookings)
+            List<BookingGetAllItemDto> result = new List<BookingGetAllItemDto>();
+            int tenantId = AbpSession.TenantId ?? 1;
+            DateTime date = input.DateSelected;
+            if (input.TypeView.ToLower() == "week")
             {
-                var idDichVus = await _bookingServiceRepository.GetAll().Where(x => x.IdBooking == item.Id).Select(x => x.DM_DonViQuiDoi.IdHangHoa).ToListAsync();
-                var dichVus = await _dichVuRepository.GetAll().Where(x => idDichVus.Contains(x.Id)).ToListAsync();
-                BookingDto rdo = new BookingDto();
-                rdo.Id = item.Id;
-                rdo.StartTime = item.StartTime;
-                rdo.EndTime = item.EndTime;
-                var tenHangHoas = dichVus.Select(x => x.TenHangHoa).ToList();
-                rdo.NoiDung = item.TenKhachHang + " - " + string.Join("-", tenHangHoas);
-                rdo.Color = dichVus.Count == 1 ? dichVus[0].Color ?? "" : "";
-                result.Add(rdo);
+                DateTime firstDayOfWeek = date.AddDays(DayOfWeek.Monday - date.DayOfWeek);
+                DateTime lastDayOfWeek = date.AddDays(DayOfWeek.Sunday - date.DayOfWeek + 7);
+                DateTime timeFrom = new DateTime(firstDayOfWeek.Year, firstDayOfWeek.Month, firstDayOfWeek.Day, 0, 0, 0);
+                DateTime timeTo = new DateTime(lastDayOfWeek.Year, lastDayOfWeek.Month, lastDayOfWeek.Day, 23, 59, 59);
+                result = await _bookingRepository.GetAllBooking(input, tenantId, timeFrom, timeTo);
             }
+            else if (input.TypeView.ToLower() == "day")
+            {
+                DateTime timeFrom = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0);
+                DateTime timeTo = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59);
+                result = await _bookingRepository.GetAllBooking(input, tenantId, timeFrom, timeTo);
+            }
+            else
+            {
+                DateTime firstDayOfMonth = new DateTime(date.Year, date.Month, 1, 0, 0, 0);
+                DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
+                result = await _bookingRepository.GetAllBooking(input, tenantId, firstDayOfMonth, lastDayOfMonth);
+            }
+
+            await _bookingHubContext.Clients.All.SendAsync("BookingDataUpdated", result);
             return result;
         }
         public async Task<Booking> GetDetail(Guid id)
@@ -247,18 +265,19 @@ namespace BanHangBeautify.Bookings.Bookings
             return result;
         }
 
-        public async Task<UpdateBookingDto> GetForEdit(Guid id)
+        public async Task<UpdateBookingDto> GetForEdit(Guid id) 
         {
             UpdateBookingDto result = new UpdateBookingDto();
-            var booking = await _repository.FirstOrDefaultAsync(x=>x.Id==id); 
-            if (booking != null) {
+            var booking = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (booking != null)
+            {
                 result = ObjectMapper.Map<UpdateBookingDto>(booking);
-                var bookingService =await _bookingServiceRepository.FirstOrDefaultAsync(x => x.IdBooking == id&&x.IsDeleted==false);
-                if (bookingService!=null)
+                var bookingService = await _bookingServiceRepository.FirstOrDefaultAsync(x => x.IdBooking == id && x.IsDeleted == false);
+                if (bookingService != null)
                 {
                     result.IdDonViQuiDoi = bookingService.IdDonViQuiDoi;
                 }
-                var bookingNhanVien =await _bookingNhanVienRepository.FirstOrDefaultAsync(x => x.IdBooking == id && x.IsDeleted == false);
+                var bookingNhanVien = await _bookingNhanVienRepository.FirstOrDefaultAsync(x => x.IdBooking == id && x.IsDeleted == false);
                 if (bookingNhanVien != null)
                 {
                     result.IdNhanVien = bookingNhanVien.IdNhanVien;
@@ -281,21 +300,8 @@ namespace BanHangBeautify.Bookings.Bookings
             return result;
         }
     }
-    public class BookingHub: Hub, ITransientDependency
+    public class BookingHub : Hub
     {
-        public IAbpSession AbpSession { get; set; }
-        public readonly IBookingAppService _bookingAppService;
-        public BookingHub(IBookingAppService bookingAppService)
-        {
-            AbpSession = NullAbpSession.Instance;
-            _bookingAppService = bookingAppService;
-        }
-        public async Task SendAllBookings(PagedBookingResultRequestDto input)
-        {
-            var bookings = await _bookingAppService.GetAll(input);
-
-            // Gửi danh sách bookings cho tất cả các kết nối máy khách
-            await Clients.All.SendAsync("ReceiveAllBookings", bookings);
-        }
+    
     }
 }

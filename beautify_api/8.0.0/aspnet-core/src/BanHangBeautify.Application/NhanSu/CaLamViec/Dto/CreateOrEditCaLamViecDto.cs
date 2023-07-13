@@ -13,5 +13,6 @@ namespace BanHangBeautify.NhanSu.CaLamViec.Dto
         public string GioVao { set; get; }
         public string GioRa { set; get; }
         public float TongGioCong { set; get; }
+        public Guid IdChiNhanh { get; set; }
     }
 }

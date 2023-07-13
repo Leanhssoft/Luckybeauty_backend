@@ -52,6 +52,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             var count =await  _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1)).ToListAsync();
             data.Id = Guid.NewGuid();
             data.MaCa = "MS00"+ (count.Count+1).ToString();
+            data.IdChiNhanh = dto.IdChiNhanh;
             data.TenCa = dto.TenCa;
             data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
@@ -69,6 +70,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
         {
             data.MaCa = dto.MaCa;
             data.TenCa = dto.TenCa;
+            data.IdChiNhanh = dto.IdChiNhanh;
             data.LastModifierUserId = AbpSession.UserId;
             data.TrangThai = 0;
             data.GioVao = DateTime.Parse(dto.GioVao.ToString());

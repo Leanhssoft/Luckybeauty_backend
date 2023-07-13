@@ -9,6 +9,6 @@ namespace BanHangBeautify.Bookings.Bookings
 {
     public interface IBookingAppService
     {
-        public Task<List<BookingDto>> GetAll(PagedBookingResultRequestDto input);
+        public Task<List<BookingGetAllItemDto>> GetAll(PagedBookingResultRequestDto input);
     }
 }

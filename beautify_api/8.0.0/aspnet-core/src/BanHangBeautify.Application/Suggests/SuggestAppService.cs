@@ -1,9 +1,12 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Authorization;
+using Abp.Domain.Repositories;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Suggests.Dto;
+using BanHangBeautify.Suggests.Repository;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,6 +20,7 @@ namespace BanHangBeautify.Suggests
     public class SuggestAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;//
+        private readonly IRepository<DichVu_NhanVien, Guid> _dichVuNhanVienRespository;
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;//
         private readonly IRepository<DM_LoaiHangHoa, int> _loaiHangHoaRepository;//
         private readonly IRepository<NS_ChucVu, Guid> _chucVuRepository;//
@@ -28,8 +32,10 @@ namespace BanHangBeautify.Suggests
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;//
         private readonly IRepository<NS_CaLamViec, Guid> _caLamViecRepository;//
         private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;
+        private readonly ISuggestRepository _suggestRepository;
         public SuggestAppService(
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
+            IRepository<DichVu_NhanVien, Guid> dichVuNhanVienRespository,
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             IRepository<DM_LoaiHangHoa, int> loaiHangHoaRepository,
             IRepository<NS_ChucVu, Guid> chucVuRepository,
@@ -40,10 +46,12 @@ namespace BanHangBeautify.Suggests
             IRepository<DM_HangHoa, Guid> hangHoaRepository,
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
-            IRepository<DM_PhongBan, Guid> phongBanRepository
+            IRepository<DM_PhongBan, Guid> phongBanRepository,
+            ISuggestRepository suggestRepository
             )
         {
             _nhanVienRepository = nhanVienRepository;
+            _dichVuNhanVienRespository = dichVuNhanVienRespository;
             _khachHangRepository = khachHangRepository;
             _loaiHangHoaRepository= loaiHangHoaRepository;
             _chiNhanhRepository= chiNhanhRepository;
@@ -55,6 +63,7 @@ namespace BanHangBeautify.Suggests
             _hangHoaRepository = hangHoaRepository;
             _caLamViecRepository = caLamViecRepository;
             _phongBanRepository= phongBanRepository;
+            _suggestRepository = suggestRepository;
         }
         public async Task<List<SuggestChucVu>> SuggestChucVus()
         {
@@ -86,6 +95,22 @@ namespace BanHangBeautify.Suggests
             }
             return result;
 
+        }
+        [HttpPost]
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(Guid idChiNhanh)
+        {
+            List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
+            var lstNhanSu = await _suggestRepository.SuggestNhanVienThucHienDichVu(AbpSession.TenantId??1,idChiNhanh);
+            foreach (var item in lstNhanSu)
+            {
+                var nhanVienDichVu = await  _dichVuNhanVienRespository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false&& x.IdNhanVien==item.Id).ToListAsync();
+                if (nhanVienDichVu==null||nhanVienDichVu.Count==0)
+                {
+                    continue;
+                }
+                result.Add(item);
+            }
+            return result;
         }
 
         public async Task<List<SuggestKhachHang>> SuggestKhachHangs()

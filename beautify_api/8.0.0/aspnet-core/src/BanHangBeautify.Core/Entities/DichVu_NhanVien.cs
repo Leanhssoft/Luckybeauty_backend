@@ -15,11 +15,5 @@ namespace BanHangBeautify.Entities
         public Guid IdNhanVien { get; set; }
         [ForeignKey("IdNhanVien")]
         public NS_NhanVien NS_NhanVien { get; set; }
-        public Guid IdChiNhanh
-        {
-            get; set;
-        }
-        [ForeignKey("IdChiNhanh")]
-        public DM_ChiNhanh DM_ChiNhanh { set; get; }
     }
 }

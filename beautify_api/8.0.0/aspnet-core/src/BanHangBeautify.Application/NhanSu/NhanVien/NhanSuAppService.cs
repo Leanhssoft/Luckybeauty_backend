@@ -90,7 +90,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             {
                 tenantName = curentTenant.TenancyName;
             }
-            var countNhanVien = _repository.GetAll().Where(x=>x.TenantId==AbpSession.TenantId).ToList().Count();
+            var countNhanVien = _repository.GetAll().Where(x=>x.TenantId==(AbpSession.TenantId??1)).ToList().Count();
             nhanSu.MaNhanVien = "NS00" + countNhanVien + 1;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
