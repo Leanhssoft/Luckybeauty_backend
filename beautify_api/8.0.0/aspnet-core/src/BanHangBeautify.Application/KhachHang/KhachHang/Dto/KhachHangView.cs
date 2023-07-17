@@ -22,5 +22,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public float TongChiTieu { get; set; }
         public DateTime? CuocHenGanNhat { get; set; }
         public float? TongTichDiem { get; set; }
+        public int? SoLanCheckIn { get; set; }
+        public int? TrangThaiCheckIn { get; set; }
     }
 }
