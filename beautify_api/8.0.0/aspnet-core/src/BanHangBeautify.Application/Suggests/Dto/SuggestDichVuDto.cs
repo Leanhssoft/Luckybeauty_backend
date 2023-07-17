@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Suggests.Dto
 {
-    public class SuggestHangHoa
+    public class SuggestDichVuDto
     {
         public Guid Id { get; set; }
-        public string TenHangHoa { get; set; }
+        public string TenDichVu { get; set; }
+        public decimal DonGia { get; set; }
     }
 }
