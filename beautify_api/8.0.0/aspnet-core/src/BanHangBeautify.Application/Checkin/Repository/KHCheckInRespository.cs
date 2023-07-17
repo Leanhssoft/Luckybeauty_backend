@@ -1,9 +1,11 @@
 ﻿using Abp.EntityFrameworkCore;
+using AutoMapper.Internal.Mappers;
+using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Common;
-using BanHangBeautify.DataExporting.Checkin.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
+using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
 using Microsoft.Data.SqlClient;
@@ -11,11 +13,12 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.DataExporting.Checkin.Repository
+namespace BanHangBeautify.Checkin.Repository
 {
     public class KHCheckInRespository : SPARepositoryBase<DM_KhachHang, Guid>, IKHCheckInRespository
     {
@@ -49,17 +52,6 @@ namespace BanHangBeautify.DataExporting.Checkin.Repository
                 }
                 return new List<PageKhachHangCheckingDto>();
             }
-        }
-        public async Task<List<PageKhachHangCheckingDto>> GetListCustomerChecking2(PagedKhachHangResultRequestDto input, int? tenantId)
-        {
-            var sqlPr = new List<SqlParameter>();
-            sqlPr.Add(new SqlParameter("@TenantId", tenantId ?? 1));
-            sqlPr.Add(new SqlParameter("@TextSearch", input.keyword ?? ""));
-            sqlPr.Add(new SqlParameter("@CurrentPage", input.SkipCount));
-            sqlPr.Add(new SqlParameter("@PageSize", input.MaxResultCount));
-
-            var data = await _context.Database.SqlQueryRaw<PageKhachHangCheckingDto>("dbo.spGetListCustomerChecking @TenantId, @TextSearch, @CurrentPage, @PageSize", sqlPr.ToArray()).ToListAsync();
-            return data;
         }
     }
 }

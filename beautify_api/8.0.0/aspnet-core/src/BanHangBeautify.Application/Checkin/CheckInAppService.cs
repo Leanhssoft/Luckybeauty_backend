@@ -1,10 +1,11 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Checkin.Dto;
+using BanHangBeautify.Checkin.Repository;
 using BanHangBeautify.Data.Entities;
-using BanHangBeautify.DataExporting.Checkin.Dto;
-using BanHangBeautify.DataExporting.Checkin.Repository;
 using BanHangBeautify.Entities;
+using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
@@ -17,7 +18,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.DataExporting.Checkin
+namespace BanHangBeautify.Checkin
 {
     //[AbpAuthorize(PermissionNames.Pages_CheckIn)]
     public class CheckInAppService : SPAAppServiceBase
@@ -99,6 +100,7 @@ namespace BanHangBeautify.DataExporting.Checkin
                 return new List<PageKhachHangCheckingDto>();
             }
         }
+       
         [HttpPost]
         public async Task<string> UpdateTrangThaiCheckin(Guid idCheckIn, int trangThai = 1)
         {
@@ -110,6 +112,12 @@ namespace BanHangBeautify.DataExporting.Checkin
                     return "data null";
                 }
                 objUp.TrangThai = trangThai;
+                if (trangThai == 0)
+                {
+                    objUp.DeleterUserId = AbpSession.UserId;
+                    objUp.DeletionTime = DateTime.Now;
+                    objUp.IsDeleted = true;
+                }
                 await _khCheckIn.UpdateAsync(objUp);
                 return string.Empty;
             }

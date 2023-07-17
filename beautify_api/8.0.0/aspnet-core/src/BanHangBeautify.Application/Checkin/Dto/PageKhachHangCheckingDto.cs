@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.DataExporting.Checkin.Dto
+namespace BanHangBeautify.Checkin.Dto
 {
     public class PageKhachHangCheckingDto : KhachHangView
     {
