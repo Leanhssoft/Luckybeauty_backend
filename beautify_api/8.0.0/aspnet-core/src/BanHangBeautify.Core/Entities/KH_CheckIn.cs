@@ -22,6 +22,6 @@ namespace BanHangBeautify.Entities
         public DateTime DateTimeCheckIn { get; set; }// ngay check in yyyy-mm-dd hh:mm:ss
         [MaxLength(4000)]
         public string GhiChu { get; set; } = string.Empty;
-        public int TrangThai { get; set; } = 1; // 0. Check in nhưng đợi lâu quá --> Cancel, 1. check in & làm dịch vụ (mặc định)
+        public int TrangThai { get; set; } = 1; // 0. Xóa khách checkin (do thêm sai), 1.dang check in & đang làm dịch vụ (mặc định), 2. đã check in & làm xong dịch vụ, 3.Khách đến check in nhưng đợi lâu quá (Cancel)
     }
 }
