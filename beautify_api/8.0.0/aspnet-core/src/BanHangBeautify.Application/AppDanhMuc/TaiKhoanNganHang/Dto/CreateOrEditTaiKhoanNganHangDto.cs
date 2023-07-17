@@ -14,6 +14,6 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Dto
         public string SoTaiKhoan{set;get;}
         public string TenChuThe{set;get;}
         public string GhiChu{set;get;}
-        public int TrangThai{set;get;}
+        public int TrangThai { set; get; } = 1;
     }
 }
