@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDashboard.Dto
 {
-    internal class DashboardFilterDto
+    public class DashboardFilterDto
     {
+        public Guid IdChiNhanh { get; set; }
+        public DateTime? ThoiGianTu { get; set; }
+        public DateTime? ThoiGianDen { get; set; }
     }
 }

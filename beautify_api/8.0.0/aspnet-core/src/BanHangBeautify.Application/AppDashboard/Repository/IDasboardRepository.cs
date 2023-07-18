@@ -1,12 +1,15 @@
-﻿using System;
+﻿using BanHangBeautify.AppDashboard.Dto;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDashboard.Repository
 {
-    internal class IDasboardRepository
+    public interface IDasboardRepository
     {
+        Task<DataSet> ThongKeThongTin(DashboardFilterDto input,int tenantId, long? userId);
     }
 }

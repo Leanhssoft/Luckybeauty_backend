@@ -1,5 +1,14 @@
-﻿using Asd.AbpZeroTemplate.DashboardCustomization.Definitions;
+﻿using Abp.Authorization;
+using Abp.Configuration;
+using Abp.MultiTenancy;
+using Abp.Runtime.Session;
+using Abp.UI;
+using Asd.AbpZeroTemplate.Configuration;
+using Asd.AbpZeroTemplate.DashboardCustomization;
+using Asd.AbpZeroTemplate.DashboardCustomization.Definitions;
+using Asd.AbpZeroTemplate.DashboardCustomization.Dto;
 using Microsoft.AspNetCore.Authorization;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +18,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.DashboardCustomization
 {
     [AbpAuthorize]
-    public class DashboardCustomizationAppService : AbpZeroTemplateAppServiceBase, IDashboardCustomizationAppService
+    public class DashboardCustomizationAppService : SPAAppServiceBase, IDashboardCustomizationAppService
     {
         private readonly DashboardConfiguration _dashboardConfiguration;
 
@@ -243,7 +252,6 @@ namespace BanHangBeautify.DashboardCustomization
                     filteredWidgets.Add(widget);
                 }
             }
-
             return filteredWidgets;
         }
 

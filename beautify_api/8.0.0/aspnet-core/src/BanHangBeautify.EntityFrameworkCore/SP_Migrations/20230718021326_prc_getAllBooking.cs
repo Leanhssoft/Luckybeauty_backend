@@ -56,7 +56,10 @@ BEGIN
             ELSE 'Thứ hai'
         END AS DayOfWeek,
         CASE
-            WHEN COUNT(hh.Id) = 1 THEN MAX(ISNULL(hh.Color,'#009EF7'))
+            WHEN b.TrangThai = 0 THEN '#F1416C'
+			WHEN B.TrangThai = 1 THEN '#FF9900'
+			wHEN b.TrangThai = 2 THEN '#7C3367'
+			WHEN b.TrangThai = 3 THEN '#50CD89'
             ELSE '#009EF7'
         END AS Color,
 		b.BookingDate
@@ -79,9 +82,10 @@ BEGIN
         b.EndTime,
         b.TenKhachHang,
         DATEPART(WEEKDAY, b.BookingDate),
+		B.TrangThai,
 		b.BookingDate;
     SELECT * FROM @Result ORDER BY BookingDate DESC,StartTime ASC;
-END");
+END;");
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
