@@ -1,6 +1,7 @@
 ﻿using Abp.AutoMapper;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
+using Asd.AbpZeroTemplate.DashboardCustomization.Definitions;
 using BanHangBeautify.Authorization;
 
 namespace BanHangBeautify
@@ -13,6 +14,7 @@ namespace BanHangBeautify
         public override void PreInitialize()
         {
             Configuration.Authorization.Providers.Add<SPAAuthorizationProvider>();
+            IocManager.Register<DashboardConfiguration>();
         }
 
         public override void Initialize()
