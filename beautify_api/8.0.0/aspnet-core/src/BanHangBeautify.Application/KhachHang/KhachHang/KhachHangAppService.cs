@@ -143,6 +143,12 @@ namespace BanHangBeautify.KhachHang.KhachHang
             int tenantId = AbpSession.TenantId ?? 1;
             return await _customerRepo.Search(input, tenantId);
         }
+        public async Task<List<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input)
+        {
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            int tenantId = AbpSession.TenantId ?? 1;
+            return await _customerRepo.GetKhachHang_noBooking(input, tenantId);
+        }
 
         public async Task<PagedResultDto<KhachHangView>> GetAll(PagedKhachHangResultRequestDto input)
         {

@@ -23,33 +23,27 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
         {
         }
 
-        public async Task<PagedResultDto<KhachHangView>> GetAllKhachHang(PagedKhachHangResultRequestDto input, int? tenantId)
+        public async Task<List<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId)
         {
-            using (var command = CreateCommand("prc_KhachHang_GetAll"))
+            using (var command = CreateCommand("prc_getKhachHang_noBooking"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
-                command.Parameters.Add(new SqlParameter("@TextSearch", input.keyword ?? ""));
-                command.Parameters.Add(new SqlParameter("@PageSize", input.MaxResultCount));
+                command.Parameters.Add(new SqlParameter("@Filter", input.keyword ?? ""));
                 command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
+                command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
-                    string[] array = { "Data", "TotalCount" };
+                    string[] array = { "Data" };
                     var ds = new DataSet();
                     ds.Load(dataReader, LoadOption.OverwriteChanges, array);
-                    var ddd = ds.Tables;
 
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
-                        var data = ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
-                        return new PagedResultDto<KhachHangView>()
-                        {
-                            TotalCount = int.Parse(ds.Tables[0].Rows[1]["@totalCount"].ToString()),
-                            Items = data
-                        };
+                        return ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
                     }
                 }
-                return new PagedResultDto<KhachHangView>();
+                return new List<KhachHangView>();
             }
         }
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input,int tenantId)

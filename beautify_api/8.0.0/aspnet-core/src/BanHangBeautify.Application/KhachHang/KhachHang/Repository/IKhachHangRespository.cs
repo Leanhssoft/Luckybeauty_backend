@@ -12,7 +12,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
 {
     public interface IKhachHangRespository
     {
-        Task<PagedResultDto<KhachHangView>> GetAllKhachHang(PagedKhachHangResultRequestDto input,int? tenantId);
+        Task<List<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input,int? tenantId);
         Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input,int tenantId);
         Task<List<KhachHangView>> JqAutoCustomer(PagedKhachHangResultRequestDto input,int? tenantId);
     }
