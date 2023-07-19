@@ -47,4 +47,17 @@ namespace BanHangBeautify.EntityFrameworkCore.Repositories
 
         // Do not add any method here, add to the class above (since this inherits it)!!!
     }
+    /// <summary>
+    /// Base class for custom repositories of the application to only call store procedure
+    /// </summary>
+    public abstract class SPARepositoryBase : SPARepositoryBase<Entity, int>
+    {
+        protected SPARepositoryBase(IDbContextProvider<SPADbContext> dbContextProvider)
+            : base(dbContextProvider)
+        {
+
+        }
+
+        //do not add any method here, add to the class above (since this inherits it)!!!
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
+using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Suggests.Dto;
@@ -185,15 +186,15 @@ namespace BanHangBeautify.Suggests
             return result;
 
         }
-        public async Task<List<SuggestHangHoa>> SuggestHangHoas()
+        public async Task<List<SuggestHangHoaDto>> SuggestHangHoas()
         {
-            List<SuggestHangHoa> result = new List<SuggestHangHoa>();
+            List<SuggestHangHoaDto> result = new List<SuggestHangHoaDto>();
             var lst = await _hangHoaRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)
                 {
-                    SuggestHangHoa rdo = new SuggestHangHoa();
+                    SuggestHangHoaDto rdo = new SuggestHangHoaDto();
                     rdo.Id = item.Id;
                     rdo.TenHangHoa = item.TenHangHoa;
                     result.Add(rdo);
@@ -230,6 +231,31 @@ namespace BanHangBeautify.Suggests
                     SuggestDonViQuiDoi rdo = new SuggestDonViQuiDoi();
                     rdo.Id = item.Id;
                     rdo.TenDonVi = item.DM_HangHoa.TenHangHoa;
+                    result.Add(rdo);
+                }
+            }
+            return result;
+
+        }
+
+        public async Task<List<SuggestDichVuDto>> SuggestDichVu()
+        {
+            List<SuggestDichVuDto> result = new List<SuggestDichVuDto>();
+            var lst = await _donViQuiDoiRepository
+                .GetAll()
+                .Include(x => x.DM_HangHoa)
+                .Where(
+                    x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false &&
+                    x.DM_HangHoa.IdLoaiHangHoa != LoaiHangHoaConst.HangHoa
+                ).ToListAsync();
+            if (lst != null || lst.Count > 0)
+            {
+                foreach (var item in lst)
+                {
+                    SuggestDichVuDto rdo = new SuggestDichVuDto();
+                    rdo.Id = item.Id;
+                    rdo.TenDichVu = item.DM_HangHoa.TenHangHoa;
+                    rdo.DonGia =decimal.Parse(item.GiaBan.ToString()??"0");
                     result.Add(rdo);
                 }
             }

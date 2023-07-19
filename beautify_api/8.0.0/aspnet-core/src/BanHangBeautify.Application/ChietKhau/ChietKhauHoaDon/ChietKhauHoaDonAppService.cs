@@ -28,7 +28,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             _chietKhauHoaDonRepository = chietKhauHoaDonRepository;
         }
         [AbpAuthorize(PermissionNames.Pages_ChietKhauHoaDon_Create,PermissionNames.Pages_ChietKhauHoaDon_Edit)]
-        public async Task<ChietKhauHoaDonDto> CreateOrEdit(CreateOrEditChietKhauHDDto input)
+        public async Task<ExecuteResultDto> CreateOrEdit(CreateOrEditChietKhauHDDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist == null)
@@ -38,34 +38,58 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             return await Update(input, checkExist);
         }
         [NonAction]
-        public async Task<ChietKhauHoaDonDto> Create(CreateOrEditChietKhauHDDto input)
+        public async Task<ExecuteResultDto> Create(CreateOrEditChietKhauHDDto input)
         {
-            ChietKhauHoaDonDto result = new ChietKhauHoaDonDto();
-            NS_ChietKhauHoaDon data = new NS_ChietKhauHoaDon();
-            data = ObjectMapper.Map<NS_ChietKhauHoaDon>(input);
-            data.Id = Guid.NewGuid();
-            data.ChungTuApDung = string.Join(";",input.ChungTuApDung.ToArray());
-            data.CreationTime = DateTime.Now;
-            data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId ?? 1;
-            data.IsDeleted = false;
-            await _repository.InsertAsync(data);
-            result = ObjectMapper.Map<ChietKhauHoaDonDto>(input);
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                NS_ChietKhauHoaDon data = new NS_ChietKhauHoaDon();
+                data = ObjectMapper.Map<NS_ChietKhauHoaDon>(input);
+                data.Id = Guid.NewGuid();
+                data.ChungTuApDung = string.Join(";", input.ChungTuApDung.ToArray());
+                data.CreationTime = DateTime.Now;
+                data.CreatorUserId = AbpSession.UserId;
+                data.TenantId = AbpSession.TenantId ?? 1;
+                data.IsDeleted = false;
+                await _repository.InsertAsync(data);
+                result.Message = "Thêm mới thành công!";
+                result.Status = "success";
+            }
+            catch (Exception)
+            {
+                result.Message = "Thêm mới thất bại!";
+                result.Status = "error";
+            }
+           
             return result;
         }
         [NonAction]
-        public async Task<ChietKhauHoaDonDto> Update(CreateOrEditChietKhauHDDto input, NS_ChietKhauHoaDon oldData)
+        public async Task<ExecuteResultDto> Update(CreateOrEditChietKhauHDDto input, NS_ChietKhauHoaDon oldData)
         {
-            ChietKhauHoaDonDto result = new ChietKhauHoaDonDto();
-            oldData.IdChiNhanh = input.IdChiNhanh;
-            oldData.LoaiChietKhau = input.LoaiChietKhau;
-            oldData.GiaTriChietKhau = input.GiaTriChietKhau;
-            oldData.ChungTuApDung = string.Join(";", input.ChungTuApDung.ToArray());
-            oldData.TrangThai = 0;
-            oldData.LastModificationTime = DateTime.Now;
-            oldData.LastModifierUserId = AbpSession.UserId;
-            await _repository.UpdateAsync(oldData);
-            result = ObjectMapper.Map<ChietKhauHoaDonDto>(oldData);
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status= "error",
+                Message="Có lỗi sảy ra vui lòng thử lại sau"
+            };
+            try
+            {
+                oldData.IdChiNhanh = input.IdChiNhanh;
+                oldData.LoaiChietKhau = input.LoaiChietKhau;
+                oldData.GiaTriChietKhau = input.GiaTriChietKhau;
+                oldData.ChungTuApDung = string.Join(";", input.ChungTuApDung.ToArray());
+                oldData.TrangThai = 0;
+                oldData.LastModificationTime = DateTime.Now;
+                oldData.LastModifierUserId = AbpSession.UserId;
+                await _repository.UpdateAsync(oldData);
+                result.Status = "success";
+                result.Status = "Cập nhật thành công!";
+            }
+            catch (Exception)
+            {
+                result.Status = "error";
+                result.Message = "Có lỗi sảy ra vui lòng thử lại sau";
+            }
+            
             return result;
         }
         [HttpPost]
