@@ -1,5 +1,7 @@
-﻿using Abp.EntityFrameworkCore;
+﻿using Abp.Dependency;
+using Abp.EntityFrameworkCore;
 using BanHangBeautify.AppDashboard.Dto;
+using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using Microsoft.Data.SqlClient;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDashboard.Repository
 {
-    public class DashboardRepository : SPARepositoryBase, IDasboardRepository
+    public class DashboardRepository : SPARepositoryBase, IDashboardRepository
     {
         public DashboardRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
@@ -20,7 +22,7 @@ namespace BanHangBeautify.AppDashboard.Repository
 
         public async Task<DataSet> ThongKeThongTin(DashboardFilterDto input, int tenantId, long? userId)
         {
-            using (var command = CreateCommand("pcr_ThongKeThongTin"))
+            using (var command = CreateCommand("prc_ThongKeThongTin"))
             {
                 command.Parameters.Add(new SqlParameter("@UserId", userId));
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId));

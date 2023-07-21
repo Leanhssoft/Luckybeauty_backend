@@ -1,4 +1,6 @@
-﻿using Abp.Runtime.Session;
+﻿using Abp.Authorization;
+using Abp.Dependency;
+using Abp.Runtime.Session;
 using BanHangBeautify.AppDashboard.Dto;
 using BanHangBeautify.AppDashboard.Repository;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
@@ -11,11 +13,12 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDashboard
 {
+    [AbpAuthorize]
     public class DashboardAppService: SPAAppServiceBase
     {
-        private readonly IDasboardRepository _dashboardRepository;
+        private readonly IDashboardRepository _dashboardRepository;
         public DashboardAppService(
-              IDasboardRepository dashboardRepository
+              IDashboardRepository dashboardRepository
               )
         {
             _dashboardRepository = dashboardRepository;
