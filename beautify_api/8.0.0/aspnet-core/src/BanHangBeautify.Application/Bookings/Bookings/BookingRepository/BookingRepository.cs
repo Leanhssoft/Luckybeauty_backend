@@ -48,5 +48,35 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
             }
             return new List<BookingGetAllItemDto>();
         }
+        public async Task<List<BookingDetailDto>> GetKhachHang_Booking(BookingRequestDto input)
+        {
+            using (var cmd = CreateCommand("prc_getKhachHang_Booking"))
+            {
+                var idChiNhanhs = string.Empty;
+                if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+                {
+                    idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+                }
+                cmd.Parameters.Add(new SqlParameter("@TenantId", input.TenantId));
+                cmd.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
+                cmd.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
+                cmd.Parameters.Add(new SqlParameter("@TrangThaiBook", input.TrangThaiBook));
+                using (var dataReader = await cmd.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<BookingDetailDto>(ds.Tables[0]);
+                        return data;
+                    }
+                }
+            }
+            return new List<BookingDetailDto>();
+        }
     }
 }

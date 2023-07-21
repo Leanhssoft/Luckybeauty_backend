@@ -10,6 +10,7 @@ using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -139,6 +140,25 @@ namespace BanHangBeautify.Checkin
             await _checkInHoaDon.InsertAsync(objNew);
             var result = ObjectMapper.Map<CheckInHoaDonDto>(objNew);
             return result;
+        }
+        /// <summary>
+        ///  used to save hoadon
+        /// </summary>
+        /// <param name="idCheckIn"></param>
+        /// <param name="idHoaDon"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<bool> Update_IdHoaDon_toCheckInHoaDon(Guid idCheckIn, Guid idHoaDon)
+        {
+            var listUp = await _checkInHoaDon.GetAll().Where(x => x.IdCheckIn == idCheckIn).ToListAsync();
+            if(listUp != null && listUp.Count > 0)
+            {
+                var objUp = listUp.FirstOrDefault();
+                objUp.IdHoaDon = idHoaDon;
+                await _checkInHoaDon.UpdateAsync(objUp);
+                return true;
+            }
+            return false;
         }
 
         #endregion

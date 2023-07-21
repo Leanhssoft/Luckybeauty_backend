@@ -20,7 +20,7 @@ namespace BanHangBeautify.Entities
         public DateTime? EndTime { set; get; }
         public DateTime BookingDate { get; set; }
         public byte LoaiBooking { get; set; }
-        public int TrangThai { get; set; }
+        public int TrangThai { get; set; }// 1. datlich 2. daxacnhan, 3.checkin, 0.xoa
         public string GhiChu { get; set; }
         public Guid? UserXuLy { get; set; }
         public DateTime? NgayXuLy { get; set; }

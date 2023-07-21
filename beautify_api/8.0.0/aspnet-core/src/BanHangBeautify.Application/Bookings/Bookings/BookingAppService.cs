@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
+using BanHangBeautify.Common;
 
 namespace BanHangBeautify.Bookings.Bookings
 {
@@ -185,6 +186,33 @@ namespace BanHangBeautify.Bookings.Bookings
             rdo.EndTime = rdo.StartTime.AddMinutes(totalTimeService);
             await _repository.UpdateAsync(rdo);
         }
+
+        [HttpPost]
+        public async Task<string> UpdateTrangThaiBooking(Guid idBooking, int trangThai = 1)
+        {
+            try
+            {
+                var objUp = await _repository.FirstOrDefaultAsync(idBooking);
+                if (objUp == null)
+                {
+                    return "data null";
+                }
+                objUp.TrangThai = trangThai;
+                if (trangThai == 0)
+                {
+                    objUp.DeleterUserId = AbpSession.UserId;
+                    objUp.DeletionTime = DateTime.Now;
+                    objUp.IsDeleted = true;
+                }
+                await _repository.UpdateAsync(objUp);
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + ex.InnerException;
+            }
+        }
+
         [AbpAuthorize(PermissionNames.Pages_Booking_Delete)]
         [HttpPost]
         public async Task<bool> DeleteBooking(Guid id)
@@ -254,6 +282,39 @@ namespace BanHangBeautify.Bookings.Bookings
             await _bookingHubContext.Clients.All.SendAsync("BookingDataUpdated", result);
             return result;
         }
+
+        public async Task<List<BookingDetailOfCustometDto>> GetKhachHang_Booking(BookingRequestDto input)
+        {
+            input.TenantId = AbpSession.TenantId ?? 1;
+            List<BookingDetailDto> data = await _bookingRepository.GetKhachHang_Booking(input);
+            var dtGr = data.GroupBy(x => new
+            {
+                x.IdBooking,
+                x.IdKhachHang,
+                x.MaKhachHang,
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.BookingDate,
+                x.StartTime,
+                x.EndTime,
+                x.TrangThai,
+                x.TxtTrangThaiBook
+            }).Select(x => new BookingDetailOfCustometDto
+            {
+                IdBooking = x.Key.IdBooking,
+                IdKhachHang = x.Key.IdKhachHang,
+                MaKhachHang = x.Key.MaKhachHang,
+                TenKhachHang = x.Key.TenKhachHang,
+                SoDienThoai = x.Key.SoDienThoai,
+                BookingDate = x.Key.BookingDate,
+                StartTime = x.Key.StartTime,
+                EndTime = x.Key.EndTime,
+                TrangThai = x.Key.TrangThai,
+                TxtTrangThaiBook = x.Key.TxtTrangThaiBook,
+                Details = x.ToList(),
+            }).ToList();
+            return dtGr;
+        }
         public async Task<Booking> GetDetail(Guid id)
         {
             Booking result = new Booking();
@@ -265,7 +326,7 @@ namespace BanHangBeautify.Bookings.Bookings
             return result;
         }
 
-        public async Task<UpdateBookingDto> GetForEdit(Guid id) 
+        public async Task<UpdateBookingDto> GetForEdit(Guid id)
         {
             UpdateBookingDto result = new UpdateBookingDto();
             var booking = await _repository.FirstOrDefaultAsync(x => x.Id == id);
@@ -302,6 +363,6 @@ namespace BanHangBeautify.Bookings.Bookings
     }
     public class BookingHub : Hub
     {
-    
+
     }
 }

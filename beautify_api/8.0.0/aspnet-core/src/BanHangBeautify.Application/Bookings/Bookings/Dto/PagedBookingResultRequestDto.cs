@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BanHangBeautify.Common.CommonClass;
 
 namespace BanHangBeautify.Bookings.Bookings.Dto
 {
@@ -13,5 +14,9 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string TypeView { get; set; }
         public Guid? IdNhanVien { get; set; }
         public Guid? IdDichVu { get; set; }
+    }
+    public class BookingRequestDto : ParamSearch
+    {
+        public int? TrangThaiBook { get; set; } = 3; // 3.all, 1.chua xacnhan, 2.da xacnhan, 0.xoa
     }
 }
