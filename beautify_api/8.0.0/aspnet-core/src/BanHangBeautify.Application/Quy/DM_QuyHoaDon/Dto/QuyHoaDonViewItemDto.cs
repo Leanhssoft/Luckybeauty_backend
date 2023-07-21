@@ -14,5 +14,6 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
         public string TenNguoiNop { get; set; }
         public string STrangThai { get; set; }
         public string TenKhoanThuChi { get; set; }
+        public int? TrangThai { get; set; } = 1;
     }
 }

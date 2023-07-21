@@ -15,6 +15,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
+using System.Data;
+using NPOI.HPSF;
+using Newtonsoft.Json;
+using NPOI.SS.Formula.Functions;
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon.Exporting
 {
@@ -64,7 +68,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Exporting
                     {
                         ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.NgayLapHoaDon.Value.ToString("dd/MM/yyyy hh:mm"));
                     }
-                    
+
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.TenKhoanThuChi);
                     ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.TongTienThu);
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.SHinhThucThanhToan);
@@ -84,6 +88,21 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Exporting
             {
                 throw ex;
             }
+        }
+
+        public FileDto WriteToExcel<T>(string fileName, string fileTemplate, List<T> listData, int startRow = 5)
+        {
+            var path = Path.Combine(_env.WebRootPath, $"ExcelTemplate", string.Format(fileTemplate));// string.Format(fileTemplate) = $"fileName.xlsx"
+            string fileNameNew = fileName + DateTime.Now.Ticks.ToString() + ".xlsx";
+
+            var file = new FileDto(fileNameNew, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
+            using (var excelPack = new ExcelPackage(new FileInfo(path)))
+            {
+                var ws = excelPack.Workbook.Worksheets[0];
+                ws.Cells[startRow, 1].LoadFromCollection(listData);
+                Save(excelPack, file);
+            }
+            return file;
         }
     }
 }

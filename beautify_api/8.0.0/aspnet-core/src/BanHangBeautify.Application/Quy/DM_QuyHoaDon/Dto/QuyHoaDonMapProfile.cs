@@ -15,6 +15,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
             CreateMap<CreateOrEditQuyHoaDonDto,QuyHoaDon>().ReverseMap();
             CreateMap<QuyHoaDonDto,QuyHoaDon>().ReverseMap();
             CreateMap<CreateOrEditQuyHoaDonDto,QuyHoaDon>().ReverseMap();
+            CreateMap<GetAllQuyHoaDonItemDto, ExcelSoQuyDto>().ReverseMap();
         }
     }
 }
