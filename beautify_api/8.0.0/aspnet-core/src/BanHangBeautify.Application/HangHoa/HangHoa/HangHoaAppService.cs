@@ -7,6 +7,7 @@ using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
@@ -14,6 +15,7 @@ using BanHangBeautify.HangHoa.HangHoa.Exporting;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.NewFolder;
+using BanHangBeautify.Quy.DM_QuyHoaDon.Exporting;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,17 +39,17 @@ namespace BanHangBeautify.HangHoa.HangHoa
         private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _dmDonViQuiDoi;
         private readonly IHangHoaRepository _repository;
-        private readonly IHangHoaExcelExporter _hangHoaExcelExporter;
+        private readonly IExcelBase _excelBase;
         public HangHoaAppService(IRepository<DM_HangHoa, Guid> repository,
             IHangHoaRepository productRepo,
             IRepository<DM_DonViQuiDoi, Guid> dvqd,
-            IHangHoaExcelExporter hangHoaExcelExporter
+            IExcelBase excelBase
             )
         {
             _dmHangHoa = repository;
             _dmDonViQuiDoi = dvqd;
             _repository = productRepo;
-            _hangHoaExcelExporter = hangHoaExcelExporter;
+            _excelBase = excelBase;
         }
 
         public string FormatMaHangHoa(string firstChar, float? maxVal = 0)
@@ -301,10 +303,9 @@ namespace BanHangBeautify.HangHoa.HangHoa
         [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Export)]
         public async Task<FileDto> ExportToExcel(HangHoaRequestDto input)
         {
-            input.CurrentPage = 1;
-            input.PageSize = int.MaxValue;
             var data = await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
-            return _hangHoaExcelExporter.ExportHangHoaToExcel(data.Items.ToList());
+            var dataExcel= ObjectMapper.Map<List<ExcelHangHoaDto>>(data.Items);
+            return _excelBase.WriteToExcel("DanhSachDichVu_", "DichVu_Export_Template.xlsx", dataExcel,5);
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
