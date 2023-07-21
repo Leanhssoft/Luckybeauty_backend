@@ -15,7 +15,7 @@ namespace BanHangBeautify.SP_Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"CREATE PROCEDURE pcr_ThongKeThongTin 
+            migrationBuilder.Sql(@"CREATE PROCEDURE prc_ThongKeThongTin 
 	@TenantId int,
 	@UserId int,
 	@ThoiGianTu DateTime = null,
@@ -50,13 +50,14 @@ BEGIN
 		TongDoanhThu decimal
     );
 	INSERT INTO @HotService 
-	SELECT TOP(5) hh.TenHangHoa,SUM(dvqd.GiaBan) AS TongTien
-	FROM Booking b 
-	JOIN BookingService bs on bs.IdBooking = b.Id and b.IsDeleted = 0 and b.TenantId = @TenantId
-	JOIN DM_DonViQuiDoi dvqd on dvqd.Id = bs.IdDonViQuiDoi
+	SELECT top(5) hh.TenHangHoa,SUM(hdct.ThanhTienSauVAT) AS TongTien
+	FROM BH_HoaDon hd
+	JOIN BH_HoaDon_ChiTiet hdct on hdct.IdHoaDon = hd.Id
+	JOIN DM_DonViQuiDoi dvqd on dvqd.Id = hdct.IdDonViQuyDoi
 	RIGHT JOIN DM_HangHoa hh on hh.id = dvqd.IdHangHoa
-	WHERE hh.TenantId = @TenantId and b.IdChiNhanh = @IdChiNhanh
-	GROUP BY hh.TenHangHoa
+	WHERE hd.TenantId = @TenantId and hd.IdChiNhanh = @IdChiNhanh
+	AND CAST(hd.CreationTime AS DATE) BETWEEN CAST(@ThoiGianTu AS DATE) AND CAST(@ThoiGianDen AS DATE)
+	GROUP BY hh.TenHangHoa,dvqd.Id
 	ORDER BY COUNT(hh.id) DESC;
 	--Tạo bảng lấy top 3 lịch hẹn gần nhất
 	DECLARE @Appointment TABLE

@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDashboard.Repository
 {
-    public interface IDasboardRepository
+    public interface IDashboardRepository
     {
-        Task<DataSet> ThongKeThongTin(DashboardFilterDto input,int tenantId, long? userId);
+        Task<DataSet> ThongKeThongTin(DashboardFilterDto input, int tenantId, long? userId);
     }
 }
