@@ -20,9 +20,6 @@
     <None Remove="HoaDon\Repository\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="DatLichOnline\Dto\DatLichDto.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\BanHangBeautify.Core\BanHangBeautify.Core.csproj" />
     <ProjectReference Include="..\BanHangBeautify.EntityFrameworkCore\BanHangBeautify.EntityFrameworkCore.csproj" />
   </ItemGroup>
@@ -30,9 +27,6 @@
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
     <Folder Include="DashboardCustomization\Dto\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DatLichOnline\Dto\DatLichDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="8.0.0" />

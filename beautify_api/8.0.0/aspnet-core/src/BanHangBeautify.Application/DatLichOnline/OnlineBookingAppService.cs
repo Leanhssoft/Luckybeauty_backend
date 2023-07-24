@@ -1,7 +1,10 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Uow;
 using Abp.Runtime.Security;
+using Abp.Runtime.Session;
 using BanHangBeautify.Common;
 using BanHangBeautify.Common.Consts;
+using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.Data.SqlClient;
@@ -9,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +33,7 @@ namespace BanHangBeautify.DatLichOnline
             return result;
         }
 
-        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVien(string tenantName,string idChiNhanh)
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVien(string tenantName,Guid idChiNhanh,Guid idDichVu)
         {
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
@@ -50,6 +54,7 @@ namespace BanHangBeautify.DatLichOnline
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@TenantId", tenant.Id));
                         cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
+                        cmd.Parameters.Add(new SqlParameter("@IdDichVu", idDichVu));
                         using (var dataReader = await cmd.ExecuteReaderAsync())
                         {
                             string[] array = { "Data" };
@@ -78,9 +83,10 @@ namespace BanHangBeautify.DatLichOnline
             }
             return result;
         }
-        public async Task<List<SuggestDichVuDto>> SuggestDichVu(string tenantName)
+        public async Task<List<SuggestDichVuBookingOnlineDto>> SuggestDichVu(string tenantName)
         {
-            List<SuggestDichVuDto> result = new List<SuggestDichVuDto>();
+            
+            List<SuggestDichVuBookingOnlineDto> result = new List<SuggestDichVuBookingOnlineDto>();
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
@@ -94,7 +100,7 @@ namespace BanHangBeautify.DatLichOnline
                 try
                 {
                     await conn.OpenAsync();
-                    sqlQuery += "SELECT dvqd.Id,hh.TenHangHoa,dvqd.GiaBan FROM DM_DonViQuiDoi dvqd \n";
+                    sqlQuery += "SELECT dvqd.Id,hh.TenHangHoa,dvqd.GiaBan,hh.SoPhutThucHien,hh.Image FROM DM_DonViQuiDoi dvqd \n";
                     sqlQuery += "JOIN DM_HangHoa hh on hh.Id = dvqd.IdHangHoa \n";
                     sqlQuery += string.Format($"WHERE hh.IdLoaiHangHoa != {LoaiHangHoaConst.HangHoa} \n");
                     sqlQuery += string.Format($"AND hh.TenantId = {tenant.Id} AND hh.IsDeleted = 0 \n");
@@ -119,10 +125,12 @@ namespace BanHangBeautify.DatLichOnline
                                 DataTable dataTable = dataSet.Tables["DichVu"];
                                 foreach (DataRow row in dataTable.Rows)
                                 {
-                                    SuggestDichVuDto rdo = new SuggestDichVuDto();
+                                    SuggestDichVuBookingOnlineDto rdo = new SuggestDichVuBookingOnlineDto();
                                     rdo.Id = Guid.Parse(row["Id"].ToString());
                                     rdo.TenDichVu = row["TenHangHoa"].ToString();
                                     rdo.DonGia = decimal.Parse(row["GiaBan"].ToString()??"0");
+                                    rdo.Image = row["Image"].ToString();
+                                    rdo.SoPhutThucHien = float.Parse(row["SoPhutThucHien"].ToString()??"0");
                                     result.Add(rdo);
                                 }
                             }
@@ -133,7 +141,7 @@ namespace BanHangBeautify.DatLichOnline
                 {
                     if (conn.State != ConnectionState.Open)
                     {
-                        result = new List<SuggestDichVuDto>();
+                        result = new List<SuggestDichVuBookingOnlineDto>();
                     }
                 }
             }
@@ -144,6 +152,10 @@ namespace BanHangBeautify.DatLichOnline
         {
             List<SuggestChiNhanhBooking> result = new List<SuggestChiNhanhBooking>();
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
+            if (tenant==null)
+            {
+                retun;
+            }
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
             if (string.IsNullOrEmpty(connectionString))
@@ -196,14 +208,25 @@ namespace BanHangBeautify.DatLichOnline
             return result;
         }
 
-        public async Task<string> Booking(string tenantName)
+        public async Task<DatLichDto> CreateBooking(string tenantName,DatLichDto data)
         {
-            string result = "";
-            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
-            string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
-            var conn = new SqlConnection(@connectionString);
+            DatLichDto result = new DatLichDto();
             try
             {
+                DateTime startTime = DateTime.Parse(data.BookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
+                data.EndTime = startTime.AddMinutes(data.SoPhutThucHien);
+                var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
+                if (tenant==null)
+                {
+                    return null;
+                }
+                string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
+                string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString = connecStringInServer;
+                }
+                var conn = new SqlConnection(@connectionString);
                 conn.Open();
                 if (conn.State == ConnectionState.Open)
                 {
@@ -211,61 +234,45 @@ namespace BanHangBeautify.DatLichOnline
                     {
                         cmd.Connection = conn;
                         cmd.CommandType = CommandType.Text;
-                        cmd.CommandText = "INSERT INTO Booking" +
-                                                "(" +
-                                                    "Id," +
-                                                    "TenantId," +
-                                                    "IdKhachHang," +
-                                                    "IdChiNhanh, " +
-                                                    "TenKhachHang," +
-                                                    "SoDienThoai," +
-                                                    "StartTime," +
-                                                    "EndTime," +
-                                                    "BookingDate," +
-                                                    "LoaiBooking," +
-                                                    "TrangThai," +
-                                                    "GhiChu," +
-                                                    "CreationTime," +
-                                                    "IsDeleted" +
-                                                ") " +
-                                          "VALUES (" +
-                                                  "@Id," +
-                                                  "@TenantId," +
-                                                  "@IdKhachHang, " +
-                                                  "@IdChiNhanh, " +
-                                                  "@TenKhachHang, " +
-                                                  "@SoDienThoai, " +
-                                                  "@StartTime, " +
-                                                  "@EndTime, " +
-                                                  "@BookingDate, " +
-                                                  "@LoaiBooking, " +
-                                                  "@TrangThai, " +
-                                                  "@GhiChu, " +
-                                                  "@CreationTime, " +
-                                                  "@IsDeleted" +
-                                          ")";
+                        cmd.CommandText = @"INSERT INTO 
+                                            Booking(Id,TenantId,TenKhachHang,SoDienThoai,IdChiNhanh,BookingDate,StartTime,EndTime,GhiChu,LoaiBooking,TrangThai,CreationTime,IsDeleted)
+                                            VALUES(@Id,@TenantId,@TenKhachHang,@SoDienThoai,@IdChiNhanh,@BookingDate,@StartTime,@Endtime,@GhiChu,@LoaiBooking,@TrangThaiBooking,@CreationTime,@IsDeleted);";
+                        cmd.CommandText += @"INSERT INTO BookingNhanVien(Id,TenantId,IdBooking,IdNhanVien,CreationTime,IsDeleted) 
+                                                VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdNhanVien,@CreationTime,@IsDeleted);
+                                            ";
+                        cmd.CommandText += @"INSERT INTO BookingService(Id,TenantId,IdBooking,IdDonViQuiDoi,CreationTime,IsDeleted) 
+                                                VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdDichVu,@CreationTime,@IsDeleted);
+                                            ";
+
                         cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
+                        cmd.Parameters.AddWithValue("@IdBookingNhanVien", Guid.NewGuid());
+                        cmd.Parameters.AddWithValue("@IdBookingDichVu", Guid.NewGuid());
                         cmd.Parameters.AddWithValue("@TenantId", tenant.Id);
-                        cmd.Parameters.AddWithValue("@MaNguon", "P01");
-                        cmd.Parameters.AddWithValue("@TenNguon", "Mạnh test thêm");
-                        cmd.Parameters.AddWithValue("@TrangThai", 1);
+                        cmd.Parameters.AddWithValue("@TenKhachHang", data.TenKhachHang);
+                        cmd.Parameters.AddWithValue("@SoDienThoai", data.SoDienThoai);
+                        cmd.Parameters.AddWithValue("@IdChiNhanh", data.IdChiNhanh);
+                        cmd.Parameters.AddWithValue("@IdDichVu", data.IdDichVu);
+                        cmd.Parameters.AddWithValue("@IdNhanVien", data.IdNhanVien);
+                        cmd.Parameters.AddWithValue("@BookingDate", data.BookingDate);
+                        cmd.Parameters.AddWithValue("@StartTime",startTime);
+                        cmd.Parameters.AddWithValue("@EndTime", data.EndTime);
+                        cmd.Parameters.AddWithValue("@GhiChu", data.GhiChu);
+                        cmd.Parameters.AddWithValue("@LoaiBooking", 2);
+                        cmd.Parameters.AddWithValue("@TrangThaiBooking", 1);
                         cmd.Parameters.AddWithValue("@CreationTime", DateTime.Now);
                         cmd.Parameters.AddWithValue("@IsDeleted", false);
-
                         await cmd.ExecuteNonQueryAsync();
+                        Console.WriteLine(cmd.CommandText);
                     }
 
-                    result = "Connection opened successfully!";
+                    result = data;
 
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                if (conn.State != ConnectionState.Open)
-                {
-                    result = "Failed to open the connection";
-                }
+                result = null;
             }
             return result;
         }
@@ -276,4 +283,9 @@ public class SuggestChiNhanhBooking: SuggestChiNhanh
     public string Logo { get; set; }
     public string DiaChi { get; set; }
     public string SoDienThoai { get; set; }
+}
+public class SuggestDichVuBookingOnlineDto: SuggestDichVuDto
+{
+    public string Image { get; set; }
+    public float SoPhutThucHien { get; set; }
 }

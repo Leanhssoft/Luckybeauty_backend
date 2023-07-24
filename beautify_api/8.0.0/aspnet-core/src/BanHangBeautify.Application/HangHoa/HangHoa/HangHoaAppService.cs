@@ -17,6 +17,7 @@ using BanHangBeautify.NewFolder;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -346,13 +347,21 @@ namespace BanHangBeautify.HangHoa.HangHoa
                                         data.IdLoaiHangHoa = 1;
                                         break;
                                 }
+                                string maHangHoa = worksheet.Cells[row, 2].Value?.ToString();
+                                if (string.IsNullOrEmpty(maHangHoa))
+                                {
+                                    MaxCodeDto objMax = await _repository.SpGetProductCode(data.IdLoaiHangHoa, AbpSession.TenantId??1);
+                                    float? max = objMax.MaxVal;
+                                    maHangHoa = FormatMaHangHoa(objMax.FirstStr, max);
+                                }
                                 data.DonViQuiDois = new List<DonViQuiDoiDto>()
                                 {
+
                                     new DonViQuiDoiDto(){
                                         GiaBan = float.Parse(worksheet.Cells[row,4].Value?.ToString()??"0"),
                                         LaDonViTinhChuan = 1,
                                         TyLeChuyenDoi = 1,
-                                        MaHangHoa = worksheet.Cells[row, 2].Value?.ToString(),
+                                        MaHangHoa = maHangHoa,
 
                                     }
                                 };
