@@ -3,22 +3,29 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
+using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Exporting;
 using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
 using BanHangBeautify.Storage;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.POIFS.Crypt.Dsig;
+using NPOI.SS.Formula.Functions;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon
 {
@@ -29,17 +36,17 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
         private readonly IRepository<QuyHoaDon_ChiTiet, Guid> _quyHoaDonChiTiet;
         private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
         private readonly IQuyHoaDonRepository _repoQuyHD;
-        private readonly IQuyHoaDonExcelExporter _quyHoaDonExcelExport;
+        private readonly IExcelBase _excelBase;
         public QuyHoaDonAppService(IRepository<QuyHoaDon, Guid> repository, IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
             IRepository<QuyHoaDon_ChiTiet, Guid> quyHoaDonChiTiet,
-            IQuyHoaDonExcelExporter quyHoaDonExcelExporter,
-            IQuyHoaDonRepository repoQuyHD)
+            IExcelBase excelBase,
+            IQuyHoaDonRepository repoQuyHD) 
         {
             _quyHoaDon = repository;
             _loaiChungTuRepository = loaiChungTuRepository;
             _quyHoaDonChiTiet = quyHoaDonChiTiet;
             _repoQuyHD = repoQuyHD;
-            _quyHoaDonExcelExport = quyHoaDonExcelExporter;
+            _excelBase = excelBase;
         }
         [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Create)]
         public async Task<QuyHoaDonDto> Create(CreateOrEditQuyHoaDonDto input)
@@ -227,15 +234,14 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             return await _repoQuyHD.Search(input);
         }
         [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Export)]
-        public async Task<FileDto> ExportToExcel(PagedQuyHoaDonRequestDto input)
+        public async Task<FileDto> ExportExcelQuyHoaDon(PagedQuyHoaDonRequestDto input)
         {
             input.TenantId = AbpSession.TenantId ?? 1;
-            input.CurrentPage = 0;
-            input.PageSize = int.MaxValue;
             var data = await _repoQuyHD.Search(input);
-            List<GetAllQuyHoaDonItemDto> model = new List<GetAllQuyHoaDonItemDto>();
-            model = (List<GetAllQuyHoaDonItemDto>)data.Items;
-            return _quyHoaDonExcelExport.ExportDanhSachQuyHoaDon(model);
+            List<GetAllQuyHoaDonItemDto> lstQuy = (List<GetAllQuyHoaDonItemDto>)data.Items;
+            var dataExcel = ObjectMapper.Map<List<ExcelSoQuyDto>>(lstQuy);
+            var ff = _excelBase.WriteToExcel<ExcelSoQuyDto>("DanhSachThuChi_", "SoQuy_Export_Template.xlsx", dataExcel, 5);
+            return ff;
         }
         [HttpGet]
         public async Task<bool> CheckExistsMaPhieuThuChi(string maphieu, Guid? id = null)

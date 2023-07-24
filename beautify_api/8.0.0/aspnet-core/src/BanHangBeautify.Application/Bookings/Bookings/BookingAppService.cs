@@ -315,6 +315,37 @@ namespace BanHangBeautify.Bookings.Bookings
             }).ToList();
             return dtGr;
         }
+        public async Task<List<BookingDetailOfCustometDto>> GetInforBooking_byID(Guid idBooking)
+        {
+            List<BookingDetailDto> data = await _bookingRepository.GetInforBooking_byID(idBooking);
+            var dtGr = data.GroupBy(x => new
+            {
+                x.IdBooking,
+                x.IdKhachHang,
+                x.MaKhachHang,
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.BookingDate,
+                x.StartTime,
+                x.EndTime,
+                x.TrangThai,
+                x.TxtTrangThaiBook
+            }).Select(x => new BookingDetailOfCustometDto
+            {
+                IdBooking = x.Key.IdBooking,
+                IdKhachHang = x.Key.IdKhachHang,
+                MaKhachHang = x.Key.MaKhachHang,
+                TenKhachHang = x.Key.TenKhachHang,
+                SoDienThoai = x.Key.SoDienThoai,
+                BookingDate = x.Key.BookingDate,
+                StartTime = x.Key.StartTime,
+                EndTime = x.Key.EndTime,
+                TrangThai = x.Key.TrangThai,
+                TxtTrangThaiBook = x.Key.TxtTrangThaiBook,
+                Details = x.ToList(),
+            }).ToList();
+            return dtGr;
+        }
         public async Task<Booking> GetDetail(Guid id)
         {
             Booking result = new Booking();
