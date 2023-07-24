@@ -78,5 +78,26 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
             }
             return new List<BookingDetailDto>();
         }
+
+        public async Task<List<BookingDetailDto>> GetInforBooking_byID(Guid idBooking)
+        {
+            using (var cmd = CreateCommand("prc_GetInforBooking_byID"))
+            {
+                cmd.Parameters.Add(new SqlParameter("@IdBooking", idBooking));
+                using (var dataReader = await cmd.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<BookingDetailDto>(ds.Tables[0]);
+                        return data;
+                    }
+                }
+            }
+            return new List<BookingDetailDto>();
+        }
     }
 }
