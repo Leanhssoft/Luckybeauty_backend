@@ -38,6 +38,10 @@ namespace BanHangBeautify.DatLichOnline
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x=>x.TenancyName.ToLower() ==tenantName.ToLower());
+            if (tenant == null)
+            {
+                return null;
+            }
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
             if (string.IsNullOrEmpty(connectionString))
             {
@@ -88,6 +92,10 @@ namespace BanHangBeautify.DatLichOnline
             
             List<SuggestDichVuBookingOnlineDto> result = new List<SuggestDichVuBookingOnlineDto>();
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
+            if (tenant == null)
+            {
+                return null;
+            }
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
             if (string.IsNullOrEmpty(connectionString))
@@ -154,7 +162,7 @@ namespace BanHangBeautify.DatLichOnline
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
             if (tenant==null)
             {
-                retun;
+                return null;
             }
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
