@@ -1,4 +1,5 @@
-﻿using NPOI.OpenXmlFormats.Wordprocessing;
+﻿using BanHangBeautify.HangHoa.HangHoa.Dto;
+using NPOI.OpenXmlFormats.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string DayOfWeek { get; set; }
         public DateTime BookingDate { get; set; }
     }
-    public class BookingDetailDto
+    public class BookingDetailDto : HangHoaDto
     {
         public Guid IdBooking { get; set; }
         public Guid? IdKhachHang { get; set; }
@@ -30,9 +31,6 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string MaKhachHang { get; set; }
         public string TenKhachHang { get; set; }
         public string SoDienThoai { get; set; }
-        public string MaHangHoa { get; set; }
-        public string TenHangHoa { get; set; }
-        public double? GiaBan { get; set; }
         public string TxtTrangThaiBook { get; set; }
     }
 
