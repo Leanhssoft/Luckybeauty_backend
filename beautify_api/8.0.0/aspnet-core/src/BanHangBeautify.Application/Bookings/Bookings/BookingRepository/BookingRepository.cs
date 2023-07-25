@@ -4,15 +4,11 @@ using BanHangBeautify.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BanHangBeautify.Bookings.Bookings.BookingRepository
 {

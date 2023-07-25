@@ -6,17 +6,15 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.ViTriPhong
 {
     [AbpAuthorize(PermissionNames.Pages_ViTriPhong)]
-    public class ViTriPhongAppService:SPAAppServiceBase
+    public class ViTriPhongAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_ViTriPhong, Guid> _repository;
         public ViTriPhongAppService(IRepository<DM_ViTriPhong, Guid> repository)
@@ -25,7 +23,7 @@ namespace BanHangBeautify.AppDanhMuc.ViTriPhong
         }
         public async Task<ViTriPhongDto> CreateOrEdit(CreateOrEditViTriPhongDto input)
         {
-            var checkExist =await _repository.FirstOrDefaultAsync(x=>x.Id== input.Id);
+            var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist != null)
             {
                 return await Update(input, checkExist);
@@ -38,7 +36,7 @@ namespace BanHangBeautify.AppDanhMuc.ViTriPhong
             ViTriPhongDto result = new ViTriPhongDto();
             DM_ViTriPhong data = new DM_ViTriPhong();
             data = ObjectMapper.Map<DM_ViTriPhong>(input);
-            data.Id=Guid.NewGuid();
+            data.Id = Guid.NewGuid();
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
             data.TenantId = AbpSession.TenantId ?? 1;
@@ -48,7 +46,8 @@ namespace BanHangBeautify.AppDanhMuc.ViTriPhong
             return result;
         }
         [NonAction]
-        public async Task<ViTriPhongDto> Update(CreateOrEditViTriPhongDto input,DM_ViTriPhong oldData) {
+        public async Task<ViTriPhongDto> Update(CreateOrEditViTriPhongDto input, DM_ViTriPhong oldData)
+        {
             ViTriPhongDto result = new ViTriPhongDto();
             oldData.MaViTriPhong = input.MaViTriPhong;
             oldData.TenViTriPhong = input.TenViTriPhong;
@@ -62,7 +61,7 @@ namespace BanHangBeautify.AppDanhMuc.ViTriPhong
         public async Task<ViTriPhongDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            if (data != null)
             {
                 data.IsDeleted = true;
                 data.DeleterUserId = AbpSession.UserId;
@@ -74,8 +73,8 @@ namespace BanHangBeautify.AppDanhMuc.ViTriPhong
         }
         public async Task<CreateOrEditViTriPhongDto> GetForEdit(Guid id)
         {
-            var data = await _repository.FirstOrDefaultAsync(x=>x.Id== id);
-            if (data!=null)
+            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateOrEditViTriPhongDto>(data);
             }

@@ -10,7 +10,7 @@ namespace BanHangBeautify.SP_Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql(@"CREATE PROCEDURE prc_nhanVien_getAll
+            migrationBuilder.Sql(@"CREATE PROCEDURE prc_nhanVien_getAll
 				@TenantId INT,
 				@IdChiNhanh UNIQUEIDENTIFIER = NULL,
 				@Filter NVARCHAR,

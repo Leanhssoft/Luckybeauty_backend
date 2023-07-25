@@ -43,7 +43,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed
             {
                 using (var uow = uowManager.Object.Begin(TransactionScopeOption.Suppress))
                 {
-                    
+
                     var context = uowManager.Object.Current.GetDbContext<TDbContext>(MultiTenancySides.Host);
 
                     contextAction(context);

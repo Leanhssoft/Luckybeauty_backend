@@ -1,11 +1,6 @@
 ﻿using BanHangBeautify.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.SP_Migrations
 {
@@ -38,9 +33,9 @@ END;");
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql("DROP PROCEDURE prc_SuggestNhanVienDichVu");
+            migrationBuilder.Sql("DROP PROCEDURE prc_SuggestNhanVienDichVu");
         }
     }
 
-	
+
 }

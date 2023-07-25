@@ -1,11 +1,6 @@
 ﻿using BanHangBeautify.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.SP_Migrations
 {
@@ -15,7 +10,7 @@ namespace BanHangBeautify.SP_Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql(@"CREATE PROCEDURE prc_chietKhauHoaDon_getAll 
+            migrationBuilder.Sql(@"CREATE PROCEDURE prc_chietKhauHoaDon_getAll 
 	@TenantId INT,
 	@IdChiNhanh UNIQUEIDENTIFIER,
 	@Filter NVARCHAR(70),
@@ -61,7 +56,7 @@ END;");
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql("DROP PROCEDURE prc_chietKhauHoaDon_getAll");
+            migrationBuilder.Sql("DROP PROCEDURE prc_chietKhauHoaDon_getAll");
         }
     }
 }

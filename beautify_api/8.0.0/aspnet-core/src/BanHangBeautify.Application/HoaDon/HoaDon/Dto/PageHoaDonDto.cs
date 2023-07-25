@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BanHangBeautify.HoaDon.HoaDon.Dto
+﻿namespace BanHangBeautify.HoaDon.HoaDon.Dto
 {
-    public class PageHoaDonDto: CreateHoaDonDto
+    public class PageHoaDonDto : CreateHoaDonDto
     {
         public string UserName { get; set; }// user lapphieu
         public string MaKhachHang { get; set; }

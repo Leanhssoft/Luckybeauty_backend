@@ -8,12 +8,9 @@ using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.CaLamViec.Dto;
 using BanHangBeautify.NhanSu.CaLamViec.Exporting;
 using BanHangBeautify.NhanSu.CaLamViec.Repository;
-using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.Storage;
-using Castle.MicroKernel.SubSystems.Resource;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
 using OfficeOpenXml;
 using System;
 using System.IO;
@@ -28,14 +25,14 @@ namespace BanHangBeautify.NhanSu.CaLamViec
     {
         private readonly IRepository<NS_CaLamViec, Guid> _repository;
         private readonly ICaLamViecRepository _caLamViecRepository;
-        private readonly ICaLamViecExcelExporter _caLamViecExcelExporter; 
-        public CaLamViecAppService(IRepository<NS_CaLamViec, Guid> repository,ICaLamViecRepository caLamViecRepository,ICaLamViecExcelExporter caLamViecExcelExporter)
+        private readonly ICaLamViecExcelExporter _caLamViecExcelExporter;
+        public CaLamViecAppService(IRepository<NS_CaLamViec, Guid> repository, ICaLamViecRepository caLamViecRepository, ICaLamViecExcelExporter caLamViecExcelExporter)
         {
             _repository = repository;
             _caLamViecRepository = caLamViecRepository;
             _caLamViecExcelExporter = caLamViecExcelExporter;
         }
-        [AbpAuthorize(PermissionNames.Pages_CaLamViec_Create,PermissionNames.Pages_CaLamViec_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_CaLamViec_Create, PermissionNames.Pages_CaLamViec_Edit)]
         public async Task<CaLamViecDto> CreateOrEdit(CreateOrEditCaLamViecDto dto)
         {
             var caLamViec = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -49,9 +46,9 @@ namespace BanHangBeautify.NhanSu.CaLamViec
         public async Task<CaLamViecDto> Create(CreateOrEditCaLamViecDto dto)
         {
             NS_CaLamViec data = new NS_CaLamViec();
-            var count =await  _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1)).ToListAsync();
+            var count = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
             data.Id = Guid.NewGuid();
-            data.MaCa = "MS00"+ (count.Count+1).ToString();
+            data.MaCa = "MS00" + (count.Count + 1).ToString();
             data.IdChiNhanh = dto.IdChiNhanh;
             data.TenCa = dto.TenCa;
             data.TenantId = AbpSession.TenantId ?? 1;
@@ -101,7 +98,8 @@ namespace BanHangBeautify.NhanSu.CaLamViec
         {
             var caLamViec = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (caLamViec != null)
-            { var data = ObjectMapper.Map<CreateOrEditCaLamViecDto>(caLamViec);
+            {
+                var data = ObjectMapper.Map<CreateOrEditCaLamViecDto>(caLamViec);
                 data.GioVao = caLamViec.GioVao.ToString("HH:mm");
                 data.GioRa = caLamViec.GioRa.ToString("HH:mm");
                 return data;
@@ -113,7 +111,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             if (string.IsNullOrEmpty(input.Keyword))
             {
                 input.Keyword = "";
-                
+
             }
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             return await _caLamViecRepository.GetAll(input, AbpSession.TenantId ?? 1);

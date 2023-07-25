@@ -2,15 +2,10 @@
 using Abp.MimeTypes;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.Controllers
 {
-    public class FileController: SPAControllerBase
+    public class FileController : SPAControllerBase
     {
         private readonly ITempFileCacheManager _tempFileCacheManager;
 

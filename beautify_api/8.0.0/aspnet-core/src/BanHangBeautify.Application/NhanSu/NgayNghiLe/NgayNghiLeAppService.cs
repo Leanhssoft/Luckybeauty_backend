@@ -5,19 +5,15 @@ using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NewFolder;
-using BanHangBeautify.NhanSu.CaLamViec.Dto;
 using BanHangBeautify.NhanSu.NgayNghiLe.Dto;
 using BanHangBeautify.NhanSu.NgayNghiLe.Exporting;
 using BanHangBeautify.NhanSu.NgayNghiLe.Repository;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -29,7 +25,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
         private readonly IRepository<DM_NgayNghiLe, Guid> _ngayNghiLeService;
         private readonly INgayNghiLeRepository _ngayNghiLeReponsitory;
         private readonly INgayNghiLeExcelExporter _ngayNghiLeExcelExporter;
-        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeService, INgayNghiLeRepository ngayNghiLeReponsitory,INgayNghiLeExcelExporter ngayNghiLeExcelExporter)
+        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeService, INgayNghiLeRepository ngayNghiLeReponsitory, INgayNghiLeExcelExporter ngayNghiLeExcelExporter)
         {
             _ngayNghiLeService = ngayNghiLeService;
             _ngayNghiLeReponsitory = ngayNghiLeReponsitory;
@@ -46,20 +42,20 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
         public async Task<CreateOrEditNgayNghiLeDto> GetForEdit(Guid id)
         {
             CreateOrEditNgayNghiLeDto result = new CreateOrEditNgayNghiLeDto();
-            var data =await _ngayNghiLeService.FirstOrDefaultAsync(x=>x.Id== id);
-            if (data!=null)
+            var data = await _ngayNghiLeService.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 result = ObjectMapper.Map<CreateOrEditNgayNghiLeDto>(data);
             }
             return result;
         }
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Pages_NhanSu_NgayNghiLe_Create,PermissionNames.Pages_NhanSu_NgayNghiLe_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_NgayNghiLe_Create, PermissionNames.Pages_NhanSu_NgayNghiLe_Edit)]
         public async Task<NgayNghiLeDto> CreateOrEdit(CreateOrEditNgayNghiLeDto input)
         {
             NgayNghiLeDto result = new NgayNghiLeDto();
-            var checkExists =await _ngayNghiLeService.FirstOrDefaultAsync(x => x.Id == input.Id);
-            result = checkExists == null ? await Create(input) : await Edit(input,checkExists);
+            var checkExists = await _ngayNghiLeService.FirstOrDefaultAsync(x => x.Id == input.Id);
+            result = checkExists == null ? await Create(input) : await Edit(input, checkExists);
             return result;
         }
         [NonAction]
@@ -83,7 +79,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             return result;
         }
         [NonAction]
-        public async Task<NgayNghiLeDto> Edit(CreateOrEditNgayNghiLeDto input,DM_NgayNghiLe oldData)
+        public async Task<NgayNghiLeDto> Edit(CreateOrEditNgayNghiLeDto input, DM_NgayNghiLe oldData)
         {
             oldData.TenNgayLe = input.TenNgayLe;
             oldData.TuNgay = input.TuNgay;
@@ -102,11 +98,11 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
         public async Task<bool> Delete(Guid id)
         {
             bool result = false;
-            var checkExists =await _ngayNghiLeService.FirstOrDefaultAsync(x => x.Id == id);
-            if (checkExists!=null)
+            var checkExists = await _ngayNghiLeService.FirstOrDefaultAsync(x => x.Id == id);
+            if (checkExists != null)
             {
-                checkExists.IsDeleted= true;
-                checkExists.DeletionTime= DateTime.Now;
+                checkExists.IsDeleted = true;
+                checkExists.DeletionTime = DateTime.Now;
                 checkExists.DeleterUserId = AbpSession.UserId;
                 _ngayNghiLeService.Update(checkExists);
                 result = true;

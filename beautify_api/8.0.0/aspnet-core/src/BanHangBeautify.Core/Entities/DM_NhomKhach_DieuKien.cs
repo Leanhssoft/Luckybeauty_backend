@@ -1,11 +1,7 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities

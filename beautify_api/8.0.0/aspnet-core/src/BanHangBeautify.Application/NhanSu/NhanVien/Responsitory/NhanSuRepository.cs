@@ -4,14 +4,10 @@ using BanHangBeautify.Common;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using Microsoft.Data.SqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.NhanVien.Responsitory

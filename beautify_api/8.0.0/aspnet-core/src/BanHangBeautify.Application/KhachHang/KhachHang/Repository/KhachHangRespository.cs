@@ -1,23 +1,19 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
 using BanHangBeautify.Common;
-using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
-using BanHangBeautify.NhanSu.NhanVien.Dto;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.KhachHang.Repository
 {
-    public class KhachHangRespository : SPARepositoryBase<DM_KhachHang,Guid>, IKhachHangRespository
+    public class KhachHangRespository : SPARepositoryBase<DM_KhachHang, Guid>, IKhachHangRespository
     {
         public KhachHangRespository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
@@ -46,7 +42,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                 return new List<KhachHangView>();
             }
         }
-        public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input,int tenantId)
+        public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input, int tenantId)
         {
             using (var command = CreateCommand("prc_KhachHang_GetAll"))
             {
@@ -93,7 +89,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
-                    string[] array = { "Data"};
+                    string[] array = { "Data" };
                     var ds = new DataSet();
                     ds.Load(dataReader, LoadOption.OverwriteChanges, array);
                     var ddd = ds.Tables;

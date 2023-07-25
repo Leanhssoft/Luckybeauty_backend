@@ -11,22 +11,16 @@ using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
-using BanHangBeautify.HangHoa.HangHoa.Exporting;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.NewFolder;
-using BanHangBeautify.Quy.DM_QuyHoaDon.Exporting;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Transactions;
 using static BanHangBeautify.Common.CommonClass;
@@ -305,8 +299,8 @@ namespace BanHangBeautify.HangHoa.HangHoa
         public async Task<FileDto> ExportToExcel(HangHoaRequestDto input)
         {
             var data = await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
-            var dataExcel= ObjectMapper.Map<List<ExcelHangHoaDto>>(data.Items);
-            return _excelBase.WriteToExcel("DanhSachDichVu_", "DichVu_Export_Template.xlsx", dataExcel,5);
+            var dataExcel = ObjectMapper.Map<List<ExcelHangHoaDto>>(data.Items);
+            return _excelBase.WriteToExcel("DanhSachDichVu_", "DichVu_Export_Template.xlsx", dataExcel, 5);
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
@@ -351,7 +345,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                                 string maHangHoa = worksheet.Cells[row, 2].Value?.ToString();
                                 if (string.IsNullOrEmpty(maHangHoa))
                                 {
-                                    MaxCodeDto objMax = await _repository.SpGetProductCode(data.IdLoaiHangHoa, AbpSession.TenantId??1);
+                                    MaxCodeDto objMax = await _repository.SpGetProductCode(data.IdLoaiHangHoa, AbpSession.TenantId ?? 1);
                                     float? max = objMax.MaxVal;
                                     maHangHoa = FormatMaHangHoa(objMax.FirstStr, max);
                                 }

@@ -2,7 +2,6 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.CauHinh.CauHinhTichDiem.Dto;
 using BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet.Dto;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.CauHinh.CauHinhTichDiemChiTiet
 {

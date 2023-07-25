@@ -7,8 +7,6 @@ using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
-using BanHangBeautify.AppDanhMuc.AppCuaHang;
-using BanHangBeautify.AppDanhMuc.AppCuaHang.Dto;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
@@ -18,7 +16,6 @@ using BanHangBeautify.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -166,7 +163,7 @@ namespace BanHangBeautify.MultiTenancy
             var tenant = await _tenantManager.GetByIdAsync(id);
             await _tenantManager.DeleteAsync(tenant);
         }
-        
+
 
 
         protected override IQueryable<Tenant> CreateFilteredQuery(PagedTenantResultRequestDto input)

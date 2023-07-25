@@ -4,17 +4,13 @@ using BanHangBeautify.Common;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.Net.MimeTypes;
-using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Hosting;
-using OfficeOpenXml.Style;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.HoaDon.Exporting
 {

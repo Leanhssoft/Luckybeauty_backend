@@ -14,7 +14,7 @@ namespace BanHangBeautify.Authorization
             var congTy = pages.CreateChildPermission(PermissionNames.Pages_CongTy, L("Company"));
             congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Create, L("CreateCompany"), multiTenancySides: MultiTenancySides.Host);
             congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Edit, L("EditCompany"));
-            congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Delete, L("DeleteCompany"),multiTenancySides: MultiTenancySides.Host);
+            congTy.CreateChildPermission(PermissionNames.Pages_CongTy_Delete, L("DeleteCompany"), multiTenancySides: MultiTenancySides.Host);
 
             //Chi nhánh
             var chiNhanh = pages.CreateChildPermission(PermissionNames.Pages_ChiNhanh, L("Branch"));
@@ -228,7 +228,7 @@ namespace BanHangBeautify.Authorization
             timeOff.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff_Edit, L("Edit"));
             timeOff.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff_Delete, L("Delete"));
 
-            var nhatKyThaoTac= pages.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac, L("NhatKyThaoTac"));
+            var nhatKyThaoTac = pages.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac, L("NhatKyThaoTac"));
             nhatKyThaoTac.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac_Create, L("Create"));
             nhatKyThaoTac.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac_Edit, L("Edit"));
             nhatKyThaoTac.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac_Delete, L("Delete"));
@@ -237,7 +237,7 @@ namespace BanHangBeautify.Authorization
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Create, L("Create"));
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Edit, L("Edit"));
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Delete, L("Delete"));
-                quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Export, L("Export"));
+            quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Export, L("Export"));
 
             var khoanThuChi = pages.CreateChildPermission(PermissionNames.Pages_KhoanThuChi, L("ThuChi"));
             khoanThuChi.CreateChildPermission(PermissionNames.Pages_KhoanThuChi_Create, L("Create"));

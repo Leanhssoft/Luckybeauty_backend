@@ -2,32 +2,26 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository;
-using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
 {
     [AbpAuthorize(PermissionNames.Pages_ChietKhauHoaDon)]
-    public class ChietKhauHoaDonAppService:SPAAppServiceBase
+    public class ChietKhauHoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_ChietKhauHoaDon, Guid> _repository;
         private readonly IChietKhauHoaDonRepository _chietKhauHoaDonRepository;
-        public ChietKhauHoaDonAppService(IRepository<NS_ChietKhauHoaDon, Guid> repository,IChietKhauHoaDonRepository chietKhauHoaDonRepository)
+        public ChietKhauHoaDonAppService(IRepository<NS_ChietKhauHoaDon, Guid> repository, IChietKhauHoaDonRepository chietKhauHoaDonRepository)
         {
             _repository = repository;
             _chietKhauHoaDonRepository = chietKhauHoaDonRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_ChietKhauHoaDon_Create,PermissionNames.Pages_ChietKhauHoaDon_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_ChietKhauHoaDon_Create, PermissionNames.Pages_ChietKhauHoaDon_Edit)]
         public async Task<ExecuteResultDto> CreateOrEdit(CreateOrEditChietKhauHDDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -60,7 +54,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                 result.Message = "Thêm mới thất bại!";
                 result.Status = "error";
             }
-           
+
             return result;
         }
         [NonAction]
@@ -68,8 +62,8 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
         {
             ExecuteResultDto result = new ExecuteResultDto()
             {
-                Status= "error",
-                Message="Có lỗi sảy ra vui lòng thử lại sau"
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau"
             };
             try
             {
@@ -89,7 +83,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                 result.Status = "error";
                 result.Message = "Có lỗi sảy ra vui lòng thử lại sau";
             }
-            
+
             return result;
         }
         [HttpPost]
@@ -116,9 +110,9 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             }
             return new CreateOrEditChietKhauHDDto();
         }
-        public async Task<PagedResultDto<ChietKhauHoaDonItemDto>> GetAll(PagedRequestDto input,Guid? idChiNhanh)
+        public async Task<PagedResultDto<ChietKhauHoaDonItemDto>> GetAll(PagedRequestDto input, Guid? idChiNhanh)
         {
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount -1) * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             return await _chietKhauHoaDonRepository.GetAll(input, AbpSession.TenantId ?? 1, idChiNhanh);
         }

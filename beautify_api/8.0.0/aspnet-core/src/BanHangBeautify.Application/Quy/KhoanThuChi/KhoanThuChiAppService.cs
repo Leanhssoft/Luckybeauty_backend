@@ -9,20 +9,19 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Quy.KhoanThuChi
 {
     [AbpAuthorize(PermissionNames.Pages_KhoanThuChi)]
-    public class KhoanThuChiAppService:SPAAppServiceBase
+    public class KhoanThuChiAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_KhoanThuChi, Guid> _khoanThuChiRepository;
         public KhoanThuChiAppService(IRepository<DM_KhoanThuChi, Guid> khoanThuChiRepository)
         {
             _khoanThuChiRepository = khoanThuChiRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_KhoanThuChi_Create,PermissionNames.Pages_KhoanThuChi_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_KhoanThuChi_Create, PermissionNames.Pages_KhoanThuChi_Edit)]
         public async Task<KhoanThuChiDto> CreateOrEdit(CreateOrEditKhoanThuChiDto input)
         {
             var checkExist = await _khoanThuChiRepository.FirstOrDefaultAsync(x => x.Id == input.Id);

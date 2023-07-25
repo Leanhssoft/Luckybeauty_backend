@@ -2,15 +2,11 @@
 using Abp.Domain.Entities.Auditing;
 using BanHangBeautify.Data.Entities;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.Entities
 {
-    public class NS_ChietKhauDichVu :FullAuditedEntity<Guid>, IMustHaveTenant
+    public class NS_ChietKhauDichVu : FullAuditedEntity<Guid>, IMustHaveTenant
     {
         public int TenantId { get; set; }
         public Guid? IdChiNhanh { get; set; }

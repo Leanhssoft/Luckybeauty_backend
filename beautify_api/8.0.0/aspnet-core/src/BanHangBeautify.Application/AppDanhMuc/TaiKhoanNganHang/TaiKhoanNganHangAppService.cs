@@ -1,20 +1,15 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Abp.EntityFrameworkCore;
 using BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Dto;
 using BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
-using BanHangBeautify.EntityFrameworkCore;
-using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
-using BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
@@ -22,10 +17,10 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
     [AbpAuthorize(PermissionNames.Pages_TaiKhoanNganHang)]
     public class TaiKhoanNganHangAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_TaiKhoanNganHang,Guid> _dmTaiKhoanNganHang;
+        private readonly IRepository<DM_TaiKhoanNganHang, Guid> _dmTaiKhoanNganHang;
         private readonly TaiKhoanNganHangRepository _repoBankAcc;
 
-        public TaiKhoanNganHangAppService(IRepository<DM_TaiKhoanNganHang,Guid> repository,
+        public TaiKhoanNganHangAppService(IRepository<DM_TaiKhoanNganHang, Guid> repository,
             TaiKhoanNganHangRepository repoBankAcc)
         {
             _dmTaiKhoanNganHang = repository;
@@ -33,7 +28,7 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
         }
         public async Task<TaiKhoanNganHangDto> CreateOrEdit(CreateOrEditTaiKhoanNganHangDto input)
         {
-            var checkExist = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x=>x.Id== input.Id);
+            var checkExist = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist != null)
             {
                 return await Update(input, checkExist);
@@ -41,7 +36,8 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             return await Create(input);
         }
         [NonAction]
-        public async Task<TaiKhoanNganHangDto> Create(CreateOrEditTaiKhoanNganHangDto input) {
+        public async Task<TaiKhoanNganHangDto> Create(CreateOrEditTaiKhoanNganHangDto input)
+        {
             DM_TaiKhoanNganHang data = ObjectMapper.Map<DM_TaiKhoanNganHang>(input);
             data.Id = Guid.NewGuid();
             data.CreationTime = DateTime.Now;
@@ -53,7 +49,8 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             return ObjectMapper.Map<TaiKhoanNganHangDto>(data);
         }
         [NonAction]
-        public async Task<TaiKhoanNganHangDto> Update(CreateOrEditTaiKhoanNganHangDto input,DM_TaiKhoanNganHang oldData) {
+        public async Task<TaiKhoanNganHangDto> Update(CreateOrEditTaiKhoanNganHangDto input, DM_TaiKhoanNganHang oldData)
+        {
             TaiKhoanNganHangDto result = new TaiKhoanNganHangDto();
             oldData.IdNganHang = input.IdNganHang;
             oldData.GhiChu = input.GhiChu;
@@ -67,8 +64,9 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             return result;
         }
         [HttpPost]
-        public async Task<TaiKhoanNganHangDto> Delete(Guid id) { 
-            var data = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x=> x.Id == id);
+        public async Task<TaiKhoanNganHangDto> Delete(Guid id)
+        {
+            var data = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
                 data.DeletionTime = DateTime.Now;
@@ -79,15 +77,17 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             }
             return new TaiKhoanNganHangDto();
         }
-        public async Task<CreateOrEditTaiKhoanNganHangDto> GetForEdit(Guid id) { 
-            var data = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x=>x.Id == id);
-            if (data!=null)
+        public async Task<CreateOrEditTaiKhoanNganHangDto> GetForEdit(Guid id)
+        {
+            var data = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateOrEditTaiKhoanNganHangDto>(data);
             }
             return new CreateOrEditTaiKhoanNganHangDto();
         }
-        public async Task<PagedResultDto<TaiKhoanNganHangDto>> GetAll(PagedRequestDto input) {
+        public async Task<PagedResultDto<TaiKhoanNganHangDto>> GetAll(PagedRequestDto input)
+        {
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<TaiKhoanNganHangDto> result = new PagedResultDto<TaiKhoanNganHangDto>();

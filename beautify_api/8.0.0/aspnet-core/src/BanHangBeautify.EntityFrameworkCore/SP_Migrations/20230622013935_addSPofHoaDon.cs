@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -162,7 +161,7 @@ namespace BanHangBeautify.SPMigrations
 		FETCH NEXT @PageSize ROWS ONLY
 END");
 
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetChiTietHoaDon_byIdHoaDon]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetChiTietHoaDon_byIdHoaDon]
 	@IdHoaDon uniqueidentifier
 AS
 BEGIN
@@ -180,7 +179,7 @@ BEGIN
 		where cthd.IdHoaDon= @IdHoaDon
 END");
 
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetInforHoaDon_byId]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetInforHoaDon_byId]
 	@Id uniqueidentifier
 AS
 BEGIN

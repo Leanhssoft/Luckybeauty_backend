@@ -1,9 +1,9 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using System;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using BanHangBeautify.Data.Entities;
-using System.ComponentModel.DataAnnotations.Schema;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
 {

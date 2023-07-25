@@ -9,24 +9,23 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMai
 {
     [AbpAuthorize(PermissionNames.Pages_KhuyenMai)]
-    public class KhuyenMaiAppService:SPAAppServiceBase
+    public class KhuyenMaiAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_KhuyenMai,Guid> _khuyenMaiRepository;
+        private readonly IRepository<DM_KhuyenMai, Guid> _khuyenMaiRepository;
         public KhuyenMaiAppService(IRepository<DM_KhuyenMai, Guid> khuyenMaiRepository)
         {
             _khuyenMaiRepository = khuyenMaiRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Create,PermissionNames.Pages_KhuyenMai_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Create, PermissionNames.Pages_KhuyenMai_Edit)]
         public async Task<KhuyenMaiDto> CreateOrEdit(CreateOrEditKhuyenMaiDto input)
         {
             var checkExist = await _khuyenMaiRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
-            if (checkExist!=null)
+            if (checkExist != null)
             {
                 return await Update(input, checkExist);
             }
@@ -35,7 +34,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
         [NonAction]
         public async Task<KhuyenMaiDto> Create(CreateOrEditKhuyenMaiDto input)
         {
-            KhuyenMaiDto result =new KhuyenMaiDto();
+            KhuyenMaiDto result = new KhuyenMaiDto();
             DM_KhuyenMai data = new DM_KhuyenMai();
             data = ObjectMapper.Map<DM_KhuyenMai>(input);
             data.Id = Guid.NewGuid();
@@ -48,7 +47,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
             return result;
         }
         [NonAction]
-        public async Task<KhuyenMaiDto> Update(CreateOrEditKhuyenMaiDto input,DM_KhuyenMai oldData)
+        public async Task<KhuyenMaiDto> Update(CreateOrEditKhuyenMaiDto input, DM_KhuyenMai oldData)
         {
             KhuyenMaiDto result = new KhuyenMaiDto();
             oldData.GhiChu = input.GhiChu;
@@ -75,7 +74,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
         public async Task<KhuyenMaiDto> Delete(Guid id)
         {
             var data = await _khuyenMaiRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            if (data != null)
             {
                 data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
@@ -87,8 +86,8 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
         }
         public async Task<CreateOrEditKhuyenMaiDto> GetForEdit(Guid id)
         {
-            var data = await _khuyenMaiRepository.FirstOrDefaultAsync(x=>x.Id==id);
-            if (data!=null)
+            var data = await _khuyenMaiRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateOrEditKhuyenMaiDto>(data);
             }
@@ -98,9 +97,9 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
         {
             PagedResultDto<KhuyenMaiDto> result = new PagedResultDto<KhuyenMaiDto>();
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            input.Keyword = string.IsNullOrEmpty(input.Keyword) ?"" : input.Keyword;
-            var lstData = await _khuyenMaiRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId??1)).OrderByDescending(x => x.CreationTime).ToListAsync();
-            result.TotalCount= lstData.Count;
+            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
+            var lstData = await _khuyenMaiRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = lstData.Count;
             var data = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<KhuyenMaiDto>>(data);
             return result;

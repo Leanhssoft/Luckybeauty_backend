@@ -1,7 +1,5 @@
 ﻿using Abp.Domain.Repositories;
-using Abp.EntityFrameworkCore.Uow;
 using Abp.Runtime.Security;
-using Abp.Runtime.Session;
 using BanHangBeautify.Common;
 using BanHangBeautify.Common.Consts;
 using BanHangBeautify.DatLichOnline.Dto;
@@ -12,14 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlTypes;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.DatLichOnline
 {
-    public class OnlineBookingAppService :SPAAppServiceBase
+    public class OnlineBookingAppService : SPAAppServiceBase
     {
         IRepository<Tenant, int> _tenantRepository;
         public OnlineBookingAppService(IRepository<Tenant, int> tenantRepository)
@@ -29,15 +25,15 @@ namespace BanHangBeautify.DatLichOnline
         public List<string> GetAllTenant()
         {
             List<string> result = new List<string>();
-            result = _tenantRepository.GetAll().Where(x => x.IsDeleted == false && x.IsActive == true).Select(x=>x.TenancyName.ToLower()).ToList();
+            result = _tenantRepository.GetAll().Where(x => x.IsDeleted == false && x.IsActive == true).Select(x => x.TenancyName.ToLower()).ToList();
             return result;
         }
 
-        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVien(string tenantName,Guid idChiNhanh,Guid idDichVu)
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVien(string tenantName, Guid idChiNhanh, Guid idDichVu)
         {
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
-            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x=>x.TenancyName.ToLower() ==tenantName.ToLower());
+            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
             if (tenant == null)
             {
                 return null;
@@ -53,7 +49,7 @@ namespace BanHangBeautify.DatLichOnline
                 conn.Open();
                 if (conn.State == ConnectionState.Open)
                 {
-                    using (var cmd = new SqlCommand("prc_bookingOnline_SuggestNhanVien",conn))
+                    using (var cmd = new SqlCommand("prc_bookingOnline_SuggestNhanVien", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@TenantId", tenant.Id));
@@ -74,6 +70,7 @@ namespace BanHangBeautify.DatLichOnline
                         }
                         return new List<SuggestEmpolyeeExecuteServiceDto>();
                     }
+                    conn.Close();
 
                 }
 
@@ -84,12 +81,13 @@ namespace BanHangBeautify.DatLichOnline
                 {
                     result = new List<SuggestEmpolyeeExecuteServiceDto>();
                 }
+                conn.Close();
             }
             return result;
         }
         public async Task<List<SuggestDichVuBookingOnlineDto>> SuggestDichVu(string tenantName)
         {
-            
+
             List<SuggestDichVuBookingOnlineDto> result = new List<SuggestDichVuBookingOnlineDto>();
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
             if (tenant == null)
@@ -136,9 +134,9 @@ namespace BanHangBeautify.DatLichOnline
                                     SuggestDichVuBookingOnlineDto rdo = new SuggestDichVuBookingOnlineDto();
                                     rdo.Id = Guid.Parse(row["Id"].ToString());
                                     rdo.TenDichVu = row["TenHangHoa"].ToString();
-                                    rdo.DonGia = decimal.Parse(row["GiaBan"].ToString()??"0");
+                                    rdo.DonGia = decimal.Parse(row["GiaBan"].ToString() ?? "0");
                                     rdo.Image = row["Image"].ToString();
-                                    rdo.SoPhutThucHien = float.Parse(row["SoPhutThucHien"].ToString()??"0");
+                                    rdo.SoPhutThucHien = float.Parse(row["SoPhutThucHien"].ToString() ?? "0");
                                     result.Add(rdo);
                                 }
                             }
@@ -160,7 +158,7 @@ namespace BanHangBeautify.DatLichOnline
         {
             List<SuggestChiNhanhBooking> result = new List<SuggestChiNhanhBooking>();
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
-            if (tenant==null)
+            if (tenant == null)
             {
                 return null;
             }
@@ -211,20 +209,18 @@ namespace BanHangBeautify.DatLichOnline
                 {
                     result = new List<SuggestChiNhanhBooking>();
                 }
-                
+
             }
             return result;
         }
 
-        public async Task<DatLichDto> CreateBooking(string tenantName,DatLichDto data)
+        public async Task<DatLichDto> CreateBooking(string tenantName, DatLichDto data)
         {
             DatLichDto result = new DatLichDto();
             try
             {
-                DateTime startTime = DateTime.Parse(data.BookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
-                data.EndTime = startTime.AddMinutes(data.SoPhutThucHien);
                 var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
-                if (tenant==null)
+                if (tenant == null)
                 {
                     return null;
                 }
@@ -234,46 +230,51 @@ namespace BanHangBeautify.DatLichOnline
                 {
                     connectionString = connecStringInServer;
                 }
-                var conn = new SqlConnection(@connectionString);
-                conn.Open();
-                if (conn.State == ConnectionState.Open)
+                DateTime startTime = DateTime.Parse(data.BookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
+                data.EndTime = startTime.AddMinutes(data.SoPhutThucHien);
+                using (var conn = new SqlConnection(@connectionString))
                 {
-                    using (var cmd = new SqlCommand())
+                    conn.Open();
+                    if (conn.State == ConnectionState.Open)
                     {
-                        cmd.Connection = conn;
-                        cmd.CommandType = CommandType.Text;
-                        cmd.CommandText = @"INSERT INTO 
+                        using (var cmd = new SqlCommand())
+                        {
+                            cmd.Connection = conn;
+                            cmd.CommandType = CommandType.Text;
+                            cmd.CommandText = @"INSERT INTO 
                                             Booking(Id,TenantId,TenKhachHang,SoDienThoai,IdChiNhanh,BookingDate,StartTime,EndTime,GhiChu,LoaiBooking,TrangThai,CreationTime,IsDeleted)
                                             VALUES(@Id,@TenantId,@TenKhachHang,@SoDienThoai,@IdChiNhanh,@BookingDate,@StartTime,@Endtime,@GhiChu,@LoaiBooking,@TrangThaiBooking,@CreationTime,@IsDeleted);";
-                        cmd.CommandText += @"INSERT INTO BookingNhanVien(Id,TenantId,IdBooking,IdNhanVien,CreationTime,IsDeleted) 
+                            cmd.CommandText += @"INSERT INTO BookingNhanVien(Id,TenantId,IdBooking,IdNhanVien,CreationTime,IsDeleted) 
                                                 VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdNhanVien,@CreationTime,@IsDeleted);
                                             ";
-                        cmd.CommandText += @"INSERT INTO BookingService(Id,TenantId,IdBooking,IdDonViQuiDoi,CreationTime,IsDeleted) 
+                            cmd.CommandText += @"INSERT INTO BookingService(Id,TenantId,IdBooking,IdDonViQuiDoi,CreationTime,IsDeleted) 
                                                 VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdDichVu,@CreationTime,@IsDeleted);
                                             ";
 
-                        cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
-                        cmd.Parameters.AddWithValue("@IdBookingNhanVien", Guid.NewGuid());
-                        cmd.Parameters.AddWithValue("@IdBookingDichVu", Guid.NewGuid());
-                        cmd.Parameters.AddWithValue("@TenantId", tenant.Id);
-                        cmd.Parameters.AddWithValue("@TenKhachHang", data.TenKhachHang);
-                        cmd.Parameters.AddWithValue("@SoDienThoai", data.SoDienThoai);
-                        cmd.Parameters.AddWithValue("@IdChiNhanh", data.IdChiNhanh);
-                        cmd.Parameters.AddWithValue("@IdDichVu", data.IdDichVu);
-                        cmd.Parameters.AddWithValue("@IdNhanVien", data.IdNhanVien);
-                        cmd.Parameters.AddWithValue("@BookingDate", data.BookingDate);
-                        cmd.Parameters.AddWithValue("@StartTime",startTime);
-                        cmd.Parameters.AddWithValue("@EndTime", data.EndTime);
-                        cmd.Parameters.AddWithValue("@GhiChu", data.GhiChu);
-                        cmd.Parameters.AddWithValue("@LoaiBooking", 2);
-                        cmd.Parameters.AddWithValue("@TrangThaiBooking", 1);
-                        cmd.Parameters.AddWithValue("@CreationTime", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@IsDeleted", false);
-                        await cmd.ExecuteNonQueryAsync();
-                        Console.WriteLine(cmd.CommandText);
-                    }
+                            cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
+                            cmd.Parameters.AddWithValue("@IdBookingNhanVien", Guid.NewGuid());
+                            cmd.Parameters.AddWithValue("@IdBookingDichVu", Guid.NewGuid());
+                            cmd.Parameters.AddWithValue("@TenantId", tenant.Id);
+                            cmd.Parameters.AddWithValue("@TenKhachHang", data.TenKhachHang);
+                            cmd.Parameters.AddWithValue("@SoDienThoai", data.SoDienThoai);
+                            cmd.Parameters.AddWithValue("@IdChiNhanh", data.IdChiNhanh);
+                            cmd.Parameters.AddWithValue("@IdDichVu", data.IdDichVu);
+                            cmd.Parameters.AddWithValue("@IdNhanVien", data.IdNhanVien);
+                            cmd.Parameters.AddWithValue("@BookingDate", data.BookingDate);
+                            cmd.Parameters.AddWithValue("@StartTime", startTime);
+                            cmd.Parameters.AddWithValue("@EndTime", data.EndTime);
+                            cmd.Parameters.AddWithValue("@GhiChu", data.GhiChu);
+                            cmd.Parameters.AddWithValue("@LoaiBooking", 2);
+                            cmd.Parameters.AddWithValue("@TrangThaiBooking", 1);
+                            cmd.Parameters.AddWithValue("@CreationTime", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@IsDeleted", false);
+                            await cmd.ExecuteNonQueryAsync();
+                            conn.Close();
+                        }
 
-                    result = data;
+                        result = data;
+
+                    }
 
                 }
 
@@ -286,13 +287,13 @@ namespace BanHangBeautify.DatLichOnline
         }
     }
 }
-public class SuggestChiNhanhBooking: SuggestChiNhanh
+public class SuggestChiNhanhBooking : SuggestChiNhanh
 {
     public string Logo { get; set; }
     public string DiaChi { get; set; }
     public string SoDienThoai { get; set; }
 }
-public class SuggestDichVuBookingOnlineDto: SuggestDichVuDto
+public class SuggestDichVuBookingOnlineDto : SuggestDichVuDto
 {
     public string Image { get; set; }
     public float SoPhutThucHien { get; set; }

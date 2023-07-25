@@ -114,7 +114,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
                 }
             }
             return new List<PageHoaDonDto>();
-        } 
+        }
         public async Task<List<PageHoaDonChiTietDto>> GetChiTietHoaDon_byIdHoaDon(Guid idHoaDon)
         {
             using var command = CreateCommand("spGetChiTietHoaDon_byIdHoaDon");

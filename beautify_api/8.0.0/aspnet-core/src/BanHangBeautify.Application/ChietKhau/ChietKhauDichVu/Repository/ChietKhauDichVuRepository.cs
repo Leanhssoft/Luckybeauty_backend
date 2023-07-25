@@ -2,18 +2,13 @@
 using Abp.EntityFrameworkCore;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto;
 using BanHangBeautify.Common;
-using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
-using BanHangBeautify.HangHoa.HangHoa.Repository;
 using Microsoft.Data.SqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
@@ -25,16 +20,16 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
         {
         }
 
-        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAll(PagedRequestDto input,int tenantId, Guid idNhanVien, Guid idChiNhanh)
+        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAll(PagedRequestDto input, int tenantId, Guid idNhanVien, Guid idChiNhanh)
         {
-            using(var cmd = CreateCommand("prc_chietKhauDichVu_getAll"))
+            using (var cmd = CreateCommand("prc_chietKhauDichVu_getAll"))
             {
-                cmd.Parameters.Add(new SqlParameter("@TenantId",tenantId));
-                cmd.Parameters.Add(new SqlParameter("@IdChiNhanh",idChiNhanh));
+                cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+                cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
                 cmd.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanVien));
                 cmd.Parameters.Add(new SqlParameter("@Filter", input.Keyword ?? ""));
-                cmd.Parameters.Add(new SqlParameter("@SortBy", input.SortBy??""));
-                cmd.Parameters.Add(new SqlParameter("@SortType", input.SortType??"desc"));
+                cmd.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
+                cmd.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
                 cmd.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
                 cmd.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
                 using (var dataReadder = await cmd.ExecuteReaderAsync())
@@ -65,7 +60,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
             return new PagedResultDto<ChietKhauDichVuItemDto>();
         }
 
-        public async Task<ChietKhauDichVuDto> GetHoaHongNV_theoDichVu( int tenantId, Guid idNhanVien, Guid idDonViQuyDoi)
+        public async Task<ChietKhauDichVuDto> GetHoaHongNV_theoDichVu(int tenantId, Guid idNhanVien, Guid idDonViQuyDoi)
         {
             using var command = CreateCommand("GetHoaHongNV_theoDichVu");
             command.Parameters.Add(new SqlParameter("@TenantId", tenantId));

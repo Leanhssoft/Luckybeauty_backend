@@ -20,7 +20,7 @@ namespace BanHangBeautify.PhongBan
         {
             _phongBanRepository = phongBanRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_PhongBan_Create,PermissionNames.Pages_PhongBan_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_PhongBan_Create, PermissionNames.Pages_PhongBan_Edit)]
         public async Task<PhongBanDto> CreateOrEdit(CreateOrEditPhongBanDto dto)
         {
             var phongBan = await _phongBanRepository.FirstOrDefaultAsync(x => x.Id == dto.Id);

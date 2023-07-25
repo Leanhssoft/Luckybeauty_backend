@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
@@ -20,7 +19,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
     public class ChietKhauDichVuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_ChietKhauDichVu, Guid> _hoahongDichVu;
-        private readonly IRepository<DM_HangHoa,Guid> _hangHoaRepository;
+        private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
         private readonly IChietKhauDichVuRepository _chietKhauDichVuRepository;
         public ChietKhauDichVuAppService(IRepository<NS_ChietKhauDichVu, Guid> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository,
              IChietKhauDichVuRepository chietKhauDichVuRepository
@@ -30,7 +29,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             _hangHoaRepository = hangHoaRepository;
             _chietKhauDichVuRepository = chietKhauDichVuRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Create,PermissionNames.Pages_ChietKhauDichVu_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Create, PermissionNames.Pages_ChietKhauDichVu_Edit)]
         public async Task<ExecuteResultDto> CreateOrEdit(CreateOrEditChietKhauDichVuDto input)
         {
             var checkExist = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -64,7 +63,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                 result.Message = "Thêm mới thất bại !";
                 result.Status = "error";
             }
-           
+
             return result;
         }
         [NonAction]
@@ -156,11 +155,11 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             }
             return new List<CreateOrEditChietKhauDichVuDto>();
         }
-		public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAccordingByNhanVien(PagedRequestDto input,Guid idNhanVien,Guid idChiNhanh)
+        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAccordingByNhanVien(PagedRequestDto input, Guid idNhanVien, Guid idChiNhanh)
         {
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount-1) * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             return await _chietKhauDichVuRepository.GetAll(input, AbpSession.TenantId ?? 1, idNhanVien, idChiNhanh);
-        }    
+        }
     }
 }

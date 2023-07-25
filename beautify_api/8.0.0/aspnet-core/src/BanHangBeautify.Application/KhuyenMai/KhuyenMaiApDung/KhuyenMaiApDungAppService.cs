@@ -9,25 +9,23 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
 {
     [AbpAuthorize(PermissionNames.Pages_KhuyenMai_ApDung)]
-    public class KhuyenMaiApDungAppService: SPAAppServiceBase
+    public class KhuyenMaiApDungAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_KhuyenMai_ApDung,Guid> _khuyenMaiApDungRepository;
+        private readonly IRepository<DM_KhuyenMai_ApDung, Guid> _khuyenMaiApDungRepository;
         public KhuyenMaiApDungAppService(IRepository<DM_KhuyenMai_ApDung, Guid> khuyenMaiApDungRepository)
         {
             _khuyenMaiApDungRepository = khuyenMaiApDungRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_ApDung_Create,PermissionNames.Pages_KhuyenMai_ApDung_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_ApDung_Create, PermissionNames.Pages_KhuyenMai_ApDung_Edit)]
         public async Task<KhuyenMaiApDungDto> CreateOrEdit(CreateOrEditKhuyenMaiApDungDto input)
         {
-            var checkExist = await _khuyenMaiApDungRepository.FirstOrDefaultAsync(x=>x.Id== input.Id);
-            if (checkExist!=null)
+            var checkExist = await _khuyenMaiApDungRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (checkExist != null)
             {
                 return await Update(input, checkExist);
             }
@@ -37,7 +35,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
         public async Task<KhuyenMaiApDungDto> Create(CreateOrEditKhuyenMaiApDungDto input)
         {
             KhuyenMaiApDungDto result = new KhuyenMaiApDungDto();
-            DM_KhuyenMai_ApDung data =new  DM_KhuyenMai_ApDung();
+            DM_KhuyenMai_ApDung data = new DM_KhuyenMai_ApDung();
             data.Id = Guid.NewGuid();
             data.IdKhuyenMai = input.IdKhuyenMai;
             data.IdNhanVien = input.IdNhanVien;
@@ -46,12 +44,12 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.IsDeleted = false;
-            data.TenantId = AbpSession.TenantId??1;
+            data.TenantId = AbpSession.TenantId ?? 1;
             await _khuyenMaiApDungRepository.InsertAsync(data);
             return result;
         }
         [NonAction]
-        public async Task<KhuyenMaiApDungDto> Update(CreateOrEditKhuyenMaiApDungDto input,DM_KhuyenMai_ApDung oldData)
+        public async Task<KhuyenMaiApDungDto> Update(CreateOrEditKhuyenMaiApDungDto input, DM_KhuyenMai_ApDung oldData)
         {
             KhuyenMaiApDungDto result = new KhuyenMaiApDungDto();
             oldData.IdKhuyenMai = input.IdKhuyenMai;
@@ -68,7 +66,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiApDung
         public async Task<KhuyenMaiApDungDto> Delete(Guid id)
         {
             var data = await _khuyenMaiApDungRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            if (data != null)
             {
                 data.IsDeleted = true;
                 data.DeleterUserId = AbpSession.UserId;

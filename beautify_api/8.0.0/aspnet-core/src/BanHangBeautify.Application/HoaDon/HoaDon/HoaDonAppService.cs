@@ -1,32 +1,22 @@
-﻿using Abp.Authorization;
+﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
+using BanHangBeautify.HoaDon.HoaDon.Exporting;
+using BanHangBeautify.HoaDon.HoaDon.Repository;
+using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
+using BanHangBeautify.HoaDon.NhanVienThucHien;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BanHangBeautify.HoaDon.HoaDon.Repository;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using BanHangBeautify.HangHoa.HangHoa.Repository;
-using Abp.EntityFrameworkCore.Repositories;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
-using static BanHangBeautify.Common.CommonClass;
-using BanHangBeautify.HoaDon.NhanVienThucHien;
-using OfficeOpenXml.Style;
-using Abp.Application.Services.Dto;
-using NPOI.OpenXmlFormats.Wordprocessing;
-using BanHangBeautify.NhanSu.NhanVien.Dto;
-using BanHangBeautify.Storage;
-using BanHangBeautify.HoaDon.HoaDon.Exporting;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {

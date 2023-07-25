@@ -1,14 +1,9 @@
 ﻿using Abp.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.Bookings.Bookings.Dto
 {
-    public class UpdateBookingDto: Entity<Guid>
+    public class UpdateBookingDto : Entity<Guid>
     {
         public string TenKhachHang { get; set; }
         public string SoDienThoai { get; set; }

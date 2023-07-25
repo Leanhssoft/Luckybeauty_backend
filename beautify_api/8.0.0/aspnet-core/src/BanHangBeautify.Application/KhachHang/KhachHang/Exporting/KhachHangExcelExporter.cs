@@ -6,16 +6,11 @@ using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Hosting;
-using NPOI.HPSF;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 namespace BanHangBeautify.KhachHang.KhachHang.Exporting
 {
     public class KhachHangExcelExporter : EpPlusExcelExporterBase, IKhachHangExcelExporter

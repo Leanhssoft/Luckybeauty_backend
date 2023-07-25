@@ -1,16 +1,13 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Repository;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
-using BanHangBeautify.PhongBan.Dto;
 using BanHangBeautify.Suggests.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,9 +25,9 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public readonly IRepository<User, long> _userRepository;
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
-        public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService,IRepository<User, long> userRepository,
-            IRepository<NS_NhanVien,Guid> nhanSuRepository,
-            IRepository<NS_QuaTrinh_CongTac,Guid> quaTrinhCongTacRepository,
+        public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService, IRepository<User, long> userRepository,
+            IRepository<NS_NhanVien, Guid> nhanSuRepository,
+            IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository,
             IChiNhanhRepository chiNhanhRepository)
         {
             _chiNhanhService = chiNhanhService;
@@ -42,9 +39,9 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         [HttpGet]
         public async Task<PagedResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedRequestDto input)
         {
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount -1) * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            return await _chiNhanhReponsitory.GetAll(input,AbpSession.TenantId??1);
+            return await _chiNhanhReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
         }
         public async Task<DM_ChiNhanh> GetChiNhanh(Guid id)
         {
@@ -53,9 +50,9 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public async Task<List<SuggestChiNhanh>> GetByUserId(long userId)
         {
             List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();
-            var user =await _userRepository.FirstOrDefaultAsync(x => x.Id == userId && x.TenantId==AbpSession.TenantId);
-            var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x => x.Id == user.NhanSuId && x.TenantId == (AbpSession.TenantId??1));
-            if (nhanSu==null)
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId && x.TenantId == AbpSession.TenantId);
+            var nhanSu = await _nhanSuRepository.FirstOrDefaultAsync(x => x.Id == user.NhanSuId && x.TenantId == (AbpSession.TenantId ?? 1));
+            if (nhanSu == null)
             {
                 var chiNhanh = _chiNhanhService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 foreach (var item in chiNhanh)
@@ -68,7 +65,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             }
             else
             {
-                var idChiNhanh = _quaTrinhCongTacRepository.GetAll().Where(x=>x.IsDeleted==false&& x.TenantId==(AbpSession.TenantId??1)).OrderByDescending(x=>x.CreationTime).FirstOrDefault(x => x.IdNhanVien == nhanSu.Id).IdChiNhanh;
+                var idChiNhanh = _quaTrinhCongTacRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).FirstOrDefault(x => x.IdNhanVien == nhanSu.Id).IdChiNhanh;
                 var chiNhanh = _chiNhanhService.FirstOrDefault(x => x.Id == idChiNhanh);
                 result.Add(new SuggestChiNhanh()
                 {
@@ -83,14 +80,14 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public async Task<CreateChiNhanhDto> GetForEdit(Guid id)
         {
             var data = await _chiNhanhService.GetAsync(id);
-            if (data!=null)
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateChiNhanhDto>(data);
             }
             return new CreateChiNhanhDto();
         }
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Edit,PermissionNames.Pages_ChiNhanh_Create)]
+        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Edit, PermissionNames.Pages_ChiNhanh_Create)]
         public async Task<ExecuteResultDto> CreateOrEditChiNhanh(CreateChiNhanhDto dto)
         {
             var exits = await _chiNhanhService.FirstOrDefaultAsync(dto.Id);
@@ -149,7 +146,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             try
             {
                 var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh == dto.TenChiNhanh);
-                if (checkTenChiNhanh==null)
+                if (checkTenChiNhanh == null)
                 {
                     chiNhanh.TenChiNhanh = dto.TenChiNhanh;
                     chiNhanh.MaSoThue = dto.MaSoThue;
@@ -169,7 +166,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                     result.Message = "Tên chi nhánh đã tồn tại!";
                     result.Status = "error";
                 }
-               
+
             }
             catch (Exception ex)
             {
@@ -208,12 +205,12 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public async Task<List<SuggestChiNhanh>> GetChiNhanhByUser()
         {
             List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();
-            var user =await _userRepository.FirstOrDefaultAsync(x=>x.Id==AbpSession.UserId&&x.TenantId==AbpSession.TenantId);
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == AbpSession.UserId && x.TenantId == AbpSession.TenantId);
             if (user != null)
             {
                 if (user.IsAdmin)
                 {
-                    var lst = await _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x=>x.CreationTime).ToListAsync();
+                    var lst = await _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
                     if (lst != null || lst.Count > 0)
                     {
                         foreach (var item in lst)
@@ -229,12 +226,12 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 {
                     var qtct = _quaTrinhCongTacRepository.GetAll().
                         Include(x => x.NS_NhanVien).
-                        Where(x=>x.NS_NhanVien.Id==user.NhanSuId &&
-                            x.IsDeleted==false && x.TenantId == (AbpSession.TenantId??1)
+                        Where(x => x.NS_NhanVien.Id == user.NhanSuId &&
+                            x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)
                             ).
                         OrderByDescending(x => x.CreationTime).Take(1).ToList().FirstOrDefault();
-                    var chiNhanh =await _chiNhanhService.FirstOrDefaultAsync(x=>x.Id==qtct.IdChiNhanh);
-                    if (chiNhanh!=null)
+                    var chiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == qtct.IdChiNhanh);
+                    if (chiNhanh != null)
                     {
                         result.Add(new SuggestChiNhanh()
                         {

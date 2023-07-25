@@ -1,10 +1,6 @@
 ﻿using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.HoaDon.Dto
 {
@@ -40,6 +36,6 @@ namespace BanHangBeautify.HoaDon.HoaDon.Dto
         public double? DiemGiaoDich { get; set; } = 0; // Số điểm khách hàng tích được khi mua hàng theo hóa đơn này
 
         public List<HoaDonChiTietDto> HoaDonChiTiet { get; set; }
-        
+
     }
 }

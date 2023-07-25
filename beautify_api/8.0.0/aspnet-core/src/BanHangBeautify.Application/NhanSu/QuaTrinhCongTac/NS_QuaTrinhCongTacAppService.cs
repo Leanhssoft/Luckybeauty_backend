@@ -20,7 +20,7 @@ namespace BanHangBeautify.NhanSu.QuaTrinhCongTac
         {
             _repository = repository;
         }
-        [AbpAuthorize(PermissionNames.Pages_QuaTrinhCongTac_Create,PermissionNames.Pages_QuaTrinhCongTac_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_QuaTrinhCongTac_Create, PermissionNames.Pages_QuaTrinhCongTac_Edit)]
         public async Task<QuaTrinhConTacDto> CreateOrEdit(CreateOrEditQuaTrinhConTacDto dto)
         {
             var quaTrinhCongTac = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);

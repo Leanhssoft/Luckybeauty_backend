@@ -1,5 +1,4 @@
-﻿using Abp.Authorization;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
@@ -12,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Suggests
@@ -54,16 +52,16 @@ namespace BanHangBeautify.Suggests
             _nhanVienRepository = nhanVienRepository;
             _dichVuNhanVienRespository = dichVuNhanVienRespository;
             _khachHangRepository = khachHangRepository;
-            _loaiHangHoaRepository= loaiHangHoaRepository;
-            _chiNhanhRepository= chiNhanhRepository;
-            _chucVuRepository= chucVuRepository;
+            _loaiHangHoaRepository = loaiHangHoaRepository;
+            _chiNhanhRepository = chiNhanhRepository;
+            _chucVuRepository = chucVuRepository;
             _nhomKhachRepository = nhomKhachRepository;
-            _loaiKhachRepository= loaiKhachRepository;
-            _nguonKhachRepository= nguonKhachRepository;
+            _loaiKhachRepository = loaiKhachRepository;
+            _nguonKhachRepository = nguonKhachRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
             _hangHoaRepository = hangHoaRepository;
             _caLamViecRepository = caLamViecRepository;
-            _phongBanRepository= phongBanRepository;
+            _phongBanRepository = phongBanRepository;
             _suggestRepository = suggestRepository;
         }
         public async Task<List<SuggestChucVu>> SuggestChucVus()
@@ -98,14 +96,14 @@ namespace BanHangBeautify.Suggests
 
         }
         [HttpPost]
-        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(Guid idChiNhanh,Guid? idNhanVien)
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(Guid idChiNhanh, Guid? idNhanVien)
         {
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
-            var lstNhanSu = await _suggestRepository.SuggestNhanVienThucHienDichVu(AbpSession.TenantId??1,idChiNhanh,idNhanVien);
+            var lstNhanSu = await _suggestRepository.SuggestNhanVienThucHienDichVu(AbpSession.TenantId ?? 1, idChiNhanh, idNhanVien);
             foreach (var item in lstNhanSu)
             {
-                var nhanVienDichVu = await  _dichVuNhanVienRespository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false&& x.IdNhanVien==item.Id).ToListAsync();
-                if (nhanVienDichVu==null||nhanVienDichVu.Count==0)
+                var nhanVienDichVu = await _dichVuNhanVienRespository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false && x.IdNhanVien == item.Id).ToListAsync();
+                if (nhanVienDichVu == null || nhanVienDichVu.Count == 0)
                 {
                     continue;
                 }
@@ -136,7 +134,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestLoaiKhach>> SuggestLoaiKhachHangs()
         {
             List<SuggestLoaiKhach> result = new List<SuggestLoaiKhach>();
-            var lst = await _loaiKhachRepository.GetAll().Where(x=> x.IsDeleted == false).ToListAsync();
+            var lst = await _loaiKhachRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)
@@ -223,7 +221,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestDonViQuiDoi>> SuggestDonViQuiDois()
         {
             List<SuggestDonViQuiDoi> result = new List<SuggestDonViQuiDoi>();
-            var lst = await _donViQuiDoiRepository.GetAll().Include(x=>x.DM_HangHoa).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+            var lst = await _donViQuiDoiRepository.GetAll().Include(x => x.DM_HangHoa).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)
@@ -255,7 +253,7 @@ namespace BanHangBeautify.Suggests
                     SuggestDichVuDto rdo = new SuggestDichVuDto();
                     rdo.Id = item.Id;
                     rdo.TenDichVu = item.DM_HangHoa.TenHangHoa;
-                    rdo.DonGia =decimal.Parse(item.GiaBan.ToString()??"0");
+                    rdo.DonGia = decimal.Parse(item.GiaBan.ToString() ?? "0");
                     result.Add(rdo);
                 }
             }

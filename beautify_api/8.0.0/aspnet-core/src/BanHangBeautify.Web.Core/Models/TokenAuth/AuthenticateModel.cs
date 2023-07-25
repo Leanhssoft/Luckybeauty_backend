@@ -1,6 +1,5 @@
 ﻿using Abp.Auditing;
 using Abp.Authorization.Users;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Models.TokenAuth
