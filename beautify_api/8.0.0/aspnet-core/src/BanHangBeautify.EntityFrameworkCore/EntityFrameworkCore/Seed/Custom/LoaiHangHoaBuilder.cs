@@ -1,12 +1,6 @@
-﻿using Abp.Application.Services.Dto;
-using BanHangBeautify.Data.Entities;
-using Microsoft.Extensions.Hosting;
-using System;
+﻿using BanHangBeautify.Data.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
 {

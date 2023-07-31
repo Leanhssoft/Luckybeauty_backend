@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto
 {
     // not use
     public class CreateOrEditQuyHoaDonCTDto
     {
-        public Guid Id{set;get;}
-        public Guid IdQuyHoaDon{set;get;}
-        public Guid? IdHoaDonLienQuan{set;get;}
-        public Guid? IdKhachHang{set;get;}
-        public Guid? IdNhanVien{set;get;}
-        public Guid? IdTaiKhoanNganHang{set;get;}
-        public Guid? IdKhoanThuChi{set;get;}
+        public Guid Id { set; get; }
+        public Guid IdQuyHoaDon { set; get; }
+        public Guid? IdHoaDonLienQuan { set; get; }
+        public Guid? IdKhachHang { set; get; }
+        public Guid? IdNhanVien { set; get; }
+        public Guid? IdTaiKhoanNganHang { set; get; }
+        public Guid? IdKhoanThuChi { set; get; }
         public double? LaPTChiPhiNganHang { get; set; } = 0;
         public double? ChiPhiNganHang { get; set; } = 0;
         public double? ThuPhiTienGui { get; set; } = 0;

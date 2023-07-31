@@ -1,5 +1,5 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,7 +15,7 @@ namespace BanHangBeautify.Entities
         [MaxLength(256)]
         public string TenNhomHang_KhongDau { get; set; }
         public bool? LaNhomHangHoa { get; set; } = false;
-        public Guid? IdParent { get; set; } 
+        public Guid? IdParent { get; set; }
         public string Color { get; set; }
         public string MoTa { get; set; }
     }

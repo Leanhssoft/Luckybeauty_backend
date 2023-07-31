@@ -1,6 +1,6 @@
-﻿using System;
+﻿using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
+using System;
 using System.Collections.Generic;
-using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Dto
 {
@@ -21,6 +21,6 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
         public string MoTa { get; set; }
         public string TenLoaiHangHoa { get; set; }
         public string TxtTrangThaiHang { get; set; }
-         public List<DonViQuiDoiDto> DonViTinhs { get; set; }
+        public List<DonViQuiDoiDto> DonViTinhs { get; set; }
     }
 }

@@ -67,7 +67,7 @@ namespace BanHangBeautify.Controllers
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
                 UserId = loginResult.User.Id,
                 IdNhanVien = loginResult.User.NhanSuId
-               
+
             };
         }
 

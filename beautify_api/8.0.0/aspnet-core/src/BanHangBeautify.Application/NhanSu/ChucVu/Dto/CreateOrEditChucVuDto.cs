@@ -6,7 +6,6 @@ namespace BanHangBeautify.NhanSu.ChucVu.Dto
 {
     public class CreateOrEditChucVuDto : EntityDto<Guid>
     {
-        [Required]
         public string MaChucVu { get; set; }
         [MaxLength(256)]
         [Required]

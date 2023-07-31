@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Abp.MultiTenancy;
+﻿using Abp.MultiTenancy;
+using System.Collections.Generic;
 
 namespace Asd.AbpZeroTemplate.DashboardCustomization.Definitions
 {

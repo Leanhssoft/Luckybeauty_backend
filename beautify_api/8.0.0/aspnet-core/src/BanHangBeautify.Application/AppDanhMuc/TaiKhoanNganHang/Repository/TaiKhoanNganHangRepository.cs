@@ -7,12 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository
 {
-    public class TaiKhoanNganHangRepository:SPARepositoryBase<DM_TaiKhoanNganHang, Guid>
+    public class TaiKhoanNganHangRepository : SPARepositoryBase<DM_TaiKhoanNganHang, Guid>
     {
         public TaiKhoanNganHangRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {

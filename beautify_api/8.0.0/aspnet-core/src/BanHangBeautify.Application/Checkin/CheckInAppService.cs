@@ -1,22 +1,13 @@
-﻿using Abp.Authorization;
-using Abp.Domain.Repositories;
-using BanHangBeautify.Authorization;
+﻿using Abp.Domain.Repositories;
 using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Checkin.Repository;
-using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
-using BanHangBeautify.HangHoa.HangHoa.Repository;
-using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Checkin
@@ -101,7 +92,7 @@ namespace BanHangBeautify.Checkin
                 return new List<PageKhachHangCheckingDto>();
             }
         }
-       
+
         [HttpPost]
         public async Task<string> UpdateTrangThaiCheckin(Guid idCheckIn, int trangThai = 1)
         {
@@ -151,7 +142,7 @@ namespace BanHangBeautify.Checkin
         public async Task<bool> Update_IdHoaDon_toCheckInHoaDon(Guid idCheckIn, Guid idHoaDon)
         {
             var listUp = await _checkInHoaDon.GetAll().Where(x => x.IdCheckIn == idCheckIn).ToListAsync();
-            if(listUp != null && listUp.Count > 0)
+            if (listUp != null && listUp.Count > 0)
             {
                 var objUp = listUp.FirstOrDefault();
                 objUp.IdHoaDon = idHoaDon;

@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
-using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
-using System.Data;
 
 namespace BanHangBeautify.Checkin.Dto
 {

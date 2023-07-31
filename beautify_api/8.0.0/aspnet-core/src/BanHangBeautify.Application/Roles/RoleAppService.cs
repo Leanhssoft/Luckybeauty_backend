@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,7 +61,7 @@ namespace BanHangBeautify.Roles
                 )
                 .ToListAsync();
 
-            return new PagedResultDto<RoleListDto>(roles.Count,ObjectMapper.Map<List<RoleListDto>>(roles));
+            return new PagedResultDto<RoleListDto>(roles.Count, ObjectMapper.Map<List<RoleListDto>>(roles));
         }
         [NonAction]
         public override async Task<RoleDto> UpdateAsync(RoleDto input)
@@ -84,10 +83,10 @@ namespace BanHangBeautify.Roles
 
             return MapToEntityDto(role);
         }
-        [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Create,PermissionNames.Pages_Administration_Roles_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Create, PermissionNames.Pages_Administration_Roles_Edit)]
         public async Task<RoleDto> CreateOrUpdateRole(CreateOrUpdateRoleInput input)
         {
-            if (input.Id.Value>0)
+            if (input.Id.Value > 0)
             {
                 return await UpdateRole(input);
             }
@@ -96,11 +95,11 @@ namespace BanHangBeautify.Roles
                 return await CreateRole(input);
             }
         }
-        
+
         protected virtual async Task<RoleDto> CreateRole(CreateOrUpdateRoleInput input)
         {
             CheckUpdatePermission();
-            var role = new Role(AbpSession.TenantId,input.Name, input.DisplayName) { };
+            var role = new Role(AbpSession.TenantId, input.Name, input.DisplayName) { };
             role.SetNormalizedName();
             CheckErrors(await _roleManager.CreateAsync(role));
             await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
@@ -156,14 +155,14 @@ namespace BanHangBeautify.Roles
                 role.DeletionTime = DateTime.Now;
                 role.DeleterUserId = AbpSession.UserId;
                 await _roleManager.UpdateAsync(role);
-                result= true;
+                result = true;
             }
             catch (System.Exception)
             {
                 result = false;
             }
             return result;
-           
+
         }
 
         public Task<ListResultDto<PermissionDto>> GetAllPermissions()
@@ -206,10 +205,10 @@ namespace BanHangBeautify.Roles
             var grantedPermissions = (await _roleManager.GetGrantedPermissionsAsync(role)).ToArray();
             return new CreateOrUpdateRoleInput
             {
-                Description= role.Description,
+                Description = role.Description,
                 DisplayName = role.DisplayName,
                 Name = role.Name,
-                Id= role.Id,
+                Id = role.Id,
                 GrantedPermissions = grantedPermissions.Select(p => p.Name).ToList()
             };
         }

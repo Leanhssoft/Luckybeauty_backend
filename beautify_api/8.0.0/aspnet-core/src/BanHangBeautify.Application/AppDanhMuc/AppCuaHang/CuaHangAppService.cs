@@ -22,7 +22,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
         }
-        
+
         [AbpAuthorize(PermissionNames.Pages_CongTy_Create)]
         public async Task<CuaHangDto> CreateCuaHang(CreateCuaHangDto dto)
         {
@@ -110,20 +110,22 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
         public async Task<EditCuaHangDto> GetCongTyForEdit(Guid idChiNhanh)
         {
             var chiNhanh = _chiNhanhRepository.FirstOrDefault(x => x.Id == idChiNhanh);
-            if (chiNhanh!=null)
+            if (chiNhanh != null)
             {
-                var cuaHang =  await _congTyRepository.GetAsync(chiNhanh.IdCongTy);
-                return new EditCuaHangDto() {
+                var cuaHang = await _congTyRepository.GetAsync(chiNhanh.IdCongTy);
+                return new EditCuaHangDto()
+                {
                     Id = cuaHang.Id,
                     DiaChi = cuaHang.DiaChi,
                     Facebook = cuaHang.Facebook,
-                    GhiChu = cuaHang.GhiChu ,
-                    Instagram = cuaHang.Instagram ,
-                    Logo = cuaHang.Logo ,
-                    MaSoThue = cuaHang.MaSoThue ,SoDienThoai=cuaHang.SoDienThoai,
-                    TenCongTy = cuaHang.TenCongTy ,
-                    Twitter= cuaHang.Twitter ,
-                    Website =cuaHang.Website
+                    GhiChu = cuaHang.GhiChu,
+                    Instagram = cuaHang.Instagram,
+                    Logo = cuaHang.Logo,
+                    MaSoThue = cuaHang.MaSoThue,
+                    SoDienThoai = cuaHang.SoDienThoai,
+                    TenCongTy = cuaHang.TenCongTy,
+                    Twitter = cuaHang.Twitter,
+                    Website = cuaHang.Website
                 };
             }
             return new EditCuaHangDto();

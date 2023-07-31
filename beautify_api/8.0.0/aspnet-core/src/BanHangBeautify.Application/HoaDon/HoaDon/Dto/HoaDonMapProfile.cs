@@ -1,13 +1,6 @@
 ﻿using AutoMapper;
-using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.HoaDon.Dto
 {

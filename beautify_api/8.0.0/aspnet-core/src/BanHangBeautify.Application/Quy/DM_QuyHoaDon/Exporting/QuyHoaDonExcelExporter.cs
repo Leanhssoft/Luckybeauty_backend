@@ -2,23 +2,15 @@
 using Abp.Timing.Timezone;
 using BanHangBeautify.Common;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
-using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.Net.MimeTypes;
+using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
 using BanHangBeautify.Storage;
-using OfficeOpenXml.Style;
+using Microsoft.AspNetCore.Hosting;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
-using System.Data;
-using NPOI.HPSF;
-using Newtonsoft.Json;
-using NPOI.SS.Formula.Functions;
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon.Exporting
 {

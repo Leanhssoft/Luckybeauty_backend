@@ -11,7 +11,8 @@ namespace BanHangBeautify.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Castle.Components.DictionaryAdapter.Key("Id")]
         override
-        public int Id { get; set; }
+        public int Id
+        { get; set; }
         [MaxLength(10)]
         public string MaLoaiHangHoa { get; set; }
         [MaxLength(256)]

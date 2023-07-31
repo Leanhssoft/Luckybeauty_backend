@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.HoaDonChiTiet.Dto
 {
-    public class PageHoaDonChiTietDto:HoaDonChiTietDto
+    public class PageHoaDonChiTietDto : HoaDonChiTietDto
     {
         public Guid? IdHangHoa { get; set; }
         public Guid? IdNhomHangHoa { get; set; }

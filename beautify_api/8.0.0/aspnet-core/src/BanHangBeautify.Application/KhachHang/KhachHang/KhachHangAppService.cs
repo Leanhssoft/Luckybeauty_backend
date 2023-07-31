@@ -4,7 +4,6 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
-using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
@@ -12,13 +11,11 @@ using BanHangBeautify.NewFolder;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -51,7 +48,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _khachHangExcelExporter = khachHangExcelExporter;
             _tempFileCacheManager = tempFileCacheManager;
         }
-        [AbpAuthorize(PermissionNames.Pages_KhachHang_Create,PermissionNames.Pages_KhachHang_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_KhachHang_Create, PermissionNames.Pages_KhachHang_Edit)]
         public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
@@ -118,7 +115,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<KhachHangDto> Delete(Guid id)
         {
             KhachHangDto result = new KhachHangDto();
-           
+
             var delete = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (delete != null)
             {
@@ -313,7 +310,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                             }
 
                         }
-                        if (countImportData >0 )
+                        if (countImportData > 0)
                         {
                             result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
                             result.Status = "success";

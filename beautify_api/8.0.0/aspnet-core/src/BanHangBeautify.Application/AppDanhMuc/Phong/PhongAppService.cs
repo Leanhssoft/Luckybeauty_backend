@@ -6,26 +6,24 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.AppDanhMuc.Phong
 {
     [AbpAuthorize(PermissionNames.Pages_Phong)]
-    public class PhongAppService:SPAAppServiceBase
+    public class PhongAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_Phong,Guid> _phongRepository;
+        private readonly IRepository<DM_Phong, Guid> _phongRepository;
         public PhongAppService(IRepository<DM_Phong, Guid> phongRepository)
         {
             _phongRepository = phongRepository;
         }
-        public async Task<PhongDto> CreateOrEdit(CreateOrEditPhongDto input) {
-            var checkExist = await _phongRepository.FirstOrDefaultAsync(x=> x.Id == input.Id);
+        public async Task<PhongDto> CreateOrEdit(CreateOrEditPhongDto input)
+        {
+            var checkExist = await _phongRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist == null)
             {
                 return await Create(input);
@@ -40,7 +38,7 @@ namespace BanHangBeautify.AppDanhMuc.Phong
             data.Id = Guid.NewGuid();
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId??1;
+            data.TenantId = AbpSession.TenantId ?? 1;
             data.IsDeleted = false;
             await _phongRepository.InsertAsync(data);
             PhongDto result = new PhongDto();
@@ -48,7 +46,8 @@ namespace BanHangBeautify.AppDanhMuc.Phong
             return result;
         }
         [NonAction]
-        public async Task<PhongDto> Update(CreateOrEditPhongDto input,DM_Phong oldData) { 
+        public async Task<PhongDto> Update(CreateOrEditPhongDto input, DM_Phong oldData)
+        {
             oldData.MaPhong = input.MaPhong;
             oldData.TenPhong = input.TenPhong;
             oldData.IdViTri = input.IdViTri;
@@ -63,11 +62,11 @@ namespace BanHangBeautify.AppDanhMuc.Phong
         public async Task<PhongDto> Delete(Guid id)
         {
             var data = await _phongRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            if (data != null)
             {
                 data.IsDeleted = true;
-                data.DeleterUserId= AbpSession.UserId;
-                data.DeletionTime= DateTime.Now;
+                data.DeleterUserId = AbpSession.UserId;
+                data.DeletionTime = DateTime.Now;
                 _phongRepository.Update(data);
             }
             var result = ObjectMapper.Map<PhongDto>(data);
@@ -75,14 +74,15 @@ namespace BanHangBeautify.AppDanhMuc.Phong
         }
         public async Task<CreateOrEditPhongDto> GetForEdit(Guid id)
         {
-            var data = await _phongRepository.FirstOrDefaultAsync(x=>x.Id== id);
-            if (data!=null)
+            var data = await _phongRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateOrEditPhongDto>(data);
             }
             return new CreateOrEditPhongDto();
         }
-        public async Task<PagedResultDto<PhongDto>> GetAll(PagedRequestDto input) {
+        public async Task<PagedResultDto<PhongDto>> GetAll(PagedRequestDto input)
+        {
             PagedResultDto<PhongDto> result = new PagedResultDto<PhongDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;

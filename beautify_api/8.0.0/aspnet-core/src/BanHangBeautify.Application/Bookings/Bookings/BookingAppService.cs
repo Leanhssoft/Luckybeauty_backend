@@ -1,8 +1,5 @@
-﻿using Abp.AspNetCore.SignalR.Hubs;
-using Abp.Authorization;
-using Abp.Dependency;
+﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Bookings.Bookings.BookingRepository;
 using BanHangBeautify.Bookings.Bookings.Dto;
@@ -11,13 +8,10 @@ using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Intrinsics.Arm;
 using System.Threading.Tasks;
-using BanHangBeautify.Common;
 
 namespace BanHangBeautify.Bookings.Bookings
 {

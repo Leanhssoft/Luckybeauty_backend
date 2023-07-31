@@ -2,8 +2,8 @@
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore;
 using Abp.EntityFrameworkCore.Repositories;
-using System.Data.Common;
 using System.Data;
+using System.Data.Common;
 
 namespace BanHangBeautify.EntityFrameworkCore.Repositories
 {

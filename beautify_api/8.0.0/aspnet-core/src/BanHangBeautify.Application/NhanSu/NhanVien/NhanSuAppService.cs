@@ -5,17 +5,13 @@ using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Exporting;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Storage;
-using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using NPOI.HSSF.Record.Chart;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -37,7 +33,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhService;
         private readonly INhanVienExcelExporter _nhanVienExcelExporter;
         public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository,
-            IRepository<NS_ChucVu, Guid> chucVuRepository, 
+            IRepository<NS_ChucVu, Guid> chucVuRepository,
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTac,
             INhanSuRepository nhanSuRepository, IHostingEnvironment env,
             IRepository<DM_ChiNhanh, Guid> chiNhanhService,
@@ -52,7 +48,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             _chiNhanhService = chiNhanhService;
             _nhanVienExcelExporter = nhanVienExcelExporter;
         }
-        [AbpAuthorize(PermissionNames.Pages_NhanSu_Create,PermissionNames.Pages_NhanSu_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_Create, PermissionNames.Pages_NhanSu_Edit)]
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
         {
             try
@@ -80,9 +76,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
             //nhanSu.IdPhongBan = dto.IdPhongBan;
-            var curentTenant =await GetCurrentTenantAsync();
+            var curentTenant = await GetCurrentTenantAsync();
             string tenantName = "";
-            if (curentTenant==null)
+            if (curentTenant == null)
             {
                 tenantName = "AdminTenant";
             }
@@ -90,7 +86,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             {
                 tenantName = curentTenant.TenancyName;
             }
-            var countNhanVien = _repository.GetAll().Where(x=>x.TenantId==(AbpSession.TenantId??1)).ToList().Count();
+            var countNhanVien = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList().Count();
             nhanSu.MaNhanVien = "NS00" + countNhanVien + 1;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
@@ -116,9 +112,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.IsDeleted = false;
             var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
             result.NgayVaoLam = nhanSu.CreationTime;
-            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu??Guid.Empty)!=null ? _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty).TenChucVu:string.Empty;
+            result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty) != null ? _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty).TenChucVu : string.Empty;
             await _repository.InsertAsync(nhanSu);
-            var qtct =  CreateFirstQuaTrinhCongTac(nhanSu.Id, dto.IdChiNhanh);
+            var qtct = CreateFirstQuaTrinhCongTac(nhanSu.Id, dto.IdChiNhanh);
             await _quaTrinhCongTac.InsertAsync(qtct);
             return result;
         }
@@ -185,13 +181,13 @@ namespace BanHangBeautify.NhanSu.NhanVien
         [HttpPost]
         public async Task<CreateOrEditNhanSuDto> GetNhanSu(Guid id)
         {
-            var nhanSu =await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            var nhanSu = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (nhanSu != null)
             {
                 var result = ObjectMapper.Map<CreateOrEditNhanSuDto>(nhanSu);
                 return result;
             }
-            
+
             return new CreateOrEditNhanSuDto();
         }
         public async Task<PagedResultDto<NhanSuItemDto>> GetAll(PagedNhanSuRequestDto input)
@@ -199,7 +195,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             input.Filter = (input.Filter ?? string.Empty).Trim();
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.MaxResultCount = input.MaxResultCount;
-            input.TenantId = input.TenantId != null ? input.TenantId :(AbpSession.TenantId??1);
+            input.TenantId = input.TenantId != null ? input.TenantId : (AbpSession.TenantId ?? 1);
             return await _nhanSuRepository.GetAllNhanSu(input);
         }
         public async Task<FileDto> ExportDanhSach(PagedNhanSuRequestDto input)
@@ -241,9 +237,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
                                 var checkPhoneNumber = await _repository.FirstOrDefaultAsync(x => x.SoDienThoai == data.SoDienThoai);
                                 await UnitOfWorkManager.Current.SaveChangesAsync();
                                 string tenChiNhanh = worksheet.Cells[row, 10].Value?.ToString();
-                                var checkChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh.Trim() ==tenChiNhanh.Trim());
+                                var checkChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh.Trim() == tenChiNhanh.Trim());
                                 await UnitOfWorkManager.Current.SaveChangesAsync();
-                                if (checkPhoneNumber != null|| data.TenNhanVien==null || data.SoDienThoai==null || checkChiNhanh==null)
+                                if (checkPhoneNumber != null || data.TenNhanVien == null || data.SoDienThoai == null || checkChiNhanh == null)
                                 {
                                     countImportLoi++;
                                     continue;

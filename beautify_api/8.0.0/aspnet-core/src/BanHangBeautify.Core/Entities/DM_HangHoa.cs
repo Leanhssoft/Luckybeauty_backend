@@ -10,6 +10,7 @@ namespace BanHangBeautify.Data.Entities
 {
     public class DM_HangHoa : FullAuditedEntity<Guid>, IMustHaveTenant
     {
+        public string Image { get; set; }
         [MaxLength(256)]
         public string TenHangHoa { get; set; }
         [MaxLength(256)]

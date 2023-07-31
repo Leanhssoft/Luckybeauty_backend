@@ -15,7 +15,6 @@ using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Roles.Dto;
-using BanHangBeautify.Suggests.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +45,7 @@ namespace BanHangBeautify.Users
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
             LogInManager logInManager,
-            IRepository<NS_NhanVien,Guid> nhanVienRepository)
+            IRepository<NS_NhanVien, Guid> nhanVienRepository)
             : base(repository)
         {
             _userManager = userManager;
@@ -57,7 +56,7 @@ namespace BanHangBeautify.Users
             _logInManager = logInManager;
             _nhanVienRepository = nhanVienRepository;
         }
-        
+
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
         {
             CheckCreatePermission();
@@ -111,11 +110,11 @@ namespace BanHangBeautify.Users
             CheckUpdatePermission();
 
             var user = await _userManager.GetUserByIdAsync(input.Id);
-            user.IsAdmin = input.IsAdmin??false;
+            user.IsAdmin = input.IsAdmin ?? false;
             user.Surname = input.Surname;
             user.Name = input.Name;
             user.PhoneNumber = input.PhoneNumber;
-            user.EmailAddress= input.EmailAddress;
+            user.EmailAddress = input.EmailAddress;
             user.IsActive = input.IsActive;
             user.LastModificationTime = DateTime.Now;
             user.LastModifierUserId = AbpSession.UserId;
@@ -273,8 +272,8 @@ namespace BanHangBeautify.Users
         public async Task<ProfileDto> GetForUpdateProfile()
         {
             var user = _userManager.GetUserById(AbpSession.UserId ?? 0);
-            
-            if (user!=null)
+
+            if (user != null)
             {
                 var result = new ProfileDto();
                 result.Id = user.Id;
@@ -284,8 +283,8 @@ namespace BanHangBeautify.Users
                 result.UserName = user.UserName;
                 result.PhoneNumber = user.PhoneNumber;
                 result.EmailAddress = user.EmailAddress;
-                var nhanSu =await _nhanVienRepository.FirstOrDefaultAsync(x=>x.Id==user.NhanSuId);
-                if (nhanSu!=null)
+                var nhanSu = await _nhanVienRepository.FirstOrDefaultAsync(x => x.Id == user.NhanSuId);
+                if (nhanSu != null)
                 {
                     result.Avatar = nhanSu.Avatar;
                     result.CCCD = nhanSu.CCCD;
@@ -302,18 +301,18 @@ namespace BanHangBeautify.Users
         public async Task<bool> UpdateProfile(ProfileDto input)
         {
             var user = _userManager.GetUserById(input.Id);
-            if (user==null)
+            if (user == null)
             {
                 return false;
             }
             user.Name = input.Name;
             user.Surname = input.Surname;
-            user.PhoneNumber = input.PhoneNumber; 
+            user.PhoneNumber = input.PhoneNumber;
             user.EmailAddress = input.EmailAddress;
-            if (user.NhanSuId!=null)
+            if (user.NhanSuId != null)
             {
-                var nhanSu = await _nhanVienRepository.FirstOrDefaultAsync(x=>x.Id==input.NhanSuId);
-                if (nhanSu!=null)
+                var nhanSu = await _nhanVienRepository.FirstOrDefaultAsync(x => x.Id == input.NhanSuId);
+                if (nhanSu != null)
                 {
                     nhanSu.Avatar = input.Avatar;
                     nhanSu.SoDienThoai = input.PhoneNumber;
@@ -366,7 +365,7 @@ namespace BanHangBeautify.Users
 
             return true;
         }
-        
+
     }
 }
 

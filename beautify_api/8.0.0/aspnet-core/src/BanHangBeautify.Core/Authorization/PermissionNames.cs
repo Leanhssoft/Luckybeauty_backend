@@ -45,7 +45,7 @@
         public const string Pages_Booking_Edit = "Pages.Booking.Edit";
         public const string Pages_Booking_Delete = "Pages.Booking.Delete";
 
-       
+
         #endregion
 
         #region Khách Hàng
@@ -179,7 +179,7 @@
         public const string Pages_HoaDon_Import = "Pages.HoaDon.Import";
         public const string Pages_HoaDon_Export = "Pages.HoaDon.Export";
 
-        public const string Pages_LoaiChungTu = "Pages.LoaiChungTu"; 
+        public const string Pages_LoaiChungTu = "Pages.LoaiChungTu";
         public const string Pages_LoaiChungTu_Create = "Pages.LoaiChungTu.Create";
         public const string Pages_LoaiChungTu_Edit = "Pages.LoaiChungTu.Edit";
         public const string Pages_LoaiChungTu_Delete = "Pages.LoaiChungTu.Delete";

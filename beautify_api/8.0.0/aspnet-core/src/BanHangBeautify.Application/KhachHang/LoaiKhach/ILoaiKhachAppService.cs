@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.LoaiKhach.Dto;
-using System;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.LoaiKhach

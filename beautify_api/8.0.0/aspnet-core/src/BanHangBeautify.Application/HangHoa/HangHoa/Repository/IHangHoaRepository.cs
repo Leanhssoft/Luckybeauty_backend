@@ -1,11 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Domain.Repositories;
-using BanHangBeautify.Data.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using static BanHangBeautify.Common.CommonClass;
 

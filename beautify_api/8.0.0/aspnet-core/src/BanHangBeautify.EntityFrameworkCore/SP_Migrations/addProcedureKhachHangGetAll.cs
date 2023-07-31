@@ -8,7 +8,7 @@ namespace BanHangBeautify.SP_Migrations
     [Migration("addProcedureKhachHangGetAll")]
     public partial class addProcedureKhachHangGetAll : Migration
     {
-       
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"

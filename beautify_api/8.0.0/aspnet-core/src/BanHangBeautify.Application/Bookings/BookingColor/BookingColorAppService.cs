@@ -6,11 +6,8 @@ using BanHangBeautify.Bookings.BookingColor.Dto;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Bookings.BookingColor
@@ -23,7 +20,8 @@ namespace BanHangBeautify.Bookings.BookingColor
         {
             this._repository = repository;
         }
-        public async Task<BookingColorDto> CreateOrEdit(CreateOrEditBookingColor input) {
+        public async Task<BookingColorDto> CreateOrEdit(CreateOrEditBookingColor input)
+        {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist == null)
             {
@@ -91,11 +89,12 @@ namespace BanHangBeautify.Bookings.BookingColor
             return new CreateOrEditBookingColor();
 
         }
-        public async Task<PagedResultDto<Booking_Color>> GetAll(PagedRequestDto input){
+        public async Task<PagedResultDto<Booking_Color>> GetAll(PagedRequestDto input)
+        {
             PagedResultDto<Booking_Color> result = new PagedResultDto<Booking_Color>();
-            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "": input.Keyword ;
+            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            var data = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x=>x.CreationTime).ToListAsync();
+            var data = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = data.Count;
             result.Items = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             return result;

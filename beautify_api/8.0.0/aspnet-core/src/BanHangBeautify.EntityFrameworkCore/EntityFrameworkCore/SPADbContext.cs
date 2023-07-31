@@ -5,7 +5,6 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace BanHangBeautify.EntityFrameworkCore
 {

@@ -2,7 +2,6 @@
 using Abp.Timing.Timezone;
 using BanHangBeautify.Common;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.Storage;
@@ -12,9 +11,6 @@ using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.NhanVien.Exporting
 {
@@ -68,7 +64,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Exporting
                     {
                         ws.Cells[startRow, 6].Value = ConvertHelper.ToDateTime(item.NgaySinh).ToString("dd/MM/yyyy");
                     }
-                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.GioiTinh==1?"Nam":"Nữ");
+                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.GioiTinh == 1 ? "Nam" : "Nữ");
                     ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.TenChucVu);
                     ws.Cells[startRow, 9].Value = ConvertHelper.ToString(item.CCCD);
                     ws.Cells[startRow, 10].Value = ConvertHelper.ToString(item.NoiCap);

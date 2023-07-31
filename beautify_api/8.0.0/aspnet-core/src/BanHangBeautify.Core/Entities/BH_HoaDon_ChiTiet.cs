@@ -1,12 +1,8 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
 {
@@ -31,7 +27,7 @@ namespace BanHangBeautify.Entities
         public double? TienChietKhau { get; set; } = 0;
         public double? DonGiaSauCK { get; set; } = 0;
         public double? ThanhTienSauCK { get; set; } = 0;
-        public double? PTThue { get; set; } = 0;   
+        public double? PTThue { get; set; } = 0;
         public double? TienThue { get; set; } = 0;
         public double? DonGiaSauVAT { get; set; } = 0;
         public double? ThanhTienSauVAT { get; set; } = 0;

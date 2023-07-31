@@ -20,7 +20,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
         {
             _repository = repository;
         }
-        [AbpAuthorize(PermissionNames.Pages_ChucVu_Create,PermissionNames.Pages_ChucVu_Edit)]
+        [AbpAuthorize(PermissionNames.Pages_ChucVu_Create, PermissionNames.Pages_ChucVu_Edit)]
         public async Task<ChucVuDto> CreateOrEdit(CreateOrEditChucVuDto dto)
         {
             try
@@ -44,8 +44,9 @@ namespace BanHangBeautify.NhanSu.ChucVu
         public async Task<ChucVuDto> Create(CreateOrEditChucVuDto dto)
         {
             NS_ChucVu chucVu = new NS_ChucVu();
+            var countIdChucVu = _repository.Count();
             chucVu.Id = Guid.NewGuid();
-            chucVu.MaChucVu = dto.MaChucVu;
+            chucVu.MaChucVu = "MCV0" + (countIdChucVu + 1).ToString();
             chucVu.TenChucVu = dto.TenChucVu;
             chucVu.TrangThai = 0;
             chucVu.MoTa = dto.MoTa;
@@ -94,7 +95,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             PagedResultDto<NS_ChucVu> result = new PagedResultDto<NS_ChucVu>();
             try
             {
-                var lstChucVu = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+                var lstChucVu = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
                 result.TotalCount = lstChucVu.Count;
                 if (!string.IsNullOrEmpty(keyWord))
                 {
@@ -106,7 +107,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             catch (Exception)
             {
                 result.Items = null;
-                result.TotalCount=0;
+                result.TotalCount = 0;
             }
 
             return result;

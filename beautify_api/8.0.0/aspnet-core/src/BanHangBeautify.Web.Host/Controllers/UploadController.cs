@@ -1,13 +1,11 @@
 ﻿using Abp.AspNetCore.Mvc.Authorization;
 using Abp.BackgroundJobs;
-using Abp.UI;
 using Abp.Web.Models;
 using BanHangBeautify.Controllers;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 

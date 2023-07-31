@@ -7,9 +7,7 @@ using BanHangBeautify.HoaDon.ChungTu.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.ChungTu
@@ -23,10 +21,10 @@ namespace BanHangBeautify.HoaDon.ChungTu
             _loaiChungTuRepository = loaiChungTuRepository;
         }
 
-        [AbpAuthorize(PermissionNames.Pages_LoaiChungTu_Create,PermissionNames.Pages_LoaiChungTu_Delete)]
+        [AbpAuthorize(PermissionNames.Pages_LoaiChungTu_Create, PermissionNames.Pages_LoaiChungTu_Delete)]
         public async Task<LoaiChungTuDto> CreateOrEdit(CreateOrEditLoaiChungTuDto input)
         {
-            var checkExist =await _loaiChungTuRepository.FirstOrDefaultAsync(x=>x.Id== input.Id);
+            var checkExist = await _loaiChungTuRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist == null)
             {
                 return await Create(input);
@@ -44,14 +42,14 @@ namespace BanHangBeautify.HoaDon.ChungTu
             data.MaLoaiChungTu = input.MaLoaiChungTu;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId??0;
+            data.TenantId = AbpSession.TenantId ?? 0;
             data.IsDeleted = false;
             _loaiChungTuRepository.Insert(data);
             result = ObjectMapper.Map<LoaiChungTuDto>(data);
             return result;
         }
         [NonAction]
-        public async Task<LoaiChungTuDto> Update(CreateOrEditLoaiChungTuDto input,DM_LoaiChungTu oldData)
+        public async Task<LoaiChungTuDto> Update(CreateOrEditLoaiChungTuDto input, DM_LoaiChungTu oldData)
         {
             LoaiChungTuDto result = new LoaiChungTuDto();
             oldData.MaLoaiChungTu = input.MaLoaiChungTu;
@@ -67,7 +65,7 @@ namespace BanHangBeautify.HoaDon.ChungTu
         [AbpAuthorize(PermissionNames.Pages_LoaiChungTu_Delete)]
         public async Task<LoaiChungTuDto> Delete(int id)
         {
-            var checkExist = await _loaiChungTuRepository.FirstOrDefaultAsync(x=> x.Id == id);
+            var checkExist = await _loaiChungTuRepository.FirstOrDefaultAsync(x => x.Id == id);
             if (checkExist != null)
             {
                 checkExist.IsDeleted = true;
@@ -87,7 +85,7 @@ namespace BanHangBeautify.HoaDon.ChungTu
         public async Task<PagedResultDto<DM_LoaiChungTu>> GetAll()
         {
             PagedResultDto<DM_LoaiChungTu> result = new PagedResultDto<DM_LoaiChungTu>();
-            var data =await _loaiChungTuRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId??1)).ToListAsync();
+            var data = await _loaiChungTuRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
             result.TotalCount = data.Count;
             result.Items = data;
             return result;

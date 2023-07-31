@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository
+﻿namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository
 {
     public interface ITaiKhoanNganHangRepository
     {

@@ -1,20 +1,15 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
-using Abp.Runtime.Session;
-using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Common;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.Data.SqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using BanHangBeautify.Common;
-using AutoMapper.Internal.Mappers;
 using static BanHangBeautify.Common.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Repository

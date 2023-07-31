@@ -1,21 +1,18 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Localization;
-using BanHangBeautify.Authorization;
 using BanHangBeautify.Localization.Dto;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Localization
 {
-    public class LanguageAppService:SPAAppServiceBase
+    public class LanguageAppService : SPAAppServiceBase
     {
         private readonly IApplicationLanguageManager _applicationLanguageManager;
         private readonly IApplicationLanguageTextManager _applicationLanguageTextManager;
