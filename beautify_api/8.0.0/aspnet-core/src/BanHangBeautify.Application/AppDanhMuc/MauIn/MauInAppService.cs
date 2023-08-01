@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BanHangBeautify.Common;
 
 namespace BanHangBeautify.AppDanhMuc.MauIn
 {
@@ -27,41 +28,34 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             _dmMauInRepository = dmMauInRepository;
             _hostEnvironment = hostEnvironment;
         }
-        public async Task<MauInDto> CreateOrEdit(CreateOrEditMauInDto input)
+        [HttpPost]
+        public async Task<MauInDto> InsertMauIn(CreateOrEditMauInDto input)
         {
-            var checkExist = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
-            if (checkExist == null)
-            {
-                return await Create(input);
-            }
-            return await Update(input, checkExist);
-        }
-        [NonAction]
-        public async Task<MauInDto> Create(CreateOrEditMauInDto input)
-        {
-            MauInDto result = new MauInDto();
-            DM_MauIn data = new DM_MauIn();
-            data = ObjectMapper.Map<DM_MauIn>(input);
+            DM_MauIn data = ObjectMapper.Map<DM_MauIn>(input);
             data.Id = Guid.NewGuid();
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.IsDeleted = false;
+            data.TrangThai = 1;
             await _dmMauInRepository.InsertAsync(data);
-            result = ObjectMapper.Map<MauInDto>(data);
-            return result;
+            return ObjectMapper.Map<MauInDto>(data);
         }
-        [NonAction]
-        public async Task<MauInDto> Update(CreateOrEditMauInDto input, DM_MauIn oldData)
+        [HttpPost]
+        public async Task<MauInDto> UpdateMauIn(CreateOrEditMauInDto input)
         {
-            oldData.TenMauIn = input.TenMauIn;
-            oldData.NoiDungMauIn = input.TenMauIn;
-            oldData.LaMacDinh = input.LaMacDinh;
-            oldData.IdChiNhanh = input.IdChiNhanh;
-            oldData.LoaiChungTu = input.LoaiChungTu;
-            oldData.LastModificationTime = DateTime.Now;
-            oldData.LastModifierUserId = AbpSession.UserId;
-            await _dmMauInRepository.UpdateAsync(oldData);
-            return ObjectMapper.Map<MauInDto>(oldData);
+            var objUpdate = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (objUpdate != null)
+            {
+                objUpdate.TenMauIn = input.TenMauIn;
+                objUpdate.NoiDungMauIn = input.TenMauIn;
+                objUpdate.LaMacDinh = input.LaMacDinh;
+                objUpdate.IdChiNhanh = input.IdChiNhanh;
+                objUpdate.LoaiChungTu = input.LoaiChungTu;
+                objUpdate.LastModificationTime = DateTime.Now;
+                objUpdate.LastModifierUserId = AbpSession.UserId;
+                await _dmMauInRepository.UpdateAsync(objUpdate);
+            }
+            return ObjectMapper.Map<MauInDto>(objUpdate);
         }
         [HttpPost]
         public async Task<MauInDto> Delete(Guid id)
@@ -72,6 +66,7 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                 data.IsDeleted = true;
                 data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
+                data.TrangThai = 0;
                 _dmMauInRepository.Update(data);
                 return ObjectMapper.Map<MauInDto>(data);
             }
@@ -86,16 +81,11 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             }
             return new CreateOrEditMauInDto();
         }
-        public async Task<PagedResultDto<MauInDto>> GetAll(PagedRequestDto input)
+        public async Task<List<MauInDto>> GetAllMauIn_byChiNhanh(Guid? idChiNhanh = null)
         {
-            PagedResultDto<MauInDto> result = new PagedResultDto<MauInDto>();
-            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
-            result.TotalCount = data.Count;
-            var lstMauIn = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            result.Items = ObjectMapper.Map<List<MauInDto>>(lstMauIn);
-            return result;
+            var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false
+            && (idChiNhanh == null || (x.IdChiNhanh == idChiNhanh))).OrderByDescending(x => x.CreationTime).ToListAsync();
+            return ObjectMapper.Map<List<MauInDto>>(data);
         }
         /// <summary>
         /// read content from txt file
@@ -110,17 +100,35 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             if (File.Exists(pathFile))
             {
                 contents = System.IO.File.ReadAllText(pathFile);
-                //contents = contents.Replace("{start_hdchitiet}", " {hoadonChiTiet?.map((ct: any, index) => (");
-                //contents = contents.Replace("{end_hdchitiet}", "  ))}");
-
-                //contents = contents.Replace("{TenHangHoa}", "{ct.tenHangHoa}");
-                //contents = contents.Replace("{SoLuong}", "{ct.soLuong}");
-                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
-                //contents = contents.Replace("{GiaBan}", "{ct.thanhTien}");
-
-                //contents = contents.Replace("{MaHoaDon}", "{ct.giaBan}");
-                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
-                //contents = contents.Replace("{GiaBan}", "{ct.giaBan}");
+            }
+            return contents;
+        }
+        /// <summary>
+        /// read file .txt by loaiMauIn
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="tenMauIn"></param>
+        /// <returns></returns>
+        public string GetContentMauInMacDinh(int type = 1, string tenMauIn = "")
+        {
+            var contents = string.Empty;
+            // mau k80
+            if (type == 1)
+            {
+                var data = Dictionary.DanhSachMauInK80.Where(x => x.Key == tenMauIn);
+                if (data != null && data.Count() > 0)
+                {
+                    contents = GetFileMauIn(data.FirstOrDefault().Value);
+                }
+            }
+            else
+            {
+                // mau a4
+                var data = Dictionary.DanhSachMauInA4.Where(x => x.Key == tenMauIn);
+                if (data != null && data.Count() > 0)
+                {
+                    contents = GetFileMauIn(data.FirstOrDefault().Value);
+                }
             }
             return contents;
         }
