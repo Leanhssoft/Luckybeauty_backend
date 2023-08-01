@@ -26,7 +26,9 @@ namespace BanHangBeautify.KhachHang.NhomKhach
         {
             NhomKhachDto result = new NhomKhachDto();
             var nhomKhach = ObjectMapper.Map<DM_NhomKhachHang>(dto);
+            var count = _repository.Count();
             nhomKhach.Id = Guid.NewGuid();
+            nhomKhach.MaNhomKhach = "NKH0" + (count + 1).ToString();
             nhomKhach.CreationTime = DateTime.Now;
             nhomKhach.CreatorUserId = AbpSession.UserId;
             nhomKhach.TenantId = AbpSession.TenantId ?? 1;

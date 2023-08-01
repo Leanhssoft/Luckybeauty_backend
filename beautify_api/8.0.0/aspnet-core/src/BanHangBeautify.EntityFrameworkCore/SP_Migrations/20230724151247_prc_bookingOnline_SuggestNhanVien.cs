@@ -13,7 +13,8 @@ namespace BanHangBeautify.SP_Migrations
             migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_bookingOnline_SuggestNhanVien]
 	@TenantId int,
 	@IdChiNhanh UNIQUEIDENTIFIER,
-	@IdDichVu UNIQUEIDENTIFIER
+	@IdDichVu UNIQUEIDENTIFIER,
+	@TenNhanVien nvarchar(50)
 AS
 BEGIN
 	SELECT ns.Id,ns.Avatar,ns.TenNhanVien,ns.SoDienThoai FROM NS_NhanVien ns join 
@@ -26,6 +27,10 @@ BEGIN
 	WHERE qtct.IdChiNhanh = @IdChiNhanh 
 	AND ns.TenantId = @TenantId
 	AND dvnv.IdDonViQuyDoi = @IdDichVu
+	AND (
+			ISNULL(@TenNhanVien, '') = ''
+			OR LOWER(ns.TenNhanVien) LIKE N'%' + LOWER(@TenNhanVien) + '%' COLLATE SQL_Latin1_General_CP1_CI_AI
+		)
 	GROUP BY ns.Id,ns.Avatar,ns.TenNhanVien,ns.SoDienThoai,qtct.IdChiNhanh
 END;");
         }

@@ -10,5 +10,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public string SortBy { set; get; }
         public string SortType { get; set; } = "desc";
         public Guid? IdChiNhanh { get; set; }
+        public Guid? IdNhomKhach { get; set; }
     }
 }

@@ -1,17 +1,21 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Repositories;
 using Abp.Runtime.Security;
 using BanHangBeautify.Common;
 using BanHangBeautify.Common.Consts;
 using BanHangBeautify.DatLichOnline.Dto;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BanHangBeautify.DatLichOnline
 {
@@ -29,11 +33,12 @@ namespace BanHangBeautify.DatLichOnline
             return result;
         }
 
-        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVien(string tenantName, Guid idChiNhanh, Guid idDichVu)
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVien(PagedRequestSuggestNhanVien input)
         {
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
+            input.TenNhanVien = string.IsNullOrEmpty(input.TenNhanVien) ? "" : input.TenNhanVien;
             string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
-            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
+            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == input.TenantName.ToLower());
             if (tenant == null)
             {
                 return null;
@@ -53,8 +58,9 @@ namespace BanHangBeautify.DatLichOnline
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@TenantId", tenant.Id));
-                        cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
-                        cmd.Parameters.Add(new SqlParameter("@IdDichVu", idDichVu));
+                        cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
+                        cmd.Parameters.Add(new SqlParameter("@IdDichVu", input.IdDichVu));
+                        cmd.Parameters.Add(new SqlParameter("@TenNhanVien", input.TenNhanVien??""));
                         using (var dataReader = await cmd.ExecuteReaderAsync())
                         {
                             string[] array = { "Data" };
@@ -85,11 +91,11 @@ namespace BanHangBeautify.DatLichOnline
             }
             return result;
         }
-        public async Task<List<SuggestDichVuBookingOnlineDto>> SuggestDichVu(string tenantName)
+        public async Task<List<SuggestDichVuBookingOnlineDto>> SuggestDichVu(PagedRequestSuggestDichVu input)
         {
 
             List<SuggestDichVuBookingOnlineDto> result = new List<SuggestDichVuBookingOnlineDto>();
-            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
+            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == input.TenantName.ToLower());
             if (tenant == null)
             {
                 return null;
@@ -106,10 +112,19 @@ namespace BanHangBeautify.DatLichOnline
                 try
                 {
                     await conn.OpenAsync();
-                    sqlQuery += "SELECT dvqd.Id,hh.TenHangHoa,dvqd.GiaBan,hh.SoPhutThucHien,hh.Image FROM DM_DonViQuiDoi dvqd \n";
+                    sqlQuery += "SELECT ISNULL(nhh.TenNhomHang,N'Chưa phân loại') as TenNhomHangHoa,nhh.Color,dvqd.Id,hh.TenHangHoa as TenDichVu,dvqd.GiaBan as DonGia,hh.SoPhutThucHien,hh.Image FROM DM_DonViQuiDoi dvqd \n";
                     sqlQuery += "JOIN DM_HangHoa hh on hh.Id = dvqd.IdHangHoa \n";
+                    sqlQuery += "LEFT JOIN DM_NhomHangHoa nhh on nhh.Id = hh.IdNhomHangHoa \n";
                     sqlQuery += string.Format($"WHERE hh.IdLoaiHangHoa != {LoaiHangHoaConst.HangHoa} \n");
                     sqlQuery += string.Format($"AND hh.TenantId = {tenant.Id} AND hh.IsDeleted = 0 \n");
+                    if (!string.IsNullOrEmpty(input.TenNhomDichVu))
+                    {
+                        sqlQuery += string.Format($"AND LOWER(ISNULL(nhh.TenNhomHang,N'Chưa phân loại')) = LOWER(N'{input.TenNhomDichVu.ToLower()}') \n");
+                    }
+                    if (!string.IsNullOrEmpty(input.Keyword))
+                    {
+                        sqlQuery += string.Format($"AND (LOWER(nhh.TenNhomHang) LIKE N'%{input.Keyword.ToLower()}%' OR LOWER(hh.TenHangHoa) LIKE N'%{input.Keyword.ToLower()}%') \n");
+                    }
                     if (conn.State == ConnectionState.Open)
                     {
                         // Insert into the database
@@ -119,25 +134,30 @@ namespace BanHangBeautify.DatLichOnline
                             cmd.CommandType = CommandType.Text;
                             cmd.CommandText = sqlQuery;
                             await cmd.ExecuteNonQueryAsync();
-                            using (SqlDataAdapter dataAdapter = new SqlDataAdapter(cmd))
+
+                            using (var dataReader = await cmd.ExecuteReaderAsync())
                             {
-                                // Create a dataset to hold the retrieved data
-                                DataSet dataSet = new DataSet();
-
-                                // Fill the dataset with the results of the query
-                                dataAdapter.Fill(dataSet, "DichVu");
-
-                                // Access the retrieved data (assuming you have a table called "YourTable")
-                                DataTable dataTable = dataSet.Tables["DichVu"];
-                                foreach (DataRow row in dataTable.Rows)
+                                string[] array = { "Data"};
+                                var ds = new DataSet();
+                                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                                 {
-                                    SuggestDichVuBookingOnlineDto rdo = new SuggestDichVuBookingOnlineDto();
-                                    rdo.Id = Guid.Parse(row["Id"].ToString());
-                                    rdo.TenDichVu = row["TenHangHoa"].ToString();
-                                    rdo.DonGia = decimal.Parse(row["GiaBan"].ToString() ?? "0");
-                                    rdo.Image = row["Image"].ToString();
-                                    rdo.SoPhutThucHien = float.Parse(row["SoPhutThucHien"].ToString() ?? "0");
-                                    result.Add(rdo);
+                                    var data = ObjectHelper.FillCollection<SuggestDichVuBookingDto>(ds.Tables[0]);
+                                    for (int i = 0; i < data.Count; i++)
+                                    {
+                                        var donGia = ds.Tables[0].Rows[i]["DonGia"].ToString();
+                                        data[i].DonGia = decimal.Parse(string.IsNullOrEmpty(donGia) ? "0" : donGia);
+                                    }
+                                    var group = data.ToList().GroupBy(x =>new { x.TenNhomHangHoa,x.Color }).ToList();
+                                    foreach (var item in group)
+                                    {
+                                        SuggestDichVuBookingOnlineDto dto = new SuggestDichVuBookingOnlineDto();
+                                        dto.TenNhomHangHoa = item.Key.TenNhomHangHoa;
+                                        dto.Color = item.Key.Color;
+                                        dto.DanhSachDichVu = item.ToList();
+                                        result.Add(dto);
+                                    }
+                                    
                                 }
                             }
                         }
@@ -213,13 +233,75 @@ namespace BanHangBeautify.DatLichOnline
             }
             return result;
         }
-
-        public async Task<DatLichDto> CreateBooking(string tenantName, DatLichDto data)
+        public async Task<List<SuggestNhomHangHoaBookingOnlineDto>> SuggestNhomDichVu(string tenantName)
         {
-            DatLichDto result = new DatLichDto();
+            List<SuggestNhomHangHoaBookingOnlineDto> result = new List<SuggestNhomHangHoaBookingOnlineDto>();
+            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
+            if (tenant == null)
+            {
+                return null;
+            }
+            string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
+            string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = connecStringInServer;
+            }
+            string sqlQuery = "";
+            using (var conn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    await conn.OpenAsync();
+                    sqlQuery += "SELECT ISNULL(nhh.Color,'#FFF') as Color, ISNULL(nhh.TenNhomHang,N'Chưa phân loại') as TenNhomHangHoa FROM DM_DonViQuiDoi dvqd \n";
+                    sqlQuery += "JOIN DM_HangHoa hh on hh.Id = dvqd.IdHangHoa \n";
+                    sqlQuery += "LEFT JOIN DM_NhomHangHoa nhh on nhh.Id = hh.IdNhomHangHoa \n";
+                    sqlQuery += string.Format($"WHERE hh.IdLoaiHangHoa != {LoaiHangHoaConst.HangHoa} \n");
+                    sqlQuery += string.Format($"AND hh.TenantId = {tenant.Id} AND hh.IsDeleted = 0 \n");
+                    sqlQuery += "GROUP BY nhh.Color,nhh.TenNhomHang";
+                    if (conn.State == ConnectionState.Open)
+                    {
+                        // Insert into the database
+                        using (var cmd = new SqlCommand())
+                        {
+                            cmd.Connection = conn;
+                            cmd.CommandType = CommandType.Text;
+                            cmd.CommandText = sqlQuery;
+                            await cmd.ExecuteNonQueryAsync();
+
+                            using (var dataReader = await cmd.ExecuteReaderAsync())
+                            {
+                                string[] array = { "Data" };
+                                var ds = new DataSet();
+                                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                                {
+                                    var data = ObjectHelper.FillCollection<SuggestNhomHangHoaBookingOnlineDto>(ds.Tables[0]);
+                                    result = data;
+
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    if (conn.State != ConnectionState.Open)
+                    {
+                        result = new List<SuggestNhomHangHoaBookingOnlineDto>();
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<ExecuteResultDto> CreateBooking(string tenantName, DatLichDto data)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
             try
             {
-                var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName.ToLower());
+                var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName);
                 if (tenant == null)
                 {
                     return null;
@@ -230,7 +312,8 @@ namespace BanHangBeautify.DatLichOnline
                 {
                     connectionString = connecStringInServer;
                 }
-                DateTime startTime = DateTime.Parse(data.BookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
+                DateTime bookingDate = DateTime.Parse(data.BookingDate);
+                DateTime startTime = DateTime.Parse(bookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
                 data.EndTime = startTime.AddMinutes(data.SoPhutThucHien);
                 using (var conn = new SqlConnection(@connectionString))
                 {
@@ -260,7 +343,7 @@ namespace BanHangBeautify.DatLichOnline
                             cmd.Parameters.AddWithValue("@IdChiNhanh", data.IdChiNhanh);
                             cmd.Parameters.AddWithValue("@IdDichVu", data.IdDichVu);
                             cmd.Parameters.AddWithValue("@IdNhanVien", data.IdNhanVien);
-                            cmd.Parameters.AddWithValue("@BookingDate", data.BookingDate);
+                            cmd.Parameters.AddWithValue("@BookingDate", bookingDate);
                             cmd.Parameters.AddWithValue("@StartTime", startTime);
                             cmd.Parameters.AddWithValue("@EndTime", data.EndTime);
                             cmd.Parameters.AddWithValue("@GhiChu", data.GhiChu);
@@ -272,7 +355,8 @@ namespace BanHangBeautify.DatLichOnline
                             conn.Close();
                         }
 
-                        result = data;
+                        result.Message = "Đặt lịch thành công!";
+                        result.Status = "success";
 
                     }
 
@@ -281,20 +365,53 @@ namespace BanHangBeautify.DatLichOnline
             }
             catch (Exception ex)
             {
-                result = null;
+                result.Message = "Đặt lịch thất bại!";
+                result.Status = "error";
+                result.Detail = ex.Message;
             }
             return result;
         }
     }
 }
+public class PagedRequestSuggestDichVu
+{
+    [Required]
+    public string TenantName { get; set; }
+    public string TenNhomDichVu { get; set; }
+    public string Keyword { get; set; }
+
+}
+public class PagedRequestSuggestNhanVien
+{
+    [Required]
+    public string TenantName { get; set; }
+    public Guid IdChiNhanh { get; set; }
+    public Guid IdDichVu { get; set; }
+    public string TenNhanVien { get; set; }
+
+}
+
 public class SuggestChiNhanhBooking : SuggestChiNhanh
 {
     public string Logo { get; set; }
     public string DiaChi { get; set; }
     public string SoDienThoai { get; set; }
 }
-public class SuggestDichVuBookingOnlineDto : SuggestDichVuDto
+public class SuggestDichVuBookingDto : SuggestDichVuDto
 {
+    public string TenNhomHangHoa{set;get;}
     public string Image { get; set; }
+    public string Color { get; set; }
     public float SoPhutThucHien { get; set; }
+}
+public class SuggestDichVuBookingOnlineDto 
+{
+    public string TenNhomHangHoa { set; get; }
+    public string Color { get; set; }
+    public List<SuggestDichVuBookingDto> DanhSachDichVu { set; get; }
+}
+public class SuggestNhomHangHoaBookingOnlineDto
+{
+    public string Color { set; get; }
+    public string TenNhomHangHoa { get; set; }
 }
