@@ -81,16 +81,11 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             }
             return new CreateOrEditMauInDto();
         }
-        public async Task<PagedResultDto<MauInDto>> GetAll(PagedRequestDto input)
+        public async Task<List<MauInDto>> GetAllMauIn_byChiNhanh(Guid? idChiNhanh = null)
         {
-            PagedResultDto<MauInDto> result = new PagedResultDto<MauInDto>();
-            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
-            result.TotalCount = data.Count;
-            var lstMauIn = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            result.Items = ObjectMapper.Map<List<MauInDto>>(lstMauIn);
-            return result;
+            var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false
+            && (idChiNhanh == null || (x.IdChiNhanh == idChiNhanh))).OrderByDescending(x => x.CreationTime).ToListAsync();
+            return ObjectMapper.Map<List<MauInDto>>(data);
         }
         /// <summary>
         /// read content from txt file
