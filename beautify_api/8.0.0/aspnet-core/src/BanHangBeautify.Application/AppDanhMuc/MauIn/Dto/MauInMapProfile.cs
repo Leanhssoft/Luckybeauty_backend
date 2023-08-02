@@ -8,7 +8,7 @@ namespace BanHangBeautify.AppDanhMuc.MauIn.Dto
         public MauInMapProfile()
         {
             CreateMap<CreateOrEditMauInDto, DM_MauIn>().ReverseMap();
-            CreateMap<MauInDto, DM_MauIn>().ReverseMap();
+            //CreateMap<MauInDto, DM_MauIn>().ReverseMap();
         }
     }
 }

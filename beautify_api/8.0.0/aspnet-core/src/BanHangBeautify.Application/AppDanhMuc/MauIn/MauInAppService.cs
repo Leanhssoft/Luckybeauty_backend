@@ -29,7 +29,7 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             _hostEnvironment = hostEnvironment;
         }
         [HttpPost]
-        public async Task<MauInDto> InsertMauIn(CreateOrEditMauInDto input)
+        public async Task<CreateOrEditMauInDto> InsertMauIn(CreateOrEditMauInDto input)
         {
             DM_MauIn data = ObjectMapper.Map<DM_MauIn>(input);
             data.Id = Guid.NewGuid();
@@ -38,16 +38,16 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             data.IsDeleted = false;
             data.TrangThai = 1;
             await _dmMauInRepository.InsertAsync(data);
-            return ObjectMapper.Map<MauInDto>(data);
+            return ObjectMapper.Map<CreateOrEditMauInDto>(data);
         }
         [HttpPost]
-        public async Task<MauInDto> UpdateMauIn(CreateOrEditMauInDto input)
+        public async Task<CreateOrEditMauInDto> UpdateMauIn(CreateOrEditMauInDto input)
         {
             var objUpdate = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (objUpdate != null)
             {
                 objUpdate.TenMauIn = input.TenMauIn;
-                objUpdate.NoiDungMauIn = input.TenMauIn;
+                objUpdate.NoiDungMauIn = input.NoiDungMauIn;
                 objUpdate.LaMacDinh = input.LaMacDinh;
                 objUpdate.IdChiNhanh = input.IdChiNhanh;
                 objUpdate.LoaiChungTu = input.LoaiChungTu;
@@ -55,10 +55,10 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                 objUpdate.LastModifierUserId = AbpSession.UserId;
                 await _dmMauInRepository.UpdateAsync(objUpdate);
             }
-            return ObjectMapper.Map<MauInDto>(objUpdate);
+            return ObjectMapper.Map<CreateOrEditMauInDto>(objUpdate);
         }
         [HttpPost]
-        public async Task<MauInDto> Delete(Guid id)
+        public async Task<CreateOrEditMauInDto> Delete(Guid id)
         {
             var data = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
@@ -68,9 +68,9 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                 data.DeletionTime = DateTime.Now;
                 data.TrangThai = 0;
                 _dmMauInRepository.Update(data);
-                return ObjectMapper.Map<MauInDto>(data);
+                return ObjectMapper.Map<CreateOrEditMauInDto>(data);
             }
-            return new MauInDto();
+            return new CreateOrEditMauInDto();
         }
         public async Task<CreateOrEditMauInDto> GetForEdit(Guid id)
         {
@@ -81,11 +81,19 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             }
             return new CreateOrEditMauInDto();
         }
-        public async Task<List<MauInDto>> GetAllMauIn_byChiNhanh(Guid? idChiNhanh = null)
+        /// <summary>
+        /// get mẫu in theo chi nhánh (nếu idChiNhanh!=null), và theo loại chứng từ
+        /// </summary>
+        /// <param name="idChiNhanh"></param>
+        /// <param name="idLoaiChungTu"></param>
+        /// <returns></returns>
+        public async Task<List<CreateOrEditMauInDto>> GetAllMauIn_byChiNhanh(Guid? idChiNhanh = null, int? idLoaiChungTu = 0)
         {
             var data = await _dmMauInRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false
-            && (idChiNhanh == null || (x.IdChiNhanh == idChiNhanh))).OrderByDescending(x => x.CreationTime).ToListAsync();
-            return ObjectMapper.Map<List<MauInDto>>(data);
+            && (idChiNhanh == null || (x.IdChiNhanh == idChiNhanh))
+            && (idLoaiChungTu == 0 || (x.LoaiChungTu == idLoaiChungTu))
+            ).OrderByDescending(x => x.CreationTime).ToListAsync();
+            return ObjectMapper.Map<List<CreateOrEditMauInDto>>(data);
         }
         /// <summary>
         /// read content from txt file
