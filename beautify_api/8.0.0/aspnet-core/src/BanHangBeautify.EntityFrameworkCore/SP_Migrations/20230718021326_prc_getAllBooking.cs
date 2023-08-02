@@ -24,6 +24,7 @@ BEGIN
     DECLARE @Result TABLE
     (
         SourceId UNIQUEIDENTIFIER,
+		Employee NVARCHAR(50),
         StartTime NVARCHAR(5),
         EndTime NVARCHAR(5),
         Customer NVARCHAR(100),
@@ -36,6 +37,7 @@ BEGIN
     INSERT INTO @Result
     SELECT
         bnv.IdNhanVien AS SourceId,
+		nv.TenNhanVien AS Employee,
         CONVERT(NVARCHAR(5), b.StartTime, 108) AS StartTime,
         CONVERT(NVARCHAR(5), b.EndTime, 108) AS EndTime,
         b.TenKhachHang AS Customer,
@@ -61,6 +63,7 @@ BEGIN
     FROM
         Booking b
         INNER JOIN BookingNhanVien bnv ON bnv.IdBooking = b.Id and bnv.IsDeleted = 0
+		LEFT JOIN NS_NhanVien nv on nv.id = bnv.IdNhanVien
         LEFT JOIN BookingService bs ON bs.IdBooking = b.Id and bs.IsDeleted = 0
         LEFT JOIN DM_DonViQuiDoi dv ON dv.Id = bs.IdDonViQuiDoi
         LEFT JOIN DM_HangHoa hh ON hh.id = dv.IdHangHoa
@@ -75,6 +78,7 @@ BEGIN
         bnv.IdNhanVien,
         b.StartTime,
         b.EndTime,
+		nv.TenNhanVien,
         b.TenKhachHang,
         DATEPART(WEEKDAY, b.BookingDate),
 		B.TrangThai,

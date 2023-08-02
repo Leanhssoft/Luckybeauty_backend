@@ -9,7 +9,7 @@ namespace BanHangBeautify.DatLichOnline.Dto
         public Guid IdChiNhanh { get; set; }
         public Guid? IdNhanVien { get; set; }
         public Guid IdDichVu { get; set; }
-        public DateTime BookingDate { get; set; }
+        public string BookingDate { get; set; }
         public string StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public string GhiChu { get; set; }
