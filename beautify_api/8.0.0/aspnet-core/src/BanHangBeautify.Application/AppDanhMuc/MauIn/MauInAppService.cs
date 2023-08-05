@@ -53,6 +53,11 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                 objUpdate.LoaiChungTu = input.LoaiChungTu;
                 objUpdate.LastModificationTime = DateTime.Now;
                 objUpdate.LastModifierUserId = AbpSession.UserId;
+                if (input.LaMacDinh)
+                {
+                    // update các mẫu còn lại (mặc định = false)
+                    _dmMauInRepository.GetAll().Where(x => x.Id != input.Id && x.IdChiNhanh == input.IdChiNhanh && x.LaMacDinh).ToList().ForEach(x => x.LaMacDinh = false);
+                }
                 await _dmMauInRepository.UpdateAsync(objUpdate);
             }
             return ObjectMapper.Map<CreateOrEditMauInDto>(objUpdate);
