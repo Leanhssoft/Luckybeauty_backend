@@ -111,6 +111,22 @@ namespace BanHangBeautify.Suggests
             }
             return result;
         }
+        [HttpPost]
+        public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienByIdDichVu(Guid idChiNhanh, Guid idDichVu)
+        {
+            List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
+            var lstNhanSu = await _suggestRepository.SuggestNhanVienByIdDichVu(AbpSession.TenantId ?? 1, idChiNhanh, idDichVu);
+            foreach (var item in lstNhanSu)
+            {
+                var nhanVienDichVu = await _dichVuNhanVienRespository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false && x.IdNhanVien == item.Id).ToListAsync();
+                if (nhanVienDichVu == null || nhanVienDichVu.Count == 0)
+                {
+                    continue;
+                }
+                result.Add(item);
+            }
+            return result;
+        }
 
         public async Task<List<SuggestKhachHang>> SuggestKhachHangs()
         {

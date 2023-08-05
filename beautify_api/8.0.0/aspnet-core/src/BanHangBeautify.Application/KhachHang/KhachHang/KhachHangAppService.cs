@@ -62,7 +62,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<KhachHangDto> CreateKhachHang(CreateOrEditKhachHangDto dto)
         {
             KhachHangDto result = new KhachHangDto();
-            var checkMa = _repository.GetAll().Where(x => x.TenantId == AbpSession.TenantId).ToList();
+            var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1)).ToList();
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.Id = Guid.NewGuid();
             khachHang.MaKhachHang = "KH00" + checkMa.Count;
