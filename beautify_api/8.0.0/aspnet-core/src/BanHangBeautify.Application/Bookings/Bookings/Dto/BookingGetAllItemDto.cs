@@ -6,6 +6,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
 {
     public class BookingGetAllItemDto
     {
+        public Guid Id { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public string Customer { get; set; }
@@ -14,6 +15,20 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string Services { get; set; }
         public string Color { get; set; }
         public string DayOfWeek { get; set; }
+        public DateTime BookingDate { get; set; }
+    }
+    public class BookingInfoDto
+    {
+        public Guid Id { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public string TenKhachHang { get; set; }
+        public string SoDienThoai { get; set; }
+        public string TenDichVu { get; set; }
+        public decimal DonGia { get; set; }
+        public string NhanVienThucHien { get; set; }
+        public string GhiChu { get; set; }
+        public string Color { get; set; }
         public DateTime BookingDate { get; set; }
     }
     public class BookingDetailDto : HangHoaDto

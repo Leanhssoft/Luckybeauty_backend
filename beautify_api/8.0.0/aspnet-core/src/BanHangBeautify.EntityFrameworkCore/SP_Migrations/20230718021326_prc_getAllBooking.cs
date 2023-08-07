@@ -22,7 +22,8 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @Result TABLE
-    (
+    (   
+        Id UNIQUEIDENTIFIER,
         SourceId UNIQUEIDENTIFIER,
 		Employee NVARCHAR(50),
         StartTime NVARCHAR(5),
@@ -36,6 +37,7 @@ BEGIN
 
     INSERT INTO @Result
     SELECT
+        b.Id,
         bnv.IdNhanVien AS SourceId,
 		nv.TenNhanVien AS Employee,
         CONVERT(NVARCHAR(5), b.StartTime, 108) AS StartTime,
@@ -75,6 +77,7 @@ BEGIN
         AND (@IdNhanVien IS NULL OR (bnv.IdNhanVien = @IdNhanVien AND @IdNhanVien IS NOT NULL))
 		AND (@IdDichVu IS NULL OR (bs.IdDonViQuiDoi = @IdDichVu AND @IdDichVu IS NOT NULL))
     GROUP BY
+        b.Id,
         bnv.IdNhanVien,
         b.StartTime,
         b.EndTime,

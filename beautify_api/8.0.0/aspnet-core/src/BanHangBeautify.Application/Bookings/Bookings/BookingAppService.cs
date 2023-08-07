@@ -25,7 +25,6 @@ namespace BanHangBeautify.Bookings.Bookings
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
-        private readonly IHubContext<BookingHub> _bookingHubContext;
         public BookingAppService(
             IRepository<Booking, Guid> repository,
             IBookingRepository bookingRepository,
@@ -33,8 +32,7 @@ namespace BanHangBeautify.Bookings.Bookings
             IRepository<BookingService, Guid> bookingServiceRepository,
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             IRepository<DM_HangHoa, Guid> dichVuRepository,
-            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
-            IHubContext<BookingHub> bookingHubContext)
+            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository)
         {
             _repository = repository;
             _bookingRepository = bookingRepository;
@@ -43,7 +41,6 @@ namespace BanHangBeautify.Bookings.Bookings
             _khachHangRepository = khachHangRepository;
             _dichVuRepository = dichVuRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
-            _bookingHubContext = bookingHubContext;
         }
 
         public async Task<Booking> CreateBooking(CreateBookingDto dto)
@@ -129,10 +126,14 @@ namespace BanHangBeautify.Bookings.Bookings
                 findBooking.TrangThai = dto.TrangThai;
                 findBooking.LastModificationTime = DateTime.Now;
                 findBooking.LastModifierUserId = AbpSession.UserId;
+                var dichVu = await _donViQuiDoiRepository.GetAllIncluding().Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
+                if (dichVu!=null&&dichVu.DM_HangHoa!=null)
+                {
+                    findBooking.EndTime = findBooking.StartTime.AddMinutes(dichVu.DM_HangHoa.SoPhutThucHien ?? 0);
+                }
                 await _repository.UpdateAsync(findBooking);
                 await UpdateBookingNhanVien(dto.Id, dto.IdNhanVien);
                 await UpdateBookingService(dto.Id, dto.IdDonViQuiDoi);
-                await UpdateEndTimeBooking(findBooking);
                 return findBooking;
             }
             return new Booking();
@@ -165,20 +166,6 @@ namespace BanHangBeautify.Bookings.Bookings
                 result = new BookingNhanVien();
             }
             return result;
-        }
-        [NonAction]
-        public async Task UpdateEndTimeBooking(Booking rdo)
-        {
-            var idDichVus = await _bookingServiceRepository.GetAll().Include(x => x.DM_DonViQuiDoi).Where(x => x.IdBooking == rdo.Id && x.IsDeleted == false).Select(x => x.DM_DonViQuiDoi.IdHangHoa).ToListAsync();
-            var dichVus = await _dichVuRepository.GetAll().Where(x => idDichVus.Contains(x.Id)).ToListAsync();
-            var time = dichVus.Select(x => x.SoPhutThucHien).ToList();
-            float totalTimeService = 0;
-            foreach (var i in time)
-            {
-                totalTimeService += i.Value;
-            }
-            rdo.EndTime = rdo.StartTime.AddMinutes(totalTimeService);
-            await _repository.UpdateAsync(rdo);
         }
 
         [HttpPost]
@@ -273,7 +260,6 @@ namespace BanHangBeautify.Bookings.Bookings
                 result = await _bookingRepository.GetAllBooking(input, tenantId, firstDayOfMonth, lastDayOfMonth);
             }
 
-            await _bookingHubContext.Clients.All.SendAsync("BookingDataUpdated", result);
             return result;
         }
 
@@ -350,7 +336,11 @@ namespace BanHangBeautify.Bookings.Bookings
             }
             return result;
         }
-
+        public async Task<BookingInfoDto> GetBookingInfo(Guid id)
+        {
+            int tenantId = AbpSession.TenantId ?? 1;
+            return await _bookingRepository.GetBookingInfo(id,tenantId);
+        }
         public async Task<UpdateBookingDto> GetForEdit(Guid id)
         {
             UpdateBookingDto result = new UpdateBookingDto();
@@ -385,9 +375,5 @@ namespace BanHangBeautify.Bookings.Bookings
             }
             return result;
         }
-    }
-    public class BookingHub : Hub
-    {
-
     }
 }
