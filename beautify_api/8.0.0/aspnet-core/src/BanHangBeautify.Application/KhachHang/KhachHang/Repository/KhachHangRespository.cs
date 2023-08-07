@@ -78,6 +78,65 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                 return new PagedResultDto<KhachHangView>();
             }
         }
+
+        public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, int tenantId)
+        {
+            using (var command = CreateCommand("prc_lichSuDatLich"))
+            {
+                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+                command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
+
+                using (var dataReader = await command.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data", "TotalCount" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<LichSuDatLichDto>(ds.Tables[0]);
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            var gia = ds.Tables[0].Rows[i]["Gia"].ToString();
+                            var thoiGianThucHien = ds.Tables[0].Rows[i]["ThoiGianThucHien"].ToString();
+                            data[i].DonGia = decimal.Parse(string.IsNullOrEmpty(gia) ? "0" : gia);
+                            data[i].ThoiGianThucHien = float.Parse(string.IsNullOrEmpty(thoiGianThucHien) ? "0" : thoiGianThucHien);
+                        }
+                        return new PagedResultDto<LichSuDatLichDto>()
+                        {
+                            TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
+                            Items = data
+                        };
+                    }
+                }
+                return new PagedResultDto<LichSuDatLichDto>();
+            }
+        }
+        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang, int tenantId)
+        {
+            using (var command = CreateCommand("prc_lichSuGiaoDich"))
+            {
+                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+                command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
+
+                using (var dataReader = await command.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data", "TotalCount" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<LichSuHoaDonDto>(ds.Tables[0]);
+                        return new PagedResultDto<LichSuHoaDonDto>()
+                        {
+                            TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
+                            Items = data
+                        };
+                    }
+                }
+                return new PagedResultDto<LichSuHoaDonDto>();
+            }
+        }
+
         public async Task<List<KhachHangView>> JqAutoCustomer(PagedKhachHangResultRequestDto input, int? tenantId)
         {
             using (var command = CreateCommand("spJqAutoCustomer"))

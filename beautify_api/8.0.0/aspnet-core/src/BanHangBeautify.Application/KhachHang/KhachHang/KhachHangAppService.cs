@@ -29,6 +29,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private readonly IRepository<DM_NhomKhachHang, Guid> _nhomKhachHangRepository;
         private readonly IRepository<DM_LoaiKhach, int> _loaiKhachHangRepository;
         private readonly IRepository<DM_NguonKhach, Guid> _nguonKhachRepository;
+        private readonly IRepository<Booking, Guid> _bookingRepository;
         private readonly IKhachHangExcelExporter _khachHangExcelExporter;
         ITempFileCacheManager _tempFileCacheManager;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
@@ -36,6 +37,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
               IRepository<DM_NhomKhachHang, Guid> nhomKhachHangRepository,
               IRepository<DM_LoaiKhach, int> loaiKhachRepository,
               IRepository<DM_NguonKhach, Guid> nguonKhachRepository,
+              IRepository<Booking, Guid> bookingRepository,
               IKhachHangExcelExporter khachHangExcelExporter,
               ITempFileCacheManager tempFileCacheManager
               )
@@ -45,6 +47,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _loaiKhachHangRepository = loaiKhachRepository;
             _nguonKhachRepository = nguonKhachRepository;
             _nhomKhachHangRepository = nhomKhachHangRepository;
+            _bookingRepository = bookingRepository;
             _khachHangExcelExporter = khachHangExcelExporter;
             _tempFileCacheManager = tempFileCacheManager;
         }
@@ -128,12 +131,42 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
             return result;
         }
-        public async Task<DM_KhachHang> GetKhachHangDetail(Guid Id)
+        public async Task<KhachHangDetailDto> GetKhachHangDetail(Guid id)
         {
-            var KhachHang = await _repository.GetAsync(Id);
-            return KhachHang;
+            KhachHangDetailDto result = new KhachHangDetailDto();
+            var khachHang = await _repository.FirstOrDefaultAsync(x=>x.Id == id);
+            if (khachHang!=null)
+            {
+                result.Id = khachHang.Id;
+                result.Avatar = khachHang.Avatar;
+                result.TenKhachHang = khachHang.TenKhachHang;
+                result.MaKhachHang = khachHang.MaKhachHang;
+                result.NgaySinh = khachHang.NgaySinh.HasValue ? khachHang.NgaySinh.Value.ToString("dd/MM/yyyy") :"";
+                result.SoDienThoai = khachHang.SoDienThoai;
+                result.DiaChi = khachHang.DiaChi;
+                result.Email = khachHang.Email;
+                result.GioiTinh = khachHang.GioiTinhNam.HasValue ? khachHang.GioiTinhNam.Value? "Nam" : "Nữ": "Khác";
+                result.DiemThuong = khachHang.TongTichDiem ??0;
+                result.MaSoThue = khachHang.MaSoThue;
+                var loaiKhach = await _loaiKhachHangRepository.FirstOrDefaultAsync(x=>x.Id== khachHang.IdLoaiKhach);
+                result.LoaiKhach = loaiKhach != null ? loaiKhach.TenLoaiKhachHang : "";
+                var nhomKhach =await _nhomKhachHangRepository.FirstOrDefaultAsync(h => h.Id == khachHang.IdNhomKhach);
+                result.NhomKhach = nhomKhach !=null ? nhomKhach.TenNhomKhach : "";
+                var nguonKhach =await _nguonKhachRepository.FirstOrDefaultAsync(x => x.Id == khachHang.IdNguonKhach);
+                result.NguonKhach = nguonKhach != null ? nguonKhach.TenNguon:"";
+            }
+            return result;
         }
-
+        public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang)
+        {
+            int tenantId = AbpSession.TenantId ?? 1;
+            return await _customerRepo.LichSuDatLich(idKhachHang, tenantId);
+        }
+        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang)
+        {
+            int tenantId = AbpSession.TenantId ?? 1;
+            return await _customerRepo.LichSuGiaoDich(idKhachHang, tenantId);
+        }
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input)
         {
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
@@ -175,7 +208,15 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 rdo.MaKhachHang = item.MaKhachHang;
                 rdo.Avatar = item.Avatar;
                 rdo.TenKhachHang = item.TenKhachHang;
-                rdo.CuocHenGanNhat = item.CreationTime;
+                var booking =await _bookingRepository.GetAll().Where(x=>x.IdKhachHang==item.Id && x.IsDeleted==false).OrderByDescending(x=>x.BookingDate).ToListAsync();
+                if (booking!=null && booking.Count>0)
+                {
+                    rdo.CuocHenGanNhat = booking[0].BookingDate;
+                }
+                else
+                {
+                    rdo.CuocHenGanNhat = item.CreationTime;
+                }
                 rdo.GioiTinh = item.GioiTinhNam == null ? "Khác" : (item.GioiTinhNam == true ? "Nam" : "Nữ");
                 rdo.SoDienThoai = item.SoDienThoai;
                 var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == item.IdNhomKhach);
