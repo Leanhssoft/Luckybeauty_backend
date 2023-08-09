@@ -110,6 +110,7 @@ namespace BanHangBeautify.Users
             CheckUpdatePermission();
 
             var user = await _userManager.GetUserByIdAsync(input.Id);
+            user.NhanSuId = input.NhanSuId;
             user.IsAdmin = input.IsAdmin ?? false;
             user.Surname = input.Surname;
             user.Name = input.Name;
