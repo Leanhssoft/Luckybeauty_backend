@@ -1,5 +1,7 @@
 ﻿using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Localization;
+using Abp.Notifications;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Bookings.Bookings.BookingRepository;
 using BanHangBeautify.Bookings.Bookings.Dto;
@@ -25,6 +27,7 @@ namespace BanHangBeautify.Bookings.Bookings
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
+        private readonly INotificationPublisher _notificationPublisher;
         public BookingAppService(
             IRepository<Booking, Guid> repository,
             IBookingRepository bookingRepository,
@@ -32,7 +35,8 @@ namespace BanHangBeautify.Bookings.Bookings
             IRepository<BookingService, Guid> bookingServiceRepository,
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             IRepository<DM_HangHoa, Guid> dichVuRepository,
-            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository)
+            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
+            INotificationPublisher notificationPublisher)
         {
             _repository = repository;
             _bookingRepository = bookingRepository;
@@ -41,6 +45,7 @@ namespace BanHangBeautify.Bookings.Bookings
             _khachHangRepository = khachHangRepository;
             _dichVuRepository = dichVuRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
+            _notificationPublisher = notificationPublisher;
         }
 
         public async Task<Booking> CreateBooking(CreateBookingDto dto)
@@ -70,6 +75,9 @@ namespace BanHangBeautify.Bookings.Bookings
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
             //await UpdateEndTimeBooking(booking);
+            string mess = "Khách hàng: " + booking.TenKhachHang + " đã được thêm lịch hẹn làm dịch vụ : "+ dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("hh:mm");
+            var notificationData = NewMessageNotification(mess);
+            await _notificationPublisher.PublishAsync("AddNewBooking", notificationData,severity:NotificationSeverity.Info);
             return booking;
         }
         [NonAction]
@@ -374,6 +382,15 @@ namespace BanHangBeautify.Bookings.Bookings
                 result = true;
             }
             return result;
+        }
+        private LocalizableMessageNotificationData NewMessageNotification(string mess)
+        {
+            return new LocalizableMessageNotificationData(
+                        new LocalizableString(
+                            mess,
+                            "LuckyBeauty"
+                        )
+                    );
         }
     }
 }

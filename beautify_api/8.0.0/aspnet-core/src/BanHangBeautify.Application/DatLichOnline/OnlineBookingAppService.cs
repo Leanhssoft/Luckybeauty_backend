@@ -1,21 +1,29 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
+using Abp.Localization;
+using Abp.Notifications;
 using Abp.Runtime.Security;
 using BanHangBeautify.Common;
 using BanHangBeautify.Common.Consts;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DatLichOnline.Dto;
+using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.SignalR.Bookings;
 using BanHangBeautify.Suggests.Dto;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
@@ -24,10 +32,32 @@ namespace BanHangBeautify.DatLichOnline
     public class OnlineBookingAppService : SPAAppServiceBase
     {
         IRepository<Tenant, int> _tenantRepository;
+        IRepository<Booking,Guid> _bookingRepository;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly INotificationPublisher _notificationPublisher;
+        private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
+        private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
+        IRepository<BookingNhanVien, Guid> _bookingNhanVienRepository;
+        IRepository<BookingService, Guid> _bookingServiceRepository;
         public OnlineBookingAppService(
-            IRepository<Tenant, int> tenantRepository)
+            IRepository<Tenant, int> tenantRepository, 
+            IRepository<Booking, Guid> bookingRepository, 
+            IUnitOfWorkManager unitOfWorkManager,
+            INotificationPublisher notificationPublisher,
+            IRepository<DM_HangHoa, Guid> dichVuRepository,
+            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
+            IRepository<BookingNhanVien, Guid> bookingNhanVienRepository,
+            IRepository<BookingService, Guid> bookingServiceRepository
+            )
         {
             _tenantRepository = tenantRepository;
+            _bookingRepository = bookingRepository;
+            _unitOfWorkManager = unitOfWorkManager;
+            _notificationPublisher = notificationPublisher;
+            _dichVuRepository = dichVuRepository;
+            _donViQuiDoiRepository = donViQuiDoiRepository;
+            _bookingNhanVienRepository = bookingNhanVienRepository;
+            _bookingServiceRepository = bookingServiceRepository;
         }
         public List<string> GetAllTenant()
         {
@@ -298,80 +328,178 @@ namespace BanHangBeautify.DatLichOnline
 
             return result;
         }
-
+        [UnitOfWork]
         public async Task<ExecuteResultDto> CreateBooking(string tenantName, DatLichDto data)
         {
             ExecuteResultDto result = new ExecuteResultDto();
+            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName);
+            if (tenant == null)
+            {
+                return null;
+            }
             try
             {
-                var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName);
-                if (tenant == null)
+                using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
                 {
-                    return null;
-                }
-                string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
-                string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
-                if (string.IsNullOrEmpty(connectionString))
-                {
-                    connectionString = connecStringInServer;
-                }
-                DateTime bookingDate = DateTime.Parse(data.BookingDate);
-                DateTime startTime = DateTime.Parse(bookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
-                data.EndTime = startTime.AddMinutes(data.SoPhutThucHien);
-                using (var conn = new SqlConnection(@connectionString))
-                {
-                    conn.Open();
-                    if (conn.State == ConnectionState.Open)
-                    {
-                        using (var cmd = new SqlCommand())
-                        {
-                            cmd.Connection = conn;
-                            cmd.CommandType = CommandType.Text;
-                            cmd.CommandText = @"INSERT INTO 
-                                            Booking(Id,TenantId,TenKhachHang,SoDienThoai,IdChiNhanh,BookingDate,StartTime,EndTime,GhiChu,LoaiBooking,TrangThai,CreationTime,IsDeleted)
-                                            VALUES(@Id,@TenantId,@TenKhachHang,@SoDienThoai,@IdChiNhanh,@BookingDate,@StartTime,@Endtime,@GhiChu,@LoaiBooking,@TrangThaiBooking,@CreationTime,@IsDeleted);";
-                            cmd.CommandText += @"INSERT INTO BookingNhanVien(Id,TenantId,IdBooking,IdNhanVien,CreationTime,IsDeleted) 
-                                                VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdNhanVien,@CreationTime,@IsDeleted);
-                                            ";
-                            cmd.CommandText += @"INSERT INTO BookingService(Id,TenantId,IdBooking,IdDonViQuiDoi,CreationTime,IsDeleted) 
-                                                VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdDichVu,@CreationTime,@IsDeleted);
-                                            ";
-
-                            cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
-                            cmd.Parameters.AddWithValue("@IdBookingNhanVien", Guid.NewGuid());
-                            cmd.Parameters.AddWithValue("@IdBookingDichVu", Guid.NewGuid());
-                            cmd.Parameters.AddWithValue("@TenantId", tenant.Id);
-                            cmd.Parameters.AddWithValue("@TenKhachHang", data.TenKhachHang);
-                            cmd.Parameters.AddWithValue("@SoDienThoai", data.SoDienThoai);
-                            cmd.Parameters.AddWithValue("@IdChiNhanh", data.IdChiNhanh);
-                            cmd.Parameters.AddWithValue("@IdDichVu", data.IdDichVu);
-                            cmd.Parameters.AddWithValue("@IdNhanVien", data.IdNhanVien);
-                            cmd.Parameters.AddWithValue("@BookingDate", bookingDate);
-                            cmd.Parameters.AddWithValue("@StartTime", startTime);
-                            cmd.Parameters.AddWithValue("@EndTime", data.EndTime);
-                            cmd.Parameters.AddWithValue("@GhiChu", data.GhiChu);
-                            cmd.Parameters.AddWithValue("@LoaiBooking", 2);
-                            cmd.Parameters.AddWithValue("@TrangThaiBooking", 1);
-                            cmd.Parameters.AddWithValue("@CreationTime", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@IsDeleted", false);
-                            await cmd.ExecuteNonQueryAsync();
-                            conn.Close();
-                        }
-                        result.Message = "Đặt lịch thành công!";
-                        result.Status = "success";
-                    }
-
+                    await CurrentUnitOfWork.SaveChangesAsync();
+                    Booking bk = new Booking();
+                    bk.Id = Guid.NewGuid();
+                    bk.IdChiNhanh = data.IdChiNhanh;
+                    bk.BookingDate = DateTime.Parse(data.BookingDate);
+                    bk.StartTime = DateTime.Parse(data.StartTime);
+                    bk.EndTime = bk.StartTime.AddMinutes(data.SoPhutThucHien);
+                    bk.GhiChu = data.GhiChu;
+                    bk.LoaiBooking = 2;
+                    bk.TrangThai = 1;
+                    bk.SoDienThoai = data.SoDienThoai;
+                    bk.TenKhachHang = data.TenKhachHang;
+                    bk.TenantId = tenant.Id;
+                    bk.CreationTime = DateTime.Now;
+                    bk.IsDeleted = false;
+                    _bookingRepository.Insert(bk);
+                    var idDichVu = _donViQuiDoiRepository.FirstOrDefault(x => x.Id == data.IdDichVu).IdHangHoa;
+                    var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
+                    var bookingService = CreateBookingService(bk.Id, data.IdDichVu);
+                    var bookingNhanVien = CreateBookingNhanVien(bk.Id, data.IdNhanVien);
+                    string mess = "Khách hàng: " + data.TenKhachHang + " đã được thêm lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + bk.BookingDate.ToString("dd/MM/yyyy") + " " + bk.StartTime.ToString("hh:mm");
+                    var notificationData = new LocalizableMessageNotificationData(
+                        new LocalizableString(
+                            mess,
+                            "LuckyBeauty"
+                        )
+                    );
+                    _bookingNhanVienRepository.Insert(bookingNhanVien);
+                    _bookingServiceRepository.Insert(bookingService);
+                    await CurrentUnitOfWork.SaveChangesAsync();
+                    await _notificationPublisher.PublishAsync("AddNewBooking", notificationData, severity: NotificationSeverity.Info);
+                    result.Message = "Đặt lịch thành công!";
+                    result.Status = "success";
                 }
 
             }
             catch (Exception ex)
             {
+
                 result.Message = "Đặt lịch thất bại!";
                 result.Status = "error";
                 result.Detail = ex.Message;
             }
+
+
             return result;
         }
+        [NonAction]
+        public BookingService CreateBookingService(Guid idBooking, Guid idDichVuQuiDoi)
+        {
+            BookingService bookingService = new BookingService();
+            try
+            {
+                bookingService.Id = Guid.NewGuid();
+                bookingService.TenantId = AbpSession.TenantId ?? 1;
+                bookingService.IdBooking = idBooking;
+                bookingService.IdDonViQuiDoi = idDichVuQuiDoi;
+                bookingService.IsDeleted = false;
+                bookingService.CreationTime = DateTime.Now;
+                bookingService.CreatorUserId = AbpSession.UserId;
+            }
+            catch (Exception)
+            {
+                bookingService = new BookingService();
+            }
+            return bookingService;
+        }
+        [NonAction]
+        public BookingNhanVien CreateBookingNhanVien(Guid idBooking, Guid idNhanVien)
+        {
+            BookingNhanVien result = new BookingNhanVien();
+            try
+            {
+                result.Id = Guid.NewGuid();
+                result.TenantId = AbpSession.TenantId ?? 1;
+                result.IdBooking = idBooking;
+                result.IdNhanVien = idNhanVien;
+                result.IsDeleted = false;
+                result.CreatorUserId = AbpSession.UserId;
+                result.CreationTime = DateTime.Now;
+            }
+            catch (Exception)
+            {
+                result = new BookingNhanVien();
+            }
+            return result;
+        }
+        //public async Task<ExecuteResultDto> CreateBooking(string tenantName, DatLichDto data)
+        //{
+        //    ExecuteResultDto result = new ExecuteResultDto();
+        //    try
+        //    {
+        //        var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName);
+        //        if (tenant == null)
+        //        {
+        //            return null;
+        //        }
+        //        string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
+        //        string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
+        //        if (string.IsNullOrEmpty(connectionString))
+        //        {
+        //            connectionString = connecStringInServer;
+        //        }
+        //        DateTime bookingDate = DateTime.Parse(data.BookingDate);
+        //        DateTime startTime = DateTime.Parse(bookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
+        //        data.EndTime = startTime.AddMinutes(data.SoPhutThucHien);
+        //        using (var conn = new SqlConnection(@connectionString))
+        //        {
+        //            conn.Open();
+        //            if (conn.State == ConnectionState.Open)
+        //            {
+        //                using (var cmd = new SqlCommand())
+        //                {
+        //                    cmd.Connection = conn;
+        //                    cmd.CommandType = CommandType.Text;
+        //                    cmd.CommandText = @"INSERT INTO 
+        //                                    Booking(Id,TenantId,TenKhachHang,SoDienThoai,IdChiNhanh,BookingDate,StartTime,EndTime,GhiChu,LoaiBooking,TrangThai,CreationTime,IsDeleted)
+        //                                    VALUES(@Id,@TenantId,@TenKhachHang,@SoDienThoai,@IdChiNhanh,@BookingDate,@StartTime,@Endtime,@GhiChu,@LoaiBooking,@TrangThaiBooking,@CreationTime,@IsDeleted);";
+        //                    cmd.CommandText += @"INSERT INTO BookingNhanVien(Id,TenantId,IdBooking,IdNhanVien,CreationTime,IsDeleted) 
+        //                                        VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdNhanVien,@CreationTime,@IsDeleted);
+        //                                    ";
+        //                    cmd.CommandText += @"INSERT INTO BookingService(Id,TenantId,IdBooking,IdDonViQuiDoi,CreationTime,IsDeleted) 
+        //                                        VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdDichVu,@CreationTime,@IsDeleted);
+        //                                    ";
+
+        //                    cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
+        //                    cmd.Parameters.AddWithValue("@IdBookingNhanVien", Guid.NewGuid());
+        //                    cmd.Parameters.AddWithValue("@IdBookingDichVu", Guid.NewGuid());
+        //                    cmd.Parameters.AddWithValue("@TenantId", tenant.Id);
+        //                    cmd.Parameters.AddWithValue("@TenKhachHang", data.TenKhachHang);
+        //                    cmd.Parameters.AddWithValue("@SoDienThoai", data.SoDienThoai);
+        //                    cmd.Parameters.AddWithValue("@IdChiNhanh", data.IdChiNhanh);
+        //                    cmd.Parameters.AddWithValue("@IdDichVu", data.IdDichVu);
+        //                    cmd.Parameters.AddWithValue("@IdNhanVien", data.IdNhanVien);
+        //                    cmd.Parameters.AddWithValue("@BookingDate", bookingDate);
+        //                    cmd.Parameters.AddWithValue("@StartTime", startTime);
+        //                    cmd.Parameters.AddWithValue("@EndTime", data.EndTime);
+        //                    cmd.Parameters.AddWithValue("@GhiChu", data.GhiChu);
+        //                    cmd.Parameters.AddWithValue("@LoaiBooking", 2);
+        //                    cmd.Parameters.AddWithValue("@TrangThaiBooking", 1);
+        //                    cmd.Parameters.AddWithValue("@CreationTime", DateTime.Now);
+        //                    cmd.Parameters.AddWithValue("@IsDeleted", false);
+        //                    await cmd.ExecuteNonQueryAsync();
+        //                    conn.Close();
+        //                }
+        //                result.Message = "Đặt lịch thành công!";
+        //                result.Status = "success";
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.Message = "Đặt lịch thất bại!";
+        //        result.Status = "error";
+        //        result.Detail = ex.Message;
+        //    }
+        //    return result;
+        //}
     }
 }
 public class PagedRequestSuggestDichVu

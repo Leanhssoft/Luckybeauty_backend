@@ -125,5 +125,9 @@ ALTER PROCEDURE [dbo].[prc_khachHang_getAll]
 					);
 				END;");
         }
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+			migrationBuilder.Sql("DROP PROCEDURE prc_khachHang_getAll");
+        }
     }
 }
