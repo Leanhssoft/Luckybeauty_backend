@@ -1,6 +1,5 @@
 ﻿using Abp.AspNetCore;
 using Abp.AspNetCore.Mvc.Antiforgery;
-using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Dependency;
 using Abp.Extensions;
@@ -8,6 +7,7 @@ using Abp.Json;
 using BanHangBeautify.Bookings.Bookings;
 using BanHangBeautify.Configuration;
 using BanHangBeautify.Identity;
+using BanHangBeautify.SignalR.Bookings;
 using Castle.Facilities.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,8 +58,8 @@ namespace BanHangBeautify.Web.Host.Startup
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
+           
             services.AddSignalR();
-
             // Configure CORS for angular2 UI
 
             services.AddCors(
@@ -78,15 +78,15 @@ namespace BanHangBeautify.Web.Host.Startup
                         .AllowCredentials()
                 )
             );
-            //services.AddCors(options =>
-            // {
-            //     options.AddPolicy(_defaultCorsPolicyName, builder =>
-            //     {
-            //         builder.AllowAnyOrigin()
-            //             .AllowAnyHeader()
-            //             .AllowAnyMethod();
-            //     });
-            // });
+                //services.AddCors(options =>
+                // {
+                //     options.AddPolicy(_defaultCorsPolicyName, builder =>
+                //     {
+                //         builder.AllowAnyOrigin()
+                //             .AllowAnyHeader()
+                //             .AllowAnyMethod();
+                //     });
+                // });
 
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             ConfigureSwagger(services);
@@ -119,7 +119,8 @@ namespace BanHangBeautify.Web.Host.Startup
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<AbpCommonHub>("/signalr");
+                //endpoints.MapHub<AbpCommonHub>("/signalr");
+                endpoints.MapHub<BookingHub>("bookingHub");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
             });

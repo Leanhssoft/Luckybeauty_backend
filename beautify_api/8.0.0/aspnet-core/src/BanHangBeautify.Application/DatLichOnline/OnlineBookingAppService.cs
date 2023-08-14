@@ -6,7 +6,9 @@ using BanHangBeautify.Common.Consts;
 using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.SignalR.Bookings;
 using BanHangBeautify.Suggests.Dto;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,7 +24,8 @@ namespace BanHangBeautify.DatLichOnline
     public class OnlineBookingAppService : SPAAppServiceBase
     {
         IRepository<Tenant, int> _tenantRepository;
-        public OnlineBookingAppService(IRepository<Tenant, int> tenantRepository)
+        public OnlineBookingAppService(
+            IRepository<Tenant, int> tenantRepository)
         {
             _tenantRepository = tenantRepository;
         }
@@ -354,10 +357,8 @@ namespace BanHangBeautify.DatLichOnline
                             await cmd.ExecuteNonQueryAsync();
                             conn.Close();
                         }
-
                         result.Message = "Đặt lịch thành công!";
                         result.Status = "success";
-
                     }
 
                 }

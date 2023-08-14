@@ -52,6 +52,7 @@ namespace BanHangBeautify.Authorization.Users
                 IsActive = true,
                 UserName = userName,
                 IsEmailConfirmed = isEmailConfirmed,
+                IsAdmin = true,
                 Roles = new List<UserRole>()
             };
 
