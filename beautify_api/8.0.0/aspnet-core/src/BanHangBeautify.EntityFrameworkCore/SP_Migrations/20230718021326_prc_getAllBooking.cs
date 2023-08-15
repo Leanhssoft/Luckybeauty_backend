@@ -10,6 +10,8 @@ namespace BanHangBeautify.SP_Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[prc_booking_getAll]");
+
             migrationBuilder.Sql(@"CREATE PROCEDURE prc_booking_getAll
     @TenantId INT,
     @IdChiNhanh UNIQUEIDENTIFIER,
@@ -43,7 +45,7 @@ BEGIN
         CONVERT(NVARCHAR(5), b.StartTime, 108) AS StartTime,
         CONVERT(NVARCHAR(5), b.EndTime, 108) AS EndTime,
         b.TenKhachHang AS Customer,
-        STRING_AGG(hh.TenHangHoa, '-') AS Services,
+        hh.TenHangHoa AS Services,
         CASE DATEPART(WEEKDAY, b.BookingDate)
             WHEN 1 THEN N'Chủ nhật'
             WHEN 2 THEN N'Thứ hai'
@@ -76,16 +78,7 @@ BEGIN
         AND (b.BookingDate BETWEEN @TimeFrom AND @TimeTo)
         AND (@IdNhanVien IS NULL OR (bnv.IdNhanVien = @IdNhanVien AND @IdNhanVien IS NOT NULL))
 		AND (@IdDichVu IS NULL OR (bs.IdDonViQuiDoi = @IdDichVu AND @IdDichVu IS NOT NULL))
-    GROUP BY
-        b.Id,
-        bnv.IdNhanVien,
-        b.StartTime,
-        b.EndTime,
-		nv.TenNhanVien,
-        b.TenKhachHang,
-        DATEPART(WEEKDAY, b.BookingDate),
-		B.TrangThai,
-		b.BookingDate;
+   
     SELECT * FROM @Result ORDER BY BookingDate DESC,StartTime ASC;
 END;");
         }
