@@ -80,7 +80,6 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.Id = productId;
             hangHoa.TenantId = AbpSession.TenantId ?? 1;
             hangHoa.CreatorUserId = AbpSession.UserId;
-            hangHoa.SoPhutThucHien = dto.SoPhutThucHien;
             hangHoa.CreationTime = DateTime.Now;
             hangHoa.LastModificationTime = DateTime.Now;
             hangHoa.LastModifierUserId = AbpSession.UserId;
@@ -146,6 +145,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TenHangHoa_KhongDau = dto.TenHangHoa_KhongDau;
+            hangHoa.Image = dto.Image;
             hangHoa.MoTa = dto.MoTa;
             hangHoa.TrangThai = dto.TrangThai;
             hangHoa.LastModificationTime = DateTime.Now;
