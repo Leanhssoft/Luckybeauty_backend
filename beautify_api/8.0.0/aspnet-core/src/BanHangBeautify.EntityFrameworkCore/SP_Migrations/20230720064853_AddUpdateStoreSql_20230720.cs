@@ -176,6 +176,9 @@ END");
 						FETCH NEXT @MaxResultCount ROWS ONLY
 					
 END;");
+
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[prc_getKhachHang_noBooking]");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[prc_getKhachHang_Booking]");
             migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_getKhachHang_Booking]
 	@TenantId int= 7,
 	@IdChiNhanhs nvarchar(max)= null,

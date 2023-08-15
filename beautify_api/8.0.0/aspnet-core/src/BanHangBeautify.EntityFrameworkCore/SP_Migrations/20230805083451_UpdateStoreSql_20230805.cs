@@ -11,6 +11,7 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[prc_GetInforBooking_byID]");
             migrationBuilder.Sql(@"CREATE PROCEDURE prc_GetInforBooking_byID
 	@IdBooking uniqueidentifier
 AS
