@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BanHangBeautify.SP_Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    [Migration("addProcedureKhachHangGetAll")]
+    [Migration("202308007083903_add_prc_khachHang_getAll")]
     public partial class addProcedureKhachHangGetAll : Migration
     {
 

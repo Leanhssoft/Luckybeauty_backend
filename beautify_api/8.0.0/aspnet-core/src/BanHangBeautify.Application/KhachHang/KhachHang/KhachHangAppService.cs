@@ -70,6 +70,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.Id = Guid.NewGuid();
             khachHang.MaKhachHang = "KH00" + checkMa.Count;
             khachHang.CreationTime = DateTime.Now;
+            khachHang.GioiTinhNam = dto.GioiTinh;
             khachHang.CreatorUserId = AbpSession.UserId;
             khachHang.LastModificationTime = DateTime.Now;
             khachHang.LastModifierUserId = AbpSession.UserId;

@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.SP_Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    [Migration("updateProcedure_prc_khachHang_getAll")]
+    [Migration("202308009083903_updateProcedure_prc_khachHang_getAll")]
     public class updateProcedure_prc_khachHang_getAll : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-ALTER PROCEDURE [dbo].[prc_khachHang_getAll]
-					@TenantId INT = 7,
+					ALTER PROCEDURE prc_khachHang_getAll
+					@TenantId INT,
 					@IdChiNhanh UNIQUEIDENTIFIER = null,
 					@Filter NVARCHAR(max) =N'',
 					@SkipCount INT = 0,
