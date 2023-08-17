@@ -24,33 +24,45 @@ BEGIN
     (
         TenDichVu nvarchar(100),
 		Color nvarchar(15),
-		TongDoanhThu decimal
+		TongDoanhThu decimal,
+		SoLanThucHien int
     );
-	DECLARE @TongDoanhThuDichVu decimal(18,2);
+	DECLARE @TongDichVu int;
 
-	SELECT @TongDoanhThuDichVu = SUM(hdct.ThanhTienSauVAT) FROM
+	SELECT @TongDichVu = Count(hh.id) FROM
 	BH_HoaDon hd JOIN BH_HoaDon_ChiTiet hdct on hdct.IdHoaDon = hd.Id
+	JOIN DM_DonViQuiDoi dvqd on dvqd.Id = hdct.IdDonViQuyDoi
+	JOIN DM_HangHoa hh on hh.id = dvqd.IdHangHoa
 	WHERE CAST(hd.CreationTime AS DATE) BETWEEN CAST(@ThoiGianTu AS DATE) AND CAST(@ThoiGianDen AS DATE) 
 		and hd.TenantId = @TenantId 
-		and hd.IdChiNhanh = @IdChiNhanh;
+		and hd.IdChiNhanh = @IdChiNhanh AND hd.IsDeleted = 0;
 
 	INSERT INTO @HotService 
-	SELECT top(5) hh.TenHangHoa,hh.Color,SUM(hdct.ThanhTienSauVAT) AS TongTien
+	SELECT hh.TenHangHoa,hh.Color,hdct.ThanhTienSauVAT AS TongTien,
+	CASE WHEN hd.Id is null then 0 else 1 end AS SoLanThucHien
 	FROM (
 		SELECT Id,TenantId,IdChiNhanh 
-		FROM BH_HoaDon 
+		FROM BH_HoaDon
 		WHERE CAST(CreationTime AS DATE) BETWEEN CAST(@ThoiGianTu AS DATE) AND CAST(@ThoiGianDen AS DATE) 
 		and TenantId = @TenantId 
-		and IdChiNhanh = @IdChiNhanh) 
+		and IdChiNhanh = @IdChiNhanh AND IsDeleted = 0) 
 	as hd 
 	JOIN BH_HoaDon_ChiTiet hdct on hdct.IdHoaDon = hd.Id
-	right JOIN DM_DonViQuiDoi dvqd on dvqd.Id = hdct.IdDonViQuyDoi
-	right JOIN DM_HangHoa hh on hh.id = dvqd.IdHangHoa
-	GROUP BY hh.TenHangHoa,dvqd.Id,hh.Color
-	ORDER BY COUNT(hh.id) DESC;
+	RIGHT JOIN DM_DonViQuiDoi dvqd on dvqd.Id = hdct.IdDonViQuyDoi
+	RIGHT JOIN DM_HangHoa hh on hh.id = dvqd.IdHangHoa;
 
-	SELECT TenDichVu,TongDoanhThu,Color, (TongDoanhThu / @TongDoanhThuDichVu) * 100 as PhanTram FROM @HotService;
-END;");
+	SELECT TOP 5
+        TenDichVu,
+        SUM(TongDoanhThu) AS TongDoanhThu,
+        Color,
+        CASE WHEN @TongDichVu = 0 THEN 0 ELSE SUM(SoLanThucHien) / CAST(@TongDichVu AS DECIMAL) * 100 END AS PhanTram
+    FROM @HotService 
+    GROUP BY 
+        TenDichVu,
+        Color
+    ORDER BY SUM(SoLanThucHien) DESC;
+END;
+");
         }
 
         /// <inheritdoc />

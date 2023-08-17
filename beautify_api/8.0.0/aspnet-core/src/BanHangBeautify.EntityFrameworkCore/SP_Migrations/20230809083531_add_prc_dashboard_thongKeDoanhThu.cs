@@ -11,7 +11,8 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"CREATE PROC prc_dashboard_thongKeDoanhThu
+            migrationBuilder.Sql(@"
+CREATE PROC prc_dashboard_thongKeDoanhThu
 	@TenantId int,
 	@IdChiNhanh uniqueidentifier = null
 AS
@@ -55,7 +56,8 @@ BEGIN
     -- Drop the temporary table
     DROP TABLE #MonthlyData;
     
-END;");
+END;
+");
         }
 
         /// <inheritdoc />

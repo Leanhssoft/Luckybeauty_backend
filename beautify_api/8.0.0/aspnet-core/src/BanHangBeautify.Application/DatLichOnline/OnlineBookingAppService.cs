@@ -39,6 +39,9 @@ namespace BanHangBeautify.DatLichOnline
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
         IRepository<BookingNhanVien, Guid> _bookingNhanVienRepository;
         IRepository<BookingService, Guid> _bookingServiceRepository;
+        IRepository<NS_LichLamViec, Guid> _lichLamViecRepository;
+        IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaRepository;
+        IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
         public OnlineBookingAppService(
             IRepository<Tenant, int> tenantRepository, 
             IRepository<Booking, Guid> bookingRepository, 
@@ -47,7 +50,10 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<DM_HangHoa, Guid> dichVuRepository,
             IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
             IRepository<BookingNhanVien, Guid> bookingNhanVienRepository,
-            IRepository<BookingService, Guid> bookingServiceRepository
+            IRepository<BookingService, Guid> bookingServiceRepository,
+            IRepository<NS_LichLamViec, Guid> lichLamViecRepository,
+            IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaRepository,
+            IRepository<NS_CaLamViec, Guid> caLamViecRepository
             )
         {
             _tenantRepository = tenantRepository;
@@ -58,6 +64,9 @@ namespace BanHangBeautify.DatLichOnline
             _donViQuiDoiRepository = donViQuiDoiRepository;
             _bookingNhanVienRepository = bookingNhanVienRepository;
             _bookingServiceRepository = bookingServiceRepository;
+            _lichLamViecCaRepository = lichLamViecCaRepository;
+            _lichLamViecRepository = lichLamViecRepository;
+            _caLamViecRepository = caLamViecRepository;
         }
         public List<string> GetAllTenant()
         {
@@ -107,10 +116,9 @@ namespace BanHangBeautify.DatLichOnline
                                 return data;
                             }
                         }
+                        conn.Close();
                         return new List<SuggestEmpolyeeExecuteServiceDto>();
                     }
-                    conn.Close();
-
                 }
 
             }
@@ -428,79 +436,73 @@ namespace BanHangBeautify.DatLichOnline
             }
             return result;
         }
-        //public async Task<ExecuteResultDto> CreateBooking(string tenantName, DatLichDto data)
-        //{
-        //    ExecuteResultDto result = new ExecuteResultDto();
-        //    try
-        //    {
-        //        var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName);
-        //        if (tenant == null)
-        //        {
-        //            return null;
-        //        }
-        //        string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
-        //        string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
-        //        if (string.IsNullOrEmpty(connectionString))
-        //        {
-        //            connectionString = connecStringInServer;
-        //        }
-        //        DateTime bookingDate = DateTime.Parse(data.BookingDate);
-        //        DateTime startTime = DateTime.Parse(bookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime);
-        //        data.EndTime = startTime.AddMinutes(data.SoPhutThucHien);
-        //        using (var conn = new SqlConnection(@connectionString))
-        //        {
-        //            conn.Open();
-        //            if (conn.State == ConnectionState.Open)
-        //            {
-        //                using (var cmd = new SqlCommand())
-        //                {
-        //                    cmd.Connection = conn;
-        //                    cmd.CommandType = CommandType.Text;
-        //                    cmd.CommandText = @"INSERT INTO 
-        //                                    Booking(Id,TenantId,TenKhachHang,SoDienThoai,IdChiNhanh,BookingDate,StartTime,EndTime,GhiChu,LoaiBooking,TrangThai,CreationTime,IsDeleted)
-        //                                    VALUES(@Id,@TenantId,@TenKhachHang,@SoDienThoai,@IdChiNhanh,@BookingDate,@StartTime,@Endtime,@GhiChu,@LoaiBooking,@TrangThaiBooking,@CreationTime,@IsDeleted);";
-        //                    cmd.CommandText += @"INSERT INTO BookingNhanVien(Id,TenantId,IdBooking,IdNhanVien,CreationTime,IsDeleted) 
-        //                                        VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdNhanVien,@CreationTime,@IsDeleted);
-        //                                    ";
-        //                    cmd.CommandText += @"INSERT INTO BookingService(Id,TenantId,IdBooking,IdDonViQuiDoi,CreationTime,IsDeleted) 
-        //                                        VALUES(@IdBookingNhanVien,@TenantId,@Id,@IdDichVu,@CreationTime,@IsDeleted);
-        //                                    ";
-
-        //                    cmd.Parameters.AddWithValue("@Id", Guid.NewGuid());
-        //                    cmd.Parameters.AddWithValue("@IdBookingNhanVien", Guid.NewGuid());
-        //                    cmd.Parameters.AddWithValue("@IdBookingDichVu", Guid.NewGuid());
-        //                    cmd.Parameters.AddWithValue("@TenantId", tenant.Id);
-        //                    cmd.Parameters.AddWithValue("@TenKhachHang", data.TenKhachHang);
-        //                    cmd.Parameters.AddWithValue("@SoDienThoai", data.SoDienThoai);
-        //                    cmd.Parameters.AddWithValue("@IdChiNhanh", data.IdChiNhanh);
-        //                    cmd.Parameters.AddWithValue("@IdDichVu", data.IdDichVu);
-        //                    cmd.Parameters.AddWithValue("@IdNhanVien", data.IdNhanVien);
-        //                    cmd.Parameters.AddWithValue("@BookingDate", bookingDate);
-        //                    cmd.Parameters.AddWithValue("@StartTime", startTime);
-        //                    cmd.Parameters.AddWithValue("@EndTime", data.EndTime);
-        //                    cmd.Parameters.AddWithValue("@GhiChu", data.GhiChu);
-        //                    cmd.Parameters.AddWithValue("@LoaiBooking", 2);
-        //                    cmd.Parameters.AddWithValue("@TrangThaiBooking", 1);
-        //                    cmd.Parameters.AddWithValue("@CreationTime", DateTime.Now);
-        //                    cmd.Parameters.AddWithValue("@IsDeleted", false);
-        //                    await cmd.ExecuteNonQueryAsync();
-        //                    conn.Close();
-        //                }
-        //                result.Message = "Đặt lịch thành công!";
-        //                result.Status = "success";
-        //            }
-        //        }
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Message = "Đặt lịch thất bại!";
-        //        result.Status = "error";
-        //        result.Detail = ex.Message;
-        //    }
-        //    return result;
-        //}
+        [HttpPost]
+        public async Task<List<AvailableTime>> GetAviableTime(PagedRequestAvailableTime input)
+        {
+            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == input.TenantName);
+            if (tenant == null)
+            {
+                return new List<AvailableTime>();
+            }
+            try
+            {
+                List<AvailableTime> times = new List<AvailableTime>();
+                using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
+                {
+                    var nhanVien = _bookingNhanVienRepository.GetAll().Where(
+                            x => x.IdNhanVien == input.IdNhanVien &&
+                            x.TenantId == tenant.Id && x.IsDeleted == false).ToList();
+                    var appointments = _bookingRepository.GetAll().Where(x =>nhanVien.Select(z=>z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date).ToList();
+                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x=>x.TuNgay<= input.DateBooking || x.DenNgay>= input.DateBooking && x.IdNhanVien == input.IdNhanVien).ToList();
+                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x=> lichLamViec.Select(z=>z.Id).ToList().Contains(x.IdLichLamViec)).ToList();
+                    var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y=>y.IdCaLamViec).Contains(x.Id)).ToList();
+                    foreach ( var x in caLamViec)
+                    {
+                        var gioVaoStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioVao.ToString("HH:mm");
+                        var startTime = DateTime.Parse(gioVaoStr);
+                        var gioRaStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioRa.ToString("HH:mm");
+                        var endTime = DateTime.Parse(gioRaStr);
+                        var currentTime = startTime;
+                        while (currentTime.AddMinutes(input.ServiceTime) <= endTime)
+                        {
+                            AvailableTime time = new AvailableTime();
+                            bool isAvailableTime = true;
+                            time.Time = currentTime.ToString("HH:mm");
+                            foreach (var appointment in appointments)
+                            {
+                                if (currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime)
+                                {
+                                    isAvailableTime = false;
+                                    break;
+                                }
+                            }
+                            time.IsAvailableTime = isAvailableTime;
+                            times.Add(time);
+                            currentTime = currentTime.AddMinutes(input.ServiceTime);
+                        }
+                    }
+                }
+                return times;
+            }
+            catch (Exception)
+            {
+                return new List<AvailableTime>();
+            }
+        }
+        
     }
+}
+public class PagedRequestAvailableTime
+{
+    public Guid IdNhanVien { get; set; }
+    public string TenantName { get; set; }
+    public DateTime DateBooking { get; set; }
+    public int ServiceTime { get; set; }
+}
+public class AvailableTime
+{
+    public bool IsAvailableTime { get; set; }
+    public string Time { get; set; }
 }
 public class PagedRequestSuggestDichVu
 {
