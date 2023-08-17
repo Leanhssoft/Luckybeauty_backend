@@ -15,6 +15,12 @@ using Google.Apis.Drive.v3.Data;
 using Nito.AsyncEx;
 using System.Linq;
 using NPOI.HSSF.Record.PivotTable;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using System.Drawing;
+using BanHangBeautify.NewFolder;
+using Microsoft.AspNetCore.Http;
+using NPOI.HPSF;
 
 namespace BanHangBeautify.UploadFile
 {
@@ -45,6 +51,7 @@ namespace BanHangBeautify.UploadFile
             }
             return contentType;
         }
+        [HttpGet]
         public async Task<IList<Google.Apis.Drive.v3.Data.File>> GoogleApi_GetAllFile()
         {
             var lst = _service.Files.List();
@@ -56,33 +63,56 @@ namespace BanHangBeautify.UploadFile
             return result.Files;
         }
         /// <summary>
-        /// Update the file id, with new metadata and stream.
+        /// update file if exists/ else insert
         /// </summary>
+        /// <param name="file"></param>
         /// <param name="fileId"></param>
-        /// <param name="fileName"></param>
+        /// <param name="tenantName"></param>
         /// <returns></returns>
-        public async Task<bool> GoogleApi_UpdateFileIfExist(string fileId, string fileName)
+        [HttpPost]
+        public async Task<string> GoogleApi_UpdateFileIfExist([FromForm] IFormFile file, string fileId, string tenantName)
         {
             try
             {
-                var mimeType = GetMimeType(fileName);
-                var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+                string fileIdReturn = string.Empty;
+                if (file.Length > 0)
                 {
-                    Name = fileName,
-                };
-                await using var stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-                var updateRequest = _service.Files.Update(fileMetadata, fileId, stream, mimeType);
-                var result = await updateRequest.UploadAsync(CancellationToken.None);
+                    var mimeType = GetMimeType(file.FileName);
+                    // check exists fileId exist in folder tenantName in google drive
+                    var request = _service.Files.List();
+                    request.Q = $"'{fileId}' in {tenantName}";
+                    var resultFile = await request.ExecuteAsync();
 
-                if (result.Status == UploadStatus.Failed)
-                {
-                    Console.WriteLine($"Error uploading file: {result.Exception.Message}");
+                    string pathFileNew = await SaveFileToServer(file);
+                  
+                    if (resultFile.Files.Count > 0)
+                    {
+                        // update
+                        var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+                        {
+                            Name = file.FileName,
+                        };
+
+                        await using var stream = new FileStream(pathFileNew, FileMode.Open, FileAccess.Read);
+                        var updateRequest = _service.Files.Update(fileMetadata, fileId, stream, mimeType);
+                        var result = await updateRequest.UploadAsync(CancellationToken.None);
+                        if (result.Status == UploadStatus.Failed)
+                        {
+                            Console.WriteLine($"Error uploading file: {result.Exception.Message}");
+                        }
+                        fileIdReturn = fileId;
+                    }
+                    else
+                    {
+                        // insert
+                        fileIdReturn = await GoogleApi_UploaFileToDrive(file, tenantName);
+                    }
                 }
-                return true;
+                return fileIdReturn;
             }
             catch (Exception)
             {
-                return false;
+                return string.Empty;
             }
         }
         /// <summary>
@@ -90,6 +120,7 @@ namespace BanHangBeautify.UploadFile
         /// </summary>
         /// <param name="tenantName"></param>
         /// <returns></returns>
+        [HttpGet]
         public async Task<string> GoogleApi_CheckExistFolder(string tenantName)
         {
             string idSubFolder = string.Empty;
@@ -97,9 +128,10 @@ namespace BanHangBeautify.UploadFile
             {
                 var request = _service.Files.List();
                 // tìm kiếm thư mục có tên = tenantName
-                request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name={tenantName}";
+                request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name='{tenantName}'";
                 var result = await request.ExecuteAsync();
-                if (result.Files.Count > 0) {
+                if (result.Files.Count > 0)
+                {
                     idSubFolder = result.Files[0].Id;
                 }
                 else
@@ -122,36 +154,84 @@ namespace BanHangBeautify.UploadFile
             }
             return idSubFolder;
         }
-        /// <summary>
-        /// upload file to drive --> return fileId
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <param name="pathFile"></param>
-        /// <param name="tenantName"></param>
-        /// <returns></returns>
-        public async Task<string> GoogleApi_UploaFileToDrive(string fileName, string pathFile, string tenantName)
+
+        private async Task<string> SaveFileToServer([FromForm] IFormFile file)
         {
             try
             {
-                var mimeType = GetMimeType(fileName);
-                string folderId = await GoogleApi_CheckExistFolder(tenantName);
-
-                var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+                // save file to server use Buffering: used to get path upload file to drive
+                string path = Path.Combine(_hostEnvironment.WebRootPath, "UploadedFiles");
+                if (!Directory.Exists(path))
                 {
-                    Name = fileName,
-                    Parents = new[] { folderId },
-                    MimeType = mimeType
-                };
-                FilesResource.CreateMediaUpload request;
-                // Create a new file, with metadata and stream.
-                using (var stream = new FileStream(pathFile, FileMode.Open))
-                {
-                    request = _service.Files.Create(
-                        fileMetadata, stream, mimeType);
-                    request.Fields = "*";
-                    request.Upload();
+                    Directory.CreateDirectory(path);
                 }
-                return request.ResponseBody?.Id;
+                path = Path.Combine(path, file.FileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+                return path;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+        /// <summary>
+        /// upload file to drive --> return fileId
+        /// </summary>
+        /// <param name="file:IFormFile"></param>
+        /// <param name="tenantName"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<string> GoogleApi_UploaFileToDrive([FromForm] IFormFile file, string tenantName)
+        {
+            try
+            {
+                string fileId = "";
+                if (file.Length > 0)
+                {
+                    string path = "";
+                    var mimeType = GetMimeType(file.FileName);
+                    string folderId = await GoogleApi_CheckExistFolder(tenantName);
+
+                    var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+                    {
+                        Name = file.FileName,
+                        Parents = new[] { folderId },
+                        MimeType = mimeType
+                    };
+
+                    // save file to server use Buffering: used to get path upload file to drive
+                    path = Path.Combine(_hostEnvironment.WebRootPath, "UploadedFiles");
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+                    path = Path.Combine(path, file.FileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+
+                    FilesResource.CreateMediaUpload request;
+                    // Create a new file, with metadata and stream.
+                    using (var stream = new FileStream(path, FileMode.Open))
+                    {
+                        request = _service.Files.Create(
+                            fileMetadata, stream, mimeType);
+                        request.Fields = "*";
+                        request.Upload();
+                    }
+                    fileId = request.ResponseBody?.Id;
+
+                    // remove file after upload to drive
+                    if (System.IO.File.Exists(path))
+                    {
+                        System.IO.File.Delete(path);
+                    }
+                }
+                return fileId;
             }
             catch (Exception e)
             {
