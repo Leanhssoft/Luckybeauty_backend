@@ -23,11 +23,13 @@ namespace BanHangBeautify.AppDashboard.Repository
         {
             using (var command = CreateCommand("prc_dashboard_thongKeSoLuong"))
             {
+                DateTime timeFrom = DateTime.Parse(input.ThoiGianTu);
+                DateTime timeTo = DateTime.Parse(input.ThoiGianDen);
                 command.Parameters.Add(new SqlParameter("@UserId", userId));
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                command.Parameters.Add(new SqlParameter("@ThoiGianTu", input.ThoiGianTu));
-                command.Parameters.Add(new SqlParameter("@ThoiGianDen", input.ThoiGianDen));
+                command.Parameters.Add(new SqlParameter("@ThoiGianTu", timeFrom));
+                command.Parameters.Add(new SqlParameter("@ThoiGianDen", timeTo));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -49,11 +51,13 @@ namespace BanHangBeautify.AppDashboard.Repository
         {
             using (var command = CreateCommand("prc_dashboard_danhSachLichHen"))
             {
+                DateTime timeFrom = DateTime.Parse(input.ThoiGianTu);
+                DateTime timeTo = DateTime.Parse(input.ThoiGianDen);
                 command.Parameters.Add(new SqlParameter("@UserId", userId));
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                command.Parameters.Add(new SqlParameter("@ThoiGianTu", input.ThoiGianTu));
-                command.Parameters.Add(new SqlParameter("@ThoiGianDen", input.ThoiGianDen));
+                command.Parameters.Add(new SqlParameter("@ThoiGianTu", timeFrom));
+                command.Parameters.Add(new SqlParameter("@ThoiGianDen", timeTo));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -118,11 +122,13 @@ namespace BanHangBeautify.AppDashboard.Repository
         {
             using (var command = CreateCommand("prc_dashboard_hotService"))
             {
+                DateTime timeFrom = DateTime.Parse(input.ThoiGianTu);
+                DateTime timeTo = DateTime.Parse(input.ThoiGianDen);
                 command.Parameters.Add(new SqlParameter("@UserId", userId));
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                command.Parameters.Add(new SqlParameter("@ThoiGianTu", input.ThoiGianTu));
-                command.Parameters.Add(new SqlParameter("@ThoiGianDen", input.ThoiGianDen));
+                command.Parameters.Add(new SqlParameter("@ThoiGianTu", timeFrom));
+                command.Parameters.Add(new SqlParameter("@ThoiGianDen", timeTo));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
