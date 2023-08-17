@@ -21,6 +21,10 @@ using System.Drawing;
 using BanHangBeautify.NewFolder;
 using Microsoft.AspNetCore.Http;
 using NPOI.HPSF;
+using Castle.Core.Resource;
+using static Google.Apis.Drive.v3.FilesResource;
+using Abp.Authorization;
+using Newtonsoft.Json;
 
 namespace BanHangBeautify.UploadFile
 {
@@ -51,110 +55,11 @@ namespace BanHangBeautify.UploadFile
             }
             return contentType;
         }
-        [HttpGet]
-        public async Task<IList<Google.Apis.Drive.v3.Data.File>> GoogleApi_GetAllFile()
-        {
-            var lst = _service.Files.List();
-            var result = await lst.ExecuteAsync();
-            foreach (var item in result.Files)
-            {
-                Console.WriteLine($"Parents: {item.Parents} - fileId: {item.Id} - fileName: {item.Name}");
-            }
-            return result.Files;
-        }
         /// <summary>
-        /// update file if exists/ else insert
+        /// save file to server: return pathFile
         /// </summary>
         /// <param name="file"></param>
-        /// <param name="fileId"></param>
-        /// <param name="tenantName"></param>
         /// <returns></returns>
-        [HttpPost]
-        public async Task<string> GoogleApi_UpdateFileIfExist([FromForm] IFormFile file, string fileId, string tenantName)
-        {
-            try
-            {
-                string fileIdReturn = string.Empty;
-                if (file.Length > 0)
-                {
-                    var mimeType = GetMimeType(file.FileName);
-                    // check exists fileId exist in folder tenantName in google drive
-                    var request = _service.Files.List();
-                    request.Q = $"'{fileId}' in {tenantName}";
-                    var resultFile = await request.ExecuteAsync();
-
-                    string pathFileNew = await SaveFileToServer(file);
-                  
-                    if (resultFile.Files.Count > 0)
-                    {
-                        // update
-                        var fileMetadata = new Google.Apis.Drive.v3.Data.File()
-                        {
-                            Name = file.FileName,
-                        };
-
-                        await using var stream = new FileStream(pathFileNew, FileMode.Open, FileAccess.Read);
-                        var updateRequest = _service.Files.Update(fileMetadata, fileId, stream, mimeType);
-                        var result = await updateRequest.UploadAsync(CancellationToken.None);
-                        if (result.Status == UploadStatus.Failed)
-                        {
-                            Console.WriteLine($"Error uploading file: {result.Exception.Message}");
-                        }
-                        fileIdReturn = fileId;
-                    }
-                    else
-                    {
-                        // insert
-                        fileIdReturn = await GoogleApi_UploaFileToDrive(file, tenantName);
-                    }
-                }
-                return fileIdReturn;
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="tenantName"></param>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<string> GoogleApi_CheckExistFolder(string tenantName)
-        {
-            string idSubFolder = string.Empty;
-            try
-            {
-                var request = _service.Files.List();
-                // tìm kiếm thư mục có tên = tenantName
-                request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name='{tenantName}'";
-                var result = await request.ExecuteAsync();
-                if (result.Files.Count > 0)
-                {
-                    idSubFolder = result.Files[0].Id;
-                }
-                else
-                {
-                    // tạo thư mục mới (thuộc folder share in drive)
-                    var fileMetadata = new Google.Apis.Drive.v3.Data.File()
-                    {
-                        Name = tenantName,
-                        Parents = new[] { _folderId },
-                        MimeType = "application/vnd.google-apps.folder"
-                    };
-                    var request2 = _service.Files.Create(fileMetadata);
-                    request2.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
-                    idSubFolder = request2.Execute().Id;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"GoogleApi_CheckExistFolder: {e.Message}");
-            }
-            return idSubFolder;
-        }
-
         private async Task<string> SaveFileToServer([FromForm] IFormFile file)
         {
             try
@@ -177,23 +82,172 @@ namespace BanHangBeautify.UploadFile
                 return string.Empty;
             }
         }
+        [HttpGet]
+        public async Task<IList<Google.Apis.Drive.v3.Data.File>> GoogleApi_GetAllFile()
+        {
+            var lst = _service.Files.List();
+            var result = await lst.ExecuteAsync();
+            foreach (var item in result.Files)
+            {
+                Console.WriteLine($"Parents: {item.Parents} - fileId: {item.Id} - fileName: {item.Name}");
+            }
+            return result.Files;
+        }
+        /// <summary>
+        /// remove all file/ or list file in nameFolder: return true/false
+        /// </summary>
+        /// <param name="nameFolder"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<bool> GoogleApi_RemoveFile_byNameFolder(string nameFolder = null)
+        {
+            try
+            {
+                ListRequest request = _service.Files.List();
+                if (!string.IsNullOrEmpty(nameFolder))
+                {
+                    request.Q = $"name = '{nameFolder}'";
+                    // Files in an application data folder in a collection:	'appDataFolder' in parents (todo)
+                }
+                //request.Fields = "Id";
+                var result = await request.ExecuteAsync();
+                foreach (var item in result.Files)
+                {
+                    if (item.Id != _folderId)
+                    {
+                        _service.Files.Delete(item.Id).Execute();
+                    }
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<bool> GoogleApi_RemoveFile_byId(string fileId = null)
+        {
+            try
+            {
+
+                if (!string.IsNullOrEmpty(fileId))
+                {
+                    var request = _service.Files.Get(fileId);
+                    request.Fields = "*";
+                    var result = await request.ExecuteAsync();
+                    _service.Files.Delete(result.Id).Execute();
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// return idFolder/idSubFolder
+        /// </summary>
+        /// <param name="tenantName"></param>
+        /// <param name="subFolder"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<string> GoogleApi_CheckExistFolder(string tenantName, string subFolder = null)
+        {
+            string idSubFolder = string.Empty;
+            try
+            {
+                var request = _service.Files.List();
+                // tìm kiếm thư mục có tên = tenantName
+                request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name='{tenantName}'";
+                var result = await request.ExecuteAsync();
+                if (result.Files.Count > 0)
+                {
+                    // check exist subFolder
+                    if (!string.IsNullOrEmpty(subFolder))
+                    {
+                        var rqSubFolder = _service.Files.List();
+                        rqSubFolder.Q= $"mimeType = 'application/vnd.google-apps.folder' and name='{subFolder}'";
+                        var lstSubFolder = await rqSubFolder.ExecuteAsync();
+
+                        if (lstSubFolder.Files.Count > 0)
+                        {
+                            idSubFolder = lstSubFolder.Files[0].Id;
+                        }
+                        else
+                        {
+                            // create subfolder
+                            var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+                            {
+                                Name = subFolder,
+                                Parents = new[] { result.Files[0].Id },// Parents: id of tenantName
+                                MimeType = "application/vnd.google-apps.folder"
+                            };
+                            var createSub = _service.Files.Create(fileMetadata);
+                            createSub.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
+                            idSubFolder = createSub.Execute().Id;
+                        }
+                    }
+                    else
+                    {
+                        idSubFolder = result.Files[0].Id;
+                    }
+                }
+                else
+                {
+                    // tạo thư mục mới (thuộc folder share in drive) có tên = tenantName
+                    var fileMetadata = new Google.Apis.Drive.v3.Data.File()
+                    {
+                        Name = tenantName,
+                        Parents = new[] { _folderId },
+                        MimeType = "application/vnd.google-apps.folder"
+                    };
+                    var rqTenantName = _service.Files.Create(fileMetadata);
+                    rqTenantName.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
+
+                    // create subfolder
+                    var fileMetadata2 = new Google.Apis.Drive.v3.Data.File()
+                    {
+                        Name = subFolder,
+                        Parents = new[] { rqTenantName.Execute().Id },// Parents: id of tenantName
+                        MimeType = "application/vnd.google-apps.folder"
+                    };
+                    var rqSubFolder = _service.Files.Create(fileMetadata2);
+                    rqSubFolder.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
+                    idSubFolder = rqSubFolder.Execute().Id;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"GoogleApi_CheckExistFolder: {e.Message}");
+            }
+            return idSubFolder;
+        }
+
         /// <summary>
         /// upload file to drive --> return fileId
         /// </summary>
-        /// <param name="file:IFormFile"></param>
+        /// <param name="file"></param>
         /// <param name="tenantName"></param>
+        /// <param name="subFolder"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<string> GoogleApi_UploaFileToDrive([FromForm] IFormFile file, string tenantName)
+        public async Task<string> GoogleApi_UploaFileToDrive([FromForm] IFormFile file, string tenantName, string subFolder = null)
         {
             try
             {
                 string fileId = "";
-                if (file.Length > 0)
+                if (file != null && file.Length > 0)
                 {
-                    string path = "";
                     var mimeType = GetMimeType(file.FileName);
-                    string folderId = await GoogleApi_CheckExistFolder(tenantName);
+                    string folderId = await GoogleApi_CheckExistFolder(tenantName, subFolder);
 
                     var fileMetadata = new Google.Apis.Drive.v3.Data.File()
                     {
@@ -202,17 +256,7 @@ namespace BanHangBeautify.UploadFile
                         MimeType = mimeType
                     };
 
-                    // save file to server use Buffering: used to get path upload file to drive
-                    path = Path.Combine(_hostEnvironment.WebRootPath, "UploadedFiles");
-                    if (!Directory.Exists(path))
-                    {
-                        Directory.CreateDirectory(path);
-                    }
-                    path = Path.Combine(path, file.FileName);
-                    using (var fileStream = new FileStream(path, FileMode.Create))
-                    {
-                        await file.CopyToAsync(fileStream);
-                    }
+                    string path = await SaveFileToServer(file);
 
                     FilesResource.CreateMediaUpload request;
                     // Create a new file, with metadata and stream.
