@@ -97,19 +97,28 @@ namespace BanHangBeautify.UploadFile
         /// remove all file/ or list file in nameFolder: return true/false
         /// </summary>
         /// <param name="nameFolder"></param>
+        /// <param name="tenantName"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<bool> GoogleApi_RemoveFile_byNameFolder(string nameFolder = null)
+        public async Task<bool> GoogleApi_RemoveFile_byNameFolder(string tenantName = null, string nameFolder = null)
         {
             try
             {
                 ListRequest request = _service.Files.List();
-                if (!string.IsNullOrEmpty(nameFolder))
+                if (!string.IsNullOrEmpty(tenantName))
                 {
-                    request.Q = $"name = '{nameFolder}'";
-                    // Files in an application data folder in a collection:	'appDataFolder' in parents (todo)
+                    request.Q = $"name = '{tenantName}' and properties has {{ key='roootFolder' and value='{_folderId}' }}";// remove all folder in tenantName
+                    if (!string.IsNullOrEmpty(nameFolder))
+                    {
+                        // remove 1 nameFolder in tenantName
+                        request.Q = $" name = '{nameFolder}' and properties has {{ key='tenantName' and value='{tenantName}' }}";
+                    }
                 }
-                //request.Fields = "Id";
+                else
+                {
+                    // remove all nameFolder all tenantName
+                    request.Q = $"name = '{nameFolder}' and properties has {{ key='roootFolder' and value='{_folderId}' }}";
+                }
                 var result = await request.ExecuteAsync();
                 foreach (var item in result.Files)
                 {
@@ -174,7 +183,7 @@ namespace BanHangBeautify.UploadFile
                     if (!string.IsNullOrEmpty(subFolder))
                     {
                         var rqSubFolder = _service.Files.List();
-                        rqSubFolder.Q= $"mimeType = 'application/vnd.google-apps.folder' and name='{subFolder}'";
+                        rqSubFolder.Q = $"mimeType = 'application/vnd.google-apps.folder' and name='{subFolder}' and properties has {{ key='tenantName' and value='{tenantName}' }}";
                         var lstSubFolder = await rqSubFolder.ExecuteAsync();
 
                         if (lstSubFolder.Files.Count > 0)
@@ -188,7 +197,12 @@ namespace BanHangBeautify.UploadFile
                             {
                                 Name = subFolder,
                                 Parents = new[] { result.Files[0].Id },// Parents: id of tenantName
-                                MimeType = "application/vnd.google-apps.folder"
+                                MimeType = "application/vnd.google-apps.folder",
+                                Properties = new Dictionary<string, string>
+                                {
+                                    { "roootFolder", _folderId },
+                                    { "tenantName", tenantName },
+                                }
                             };
                             var createSub = _service.Files.Create(fileMetadata);
                             createSub.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
@@ -207,17 +221,26 @@ namespace BanHangBeautify.UploadFile
                     {
                         Name = tenantName,
                         Parents = new[] { _folderId },
-                        MimeType = "application/vnd.google-apps.folder"
+                        MimeType = "application/vnd.google-apps.folder",
+                        Properties = new Dictionary<string, string>
+                        {
+                            { "roootFolder", _folderId },
+                        }
                     };
                     var rqTenantName = _service.Files.Create(fileMetadata);
-                    rqTenantName.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
+                    rqTenantName.Fields = "*";
 
                     // create subfolder
                     var fileMetadata2 = new Google.Apis.Drive.v3.Data.File()
                     {
                         Name = subFolder,
                         Parents = new[] { rqTenantName.Execute().Id },// Parents: id of tenantName
-                        MimeType = "application/vnd.google-apps.folder"
+                        MimeType = "application/vnd.google-apps.folder",
+                        Properties = new Dictionary<string, string>
+                        {
+                            { "roootFolder", _folderId },
+                            { "tenantName", tenantName }
+                        }
                     };
                     var rqSubFolder = _service.Files.Create(fileMetadata2);
                     rqSubFolder.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
