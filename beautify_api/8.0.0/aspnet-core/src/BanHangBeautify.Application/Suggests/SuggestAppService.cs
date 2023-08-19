@@ -80,7 +80,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestNhanSu>> SuggestNhanSus()
         {
             List<SuggestNhanSu> result = new List<SuggestNhanSu>();
-            var lstNhanSu = await _nhanVienRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+            var lstNhanSu = await _nhanVienRepository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
             if (lstNhanSu != null || lstNhanSu.Count > 0)
             {
                 foreach (var item in lstNhanSu)
@@ -89,6 +89,9 @@ namespace BanHangBeautify.Suggests
                     rdo.Id = item.Id;
                     rdo.TenNhanVien = item.TenNhanVien;
                     rdo.SoDienThoai = item.SoDienThoai;
+                    rdo.Avatar = item.Avatar;
+                    var chucVu = await _chucVuRepository.FirstOrDefaultAsync(x => x.Id == item.IdChucVu);
+                    rdo.ChucVu = chucVu != null ? chucVu.TenChucVu : "";
                     result.Add(rdo);
                 }
             }

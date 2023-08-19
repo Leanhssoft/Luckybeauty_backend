@@ -2,7 +2,6 @@
 using BanHangBeautify.AppDashboard.Dto;
 using BanHangBeautify.AppDashboard.Repository;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDashboard
@@ -17,7 +16,7 @@ namespace BanHangBeautify.AppDashboard
         {
             _dashboardRepository = dashboardRepository;
         }
-       
+
 
         public async Task<ThongKeSoLuong> ThongKeSoLuong(DashboardFilterDto input)
         {

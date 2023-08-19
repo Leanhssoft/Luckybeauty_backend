@@ -1,5 +1,4 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.Domain.Repositories;
+﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.Notifications;
@@ -9,30 +8,24 @@ using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.Entities;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.MultiTenancy;
-using BanHangBeautify.SignalR.Bookings;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BanHangBeautify.DatLichOnline
 {
     public class OnlineBookingAppService : SPAAppServiceBase
     {
         IRepository<Tenant, int> _tenantRepository;
-        IRepository<Booking,Guid> _bookingRepository;
+        IRepository<Booking, Guid> _bookingRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly INotificationPublisher _notificationPublisher;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
@@ -43,8 +36,8 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaRepository;
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
         public OnlineBookingAppService(
-            IRepository<Tenant, int> tenantRepository, 
-            IRepository<Booking, Guid> bookingRepository, 
+            IRepository<Tenant, int> tenantRepository,
+            IRepository<Booking, Guid> bookingRepository,
             IUnitOfWorkManager unitOfWorkManager,
             INotificationPublisher notificationPublisher,
             IRepository<DM_HangHoa, Guid> dichVuRepository,
@@ -102,7 +95,7 @@ namespace BanHangBeautify.DatLichOnline
                         cmd.Parameters.Add(new SqlParameter("@TenantId", tenant.Id));
                         cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
                         cmd.Parameters.Add(new SqlParameter("@IdDichVu", input.IdDichVu));
-                        cmd.Parameters.Add(new SqlParameter("@TenNhanVien", input.TenNhanVien??""));
+                        cmd.Parameters.Add(new SqlParameter("@TenNhanVien", input.TenNhanVien ?? ""));
                         using (var dataReader = await cmd.ExecuteReaderAsync())
                         {
                             string[] array = { "Data" };
@@ -178,7 +171,7 @@ namespace BanHangBeautify.DatLichOnline
 
                             using (var dataReader = await cmd.ExecuteReaderAsync())
                             {
-                                string[] array = { "Data"};
+                                string[] array = { "Data" };
                                 var ds = new DataSet();
                                 ds.Load(dataReader, LoadOption.OverwriteChanges, array);
                                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
@@ -189,7 +182,7 @@ namespace BanHangBeautify.DatLichOnline
                                         var donGia = ds.Tables[0].Rows[i]["DonGia"].ToString();
                                         data[i].DonGia = decimal.Parse(string.IsNullOrEmpty(donGia) ? "0" : donGia);
                                     }
-                                    var group = data.ToList().GroupBy(x =>new { x.TenNhomHangHoa,x.Color }).ToList();
+                                    var group = data.ToList().GroupBy(x => new { x.TenNhomHangHoa, x.Color }).ToList();
                                     foreach (var item in group)
                                     {
                                         SuggestDichVuBookingOnlineDto dto = new SuggestDichVuBookingOnlineDto();
@@ -198,7 +191,7 @@ namespace BanHangBeautify.DatLichOnline
                                         dto.DanhSachDichVu = item.ToList();
                                         result.Add(dto);
                                     }
-                                    
+
                                 }
                             }
                         }
@@ -452,11 +445,11 @@ namespace BanHangBeautify.DatLichOnline
                     var nhanVien = _bookingNhanVienRepository.GetAll().Where(
                             x => x.IdNhanVien == input.IdNhanVien &&
                             x.TenantId == tenant.Id && x.IsDeleted == false).ToList();
-                    var appointments = _bookingRepository.GetAll().Where(x =>nhanVien.Select(z=>z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date).ToList();
-                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x=>x.TuNgay<= input.DateBooking || x.DenNgay>= input.DateBooking && x.IdNhanVien == input.IdNhanVien).ToList();
-                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x=> lichLamViec.Select(z=>z.Id).ToList().Contains(x.IdLichLamViec)).ToList();
-                    var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y=>y.IdCaLamViec).Contains(x.Id)).ToList();
-                    foreach ( var x in caLamViec)
+                    var appointments = _bookingRepository.GetAll().Where(x => nhanVien.Select(z => z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date).ToList();
+                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.TuNgay <= input.DateBooking || x.DenNgay >= input.DateBooking && x.IdNhanVien == input.IdNhanVien).ToList();
+                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec)).ToList();
+                    var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id)).ToList();
+                    foreach (var x in caLamViec)
                     {
                         var gioVaoStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioVao.ToString("HH:mm");
                         var startTime = DateTime.Parse(gioVaoStr);
@@ -489,7 +482,7 @@ namespace BanHangBeautify.DatLichOnline
                 return new List<AvailableTime>();
             }
         }
-        
+
     }
 }
 public class PagedRequestAvailableTime
@@ -530,12 +523,12 @@ public class SuggestChiNhanhBooking : SuggestChiNhanh
 }
 public class SuggestDichVuBookingDto : SuggestDichVuDto
 {
-    public string TenNhomHangHoa{set;get;}
+    public string TenNhomHangHoa { set; get; }
     public string Image { get; set; }
     public string Color { get; set; }
     public float SoPhutThucHien { get; set; }
 }
-public class SuggestDichVuBookingOnlineDto 
+public class SuggestDichVuBookingOnlineDto
 {
     public string TenNhomHangHoa { set; get; }
     public string Color { get; set; }

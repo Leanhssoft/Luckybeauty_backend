@@ -1,10 +1,8 @@
 ﻿using Abp.EntityFrameworkCore;
 using BanHangBeautify.AppDashboard.Dto;
-using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Common;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -40,7 +38,7 @@ namespace BanHangBeautify.AppDashboard.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillObject<ThongKeSoLuong>(ds.Tables[0].Rows[0]);
-                        data.TongDoanhThu = decimal.Parse(string.IsNullOrEmpty(ds.Tables[0].Rows[0]["TongDoanhThu"].ToString()) ? "0": ds.Tables[0].Rows[0]["TongDoanhThu"].ToString());
+                        data.TongDoanhThu = decimal.Parse(string.IsNullOrEmpty(ds.Tables[0].Rows[0]["TongDoanhThu"].ToString()) ? "0" : ds.Tables[0].Rows[0]["TongDoanhThu"].ToString());
                         return data;
                     }
                 }
@@ -141,10 +139,10 @@ namespace BanHangBeautify.AppDashboard.Repository
                         var data = ObjectHelper.FillCollection<HotService>(ds.Tables[0]);
                         for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                         {
-                          var tongDoanhThu = ds.Tables[0].Rows[i]["TongDoanhThu"].ToString();
-                          data[i].TongDoanhThu = float.Parse(string.IsNullOrEmpty(tongDoanhThu) ? "0": tongDoanhThu);
-                          var phanTram = ds.Tables[0].Rows[i]["PhanTram"].ToString();
-                          data[i].PhanTram = float.Parse(string.IsNullOrEmpty(phanTram) ? "0": phanTram);
+                            var tongDoanhThu = ds.Tables[0].Rows[i]["TongDoanhThu"].ToString();
+                            data[i].TongDoanhThu = float.Parse(string.IsNullOrEmpty(tongDoanhThu) ? "0" : tongDoanhThu);
+                            var phanTram = ds.Tables[0].Rows[i]["PhanTram"].ToString();
+                            data[i].PhanTram = float.Parse(string.IsNullOrEmpty(phanTram) ? "0" : phanTram);
                         }
                         return data;
                     }

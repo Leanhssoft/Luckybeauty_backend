@@ -16,7 +16,7 @@ namespace BanHangBeautify.Common
             {MauInTeamPlate.HD.ToString(),"HoaDonBan.txt" },
             {MauInTeamPlate.SQPT.ToString(),"PhieuThu.txt" },
             {MauInTeamPlate.SQPC.ToString(),"PhieuChi.txt" },
-        }; 
+        };
         public static Dictionary<string, string> DanhSachMauInK80 = new Dictionary<string, string>()
         {
             {MauInTeamPlate.HD.ToString(),"K80_HoaDonBan.txt" },

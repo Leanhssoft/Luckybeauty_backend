@@ -26,7 +26,7 @@ namespace BanHangBeautify.Suggests.Repository
                 cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
                 cmd.Parameters.Add(new SqlParameter("@IdDichVu", idDichVu));
-                cmd.Parameters.Add(new SqlParameter("@TenNhanVien",  ""));
+                cmd.Parameters.Add(new SqlParameter("@TenNhanVien", ""));
                 using (var dataReader = await cmd.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };

@@ -3,9 +3,12 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Common.Consts;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien_DichVu.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +20,22 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
     public class NhanVienDichVuAppService : SPAAppServiceBase
     {
         IRepository<DichVu_NhanVien, Guid> _repository;
-        public NhanVienDichVuAppService(IRepository<DichVu_NhanVien, Guid> repository)
+        IRepository<NS_NhanVien, Guid> _nhanSuRepository;
+        IRepository<NS_ChucVu, Guid> _chucVuRepository;
+        IRepository<DM_DonViQuiDoi, Guid> _donViQuyDoiRepository;
+        IRepository<DM_HangHoa, Guid> _hangHoaRepository;
+        public NhanVienDichVuAppService(
+            IRepository<DichVu_NhanVien, Guid> repository,
+            IRepository<NS_NhanVien, Guid> nhanSuRepository,
+            IRepository<NS_ChucVu, Guid> chucVuRepository,
+            IRepository<DM_DonViQuiDoi, Guid> donViQuyDoiRepository,
+            IRepository<DM_HangHoa, Guid> hangHoaRepository)
         {
             _repository = repository;
+            _nhanSuRepository = nhanSuRepository;
+            _chucVuRepository = chucVuRepository;
+            _donViQuyDoiRepository = donViQuyDoiRepository;
+            _hangHoaRepository = hangHoaRepository;
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Create)]
@@ -52,37 +68,75 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Create)]
-        public async Task<ExecuteResultDto> CreateByServiceMany(CreateManyEmployeeDto input)
+        public async Task<ExecuteResultDto> CreateOrUpdateEmployeeByService(CreateManyEmployeeDto input)
         {
             ExecuteResultDto result = new ExecuteResultDto();
             try
             {
                 List<DichVu_NhanVien> lstDichVuNhanVien = new List<DichVu_NhanVien>();
-                if (input.IdNhanViens != null && input.IdNhanViens.Count > 0)
+                var checkExist = _repository.GetAll().Where(x => x.IdDonViQuyDoi == input.IdDonViQuiDoi).ToList();
+                if (checkExist != null && checkExist.Count > 0)
                 {
                     foreach (var item in input.IdNhanViens)
                     {
-                        var checkExits = _repository.GetAll().Where(x => x.IdDonViQuyDoi == input.IdDonViQuiDoi && x.IdNhanVien == item && x.IsDeleted == false).FirstOrDefault();
-                        if (checkExits != null)
+                        if (!checkExist.Select(x => x.IdNhanVien).ToList().Contains(item))
                         {
-                            continue;
+                            DichVu_NhanVien rdo = new DichVu_NhanVien();
+                            rdo.Id = Guid.NewGuid();
+                            rdo.IdNhanVien = item;
+                            rdo.IdDonViQuyDoi = input.IdDonViQuiDoi;
+                            rdo.TenantId = AbpSession.TenantId ?? 1;
+                            rdo.CreationTime = DateTime.Now;
+                            rdo.CreatorUserId = AbpSession.UserId;
+                            rdo.LastModificationTime = DateTime.Now;
+                            rdo.LastModifierUserId = AbpSession.UserId;
+                            rdo.IsDeleted = false;
+                            await _repository.InsertAsync(rdo);
                         }
-                        DichVu_NhanVien rdo = new DichVu_NhanVien();
-                        rdo.Id = Guid.NewGuid();
-                        rdo.IdNhanVien = item;
-                        rdo.IdDonViQuyDoi = input.IdDonViQuiDoi;
-                        rdo.TenantId = AbpSession.TenantId ?? 1;
-                        rdo.CreationTime = DateTime.Now;
-                        rdo.CreatorUserId = AbpSession.UserId;
-                        rdo.LastModificationTime = DateTime.Now;
-                        rdo.LastModifierUserId = AbpSession.UserId;
-                        rdo.IsDeleted = false;
-                        lstDichVuNhanVien.Add(rdo);
+                        else
+                        {
+                            var dvnv = checkExist.Where(x => x.IdDonViQuyDoi == item).FirstOrDefault();
+                            if (dvnv.IsDeleted == true)
+                            {
+                                dvnv.IsDeleted = false;
+                                dvnv.DeleterUserId = null;
+                                dvnv.DeletionTime = null;
+                                await _repository.UpdateAsync(dvnv);
+                            }
+                        }
                     }
 
+                    result.Message = "Cập nhật thành công!";
                 }
-                await _repository.InsertRangeAsync(lstDichVuNhanVien);
-                result.Message = "Thêm mới thành công!";
+                else
+                {
+                    if (input.IdNhanViens != null && input.IdNhanViens.Count > 0)
+                    {
+                        foreach (var item in input.IdNhanViens)
+                        {
+                            var checkExits = _repository.GetAll().Where(x => x.IdDonViQuyDoi == input.IdDonViQuiDoi && x.IdNhanVien == item && x.IsDeleted == false).FirstOrDefault();
+                            if (checkExits != null)
+                            {
+                                continue;
+                            }
+                            DichVu_NhanVien rdo = new DichVu_NhanVien();
+                            rdo.Id = Guid.NewGuid();
+                            rdo.IdNhanVien = item;
+                            rdo.IdDonViQuyDoi = input.IdDonViQuiDoi;
+                            rdo.TenantId = AbpSession.TenantId ?? 1;
+                            rdo.CreationTime = DateTime.Now;
+                            rdo.CreatorUserId = AbpSession.UserId;
+                            rdo.LastModificationTime = DateTime.Now;
+                            rdo.LastModifierUserId = AbpSession.UserId;
+                            rdo.IsDeleted = false;
+                            lstDichVuNhanVien.Add(rdo);
+                        }
+
+                    }
+                    await _repository.InsertRangeAsync(lstDichVuNhanVien);
+                    result.Message = "Thêm mới thành công!";
+                }
+
                 result.Status = "success";
             }
             catch (Exception ex)
@@ -94,36 +148,74 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Create)]
-        public async Task<ExecuteResultDto> CreateByEmployeeMany(CreateServiceManyDto input)
+        public async Task<ExecuteResultDto> CreateOrUpdateServicesByEmployee(CreateServiceManyDto input)
         {
             ExecuteResultDto result = new ExecuteResultDto();
             try
             {
                 List<DichVu_NhanVien> lstDichVuNhanVien = new List<DichVu_NhanVien>();
-                if (input.IdDonViQuiDois != null && input.IdDonViQuiDois.Count > 0)
+                var checkExist = _repository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien).ToList();
+                if (checkExist != null && checkExist.Count > 0)
                 {
                     foreach (var item in input.IdDonViQuiDois)
                     {
-                        var checkExits = _repository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IdDonViQuyDoi == item && x.IsDeleted == false).FirstOrDefault();
-                        if (checkExits != null)
+                        if (!checkExist.Select(x => x.IdDonViQuyDoi).ToList().Contains(item))
                         {
-                            continue;
+                            DichVu_NhanVien rdo = new DichVu_NhanVien();
+                            rdo.Id = Guid.NewGuid();
+                            rdo.IdNhanVien = input.IdNhanVien;
+                            rdo.IdDonViQuyDoi = item;
+                            rdo.TenantId = AbpSession.TenantId ?? 1;
+                            rdo.CreationTime = DateTime.Now;
+                            rdo.CreatorUserId = AbpSession.UserId;
+                            rdo.LastModificationTime = DateTime.Now;
+                            rdo.LastModifierUserId = AbpSession.UserId;
+                            rdo.IsDeleted = false;
+                            await _repository.InsertAsync(rdo);
                         }
-                        DichVu_NhanVien rdo = new DichVu_NhanVien();
-                        rdo.Id = Guid.NewGuid();
-                        rdo.IdNhanVien = input.IdNhanVien;
-                        rdo.IdDonViQuyDoi = item;
-                        rdo.TenantId = AbpSession.TenantId ?? 1;
-                        rdo.CreationTime = DateTime.Now;
-                        rdo.CreatorUserId = AbpSession.UserId;
-                        rdo.LastModificationTime = DateTime.Now;
-                        rdo.LastModifierUserId = AbpSession.UserId;
-                        rdo.IsDeleted = false;
-                        lstDichVuNhanVien.Add(rdo);
+                        else
+                        {
+                            var dvnv = checkExist.Where(x => x.IdDonViQuyDoi == item).FirstOrDefault();
+                            if (dvnv.IsDeleted == true)
+                            {
+                                dvnv.IsDeleted = false;
+                                dvnv.DeleterUserId = null;
+                                dvnv.DeletionTime = null;
+                                await _repository.UpdateAsync(dvnv);
+                            }
+                        }
                     }
+
+                    result.Message = "Cập nhật thành công!";
                 }
-                await _repository.InsertRangeAsync(lstDichVuNhanVien);
-                result.Message = "Thêm mới thành công!";
+                else
+                {
+                    if (input.IdDonViQuiDois != null && input.IdDonViQuiDois.Count > 0)
+                    {
+                        foreach (var item in input.IdDonViQuiDois)
+                        {
+                            var checkExits = _repository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IdDonViQuyDoi == item && x.IsDeleted == false).FirstOrDefault();
+                            if (checkExits != null)
+                            {
+                                continue;
+                            }
+                            DichVu_NhanVien rdo = new DichVu_NhanVien();
+                            rdo.Id = Guid.NewGuid();
+                            rdo.IdNhanVien = input.IdNhanVien;
+                            rdo.IdDonViQuyDoi = item;
+                            rdo.TenantId = AbpSession.TenantId ?? 1;
+                            rdo.CreationTime = DateTime.Now;
+                            rdo.CreatorUserId = AbpSession.UserId;
+                            rdo.LastModificationTime = DateTime.Now;
+                            rdo.LastModifierUserId = AbpSession.UserId;
+                            rdo.IsDeleted = false;
+                            lstDichVuNhanVien.Add(rdo);
+                        }
+                    }
+                    await _repository.InsertRangeAsync(lstDichVuNhanVien);
+                    result.Message = "Thêm mới thành công!";
+                }
+
                 result.Status = "success";
             }
             catch (Exception ex)
@@ -134,6 +226,71 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
             return result;
         }
 
+        public async Task<List<SuggestDichVuBookingDto>> GetAllDichVu(Guid? idNhomDichVu)
+        {
+            List<SuggestDichVuBookingDto> result = new List<SuggestDichVuBookingDto>();
+            var lst = await _donViQuyDoiRepository
+                .GetAll()
+                .Include(x => x.DM_HangHoa)
+                .Where(
+                    x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false &&
+                    x.DM_HangHoa.IdLoaiHangHoa != LoaiHangHoaConst.HangHoa
+                ).ToListAsync();
+            if (idNhomDichVu.HasValue)
+            {
+                lst = lst.Where(x => x.DM_HangHoa.IdNhomHangHoa == idNhomDichVu).ToList();
+            }
+
+            if (lst != null || lst.Count > 0)
+            {
+                foreach (var item in lst)
+                {
+                    SuggestDichVuBookingDto rdo = new SuggestDichVuBookingDto();
+                    rdo.Id = item.Id;
+                    rdo.TenDichVu = item.DM_HangHoa.TenHangHoa;
+                    rdo.DonGia = decimal.Parse(item.GiaBan.ToString() ?? "0");
+                    rdo.Image = item.DM_HangHoa.Image;
+                    rdo.SoPhutThucHien = item.DM_HangHoa.SoPhutThucHien.HasValue ? float.Parse(item.DM_HangHoa.SoPhutThucHien.ToString()) : 0;
+                    result.Add(rdo);
+                }
+            }
+            return result;
+        }
+
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu)]
+        public async Task<NhanVienDichVuDetailDto> GetDetail(Guid idNhanVien)
+        {
+            NhanVienDichVuDetailDto result = new NhanVienDichVuDetailDto();
+            var data = _nhanSuRepository.GetAll().Where(x => x.Id == idNhanVien && x.IsDeleted == false).ToList();
+            if (data != null && data.Count > 0)
+            {
+                var nhanVien = await _nhanSuRepository.GetAllIncluding().Where(x => x.Id == idNhanVien).Include(x => x.NS_ChucVu).FirstOrDefaultAsync();
+                if (nhanVien != null)
+                {
+                    var chucVu = _chucVuRepository.FirstOrDefault(x => x.Id == nhanVien.IdChucVu);
+                    var dichVuNhanViens = _repository.GetAll().Where(x => x.IdNhanVien == idNhanVien).ToList();
+                    result.ChucVu = nhanVien.NS_ChucVu != null ? chucVu.TenChucVu : "";
+                    result.TenNhanVien = nhanVien.TenNhanVien;
+                    result.SoDienThoai = nhanVien.SoDienThoai;
+                    result.Email = "";
+                    result.Rate = 0;
+                    var idDichVus = dichVuNhanViens.Select(x => x.IdDonViQuyDoi).ToList();
+                    var dichVus = _donViQuyDoiRepository.GetAllIncluding().Where(x => idDichVus.Contains(x.Id)).ToList();
+                    foreach (var item in dichVus)
+                    {
+                        DichVuNhanTheoNhanVienDto service = new DichVuNhanTheoNhanVienDto();
+                        var dichVu = _hangHoaRepository.FirstOrDefault(x => x.Id == item.IdHangHoa);
+                        service.SoPhutThucHien = dichVu.SoPhutThucHien.ToString();
+                        service.TenDichVu = dichVu.TenHangHoa;
+                        service.DonGia = (decimal)item.GiaBan;
+                        result.DichVuThucHiens.Add(service);
+                    }
+                }
+            }
+            return result;
+
+        }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Delete)]
         public async Task<ExecuteResultDto> DeleteAsync(EntityDto<Guid> input)
