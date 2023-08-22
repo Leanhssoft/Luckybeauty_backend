@@ -8,7 +8,6 @@ using BanHangBeautify.Bookings.Bookings.Dto;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -75,9 +74,9 @@ namespace BanHangBeautify.Bookings.Bookings
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
             //await UpdateEndTimeBooking(booking);
-            string mess = "Khách hàng: " + booking.TenKhachHang + " đã được thêm lịch hẹn làm dịch vụ : "+ dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("hh:mm");
+            string mess = "Khách hàng: " + booking.TenKhachHang + " đã được thêm lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("hh:mm");
             var notificationData = NewMessageNotification(mess);
-            await _notificationPublisher.PublishAsync("AddNewBooking", notificationData,severity:NotificationSeverity.Info);
+            await _notificationPublisher.PublishAsync("AddNewBooking", notificationData, severity: NotificationSeverity.Info);
             return booking;
         }
         [NonAction]
@@ -135,7 +134,7 @@ namespace BanHangBeautify.Bookings.Bookings
                 findBooking.LastModificationTime = DateTime.Now;
                 findBooking.LastModifierUserId = AbpSession.UserId;
                 var dichVu = await _donViQuiDoiRepository.GetAllIncluding().Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
-                if (dichVu!=null&&dichVu.DM_HangHoa!=null)
+                if (dichVu != null && dichVu.DM_HangHoa != null)
                 {
                     findBooking.EndTime = findBooking.StartTime.AddMinutes(dichVu.DM_HangHoa.SoPhutThucHien ?? 0);
                 }
@@ -347,7 +346,7 @@ namespace BanHangBeautify.Bookings.Bookings
         public async Task<BookingInfoDto> GetBookingInfo(Guid id)
         {
             int tenantId = AbpSession.TenantId ?? 1;
-            return await _bookingRepository.GetBookingInfo(id,tenantId);
+            return await _bookingRepository.GetBookingInfo(id, tenantId);
         }
         public async Task<UpdateBookingDto> GetForEdit(Guid id)
         {

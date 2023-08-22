@@ -1,30 +1,15 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Google.Apis.Auth.OAuth2;
+﻿using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
-using System.IO;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using Google.Apis.Upload;
-using NPOI.OpenXmlFormats.Wordprocessing;
-using Microsoft.AspNetCore.StaticFiles;
-using ICSharpCode.SharpZipLib.Core;
-using Google.Apis.Drive.v3.Data;
-using Nito.AsyncEx;
-using System.Linq;
-using NPOI.HSSF.Record.PivotTable;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using System.Drawing;
-using BanHangBeautify.NewFolder;
-using Microsoft.AspNetCore.Http;
-using NPOI.HPSF;
-using Castle.Core.Resource;
+using System.IO;
+using System.Threading.Tasks;
 using static Google.Apis.Drive.v3.FilesResource;
-using Abp.Authorization;
-using Newtonsoft.Json;
 
 namespace BanHangBeautify.UploadFile
 {

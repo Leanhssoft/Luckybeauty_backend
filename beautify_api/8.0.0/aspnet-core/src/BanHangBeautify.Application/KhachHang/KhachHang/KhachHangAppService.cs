@@ -65,7 +65,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<KhachHangDto> CreateKhachHang(CreateOrEditKhachHangDto dto)
         {
             KhachHangDto result = new KhachHangDto();
-            var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId??1)).ToList();
+            var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.Id = Guid.NewGuid();
             khachHang.MaKhachHang = "KH00" + checkMa.Count;
@@ -135,26 +135,26 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<KhachHangDetailDto> GetKhachHangDetail(Guid id)
         {
             KhachHangDetailDto result = new KhachHangDetailDto();
-            var khachHang = await _repository.FirstOrDefaultAsync(x=>x.Id == id);
-            if (khachHang!=null)
+            var khachHang = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (khachHang != null)
             {
                 result.Id = khachHang.Id;
                 result.Avatar = khachHang.Avatar;
                 result.TenKhachHang = khachHang.TenKhachHang;
                 result.MaKhachHang = khachHang.MaKhachHang;
-                result.NgaySinh = khachHang.NgaySinh.HasValue ? khachHang.NgaySinh.Value.ToString("dd/MM/yyyy") :"";
+                result.NgaySinh = khachHang.NgaySinh.HasValue ? khachHang.NgaySinh.Value.ToString("dd/MM/yyyy") : "";
                 result.SoDienThoai = khachHang.SoDienThoai;
                 result.DiaChi = khachHang.DiaChi;
                 result.Email = khachHang.Email;
-                result.GioiTinh = khachHang.GioiTinhNam.HasValue ? khachHang.GioiTinhNam.Value? "Nam" : "Nữ": "Khác";
-                result.DiemThuong = khachHang.TongTichDiem ??0;
+                result.GioiTinh = khachHang.GioiTinhNam.HasValue ? khachHang.GioiTinhNam.Value ? "Nam" : "Nữ" : "Khác";
+                result.DiemThuong = khachHang.TongTichDiem ?? 0;
                 result.MaSoThue = khachHang.MaSoThue;
-                var loaiKhach = await _loaiKhachHangRepository.FirstOrDefaultAsync(x=>x.Id== khachHang.IdLoaiKhach);
+                var loaiKhach = await _loaiKhachHangRepository.FirstOrDefaultAsync(x => x.Id == khachHang.IdLoaiKhach);
                 result.LoaiKhach = loaiKhach != null ? loaiKhach.TenLoaiKhachHang : "";
-                var nhomKhach =await _nhomKhachHangRepository.FirstOrDefaultAsync(h => h.Id == khachHang.IdNhomKhach);
-                result.NhomKhach = nhomKhach !=null ? nhomKhach.TenNhomKhach : "";
-                var nguonKhach =await _nguonKhachRepository.FirstOrDefaultAsync(x => x.Id == khachHang.IdNguonKhach);
-                result.NguonKhach = nguonKhach != null ? nguonKhach.TenNguon:"";
+                var nhomKhach = await _nhomKhachHangRepository.FirstOrDefaultAsync(h => h.Id == khachHang.IdNhomKhach);
+                result.NhomKhach = nhomKhach != null ? nhomKhach.TenNhomKhach : "";
+                var nguonKhach = await _nguonKhachRepository.FirstOrDefaultAsync(x => x.Id == khachHang.IdNguonKhach);
+                result.NguonKhach = nguonKhach != null ? nguonKhach.TenNguon : "";
             }
             return result;
         }
@@ -209,8 +209,8 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 rdo.MaKhachHang = item.MaKhachHang;
                 rdo.Avatar = item.Avatar;
                 rdo.TenKhachHang = item.TenKhachHang;
-                var booking =await _bookingRepository.GetAll().Where(x=>x.IdKhachHang==item.Id && x.IsDeleted==false).OrderByDescending(x=>x.BookingDate).ToListAsync();
-                if (booking!=null && booking.Count>0)
+                var booking = await _bookingRepository.GetAll().Where(x => x.IdKhachHang == item.Id && x.IsDeleted == false).OrderByDescending(x => x.BookingDate).ToListAsync();
+                if (booking != null && booking.Count > 0)
                 {
                     rdo.CuocHenGanNhat = booking[0].BookingDate;
                 }

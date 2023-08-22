@@ -20,8 +20,20 @@ namespace BanHangBeautify.KhachHang.NhomKhach
         {
             _repository = repository;
         }
+
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Pages_NhomKhach_Create)]
+        [AbpAuthorize(PermissionNames.Pages_NhomKhach_Create, PermissionNames.Pages_NhomKhach_Edit)]
+        public async Task<NhomKhachDto> CreateOrEditNhomKhach(CreateOrEditNhomKhachDto dto)
+        {
+            var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
+            if (checkExist != null)
+            {
+                return await EditNhomKhach(dto, checkExist);
+            }
+            return await CreateNhomKhach(dto);
+        }
+
+        [NonAction]
         public async Task<NhomKhachDto> CreateNhomKhach(CreateOrEditNhomKhachDto dto)
         {
             NhomKhachDto result = new NhomKhachDto();
@@ -37,14 +49,16 @@ namespace BanHangBeautify.KhachHang.NhomKhach
             result = ObjectMapper.Map<NhomKhachDto>(nhomKhach);
             return result;
         }
-        public async Task<NhomKhachDto> EditNhomKhach(CreateOrEditNhomKhachDto dto)
+        [NonAction]
+        public async Task<NhomKhachDto> EditNhomKhach(CreateOrEditNhomKhachDto dto, DM_NhomKhachHang oldData)
         {
             NhomKhachDto result = new NhomKhachDto();
-            var nhomKhach = ObjectMapper.Map<DM_NhomKhachHang>(dto);
-            nhomKhach.LastModificationTime = DateTime.Now;
-            nhomKhach.LastModifierUserId = AbpSession.UserId;
-            await _repository.UpdateAsync(nhomKhach);
-            result = ObjectMapper.Map<NhomKhachDto>(nhomKhach);
+            oldData.TenNhomKhach = dto.TenNhomKhach;
+            oldData.MoTa = dto.MoTa;
+            oldData.LastModificationTime = DateTime.Now;
+            oldData.LastModifierUserId = AbpSession.UserId;
+            await _repository.UpdateAsync(oldData);
+            result = ObjectMapper.Map<NhomKhachDto>(oldData);
 
             return result;
         }
@@ -69,6 +83,12 @@ namespace BanHangBeautify.KhachHang.NhomKhach
         {
             var nhomKhach = await _repository.GetAsync(Id);
             return nhomKhach;
+        }
+        [HttpPost]
+        public async Task<CreateOrEditNhomKhachDto> GetForEdit(Guid id)
+        {
+            var nhomKhach = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            return ObjectMapper.Map<CreateOrEditNhomKhachDto>(nhomKhach);
         }
         public async Task<PagedResultDto<DM_NhomKhachHang>> GetAll(PagedNhomKhachResultRequestDto input)
         {

@@ -2,7 +2,7 @@
 using System;
 
 namespace BanHangBeautify.Bookings.Bookings.Dto
-{ 
+{
     public class UpdateBookingDto : Entity<Guid>
     {
         public string TenKhachHang { get; set; }
