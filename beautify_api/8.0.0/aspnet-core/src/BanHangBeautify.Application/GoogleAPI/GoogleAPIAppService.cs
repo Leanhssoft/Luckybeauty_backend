@@ -119,6 +119,7 @@ namespace BanHangBeautify.UploadFile
                     // remove all nameFolder all tenantName
                     request.Q = $"name = '{nameFolder}' and properties has {{ key='roootFolder' and value='{_folderId}' }}";
                 }
+                request.Fields = "files(id)";
                 var result = await request.ExecuteAsync();
                 foreach (var item in result.Files)
                 {
@@ -176,6 +177,7 @@ namespace BanHangBeautify.UploadFile
                 var request = _service.Files.List();
                 // tìm kiếm thư mục có tên = tenantName
                 request.Q = $"mimeType = 'application/vnd.google-apps.folder' and name='{tenantName}'";
+                request.Fields = "files(id)";
                 var result = await request.ExecuteAsync();
                 if (result.Files.Count > 0)
                 {
@@ -184,6 +186,7 @@ namespace BanHangBeautify.UploadFile
                     {
                         var rqSubFolder = _service.Files.List();
                         rqSubFolder.Q = $"mimeType = 'application/vnd.google-apps.folder' and name='{subFolder}' and properties has {{ key='tenantName' and value='{tenantName}' }}";
+                        rqSubFolder.Fields = "files(id)";
                         var lstSubFolder = await rqSubFolder.ExecuteAsync();
 
                         if (lstSubFolder.Files.Count > 0)
@@ -205,7 +208,7 @@ namespace BanHangBeautify.UploadFile
                                 }
                             };
                             var createSub = _service.Files.Create(fileMetadata);
-                            createSub.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
+                            createSub.Fields = "id";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
                             idSubFolder = createSub.Execute().Id;
                         }
                     }
@@ -228,7 +231,7 @@ namespace BanHangBeautify.UploadFile
                         }
                     };
                     var rqTenantName = _service.Files.Create(fileMetadata);
-                    rqTenantName.Fields = "*";
+                    rqTenantName.Fields = "id";
 
                     // create subfolder
                     var fileMetadata2 = new Google.Apis.Drive.v3.Data.File()
@@ -243,7 +246,7 @@ namespace BanHangBeautify.UploadFile
                         }
                     };
                     var rqSubFolder = _service.Files.Create(fileMetadata2);
-                    rqSubFolder.Fields = "*";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
+                    rqSubFolder.Fields = "id";// định nghĩa các trường sẽ dc trả về khi request (*: return all, Id: return Id)
                     idSubFolder = rqSubFolder.Execute().Id;
                 }
             }
@@ -287,7 +290,7 @@ namespace BanHangBeautify.UploadFile
                     {
                         request = _service.Files.Create(
                             fileMetadata, stream, mimeType);
-                        request.Fields = "*";
+                        request.Fields = "id";
                         request.Upload();
                     }
                     fileId = request.ResponseBody?.Id;
