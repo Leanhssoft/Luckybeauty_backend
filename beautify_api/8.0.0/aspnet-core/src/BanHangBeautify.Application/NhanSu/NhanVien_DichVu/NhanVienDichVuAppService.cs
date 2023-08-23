@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
@@ -173,19 +174,19 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                             rdo.IsDeleted = false;
                             await _repository.InsertAsync(rdo);
                         }
-                        else
-                        {
-                            var dvnv = checkExist.Where(x => x.IdDonViQuyDoi == item).FirstOrDefault();
-                            if (dvnv.IsDeleted == true)
-                            {
-                                dvnv.IsDeleted = false;
-                                dvnv.DeleterUserId = null;
-                                dvnv.DeletionTime = null;
-                                await _repository.UpdateAsync(dvnv);
-                            }
-                        }
+                        
                     }
-
+                    foreach (var item in checkExist)
+                    {
+                        if (input.IdDonViQuiDois.Contains(item.IdDonViQuyDoi)==false)
+                        {
+                            item.IsDeleted = true;
+                            item.DeletionTime = DateTime.Now;
+                            item.DeleterUserId = AbpSession.UserId;
+                            await _repository.UpdateAsync(item);
+                        }
+                        
+                    }
                     result.Message = "Cập nhật thành công!";
                 }
                 else
@@ -281,6 +282,8 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     {
                         DichVuNhanTheoNhanVienDto service = new DichVuNhanTheoNhanVienDto();
                         var dichVu = _hangHoaRepository.FirstOrDefault(x => x.Id == item.IdHangHoa);
+                        service.IdDichVu = item.Id;
+                        service.Image = dichVu.Image;
                         service.SoPhutThucHien = dichVu.SoPhutThucHien.ToString();
                         service.TenDichVu = dichVu.TenHangHoa;
                         service.DonGia = (decimal)item.GiaBan;

@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
 using Abp.Notifications;
@@ -9,6 +10,7 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.Notifications;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -27,7 +29,6 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<Tenant, int> _tenantRepository;
         IRepository<Booking, Guid> _bookingRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly INotificationPublisher _notificationPublisher;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
         IRepository<BookingNhanVien, Guid> _bookingNhanVienRepository;
@@ -35,24 +36,26 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_LichLamViec, Guid> _lichLamViecRepository;
         IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaRepository;
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
+        IRepository<NS_NhanVien, Guid> _nhanVienRepository;
+        private readonly IAppNotifier _appNotifier;
         public OnlineBookingAppService(
             IRepository<Tenant, int> tenantRepository,
             IRepository<Booking, Guid> bookingRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            INotificationPublisher notificationPublisher,
             IRepository<DM_HangHoa, Guid> dichVuRepository,
             IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
             IRepository<BookingNhanVien, Guid> bookingNhanVienRepository,
             IRepository<BookingService, Guid> bookingServiceRepository,
             IRepository<NS_LichLamViec, Guid> lichLamViecRepository,
             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaRepository,
-            IRepository<NS_CaLamViec, Guid> caLamViecRepository
+            IRepository<NS_CaLamViec, Guid> caLamViecRepository,
+            IRepository<NS_NhanVien, Guid> nhanVienRepository,
+            IAppNotifier appNotifier
             )
         {
             _tenantRepository = tenantRepository;
             _bookingRepository = bookingRepository;
             _unitOfWorkManager = unitOfWorkManager;
-            _notificationPublisher = notificationPublisher;
             _dichVuRepository = dichVuRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
             _bookingNhanVienRepository = bookingNhanVienRepository;
@@ -60,6 +63,8 @@ namespace BanHangBeautify.DatLichOnline
             _lichLamViecCaRepository = lichLamViecCaRepository;
             _lichLamViecRepository = lichLamViecRepository;
             _caLamViecRepository = caLamViecRepository;
+            _nhanVienRepository = nhanVienRepository;
+            _appNotifier = appNotifier;
         }
         public List<string> GetAllTenant()
         {
@@ -350,8 +355,8 @@ namespace BanHangBeautify.DatLichOnline
                     bk.StartTime = DateTime.Parse(data.StartTime);
                     bk.EndTime = bk.StartTime.AddMinutes(data.SoPhutThucHien);
                     bk.GhiChu = data.GhiChu;
-                    bk.LoaiBooking = 2;
-                    bk.TrangThai = 1;
+                    bk.LoaiBooking = LoaiBookingConst.BookingOnline;
+                    bk.TrangThai = TrangThaiBookingConst.DatLich;
                     bk.SoDienThoai = data.SoDienThoai;
                     bk.TenKhachHang = data.TenKhachHang;
                     bk.TenantId = tenant.Id;
@@ -362,17 +367,22 @@ namespace BanHangBeautify.DatLichOnline
                     var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
                     var bookingService = CreateBookingService(bk.Id, data.IdDichVu);
                     var bookingNhanVien = CreateBookingNhanVien(bk.Id, data.IdNhanVien);
-                    string mess = "Khách hàng: " + data.TenKhachHang + " đã được thêm lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + bk.BookingDate.ToString("dd/MM/yyyy") + " " + bk.StartTime.ToString("hh:mm");
+                    string mess = "Khách hàng: " + bk.TenKhachHang + "(" + bk.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + bk.BookingDate.ToString("dd/MM/yyyy") + " " + bk.StartTime.ToString("hh:mm");
                     var notificationData = new LocalizableMessageNotificationData(
                         new LocalizableString(
                             mess,
                             "LuckyBeauty"
                         )
                     );
+
                     _bookingNhanVienRepository.Insert(bookingNhanVien);
                     _bookingServiceRepository.Insert(bookingService);
                     await CurrentUnitOfWork.SaveChangesAsync();
-                    await _notificationPublisher.PublishAsync("AddNewBooking", notificationData, severity: NotificationSeverity.Info);
+                    var listUser = await (from ns in _nhanVienRepository.GetAll()
+                                      join us in UserManager.Users on ns.Id equals us.NhanSuId
+                                      where !ns.IsDeleted && !us.IsDeleted && us.Id != AbpSession.UserId
+                                      select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+                    await _appNotifier.SendMessageAsync("AddNewBooking", notificationData, listUser, severity: NotificationSeverity.Info);
                     result.Message = "Đặt lịch thành công!";
                     result.Status = "success";
                 }
@@ -433,12 +443,7 @@ namespace BanHangBeautify.DatLichOnline
         public async Task<List<AvailableTime>> GetAviableTime(PagedRequestAvailableTime input)
         {
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == input.TenantName);
-            if (tenant == null)
-            {
-                return new List<AvailableTime>();
-            }
-            try
-            {
+           
                 List<AvailableTime> times = new List<AvailableTime>();
                 using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
                 {
@@ -475,12 +480,7 @@ namespace BanHangBeautify.DatLichOnline
                         }
                     }
                 }
-                return times;
-            }
-            catch (Exception)
-            {
-                return new List<AvailableTime>();
-            }
+            return times;
         }
 
     }

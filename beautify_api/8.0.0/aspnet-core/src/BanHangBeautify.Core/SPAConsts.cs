@@ -10,7 +10,8 @@ namespace BanHangBeautify
 
         public const bool MultiTenancyEnabled = true;
 
-
+        public const int DefaultPageSize = 10;
+        public const int MaxPageSize = 1000;
         /// <summary>
         /// Default pass phrase for SimpleStringCipher decrypt/encrypt operations
         /// </summary>

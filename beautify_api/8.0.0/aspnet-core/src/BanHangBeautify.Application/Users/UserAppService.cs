@@ -119,6 +119,11 @@ namespace BanHangBeautify.Users
             user.IsActive = input.IsActive;
             user.LastModificationTime = DateTime.Now;
             user.LastModifierUserId = AbpSession.UserId;
+            if (!string.IsNullOrEmpty(input.Password))
+            {
+                    CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
+                
+            }
             user.SetNormalizedNames();
 
             CheckErrors(await _userManager.UpdateAsync(user));
@@ -212,6 +217,8 @@ namespace BanHangBeautify.Users
             var roles = _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).Select(r => r.NormalizedName);
 
             var userDto = base.MapToEntityDto(user);
+            userDto.Password = user.Password;
+            userDto.ConfirmPassword = userDto.Password;
             userDto.RoleNames = roles.ToArray();
 
             return userDto;
