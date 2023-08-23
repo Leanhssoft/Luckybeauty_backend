@@ -5,6 +5,7 @@
         public string UserName { get; set; }// user lapphieu
         public string MaKhachHang { get; set; }
         public string TenKhachHang { get; set; }
+        public string Avatar { get; set; }
         public string TenChiNhanh { get; set; }
         public string TxtTrangThaiHD { get; set; }
         public double? DaThanhToan { get; set; }

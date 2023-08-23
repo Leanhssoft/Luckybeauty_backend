@@ -1,8 +1,10 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using Abp.Application.Services.Dto;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using System;
@@ -77,6 +79,22 @@ namespace BanHangBeautify.UploadFile
                 Console.WriteLine($"Parents: {item.Parents} - fileId: {item.Id} - fileName: {item.Name}");
             }
             return result.Files;
+        }
+
+        [HttpGet]
+        public async Task<PagedResultDto<Google.Apis.Drive.v3.Data.File>> GetAllFile_ByProperties(string key, string value)
+        {
+            PagedResultDto<Google.Apis.Drive.v3.Data.File> data = new();
+            ListRequest request = _service.Files.List();
+            if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+            {
+                request.Q = $"properties has {{ key='{key}' and value='{value}' }}";// remove all folder in tenantName
+                request.Fields = "*";
+                var result = await request.ExecuteAsync();
+                data.Items = (IReadOnlyList<Google.Apis.Drive.v3.Data.File>)result.Files;
+                data.TotalCount = result.Files.Count;
+            }
+            return data;
         }
         /// <summary>
         /// remove all file/ or list file in nameFolder: return true/false
