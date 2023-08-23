@@ -27,7 +27,6 @@
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
     <Folder Include="DashboardCustomization\Dto\" />
-    <Folder Include="SignalR\Notifications\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Abp.EntityFrameworkCore.EFPlus" Version="8.0.0" />

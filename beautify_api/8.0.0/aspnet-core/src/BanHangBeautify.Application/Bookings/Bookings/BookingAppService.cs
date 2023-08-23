@@ -1,12 +1,15 @@
-﻿using Abp.Authorization;
+﻿using Abp;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Localization;
 using Abp.Notifications;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Bookings.Bookings.BookingRepository;
 using BanHangBeautify.Bookings.Bookings.Dto;
+using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.Notifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,8 +28,9 @@ namespace BanHangBeautify.Bookings.Bookings
         private readonly IRepository<BookingService, Guid> _bookingServiceRepository;
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
+        private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
-        private readonly INotificationPublisher _notificationPublisher;
+        private readonly IAppNotifier _appNotifier;
         public BookingAppService(
             IRepository<Booking, Guid> repository,
             IBookingRepository bookingRepository,
@@ -35,7 +39,8 @@ namespace BanHangBeautify.Bookings.Bookings
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             IRepository<DM_HangHoa, Guid> dichVuRepository,
             IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
-            INotificationPublisher notificationPublisher)
+             IRepository<NS_NhanVien, Guid> nhanVienRepository,
+            IAppNotifier appNotifier)
         {
             _repository = repository;
             _bookingRepository = bookingRepository;
@@ -44,9 +49,17 @@ namespace BanHangBeautify.Bookings.Bookings
             _khachHangRepository = khachHangRepository;
             _dichVuRepository = dichVuRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
-            _notificationPublisher = notificationPublisher;
+            _nhanVienRepository = nhanVienRepository;
+            _appNotifier = appNotifier;
         }
-
+        private async Task<List<UserIdentifier>> getUserAdmin()
+        {
+            var data = await (from ns in _nhanVienRepository.GetAll()
+                              join us in UserManager.Users on ns.Id equals us.NhanSuId
+                              where !ns.IsDeleted && !us.IsDeleted && us.Id != AbpSession.UserId
+                              select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+            return data;
+        }
         public async Task<Booking> CreateBooking(CreateBookingDto dto)
         {
             var startTime = dto.StartTime + " " + dto.StartHours;
@@ -64,6 +77,7 @@ namespace BanHangBeautify.Bookings.Bookings
             booking.CreationTime = DateTime.Now;
             booking.TenantId = AbpSession.TenantId ?? 1;
             booking.CreatorUserId = AbpSession.UserId;
+            booking.LoaiBooking = LoaiBookingConst.CuaHangDatChoKhach;
             booking.IsDeleted = false;
             var idDichVu = _donViQuiDoiRepository.FirstOrDefault(x => x.Id == dto.IdDonViQuiDoi).IdHangHoa;
             var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
@@ -74,9 +88,10 @@ namespace BanHangBeautify.Bookings.Bookings
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
             //await UpdateEndTimeBooking(booking);
-            string mess = "Khách hàng: " + booking.TenKhachHang + " đã được thêm lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("hh:mm");
+            var listUser = await getUserAdmin();
+            string mess = "Khách hàng: " + booking.TenKhachHang + "("+booking.SoDienThoai+")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("hh:mm");
             var notificationData = NewMessageNotification(mess);
-            await _notificationPublisher.PublishAsync("AddNewBooking", notificationData, severity: NotificationSeverity.Info);
+            await _appNotifier.SendMessageAsync("AddNewBooking", notificationData,listUser, severity: NotificationSeverity.Info);
             return booking;
         }
         [NonAction]
@@ -233,6 +248,7 @@ namespace BanHangBeautify.Bookings.Bookings
                         await _bookingNhanVienRepository.UpdateAsync(item);
                     }
                 }
+                findBooking.TrangThai = TrangThaiBookingConst.Huy;
                 findBooking.DeletionTime = DateTime.Now;
                 findBooking.DeleterUserId = AbpSession.UserId;
                 await _repository.DeleteAsync(findBooking);
@@ -376,7 +392,7 @@ namespace BanHangBeautify.Bookings.Bookings
             {
                 findBooking.LastModificationTime = DateTime.Now;
                 findBooking.LastModifierUserId = AbpSession.UserId;
-                findBooking.TrangThai = 0;
+                findBooking.TrangThai = TrangThaiBookingConst.Huy;
                 await _repository.UpdateAsync(findBooking);
                 result = true;
             }

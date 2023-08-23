@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BanHangBeautify.NhanSu.NhanVien_DichVu.Dto
 {
@@ -13,6 +14,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu.Dto
     }
     public class DichVuNhanTheoNhanVienDto
     {
+        public Guid IdDichVu { get; set; }
         public string TenDichVu { get; set; }
         public string Image { get; set; }
         public decimal DonGia { get; set; }

@@ -27,7 +27,7 @@ namespace BanHangBeautify.Users.Dto
         //[EmailAddress]
         //[StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
-
+        public string Password { set; get; }
         public bool IsActive { get; set; }
         public bool? IsAdmin { get; set; }
 

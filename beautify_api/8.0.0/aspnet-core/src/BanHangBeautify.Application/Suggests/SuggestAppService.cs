@@ -31,6 +31,7 @@ namespace BanHangBeautify.Suggests
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;//
         private readonly IRepository<NS_CaLamViec, Guid> _caLamViecRepository;//
         private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;
+        private readonly IRepository<DM_NhomHangHoa, Guid> _nhomHangHoaRepository;
         private readonly ISuggestRepository _suggestRepository;
         public SuggestAppService(
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
@@ -46,6 +47,7 @@ namespace BanHangBeautify.Suggests
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
             IRepository<DM_PhongBan, Guid> phongBanRepository,
+            IRepository<DM_NhomHangHoa,Guid> nhomHangHoaRepository,
             ISuggestRepository suggestRepository
             )
         {
@@ -62,6 +64,7 @@ namespace BanHangBeautify.Suggests
             _hangHoaRepository = hangHoaRepository;
             _caLamViecRepository = caLamViecRepository;
             _phongBanRepository = phongBanRepository;
+            _nhomHangHoaRepository = nhomHangHoaRepository;
             _suggestRepository = suggestRepository;
         }
         public async Task<List<SuggestChucVu>> SuggestChucVus()
@@ -223,7 +226,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestLoaiHangHoa>> SuggestLoaiHangHoas()
         {
             List<SuggestLoaiHangHoa> result = new List<SuggestLoaiHangHoa>();
-            var lst = await _loaiHangHoaRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
+            var lst = await _loaiHangHoaRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)
@@ -231,6 +234,23 @@ namespace BanHangBeautify.Suggests
                     SuggestLoaiHangHoa rdo = new SuggestLoaiHangHoa();
                     rdo.Id = item.Id;
                     rdo.TenLoai = item.TenLoaiHangHoa;
+                    result.Add(rdo);
+                }
+            }
+            return result;
+
+        }
+        public async Task<List<SuggestNhomHangHoa>> SuggestNhomHangHoas()
+        {
+            List<SuggestNhomHangHoa> result = new List<SuggestNhomHangHoa>();
+            var lst = await _nhomHangHoaRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId==(AbpSession.TenantId??1) && x.LaNhomHangHoa ==false).ToListAsync();
+            if (lst != null || lst.Count > 0)
+            {
+                foreach (var item in lst)
+                {
+                    SuggestNhomHangHoa rdo = new SuggestNhomHangHoa();
+                    rdo.IdNhomHang = item.Id;
+                    rdo.TenNhomHang = item.TenNhomHang;
                     result.Add(rdo);
                 }
             }

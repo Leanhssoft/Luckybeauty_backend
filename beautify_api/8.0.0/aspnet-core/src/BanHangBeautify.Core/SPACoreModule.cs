@@ -10,6 +10,7 @@ using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Configuration;
 using BanHangBeautify.Localization;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.Notifications;
 using BanHangBeautify.Timing;
 
 namespace BanHangBeautify
@@ -33,7 +34,8 @@ namespace BanHangBeautify
 
             // Configure roles
             AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
-
+            //Adding notification providers
+            Configuration.Notifications.Providers.Add<AppNotificationProvider>();
             Configuration.Settings.Providers.Add<AppSettingProvider>();
 
             Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
