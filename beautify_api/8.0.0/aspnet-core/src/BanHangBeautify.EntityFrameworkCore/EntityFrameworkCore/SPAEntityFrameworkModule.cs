@@ -21,7 +21,7 @@ namespace BanHangBeautify.EntityFrameworkCore
             if (!SkipDbContextRegistration)
             {
                 Configuration.Modules.AbpEfCore().AddDbContext<SPADbContext>(options =>
-                {
+              {
                     if (options.ExistingConnection != null)
                     {
                         SPADbContextConfigurer.Configure(options.DbContextOptions, options.ExistingConnection);
