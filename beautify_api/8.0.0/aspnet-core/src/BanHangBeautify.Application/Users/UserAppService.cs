@@ -121,7 +121,7 @@ namespace BanHangBeautify.Users
             user.LastModifierUserId = AbpSession.UserId;
             if (!string.IsNullOrEmpty(input.Password))
             {
-                    CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
+                CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
                 
             }
             user.SetNormalizedNames();
