@@ -452,7 +452,7 @@ namespace BanHangBeautify.DatLichOnline
                             x => x.IdNhanVien == input.IdNhanVien &&
                             x.TenantId == tenant.Id && x.IsDeleted == false).ToList();
                     var appointments = _bookingRepository.GetAll().Where(x => nhanVien.Select(z => z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date).ToList();
-                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.TuNgay <= input.DateBooking || x.DenNgay >= input.DateBooking && x.IdNhanVien == input.IdNhanVien).ToList();
+                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien).ToList();
                     var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date== input.DateBooking.Date).ToList();
                     var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id)).ToList();
                     foreach (var x in caLamViec)
