@@ -1,7 +1,9 @@
-﻿using Abp.Application.Services.Dto;
+﻿using Abp;
+using Abp.Application.Services.Dto;
 using Abp.Auditing;
 using Abp.Authorization;
 using Abp.Configuration;
+using Abp.Json;
 using Abp.Notifications;
 using Abp.Runtime.Session;
 using Abp.UI;
@@ -12,25 +14,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Notification
 {
-    [AbpAuthorize]
     public class NotificationAppService : SPAAppServiceBase, INotificationAppService
     {
         private readonly INotificationDefinitionManager _notificationDefinitionManager;
         private readonly IUserNotificationManager _userNotificationManager;
         private readonly INotificationSubscriptionManager _notificationSubscriptionManager;
-
+        private readonly INotificationPublisher _notificationPublisher;
         public NotificationAppService(
             INotificationDefinitionManager notificationDefinitionManager,
             IUserNotificationManager userNotificationManager,
-            INotificationSubscriptionManager notificationSubscriptionManager)
+            INotificationSubscriptionManager notificationSubscriptionManager,
+            INotificationPublisher notificationPublisher)
         {
             _notificationDefinitionManager = notificationDefinitionManager;
             _userNotificationManager = userNotificationManager;
             _notificationSubscriptionManager = notificationSubscriptionManager;
+            _notificationPublisher = notificationPublisher;
         }
         [DisableAuditing]
         public async Task<GetNotificationsOutput> GetUserNotifications(GetUserNotificationsInput input)
@@ -42,12 +46,37 @@ namespace BanHangBeautify.Notification
             var unreadCount = await _userNotificationManager.GetUserNotificationCountAsync(
                 AbpSession.ToUserIdentifier(), UserNotificationState.Unread, input.StartDate, input.EndDate
                 );
-            var notifications = await _userNotificationManager.GetUserNotificationsAsync(
+            var data = await _userNotificationManager.GetUserNotificationsAsync(
                 AbpSession.ToUserIdentifier(), input.State, input.SkipCount, input.MaxResultCount, input.StartDate, input.EndDate
                 );
+            List<UserCustomNotification> notifications = new List<UserCustomNotification>();
+            if (data !=null && data.Count>0)
+            {
+                foreach (var item in data)
+                {
+                    UserCustomNotification dto = new UserCustomNotification();
+                    dto.State = item.State;
+                    dto.UserId = item.UserId;
+                    dto.TenantId = item.TenantId;
+                    dto.Id = item.Id;
+                    MessageNotification message= new MessageNotification();
+                    message = JsonSerializer.Deserialize<MessageNotification>(item.Notification.Data.Properties["Message"].ToJsonString());
+                    dto.Notification = new NotificationCustomData()
+                    {
+                        Id = item.Notification.Id,
+                        CreationTime = item.Notification.CreationTime,
+                        Content = message.Name,
+                        NotificationName = item.Notification.NotificationName,
+                        Severity = item.Notification.Severity
+                    };
+                   
+                    notifications.Add(dto);
+                }
+            }
 
             return new GetNotificationsOutput(totalCount, unreadCount, notifications);
         }
+        
 
         public async Task SetAllNotificationsAsRead()
         {
@@ -131,6 +160,15 @@ namespace BanHangBeautify.Notification
                 input.State,
                 input.StartDate,
                 input.EndDate);
+        }
+
+        public async Task SendMessageAsync(string notificationName, LocalizableMessageNotificationData notificationData, List<Abp.UserIdentifier> user, NotificationSeverity severity = NotificationSeverity.Info)
+        {
+            await _notificationPublisher.PublishAsync(notificationName,
+                     notificationData,
+                     severity: severity,
+                     userIds: user.ToArray()
+                 );
         }
     }
 }

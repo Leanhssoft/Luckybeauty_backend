@@ -1,4 +1,5 @@
 ﻿using Abp;
+using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Localization;
@@ -38,6 +39,7 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
         IRepository<NS_NhanVien, Guid> _nhanVienRepository;
         private readonly IAppNotifier _appNotifier;
+        INotificationAppService _notificationAppService;
         public OnlineBookingAppService(
             IRepository<Tenant, int> tenantRepository,
             IRepository<Booking, Guid> bookingRepository,
@@ -50,7 +52,7 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaRepository,
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
-            IAppNotifier appNotifier
+            IAppNotifier appNotifier, INotificationAppService notificationAppService
             )
         {
             _tenantRepository = tenantRepository;
@@ -65,6 +67,7 @@ namespace BanHangBeautify.DatLichOnline
             _caLamViecRepository = caLamViecRepository;
             _nhanVienRepository = nhanVienRepository;
             _appNotifier = appNotifier;
+            _notificationAppService = notificationAppService;
         }
         public List<string> GetAllTenant()
         {
@@ -378,11 +381,9 @@ namespace BanHangBeautify.DatLichOnline
                     _bookingNhanVienRepository.Insert(bookingNhanVien);
                     _bookingServiceRepository.Insert(bookingService);
                     await CurrentUnitOfWork.SaveChangesAsync();
-                    var listUser = await (from ns in _nhanVienRepository.GetAll()
-                                      join us in UserManager.Users on ns.Id equals us.NhanSuId
-                                      where !ns.IsDeleted && !us.IsDeleted && us.Id != AbpSession.UserId
+                    var listUser = await (from us in UserManager.Users
                                       select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
-                    await _appNotifier.SendMessageAsync("AddNewBooking", notificationData, listUser, severity: NotificationSeverity.Info);
+                    await _notificationAppService.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
                     result.Message = "Đặt lịch thành công!";
                     result.Status = "success";
                 }
@@ -452,7 +453,7 @@ namespace BanHangBeautify.DatLichOnline
                             x.TenantId == tenant.Id && x.IsDeleted == false).ToList();
                     var appointments = _bookingRepository.GetAll().Where(x => nhanVien.Select(z => z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date).ToList();
                     var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.TuNgay <= input.DateBooking || x.DenNgay >= input.DateBooking && x.IdNhanVien == input.IdNhanVien).ToList();
-                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec)).ToList();
+                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date== input.DateBooking.Date).ToList();
                     var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id)).ToList();
                     foreach (var x in caLamViec)
                     {

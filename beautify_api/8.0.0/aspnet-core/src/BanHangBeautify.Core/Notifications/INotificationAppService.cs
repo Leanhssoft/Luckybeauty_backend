@@ -1,5 +1,7 @@
-﻿using Abp.Application.Services;
+﻿using Abp;
+using Abp.Application.Services;
 using Abp.Application.Services.Dto;
+using Abp.Notifications;
 using BanHangBeautify.Notifications.Dto;
 using System;
 using System.Collections.Generic;
@@ -24,5 +26,7 @@ namespace BanHangBeautify.Notifications
         Task DeleteNotification(EntityDto<Guid> input);
 
         Task DeleteAllUserNotifications(DeleteAllUserNotificationsInput input);
+        Task SendMessageAsync(string notificationName, LocalizableMessageNotificationData notificationData, List<UserIdentifier> user,
+            NotificationSeverity severity = NotificationSeverity.Info);
     }
 }

@@ -8,6 +8,7 @@ using BanHangBeautify.Bookings.Bookings;
 using BanHangBeautify.Configuration;
 using BanHangBeautify.Identity;
 using BanHangBeautify.SignalR.Bookings;
+using BanHangBeautify.SignalR.Notification;
 using Castle.Facilities.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -121,6 +122,7 @@ namespace BanHangBeautify.Web.Host.Startup
             {
                 //endpoints.MapHub<AbpCommonHub>("/signalr");
                 endpoints.MapHub<BookingHub>("bookingHub");
+                endpoints.MapHub<NotificationHub>("notifications");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
             });

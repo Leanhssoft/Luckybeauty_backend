@@ -231,5 +231,6 @@
     <text name="EditHoaDon">Sửa hóa đơn</text>
     <text name="DeleteHoaDon">Xóa hóa đơn</text>
     <text name="NhanVienDichVu">Nhân viên - Dịch vụ</text>
+    <text name="AddNewBooking">Lịch hẹn mới</text>
   </texts>
 </localizationDictionary>

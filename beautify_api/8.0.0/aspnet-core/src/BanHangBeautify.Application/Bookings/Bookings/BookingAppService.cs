@@ -10,7 +10,9 @@ using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Notifications;
+using BanHangBeautify.SignalR.Notification;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -54,10 +56,11 @@ namespace BanHangBeautify.Bookings.Bookings
         }
         private async Task<List<UserIdentifier>> getUserAdmin()
         {
-            var data = await (from ns in _nhanVienRepository.GetAll()
-                              join us in UserManager.Users on ns.Id equals us.NhanSuId
-                              where !ns.IsDeleted && !us.IsDeleted && us.Id != AbpSession.UserId
-                              select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+            var data = await (from us in UserManager.Users 
+                              join nv in _nhanVienRepository.GetAll() on us.NhanSuId equals nv.Id into joined
+                              from nv in joined.DefaultIfEmpty()
+                              where !nv.IsDeleted
+                              select new UserIdentifier(us.TenantId??1, us.Id)).ToListAsync();
             return data;
         }
         public async Task<Booking> CreateBooking(CreateBookingDto dto)
@@ -87,11 +90,10 @@ namespace BanHangBeautify.Bookings.Bookings
             _repository.Insert(booking);
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
-            //await UpdateEndTimeBooking(booking);
             var listUser = await getUserAdmin();
             string mess = "Khách hàng: " + booking.TenKhachHang + "("+booking.SoDienThoai+")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("hh:mm");
             var notificationData = NewMessageNotification(mess);
-            await _appNotifier.SendMessageAsync("AddNewBooking", notificationData,listUser, severity: NotificationSeverity.Info);
+            await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData,listUser, severity: NotificationSeverity.Info);
             return booking;
         }
         [NonAction]

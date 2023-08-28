@@ -1,5 +1,6 @@
 ﻿using Abp.Authorization;
 using Abp.Authorization.Users;
+using Abp.Domain.Repositories;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
 using Abp.UI;
@@ -7,6 +8,7 @@ using BanHangBeautify.Authentication.External;
 using BanHangBeautify.Authentication.JwtBearer;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Models.TokenAuth;
 using BanHangBeautify.MultiTenancy;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +32,7 @@ namespace BanHangBeautify.Controllers
         private readonly IExternalAuthConfiguration _externalAuthConfiguration;
         private readonly IExternalAuthManager _externalAuthManager;
         private readonly UserRegistrationManager _userRegistrationManager;
+        private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -38,7 +41,8 @@ namespace BanHangBeautify.Controllers
             TokenAuthConfiguration configuration,
             IExternalAuthConfiguration externalAuthConfiguration,
             IExternalAuthManager externalAuthManager,
-            UserRegistrationManager userRegistrationManager)
+            UserRegistrationManager userRegistrationManager,
+            IRepository<NS_NhanVien, Guid> nhanSuRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -47,6 +51,7 @@ namespace BanHangBeautify.Controllers
             _externalAuthConfiguration = externalAuthConfiguration;
             _externalAuthManager = externalAuthManager;
             _userRegistrationManager = userRegistrationManager;
+            _nhanSuRepository = nhanSuRepository;
         }
 
         [HttpPost]
@@ -59,15 +64,17 @@ namespace BanHangBeautify.Controllers
             );
 
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
-
+            var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x=>x.Id==loginResult.User.NhanSuId);
             return new AuthenticateResultModel
             {
                 AccessToken = accessToken,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
                 UserId = loginResult.User.Id,
-                IdNhanVien = loginResult.User.NhanSuId
-
+                IdNhanVien = loginResult.User.NhanSuId,
+                Email = loginResult.User.EmailAddress,
+                Avatar = nhanSu==null?"":nhanSu.Avatar,
+                FullName = loginResult.User.FullName
             };
         }
 
