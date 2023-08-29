@@ -118,8 +118,8 @@ BEGIN
             ELSE ''
         END AS Sunday
     FROM @NhanVien N
-    LEFT JOIN NS_LichLamViec L ON L.IdNhanVien = N.Id AND L.TuNgay BETWEEN @DateFrom AND @DateTo AND L.IsDeleted = 0
-	LEFT JOIN NS_LichLamViec_Ca LC ON LC.IdLichLamViec = l.Id AND LC.IsDeleted = 0
+    LEFT JOIN NS_LichLamViec L ON L.IdNhanVien = N.Id AND L.IsDeleted = 0
+	LEFT JOIN NS_LichLamViec_Ca LC ON LC.IdLichLamViec = l.Id AND LC.IsDeleted = 0 AND LC.NgayLamViec BETWEEN @DateFrom AND @DateTo AND L.IsDeleted = 0
     LEFT JOIN NS_CaLamViec C ON C.Id = LC.IdCaLamViec AND C.IsDeleted = 0
 	--WHERE L.TuNgay BETWEEN @DateFrom AND @DateTo
     GROUP BY N.Id, N.Avatar, N.TenNhanVien,C.Id,C.TongGioCong, LC.NgayLamViec, C.GioVao, C.GioRa

@@ -17,5 +17,6 @@ namespace BanHangBeautify.Common.Consts
         public const int DatLich = 1;
         public const int DaXacNhan = 2;
         public const int Huy = 0;
+        public const string AddNewBooking = "Lịch hẹn mới";
     }
 }

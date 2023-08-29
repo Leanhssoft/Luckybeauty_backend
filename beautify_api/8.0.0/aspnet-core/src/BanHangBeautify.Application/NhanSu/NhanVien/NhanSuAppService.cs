@@ -141,7 +141,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.MaNhanVien = dto.MaNhanVien;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
-            nhanSu.TenNhanVien = dto.Ho + " " + dto.TenLot;
+            //nhanSu.TenNhanVien = dto.Ho + " " + dto.TenLot;
+            nhanSu.TenNhanVien = dto.TenNhanVien;
             nhanSu.CCCD = dto.CCCD;
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;

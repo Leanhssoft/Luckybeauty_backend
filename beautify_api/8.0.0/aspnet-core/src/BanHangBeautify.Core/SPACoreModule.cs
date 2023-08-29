@@ -1,5 +1,6 @@
 ﻿using Abp.Localization;
 using Abp.Modules;
+using Abp.Notifications;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Security;
 using Abp.Timing;
@@ -32,10 +33,10 @@ namespace BanHangBeautify
             // Enable this line to create a multi-tenant application.
             Configuration.MultiTenancy.IsEnabled = SPAConsts.MultiTenancyEnabled;
 
-            // Configure roles
-            AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
             //Adding notification providers
             Configuration.Notifications.Providers.Add<AppNotificationProvider>();
+            // Configure roles
+            AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
             Configuration.Settings.Providers.Add<AppSettingProvider>();
 
             Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
