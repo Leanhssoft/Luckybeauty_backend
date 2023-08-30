@@ -80,24 +80,25 @@ namespace BanHangBeautify.Suggests
             }
             return result;
         }
-        public async Task<List<SuggestNhanSu>> SuggestNhanSus()
+        public async Task<List<SuggestNhanSu>> SuggestNhanSus(Guid idChiNhanh)
         {
             List<SuggestNhanSu> result = new List<SuggestNhanSu>();
-            var lstNhanSu = await _nhanVienRepository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
-            if (lstNhanSu != null || lstNhanSu.Count > 0)
-            {
-                foreach (var item in lstNhanSu)
-                {
-                    SuggestNhanSu rdo = new SuggestNhanSu();
-                    rdo.Id = item.Id;
-                    rdo.TenNhanVien = item.TenNhanVien;
-                    rdo.SoDienThoai = item.SoDienThoai;
-                    rdo.Avatar = item.Avatar;
-                    var chucVu = await _chucVuRepository.FirstOrDefaultAsync(x => x.Id == item.IdChucVu);
-                    rdo.ChucVu = chucVu != null ? chucVu.TenChucVu : "";
-                    result.Add(rdo);
-                }
-            }
+            //var lstNhanSu = await _nhanVienRepository.GetAll().Include(x => x.NS_ChucVu).Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).ToListAsync();
+            //if (lstNhanSu != null || lstNhanSu.Count > 0)
+            //{
+            //    foreach (var item in lstNhanSu)
+            //    {
+            //        SuggestNhanSu rdo = new SuggestNhanSu();
+            //        rdo.Id = item.Id;
+            //        rdo.TenNhanVien = item.TenNhanVien;
+            //        rdo.SoDienThoai = item.SoDienThoai;
+            //        rdo.Avatar = item.Avatar;
+            //        var chucVu = await _chucVuRepository.FirstOrDefaultAsync(x => x.Id == item.IdChucVu);
+            //        rdo.ChucVu = chucVu != null ? chucVu.TenChucVu : "";
+            //        result.Add(rdo);
+            //    }
+            //}
+            result = await _suggestRepository.SuggestNhanSu(AbpSession.TenantId ?? 1, idChiNhanh);
             return result;
 
         }

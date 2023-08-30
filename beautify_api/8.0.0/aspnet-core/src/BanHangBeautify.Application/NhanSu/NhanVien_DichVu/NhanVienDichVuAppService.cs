@@ -274,6 +274,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     result.ChucVu = nhanVien.NS_ChucVu != null ? chucVu.TenChucVu : "";
                     result.TenNhanVien = nhanVien.TenNhanVien;
                     result.SoDienThoai = nhanVien.SoDienThoai;
+                    result.Avatar = nhanVien.Avatar;
                     result.Email = "";
                     result.Rate = 0;
                     var idDichVus = dichVuNhanViens.Select(x => x.IdDonViQuyDoi).ToList();

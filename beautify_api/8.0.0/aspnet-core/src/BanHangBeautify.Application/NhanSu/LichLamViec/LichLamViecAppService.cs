@@ -20,15 +20,20 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         private readonly IRepository<NS_LichLamViec, Guid> _lichLamViecService;
         private readonly IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaService;
         private readonly ILichLamViecRespository _lichLamViecRespository;
+        private readonly IRepository<DM_NgayNghiLe, Guid> _dmNgayNghiLeService;
         public LichLamViecAppService(
             IRepository<NS_LichLamViec, Guid> lichLamViecService,
             ILichLamViecRespository lichLamViecRespository,
-             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaService
+             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaService,
+             IRepository<DM_NgayNghiLe, Guid> dmNgayNghiLeService
+
          )
         {
             _lichLamViecService = lichLamViecService;
             _lichLamViecRespository = lichLamViecRespository;
             _lichLamViecCaService = lichLamViecCaService;
+            _dmNgayNghiLeService = dmNgayNghiLeService;
+
         }
         [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Create, PermissionNames.Pages_NhanSu_Edit)]
         public async Task<LichLamViecDto> CreateOrEdit(CreateOrEditLichLamViecDto input)
@@ -55,9 +60,23 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             result = ObjectMapper.Map<LichLamViecDto>(data);
             await _lichLamViecService.InsertAsync(data);
             var tongSoNgay = data.DenNgay.Value.Subtract(data.TuNgay).TotalDays;
+            List<DateTime> danhSachNgayNghi = new List<DateTime>();
+            var ngayNghi = _dmNgayNghiLeService.GetAll().Where(x=> x.IsDeleted==false && x.TenantId==(AbpSession.TenantId??1)).ToList();
+            foreach (var item in ngayNghi)
+            {
+                for (int i = 1; i <= item.TongSoNgay; i++)
+                {
+                    var day = data.TuNgay.AddDays(i);
+                    danhSachNgayNghi.Add(day);
+                }
+            }
             for (int i = 0; i < tongSoNgay; i++)
             {
                 var day = data.TuNgay.AddDays(i);
+                if (danhSachNgayNghi.Contains(day))
+                {
+                    continue;
+                }
                 if (input.NgayLamViec.Contains(day.DayOfWeek.ToString()))
                 {
                     NS_LichLamViec_Ca rdo = new NS_LichLamViec_Ca();

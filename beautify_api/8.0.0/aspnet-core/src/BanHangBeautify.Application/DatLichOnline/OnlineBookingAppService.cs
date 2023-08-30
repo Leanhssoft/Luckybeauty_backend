@@ -37,7 +37,7 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_LichLamViec, Guid> _lichLamViecRepository;
         IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaRepository;
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
-        IRepository<NS_NhanVien, Guid> _nhanVienRepository;
+        IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IAppNotifier _appNotifier;
         INotificationAppService _notificationAppService;
         public OnlineBookingAppService(
@@ -51,7 +51,7 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<NS_LichLamViec, Guid> lichLamViecRepository,
             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaRepository,
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
-            IRepository<NS_NhanVien, Guid> nhanVienRepository,
+            IRepository<HT_CongTy, Guid> congTyRepository,
             IAppNotifier appNotifier, INotificationAppService notificationAppService
             )
         {
@@ -65,7 +65,7 @@ namespace BanHangBeautify.DatLichOnline
             _lichLamViecCaRepository = lichLamViecCaRepository;
             _lichLamViecRepository = lichLamViecRepository;
             _caLamViecRepository = caLamViecRepository;
-            _nhanVienRepository = nhanVienRepository;
+            _congTyRepository = congTyRepository;
             _appNotifier = appNotifier;
             _notificationAppService = notificationAppService;
         }
@@ -75,7 +75,27 @@ namespace BanHangBeautify.DatLichOnline
             result = _tenantRepository.GetAll().Where(x => x.IsDeleted == false && x.IsActive == true).Select(x => x.TenancyName.ToLower()).ToList();
             return result;
         }
-
+        public async Task<StoreInfoDto> GetThongTinCuaHang(string tenantName)
+        {
+            var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == tenantName);
+            if (tenant == null)
+            {
+                return null;
+            }
+            using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
+            {
+                await CurrentUnitOfWork.SaveChangesAsync();
+                StoreInfoDto store = new StoreInfoDto();
+                var congTy = await _congTyRepository.GetAll().FirstOrDefaultAsync();
+                store.TenCuaHang = congTy.TenCongTy;
+                store.MaSoThue = congTy.MaSoThue;
+                store.DiaChi = congTy.DiaChi;
+                store.SoDienThoai = congTy.SoDienThoai;
+                store.Logo = congTy.Logo;
+                store.Website = congTy.Website;
+                return store;
+            }
+        }
         public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVien(PagedRequestSuggestNhanVien input)
         {
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
@@ -355,7 +375,8 @@ namespace BanHangBeautify.DatLichOnline
                     bk.Id = Guid.NewGuid();
                     bk.IdChiNhanh = data.IdChiNhanh;
                     bk.BookingDate = DateTime.Parse(data.BookingDate);
-                    bk.StartTime = DateTime.Parse(data.StartTime);
+                    var startTime = bk.BookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime;
+                    bk.StartTime = DateTime.Parse(startTime);
                     bk.EndTime = bk.StartTime.AddMinutes(data.SoPhutThucHien);
                     bk.GhiChu = data.GhiChu;
                     bk.LoaiBooking = LoaiBookingConst.BookingOnline;
@@ -370,7 +391,7 @@ namespace BanHangBeautify.DatLichOnline
                     var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
                     var bookingService = CreateBookingService(bk.Id, data.IdDichVu);
                     var bookingNhanVien = CreateBookingNhanVien(bk.Id, data.IdNhanVien);
-                    string mess = "Khách hàng: " + bk.TenKhachHang + "(" + bk.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + bk.BookingDate.ToString("dd/MM/yyyy") + " " + bk.StartTime.ToString("hh:mm");
+                    string mess = "Khách hàng: " + bk.TenKhachHang + "(" + bk.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + bk.BookingDate.ToString("dd/MM/yyyy") + " " + bk.StartTime.ToString("HH:mm");
                     var notificationData = new LocalizableMessageNotificationData(
                         new LocalizableString(
                             mess,
@@ -467,21 +488,29 @@ namespace BanHangBeautify.DatLichOnline
                             AvailableTime time = new AvailableTime();
                             bool isAvailableTime = true;
                             time.Time = currentTime.ToString("HH:mm");
-                            foreach (var appointment in appointments)
+                            if (currentTime < DateTime.Now)
                             {
-                                if (currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime)
+                                isAvailableTime = false;
+                            }
+                            else
+                            {
+                                foreach (var appointment in appointments)
                                 {
-                                    isAvailableTime = false;
-                                    break;
+                                    if ((currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime))
+                                    {
+                                        isAvailableTime = false;
+                                        break;
+                                    }
                                 }
                             }
+                            
                             time.IsAvailableTime = isAvailableTime;
                             times.Add(time);
                             currentTime = currentTime.AddMinutes(input.ServiceTime);
                         }
                     }
                 }
-            return times;
+            return times.OrderByDescending(x => x.Time).Reverse().ToList();
         }
 
     }

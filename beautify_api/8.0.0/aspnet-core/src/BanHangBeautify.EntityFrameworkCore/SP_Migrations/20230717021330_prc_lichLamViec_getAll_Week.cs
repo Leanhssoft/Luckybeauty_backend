@@ -10,7 +10,7 @@ namespace BanHangBeautify.SP_Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_lichLamViec_getAll_Week]
+            migrationBuilder.Sql(@"CREATE PROCEDURE prc_lichLamViec_getAll_Week
 	@TenantId INT,
 	@IdChiNhanh uniqueidentifier,
     @IdNhanVien uniqueidentifier = null,
@@ -22,6 +22,7 @@ AS
 BEGIN
     -- Declare necessary variables
     DECLARE @ListItems TABLE (
+		Id uniqueidentifier,
         Avatar VARCHAR(MAX),
         IdNhanVien uniqueidentifier,
 		IdCaLamViec uniqueidentifier,
@@ -35,7 +36,6 @@ BEGIN
         Saturday VARCHAR(MAX),
         Sunday VARCHAR(MAX)
     )
-	DECLARE @TotalCount INT
     -- Retrieve data from the database
     DECLARE @NhanVien TABLE (
         -- Define necessary columns from the NhanVien table
@@ -60,27 +60,12 @@ BEGIN
 		AND qtct.IdChiNhanh = @IdChiNhanh
         AND (@IdNhanVien IS NULL OR (nv.Id = @IdNhanVien AND @IdNhanVien IS NOT NULL))
 	ORDER BY nv.TenNhanVien DESC
-	OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY
-
-    -- Get the total count
-    SET @TotalCount = (
-			SELECT COUNT(*) FROM NS_NhanVien nv 
-			LEFT JOIN NS_ChucVu cv ON cv.Id = nv.IdChucVu
-			JOIN (
-				SELECT IdNhanVien,IdChiNhanh FROM NS_QuaTrinh_CongTac
-				WHERE IsDeleted = 0 AND TenantId= @TenantId 
-				GROUP BY IdNhanVien,IdChiNhanh
-			) AS qtct ON qtct.IdNhanVien = nv.Id
-			WHERE nv.IsDeleted = 0 -- Assuming IsDeleted is a column in the NhanVien table
-				AND nv.TenantId = ISNULL(@TenantId, 1) -- Assuming TenantId is a column in the NhanVien table
-				AND qtct.IdChiNhanh = @IdChiNhanh
-                AND (@IdNhanVien IS NULL OR (nv.Id = @IdNhanVien AND @IdNhanVien IS NOT NULL))
-		)
 
     -- Retrieve the list of LichLamViecNhanVien
-    INSERT INTO @ListItems (Avatar, IdNhanVien,IdCaLamViec, TenNhanVien, TongThoiGian, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
+    INSERT INTO @ListItems (Id,Avatar, IdNhanVien,IdCaLamViec, TenNhanVien, TongThoiGian, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
     
 	SELECT
+		L.Id,
         N.Avatar,
         N.Id,
 		C.Id,
@@ -118,14 +103,16 @@ BEGIN
             ELSE ''
         END AS Sunday
     FROM @NhanVien N
-    LEFT JOIN NS_LichLamViec L ON L.IdNhanVien = N.Id AND L.IsDeleted = 0
+    LEFT JOIN NS_LichLamViec L ON L.IdNhanVien = N.Id 
 	LEFT JOIN NS_LichLamViec_Ca LC ON LC.IdLichLamViec = l.Id AND LC.IsDeleted = 0 AND LC.NgayLamViec BETWEEN @DateFrom AND @DateTo AND L.IsDeleted = 0
     LEFT JOIN NS_CaLamViec C ON C.Id = LC.IdCaLamViec AND C.IsDeleted = 0
 	--WHERE L.TuNgay BETWEEN @DateFrom AND @DateTo
-    GROUP BY N.Id, N.Avatar, N.TenNhanVien,C.Id,C.TongGioCong, LC.NgayLamViec, C.GioVao, C.GioRa
+    GROUP BY L.Id,N.Id, N.Avatar, N.TenNhanVien,C.Id,C.TongGioCong, LC.NgayLamViec, C.GioVao, C.GioRa
+	ORDER BY N.TenNhanVien;
 
     -- Return the result
     SELECT
+	Id,
 	Avatar,
 	IdNhanVien,
 	TenNhanVien,
@@ -137,11 +124,26 @@ BEGIN
 	MAX(Friday) as Friday,
 	MAX(Saturday) as Saturday,
 	MAX(Sunday) as Sunday
-    FROM @ListItems 
-	Group by Avatar, IdNhanVien, TenNhanVien,IdCaLamViec
-	ORDER BY TenNhanVien DESC;
+    FROM @ListItems
+	Group by Id,Avatar, IdNhanVien, TenNhanVien,IdCaLamViec
+	ORDER BY TenNhanVien DESC OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY;
 
-	SELECT @TotalCount as TotalCount;
+
+	SELECT Count(*) as TotalCount FROM (SELECT
+	Id,
+	Avatar,
+	IdNhanVien,
+	TenNhanVien,
+	CONVERT(NVARCHAR(Max), SUM(TongThoiGian)) as TongThoiGian,
+	MAX(Monday) as Monday,
+	MAX(Tuesday) as Tuesday,
+	MAX(Wednesday) as Wednesday,
+	MAX(Thursday) as Thursday,
+	MAX(Friday) as Friday,
+	MAX(Saturday) as Saturday,
+	MAX(Sunday) as Sunday
+    FROM @ListItems
+	Group by Id,Avatar, IdNhanVien, TenNhanVien,IdCaLamViec) AS DataTable;
 END;");
         }
 

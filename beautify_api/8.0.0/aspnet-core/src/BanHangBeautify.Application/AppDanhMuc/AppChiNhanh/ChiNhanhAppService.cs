@@ -110,6 +110,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                     chiNhanh.Id = Guid.NewGuid();
                     var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
                     chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
+                    chiNhanh.SoDienThoai = dto.SoDienThoai;
                     chiNhanh.TenChiNhanh = dto.TenChiNhanh;
                     chiNhanh.MaSoThue = dto.MaSoThue;
                     chiNhanh.DiaChi = dto.DiaChi;
@@ -120,6 +121,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                     chiNhanh.TenantId = AbpSession.TenantId ?? 1;
                     chiNhanh.CreatorUserId = AbpSession.UserId;
                     chiNhanh.IdCongTy = dto.IdCongTy;
+                    chiNhanh.TrangThai = dto.TrangThai;
                     chiNhanh.CreationTime = DateTime.Now;
                     await _chiNhanhService.InsertAsync(chiNhanh);
                     result.Message = "Thêm mới chi nhánh thành công!";
@@ -145,17 +147,19 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             ExecuteResultDto result = new ExecuteResultDto();
             try
             {
-                var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh == dto.TenChiNhanh);
-                if (checkTenChiNhanh == null)
+                var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == dto.Id);
+                if (checkTenChiNhanh != null)
                 {
                     chiNhanh.TenChiNhanh = dto.TenChiNhanh;
                     chiNhanh.MaSoThue = dto.MaSoThue;
+                    chiNhanh.SoDienThoai = dto.SoDienThoai;
                     chiNhanh.DiaChi = dto.DiaChi;
                     chiNhanh.GhiChu = dto.GhiChu;
                     chiNhanh.Logo = dto.Logo;
                     chiNhanh.NgayApDung = dto.NgayApDung;
                     chiNhanh.NgayHetHan = dto.NgayHetHan;
                     chiNhanh.TenantId = AbpSession.TenantId ?? 1;
+                    chiNhanh.TrangThai = dto.TrangThai;
                     chiNhanh.LastModifierUserId = AbpSession.UserId;
                     await _chiNhanhService.UpdateAsync(chiNhanh);
                     result.Message = "Cập nhật thông tin chi nhánh thành công!";

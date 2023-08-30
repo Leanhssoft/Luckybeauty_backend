@@ -56,12 +56,9 @@ namespace BanHangBeautify.Bookings.Bookings
         }
         private async Task<List<UserIdentifier>> getUserAdmin()
         {
-            var data = await (from us in UserManager.Users 
-                              join nv in _nhanVienRepository.GetAll() on us.NhanSuId equals nv.Id into joined
-                              from nv in joined.DefaultIfEmpty()
-                              where !nv.IsDeleted
-                              select new UserIdentifier(us.TenantId??1, us.Id)).ToListAsync();
-            return data;
+            var listUser = await (from us in UserManager.Users
+                                  select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+            return listUser;
         }
         public async Task<Booking> CreateBooking(CreateBookingDto dto)
         {
@@ -91,7 +88,7 @@ namespace BanHangBeautify.Bookings.Bookings
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
             var listUser = await getUserAdmin();
-            string mess = "Khách hàng: " + booking.TenKhachHang + "("+booking.SoDienThoai+")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("hh:mm");
+            string mess = "Khách hàng: " + booking.TenKhachHang + "("+booking.SoDienThoai+")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("HH:mm");
             var notificationData = NewMessageNotification(mess);
             await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData,listUser, severity: NotificationSeverity.Info);
             return booking;

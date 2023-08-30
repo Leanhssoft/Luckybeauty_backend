@@ -4,6 +4,7 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Suggests.Dto;
+using BanHangBeautify.Users.Dto;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,30 @@ namespace BanHangBeautify.Suggests.Repository
     {
         public SuggestRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
+        }
+
+        public async Task<List<SuggestNhanSu>> SuggestNhanSu(int tenantId,Guid idChiNhanh)
+        {
+            using (var cmd = CreateCommand("prc_SuggestNhanVien"))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add(new SqlParameter("@TenantId",tenantId ));
+                cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
+                using (var dataReader = await cmd.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                    var ddd = ds.Tables;
+
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<SuggestNhanSu>(ds.Tables[0]);
+                        return data;
+                    }
+                }
+                return new List<SuggestNhanSu>();
+            }
         }
 
         public async Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienByIdDichVu(int tenantId, Guid idChiNhanh, Guid idDichVu)

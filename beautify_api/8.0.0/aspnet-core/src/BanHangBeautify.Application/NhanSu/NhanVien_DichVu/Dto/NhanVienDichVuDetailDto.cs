@@ -5,6 +5,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu.Dto
 {
     public class NhanVienDichVuDetailDto
     {
+        public string Avatar { get; set; }
         public string TenNhanVien { get; set; }
         public string SoDienThoai { get; set; }
         public string Email { get; set; }
