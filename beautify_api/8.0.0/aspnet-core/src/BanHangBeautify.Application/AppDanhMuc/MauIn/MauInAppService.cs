@@ -61,8 +61,8 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             }
             return ObjectMapper.Map<CreateOrEditMauInDto>(objUpdate);
         }
-        [HttpPost]
-        public async Task<CreateOrEditMauInDto> Delete(Guid id)
+        [HttpGet]
+        public async Task<CreateOrEditMauInDto> DeleteMauIn(Guid id)
         {
             var data = await _dmMauInRepository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
@@ -70,6 +70,7 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                 data.IsDeleted = true;
                 data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
+                data.LaMacDinh = false;
                 data.TrangThai = 0;
                 _dmMauInRepository.Update(data);
                 return ObjectMapper.Map<CreateOrEditMauInDto>(data);
