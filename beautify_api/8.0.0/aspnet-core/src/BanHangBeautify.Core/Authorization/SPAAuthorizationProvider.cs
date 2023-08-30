@@ -34,6 +34,7 @@ namespace BanHangBeautify.Authorization
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Edit, L("EditHangHoa"));
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Delete, L("DeleteHangHoa"));
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Export, L("ExportHangHoa"));
+            hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Import, L("ImportHangHoa"));
 
             //Nhóm hàng hóa
             var nhomhangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_NhomHangHoa, L("NhomHangHoa"));

@@ -188,7 +188,7 @@ namespace BanHangBeautify.UploadFile
                     if (!string.IsNullOrEmpty(subFolder))
                     {
                         var rqSubFolder = _service.Files.List();
-                        rqSubFolder.Q = $"mimeType = 'application/vnd.google-apps.folder' and name='{subFolder}' and properties has {{ key='tenantName' and value='{tenantName}' }}";
+                        rqSubFolder.Q = $"mimeType = 'application/vnd.google-apps.folder' and '{result.Files[0].Id}' in parents and name='{subFolder}' and properties has {{ key='tenantName' and value='{tenantName}' }}";
                         rqSubFolder.Fields = "files(id)";
                         var lstSubFolder = await rqSubFolder.ExecuteAsync();
 
