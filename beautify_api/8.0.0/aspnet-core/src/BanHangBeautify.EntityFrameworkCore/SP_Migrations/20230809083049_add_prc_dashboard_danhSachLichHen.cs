@@ -34,10 +34,11 @@ BEGIN
 	SELECT TOP(3) 
 	kh.Avatar,b.TenKhachHang,b.StartTime,b.EndTime,hh.TenHangHoa,dvqd.GiaBan,
 	CASE 
-		WHEN b.TrangThai = 1 THEN N'Đặt lịch' 
+		WHEN b.TrangThai = 1 THEN N'Chưa xác nhận' 
 		WHEN b.TrangThai = 2 THEN N'Đã xác nhận' 
-		WHEN b.TrangThai = 3 THEN N'Đang Chờ' 
-		ELSE ''
+		WHEN b.TrangThai = 3 THEN N'Checkin' 
+		WHEN b.TrangThai = 4 THEN N'Hoàn thành' 
+		ELSE 'Xóa'
 	END as TrangThai 
 	FROM Booking b 
 	JOIN BookingService bs on bs.IdBooking = b.Id and b.IsDeleted = 0 and b.TenantId = @TenantId

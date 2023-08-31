@@ -24,6 +24,7 @@ SELECT
 		b.BookingDate,
         CONVERT(NVARCHAR(5), b.StartTime, 108) AS StartTime,
         CONVERT(NVARCHAR(5), b.EndTime, 108) AS EndTime,
+        kh.Avatar as AvatarKhachHang,
         b.TenKhachHang,
 		b.SoDienThoai,
         b.GhiChu,
@@ -33,12 +34,15 @@ SELECT
         CASE
             WHEN b.TrangThai = 0 THEN '#F1416C'
 			WHEN B.TrangThai = 1 THEN '#FF9900'
-			wHEN b.TrangThai = 2 THEN '#7C3367'
-			WHEN b.TrangThai = 3 THEN '#50CD89'
+			wHEN b.TrangThai = 2 THEN '#7DC1FF'
+			WHEN b.TrangThai = 3 THEN '#009EF7'
+			WHEN b.TrangThai = 4 THEN '#50CD89'
             ELSE '#009EF7'
-        END AS Color
+        END AS Color,
+        b.TrangThai
     FROM
         Booking b
+        LEFT JOIN DM_KhachHang kh on kh.Id= b.IdKhachHang
         INNER JOIN BookingNhanVien bnv ON bnv.IdBooking = b.Id and bnv.IsDeleted = 0
 		LEFT JOIN NS_NhanVien nv on nv.id = bnv.IdNhanVien
         LEFT JOIN BookingService bs ON bs.IdBooking = b.Id and bs.IsDeleted = 0

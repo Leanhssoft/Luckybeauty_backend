@@ -2,8 +2,9 @@
 
 namespace BanHangBeautify.Bookings.Bookings.Dto
 {
-    public class CreateBookingDto
+    public class CreateOrEditBookingDto
     {
+        public Guid Id { get; set; }
         public Guid? IdChiNhanh { get; set; }
         public string StartTime { get; set; }
         public string StartHours { get; set; }

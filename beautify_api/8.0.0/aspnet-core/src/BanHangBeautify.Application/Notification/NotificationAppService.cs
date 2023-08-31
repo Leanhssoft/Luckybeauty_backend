@@ -39,42 +39,50 @@ namespace BanHangBeautify.Notification
         [DisableAuditing]
         public async Task<GetNotificationsOutput> GetUserNotifications(GetUserNotificationsInput input)
         {
-            var totalCount = await _userNotificationManager.GetUserNotificationCountAsync(
-                AbpSession.ToUserIdentifier(), input.State, input.StartDate, input.EndDate
-                );
-
-            var unreadCount = await _userNotificationManager.GetUserNotificationCountAsync(
-                AbpSession.ToUserIdentifier(), UserNotificationState.Unread, input.StartDate, input.EndDate
-                );
-            var data = await _userNotificationManager.GetUserNotificationsAsync(
-                AbpSession.ToUserIdentifier(), input.State, input.SkipCount, input.MaxResultCount, input.StartDate, input.EndDate
-                );
-            List<UserCustomNotification> notifications = new List<UserCustomNotification>();
-            if (data !=null && data.Count>0)
+            try
             {
-                foreach (var item in data)
-                {
-                    UserCustomNotification dto = new UserCustomNotification();
-                    dto.State = item.State;
-                    dto.UserId = item.UserId;
-                    dto.TenantId = item.TenantId;
-                    dto.Id = item.Id;
-                    MessageNotification message= new MessageNotification();
-                    message = JsonSerializer.Deserialize<MessageNotification>(item.Notification.Data.Properties["Message"].ToJsonString());
-                    dto.Notification = new NotificationCustomData()
-                    {
-                        Id = item.Notification.Id,
-                        CreationTime = item.Notification.CreationTime,
-                        Content = message.Name,
-                        NotificationName = item.Notification.NotificationName,
-                        Severity = item.Notification.Severity
-                    };
-                   
-                    notifications.Add(dto);
-                }
-            }
+                var totalCount = await _userNotificationManager.GetUserNotificationCountAsync(
+               AbpSession.ToUserIdentifier(), input.State, input.StartDate, input.EndDate
+               );
 
-            return new GetNotificationsOutput(totalCount, unreadCount, notifications);
+                var unreadCount = await _userNotificationManager.GetUserNotificationCountAsync(
+                    AbpSession.ToUserIdentifier(), UserNotificationState.Unread, input.StartDate, input.EndDate
+                    );
+                var data = await _userNotificationManager.GetUserNotificationsAsync(
+                    AbpSession.ToUserIdentifier(), input.State, input.SkipCount, input.MaxResultCount, input.StartDate, input.EndDate
+                    );
+                List<UserCustomNotification> notifications = new List<UserCustomNotification>();
+                if (data != null && data.Count > 0)
+                {
+                    foreach (var item in data)
+                    {
+                        UserCustomNotification dto = new UserCustomNotification();
+                        dto.State = item.State;
+                        dto.UserId = item.UserId;
+                        dto.TenantId = item.TenantId;
+                        dto.Id = item.Id;
+                        MessageNotification message = new MessageNotification();
+                        message = JsonSerializer.Deserialize<MessageNotification>(item.Notification.Data.Properties["Message"].ToJsonString());
+                        dto.Notification = new NotificationCustomData()
+                        {
+                            Id = item.Notification.Id,
+                            CreationTime = item.Notification.CreationTime,
+                            Content = message.Name,
+                            NotificationName = item.Notification.NotificationName,
+                            Severity = item.Notification.Severity
+                        };
+
+                        notifications.Add(dto);
+                    }
+                }
+
+                return new GetNotificationsOutput(totalCount, unreadCount, notifications);
+            }
+            catch (Exception)
+            {
+                return new GetNotificationsOutput(0, 0,new List<UserCustomNotification>());
+            }
+           
         }
         
 

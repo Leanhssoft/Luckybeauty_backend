@@ -8,8 +8,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public BookingMapProfile()
         {
             CreateMap<Booking, BookingDto>().ReverseMap();
-            CreateMap<Booking, CreateBookingDto>().ReverseMap();
-            CreateMap<Booking, UpdateBookingDto>().ReverseMap();
+            CreateMap<Booking, CreateOrEditBookingDto>().ReverseMap();
             CreateMap<Booking, CancelBookingDto>().ReverseMap();
         }
     }

@@ -60,7 +60,18 @@ namespace BanHangBeautify.Bookings.Bookings
                                   select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
             return listUser;
         }
-        public async Task<Booking> CreateBooking(CreateBookingDto dto)
+        [HttpPost]
+        public async Task<Booking> CreateOrEditBooking(CreateOrEditBookingDto data)
+        {
+            var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == data.Id);
+            if (checkExist != null)
+            {
+                return await UpdateBooking(data,checkExist);
+            }
+            return await CreateBooking(data);
+        }
+        [NonAction]
+        public async Task<Booking> CreateBooking(CreateOrEditBookingDto dto)
         {
             var startTime = dto.StartTime + " " + dto.StartHours;
             var booking = ObjectMapper.Map<Booking>(dto);
@@ -88,9 +99,9 @@ namespace BanHangBeautify.Bookings.Bookings
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
             var listUser = await getUserAdmin();
-            string mess = "Khách hàng: " + booking.TenKhachHang + "("+booking.SoDienThoai+")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("HH:mm");
+            string mess = "Khách hàng: " + booking.TenKhachHang + "(" + booking.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("HH:mm");
             var notificationData = NewMessageNotification(mess);
-            await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData,listUser, severity: NotificationSeverity.Info);
+            await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
             return booking;
         }
         [NonAction]
@@ -133,31 +144,32 @@ namespace BanHangBeautify.Bookings.Bookings
             }
             return result;
         }
-        [HttpPost]
-        public async Task<Booking> UpdateBooking(UpdateBookingDto dto)
+        [NonAction]
+        public async Task<Booking> UpdateBooking(CreateOrEditBookingDto dto, Booking findBooking)
         {
-            var findBooking = await _repository.FirstOrDefaultAsync(x => x.Id == dto.Id);
-            if (findBooking != null)
+            var startTime = dto.StartTime + " " + dto.StartHours;
+            var khachHang = await _khachHangRepository.FirstOrDefaultAsync(dto.IdKhachHang);
+            findBooking.IdKhachHang = dto.IdKhachHang;
+            if (khachHang != null)
             {
-                findBooking.SoDienThoai = string.IsNullOrEmpty(dto.SoDienThoai) ? findBooking.SoDienThoai : dto.SoDienThoai;
-                findBooking.StartTime = dto.StartTime;
-                findBooking.GhiChu = dto.GhiChu;
-                findBooking.LoaiBooking = dto.LoaiBooking;
-                findBooking.TenKhachHang = string.IsNullOrEmpty(dto.TenKhachHang) ? findBooking.TenKhachHang : dto.TenKhachHang;
-                findBooking.TrangThai = dto.TrangThai;
-                findBooking.LastModificationTime = DateTime.Now;
-                findBooking.LastModifierUserId = AbpSession.UserId;
-                var dichVu = await _donViQuiDoiRepository.GetAllIncluding().Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
-                if (dichVu != null && dichVu.DM_HangHoa != null)
-                {
-                    findBooking.EndTime = findBooking.StartTime.AddMinutes(dichVu.DM_HangHoa.SoPhutThucHien ?? 0);
-                }
-                await _repository.UpdateAsync(findBooking);
-                await UpdateBookingNhanVien(dto.Id, dto.IdNhanVien);
-                await UpdateBookingService(dto.Id, dto.IdDonViQuiDoi);
-                return findBooking;
+                findBooking.TenKhachHang = khachHang.TenKhachHang;
+                findBooking.SoDienThoai = khachHang.SoDienThoai;
             }
-            return new Booking();
+            findBooking.StartTime = DateTime.Parse(startTime);
+            findBooking.BookingDate = DateTime.Parse(dto.StartTime);
+            findBooking.GhiChu = dto.GhiChu;
+            findBooking.TrangThai = dto.TrangThai;
+            findBooking.LastModificationTime = DateTime.Now;
+            findBooking.LastModifierUserId = AbpSession.UserId;
+            var dichVu = await _donViQuiDoiRepository.GetAllIncluding().Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
+            if (dichVu != null && dichVu.DM_HangHoa != null)
+            {
+                findBooking.EndTime = findBooking.StartTime.AddMinutes(dichVu.DM_HangHoa.SoPhutThucHien ?? 0);
+            }
+            await _repository.UpdateAsync(findBooking);
+            await UpdateBookingNhanVien(dto.Id, dto.IdNhanVien);
+            await UpdateBookingService(dto.Id, dto.IdDonViQuiDoi);
+            return findBooking;
 
         }
         [NonAction]
@@ -190,29 +202,37 @@ namespace BanHangBeautify.Bookings.Bookings
         }
 
         [HttpPost]
-        public async Task<string> UpdateTrangThaiBooking(Guid idBooking, int trangThai = 1)
+        public async Task<ExecuteResultDto> UpdateTrangThaiBooking(Guid idBooking, int trangThai = 1)
         {
+            ExecuteResultDto result = new ExecuteResultDto();
             try
             {
                 var objUp = await _repository.FirstOrDefaultAsync(idBooking);
                 if (objUp == null)
                 {
-                    return "data null";
+                    result.Status = "error";
+                    result.Message = "Cập nhật trạng thái lịch hẹn thất bại";
                 }
                 objUp.TrangThai = trangThai;
-                if (trangThai == 0)
-                {
-                    objUp.DeleterUserId = AbpSession.UserId;
-                    objUp.DeletionTime = DateTime.Now;
-                    objUp.IsDeleted = true;
-                }
+                objUp.LastModificationTime = DateTime.Now;
+                objUp.LastModifierUserId = AbpSession.UserId;
+                //if (trangThai == 0)
+                //{
+                //    objUp.DeleterUserId = AbpSession.UserId;
+                //    objUp.DeletionTime = DateTime.Now;
+                //    objUp.IsDeleted = true;
+                //}
                 await _repository.UpdateAsync(objUp);
-                return string.Empty;
+                result.Status = "success";
+                result.Message = "Cập nhật trạng thái lịch hẹn thành công";
             }
             catch (Exception ex)
             {
-                return ex.Message + ex.InnerException;
+                result.Status = "error";
+                result.Message = "Cập nhật trạng thái lịch hẹn thất bại";
+                result.Detail = ex.Message;
             }
+            return result;
         }
 
         [AbpAuthorize(PermissionNames.Pages_Booking_Delete)]
@@ -365,13 +385,15 @@ namespace BanHangBeautify.Bookings.Bookings
             int tenantId = AbpSession.TenantId ?? 1;
             return await _bookingRepository.GetBookingInfo(id, tenantId);
         }
-        public async Task<UpdateBookingDto> GetForEdit(Guid id)
+        public async Task<CreateOrEditBookingDto> GetForEdit(Guid id)
         {
-            UpdateBookingDto result = new UpdateBookingDto();
+            CreateOrEditBookingDto result = new CreateOrEditBookingDto();
             var booking = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (booking != null)
             {
-                result = ObjectMapper.Map<UpdateBookingDto>(booking);
+                result = ObjectMapper.Map<CreateOrEditBookingDto>(booking);
+                result.StartHours = booking.StartTime.ToString("HH:mm");
+                result.StartTime = DateTime.Parse(result.StartTime).ToString("yyyy-MM-dd");
                 var bookingService = await _bookingServiceRepository.FirstOrDefaultAsync(x => x.IdBooking == id && x.IsDeleted == false);
                 if (bookingService != null)
                 {

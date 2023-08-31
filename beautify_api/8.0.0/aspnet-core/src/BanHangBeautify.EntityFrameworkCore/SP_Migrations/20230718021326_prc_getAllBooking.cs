@@ -59,8 +59,9 @@ BEGIN
         CASE
             WHEN b.TrangThai = 0 THEN '#F1416C'
 			WHEN B.TrangThai = 1 THEN '#FF9900'
-			wHEN b.TrangThai = 2 THEN '#7C3367'
-			WHEN b.TrangThai = 3 THEN '#50CD89'
+			wHEN b.TrangThai = 2 THEN '#7DC1FF'
+			WHEN b.TrangThai = 3 THEN '#009EF7'
+			WHEN b.TrangThai = 4 THEN '#50CD89'
             ELSE '#009EF7'
         END AS Color,
 		b.BookingDate

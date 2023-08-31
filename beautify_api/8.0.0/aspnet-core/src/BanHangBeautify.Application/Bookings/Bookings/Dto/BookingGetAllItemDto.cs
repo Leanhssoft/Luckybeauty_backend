@@ -22,6 +22,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public Guid Id { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public string AvatarKhachHang { set; get; }
         public string TenKhachHang { get; set; }
         public string SoDienThoai { get; set; }
         public string TenDichVu { get; set; }
@@ -29,6 +30,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string NhanVienThucHien { get; set; }
         public string GhiChu { get; set; }
         public string Color { get; set; }
+        public int TrangThai { set; get; }
         public DateTime BookingDate { get; set; }
     }
     public class BookingDetailDto : HangHoaDto
