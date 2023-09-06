@@ -108,8 +108,8 @@ namespace BanHangBeautify.Users
         public async Task<UserDto> UpdateUser(UpdateUserDto input)
         {
             CheckUpdatePermission();
-
-            var user = await _userManager.GetUserByIdAsync(input.Id);
+            var user = await _userManager.FindByIdAsync(input.Id.ToString());
+            //var user = await _userManager.GetUserByIdAsync(input.Id);
             user.NhanSuId = input.NhanSuId;
             user.IsAdmin = input.IsAdmin ?? false;
             user.Surname = input.Surname;
@@ -124,6 +124,8 @@ namespace BanHangBeautify.Users
                 CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
                 
             }
+            
+            await _userManager.ChangeEmailAsync(user, input.EmailAddress, null);
             user.SetNormalizedNames();
 
             CheckErrors(await _userManager.UpdateAsync(user));
@@ -253,30 +255,6 @@ namespace BanHangBeautify.Users
         {
             identityResult.CheckErrors(LocalizationManager);
         }
-        public async Task<bool> ChangePassword(ChangePasswordDto input)
-        {
-            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
-
-            var user = await _userManager.FindByIdAsync(AbpSession.GetUserId().ToString());
-            if (user == null)
-            {
-                throw new Exception("There is no current user!");
-            }
-
-            if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
-            {
-                CheckErrors(await _userManager.ChangePasswordAsync(user, input.NewPassword));
-            }
-            else
-            {
-                CheckErrors(IdentityResult.Failed(new IdentityError
-                {
-                    Description = "Incorrect password."
-                }));
-            }
-
-            return true;
-        }
         public async Task<ProfileDto> GetForUpdateProfile()
         {
             var user = _userManager.GetUserById(AbpSession.UserId ?? 0);
@@ -372,6 +350,39 @@ namespace BanHangBeautify.Users
             }
 
             return true;
+        }
+        public async Task<ExecuteResultDto> ChangeUserPassword(ChangePasswordDto input)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+
+            var user = await _userManager.FindByIdAsync(AbpSession.GetUserId().ToString());
+            if (user == null)
+            {
+                result.Status = "error";
+                result.Message = "Người dùng không tồn tại!";
+            }
+            if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
+            {
+                var check = await _userManager.ChangePasswordAsync(user, input.NewPassword);
+                if (check.Succeeded)
+                {
+                    result.Status = "success";
+                    result.Message = "Thay đổi mật khẩu thành công!";
+                }
+                else
+                {
+                    result.Status = "error";
+                    result.Message = string.Join(",", check.Errors.Select(x => x.Description).ToList());
+                }
+            }
+            else
+            {
+                result.Status = "error";
+                result.Message = "Mật khẩu hiện tại không đúng vui lòng kiểm tra lại";
+            }
+
+            return result;
         }
 
     }
