@@ -227,7 +227,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestLoaiHangHoa>> SuggestLoaiHangHoas()
         {
             List<SuggestLoaiHangHoa> result = new List<SuggestLoaiHangHoa>();
-            var lst = await _loaiHangHoaRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
+            var lst = await _loaiHangHoaRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)

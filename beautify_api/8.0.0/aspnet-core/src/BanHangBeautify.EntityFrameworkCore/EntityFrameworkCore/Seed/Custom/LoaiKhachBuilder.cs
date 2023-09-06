@@ -27,8 +27,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                     IsDeleted = false,
                     MaLoaiKhachHang = "KH",
                     TenLoaiKhachHang = "Khách hàng",
-                    TrangThai = 1,
-                    TenantId = 1
+                    TrangThai = 1
                 });
             }
 
@@ -41,8 +40,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                     IsDeleted = false,
                     MaLoaiKhachHang = "NCC",
                     TenLoaiKhachHang = "Nhà cung cấp",
-                    TrangThai = 1,
-                    TenantId = 1
+                    TrangThai = 1
                 });
 
             };

@@ -26,7 +26,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
         public async Task<PagedResultDto<LoaiHangHoaDto>> GetAll(LoaiHangHoaPagedResultRequestDto input)
         {
             PagedResultDto<LoaiHangHoaDto> result = new PagedResultDto<LoaiHangHoaDto>();
-            var loaiHangHoas = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var loaiHangHoas = await _repository.GetAll().Where(x => x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = loaiHangHoas.Count;
             if (!string.IsNullOrEmpty(input.Keyword))
             {
@@ -65,7 +65,7 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             data.Id = maxId + 1;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId ?? 1;
+            data.TenantId = AbpSession.TenantId;
             data.TrangThai = 0;
             data.TenLoaiHangHoa = dto.TenLoai;
             data.MaLoaiHangHoa = dto.MaLoai;

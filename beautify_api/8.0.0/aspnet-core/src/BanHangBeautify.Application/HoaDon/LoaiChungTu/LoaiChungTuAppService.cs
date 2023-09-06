@@ -42,7 +42,7 @@ namespace BanHangBeautify.HoaDon.ChungTu
             data.MaLoaiChungTu = input.MaLoaiChungTu;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId ?? 0;
+            data.TenantId = AbpSession.TenantId;
             data.IsDeleted = false;
             _loaiChungTuRepository.Insert(data);
             result = ObjectMapper.Map<LoaiChungTuDto>(data);
@@ -85,7 +85,7 @@ namespace BanHangBeautify.HoaDon.ChungTu
         public async Task<PagedResultDto<DM_LoaiChungTu>> GetAll()
         {
             PagedResultDto<DM_LoaiChungTu> result = new PagedResultDto<DM_LoaiChungTu>();
-            var data = await _loaiChungTuRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
+            var data = await _loaiChungTuRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
             result.TotalCount = data.Count;
             result.Items = data;
             return result;
