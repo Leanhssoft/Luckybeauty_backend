@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
+using NPOI.SS.Formula.Functions;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using static BanHangBeautify.Common.CommonClass;
 
 namespace BanHangBeautify.Common
 {
@@ -27,6 +30,43 @@ namespace BanHangBeautify.Common
         //    }
         //    return tItems;
         //}
+
+        /// <summary>
+        /// kiểm tra trùng dữ liệu (khi import excel)
+        /// </summary>
+        /// <param name="worksheet"></param>
+        /// <param name="colName"></param>
+        /// <param name="fromRow"></param>
+        /// <param name="toRow"></param>
+        /// <returns>trả về giá trị bị trùng lặp (string)</returns>
+        public static List<ExcelErrorDto> Excel_CheckDuplicateData(ExcelWorksheet worksheet, string colName, int fromRow, int toRow)
+        {
+            List<ExcelErrorDto> lstErr = new List<ExcelErrorDto>();
+            try
+            {
+                var listData = worksheet.Cells[$"{colName}{fromRow}:{colName}{toRow}"]
+                    .Where(x => x.Value != null && x.Value.ToString() != string.Empty)
+                    .Select(x => x.Value.ToString().Trim().ToUpper()).ToList();// convert to UpperCase
+                for (int row = 3; row <= toRow; row++)
+                {
+                    var valCell = worksheet.Cells[row, 2].Value.ToString();
+                    if (!string.IsNullOrEmpty(valCell))
+                    {
+                        valCell = valCell.Trim().ToUpper();
+                        var duplicate = listData.Where(x => x == valCell).Count() > 1;
+                        if (duplicate)
+                        {
+                            lstErr.Add(new ExcelErrorDto { RowNumber = row, ThuocTinh = valCell });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lstErr.Add(new ExcelErrorDto { RowNumber = 0, ThuocTinh = ex.Message.ToString() });
+            }
+            return lstErr;
+        }
 
         public static object CreateObject(Type type, DataRow row)
         {
