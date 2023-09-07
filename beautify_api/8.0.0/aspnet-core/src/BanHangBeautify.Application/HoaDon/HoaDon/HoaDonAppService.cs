@@ -385,6 +385,31 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 await _hoaDonRepository.UpdateAsync(hoaDon);
             }
         }
+
+        [HttpPost]
+        public async Task Delete_MultipleHoaDon(List<Guid> lstId)
+        {
+            _hoaDonRepository.GetAll().Where(x => lstId.Contains(x.Id)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+                x.TrangThai = 0;
+            });
+            _hoaDonChiTietRepository.GetAll().Where(x => lstId.Contains(x.IdHoaDon)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+                x.TrangThai = 0;
+            });
+            _hoaDonAnhRepository.GetAll().Where(x => lstId.Contains(x.IdHoaDon)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+            });
+        }
         public async Task<List<PageHoaDonDto>> GetInforHoaDon_byId(Guid id)
         {
             return await _repoHoaDon.GetInforHoaDon_byId(id);

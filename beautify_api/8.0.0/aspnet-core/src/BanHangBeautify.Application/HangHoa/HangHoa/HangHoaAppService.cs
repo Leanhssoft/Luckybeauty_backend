@@ -16,14 +16,18 @@ using BanHangBeautify.NewFolder;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
+using NPOI.SS.UserModel;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using static BanHangBeautify.Common.CommonClass;
+using static BanHangBeautify.Common.ObjectHelper;
 
 
 namespace BanHangBeautify.HangHoa.HangHoa
@@ -392,6 +396,51 @@ namespace BanHangBeautify.HangHoa.HangHoa
             }
 
             return result;
+        }
+
+        public async Task<List<ExcelErrorDto>> ImportExcel_DanhMucHangHoa(FileUpload file)
+        {
+            List<ExcelErrorDto> lstErr = new List<ExcelErrorDto>();
+            try
+            {
+                if (file.Type == ".xlsx")
+                {
+                    using (MemoryStream stream = new MemoryStream(file.File))
+                    {
+                        using (var package = new ExcelPackage())
+                        {
+                            package.Load(stream);
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
+                            int rowCount = worksheet.Dimension.Rows;
+
+                            // cột B: mã dịch vụ
+                            var errDuplicate = Excel_CheckDuplicateData(worksheet, "B", 3, rowCount);
+                            if (errDuplicate.Count > 0)
+                            {
+                                lstErr.Add(new ExcelErrorDto
+                                {
+                                    RowNumber = errDuplicate[0].RowNumber,
+                                    ThuocTinh = errDuplicate[0].ThuocTinh,
+                                    DienGiai = "Mã dịch vụ bị trùng lặp",
+                                    LoaiErr = 1,
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExcelErrorDto xx = new()
+                {
+                    RowNumber = 0,
+                    DienGiai = ex.InnerException.ToString(),
+                    LoaiErr = 0,
+                };
+                lstErr.Add(xx);
+            }
+
+            return lstErr;
         }
     }
 }

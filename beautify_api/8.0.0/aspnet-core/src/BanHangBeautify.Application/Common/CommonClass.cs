@@ -23,5 +23,13 @@ namespace BanHangBeautify.Common
             public string FirstStr { get; set; } = string.Empty;
             public float? MaxVal { get; set; } = 1;
         }
+        public class ExcelErrorDto
+        {
+            public int RowNumber { get; set; }
+            public string TenTruongDuLieu { get; set; }
+            public string ThuocTinh { get; set; }
+            public string DienGiai { get; set; }
+            public int LoaiErr { get; set; }
+        }
     }
 }
