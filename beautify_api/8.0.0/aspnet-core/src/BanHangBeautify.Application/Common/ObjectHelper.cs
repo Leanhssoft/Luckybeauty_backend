@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using BanHangBeautify.Data.Entities;
+using Newtonsoft.Json.Linq;
 using NPOI.SS.Formula.Functions;
 using OfficeOpenXml;
 using System;
@@ -49,23 +50,34 @@ namespace BanHangBeautify.Common
                     .Select(x => x.Value.ToString().Trim().ToUpper()).ToList();// convert to UpperCase
                 for (int row = 3; row <= toRow; row++)
                 {
-                    var valCell = worksheet.Cells[row, 2].Value.ToString();
+                    var valCell = worksheet.Cells[row, 2].Value?.ToString();
                     if (!string.IsNullOrEmpty(valCell))
                     {
                         valCell = valCell.Trim().ToUpper();
                         var duplicate = listData.Where(x => x == valCell).Count() > 1;
                         if (duplicate)
                         {
-                            lstErr.Add(new ExcelErrorDto { RowNumber = row, ThuocTinh = valCell });
+                            lstErr.Add(new ExcelErrorDto { RowNumber = row, GiaTriDuLieu = valCell });
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                lstErr.Add(new ExcelErrorDto { RowNumber = 0, ThuocTinh = ex.Message.ToString() });
+                lstErr.Add(new ExcelErrorDto { RowNumber = 0, GiaTriDuLieu = ex.Message.ToString() });
             }
             return lstErr;
+        }
+
+        public static bool Excel_CheckNumber(string dataType)
+        {
+            string[] arrDataType = {"System.Sbyte", "System.byte", "System.Int16", "System.Int32", "System.Int64",
+                "System.UInt16","System.UInt32", "System.UInt64", "System.Single","System.Double", "System.Decimal" };
+            if (!arrDataType.Contains(dataType))
+            {
+                return false;
+            }
+            return true;
         }
 
         public static object CreateObject(Type type, DataRow row)
