@@ -94,7 +94,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Delete)]
-        public async Task<ChietKhauDichVuDto> Delete(Guid id)
+        public async Task<ExecuteResultDto> Delete(Guid id)
         {
             var data = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
@@ -103,9 +103,16 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                 data.DeletionTime = DateTime.Now;
                 data.DeleterUserId = AbpSession.UserId;
                 await _hoahongDichVu.UpdateAsync(data);
-                return ObjectMapper.Map<ChietKhauDichVuDto>(data);
+                return new ExecuteResultDto()
+                {
+                    Status = "success",
+                    Message = "Xóa dữ liệu thành công!"
+                };
             }
-            return new ChietKhauDichVuDto();
+            return new ExecuteResultDto() { 
+                Status = "error",
+                Message= "Có lỗi say ra vui lòng thử lại sau!"
+            };
         }
         public async Task<CreateOrEditChietKhauDichVuDto> GetForEdit(Guid id)
         {

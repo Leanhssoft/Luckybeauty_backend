@@ -1,6 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
-using BanHangBeautify.Common;
+using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
@@ -11,7 +11,7 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using static BanHangBeautify.Common.CommonClass;
+using static BanHangBeautify.Configuration.Common.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Repository
 {
@@ -120,7 +120,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     var data = ObjectHelper.FillCollection<HangHoaDto>(ds.Tables[0]);
-                    return new BanHangBeautify.Common.CommonClass.MaxCodeDto()
+                    return new CommonClass.MaxCodeDto()
                     {
                         FirstStr = ds.Tables[0].Rows[0]["FirstStr"].ToString(),
                         MaxVal = float.Parse(ds.Tables[0].Rows[0]["MaxVal"].ToString()),

@@ -1,4 +1,4 @@
-﻿namespace BanHangBeautify.Common.Consts
+﻿namespace BanHangBeautify.Configuration.Common.Consts
 {
     public class LoaiChietKhauHoaDonConst
     {

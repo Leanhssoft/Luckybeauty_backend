@@ -1,6 +1,6 @@
 ﻿using Abp.EntityFrameworkCore;
 using BanHangBeautify.AppDashboard.Dto;
-using BanHangBeautify.Common;
+using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using Microsoft.Data.SqlClient;

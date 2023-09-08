@@ -2,7 +2,7 @@
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using System;
 using System.Threading.Tasks;
-using static BanHangBeautify.Common.CommonClass;
+using static BanHangBeautify.Configuration.Common.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Repository
 {

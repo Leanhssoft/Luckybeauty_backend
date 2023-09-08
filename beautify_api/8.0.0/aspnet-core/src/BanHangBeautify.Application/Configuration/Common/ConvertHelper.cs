@@ -5,7 +5,7 @@ using System.Data;
 using System.Globalization;
 using System.Xml;
 
-namespace BanHangBeautify.Common
+namespace BanHangBeautify.Configuration.Common
 {
     public class ConvertHelper
     {
@@ -68,8 +68,8 @@ namespace BanHangBeautify.Common
             {
                 if (t != null)
                 {
-                    U uDefault = default(U);
-                    U u = ConvertObject<U>(t, uDefault);
+                    U uDefault = default;
+                    U u = ConvertObject(t, uDefault);
                     uList.Add(u);
                 }
             }
@@ -79,7 +79,7 @@ namespace BanHangBeautify.Common
 
         public static T ConvertObject<T>(object t, T defaultValue)
         {
-            T obj = default(T);
+            T obj = default;
             try
             {
                 obj = (T)t;
@@ -104,7 +104,7 @@ namespace BanHangBeautify.Common
                 return false;
             }
 
-            return (bool.TryParse(obj.ToString(), out retVal) && retVal);
+            return bool.TryParse(obj.ToString(), out retVal) && retVal;
         }
 
         public static bool ToBoolean(DataRow dr, string field)
@@ -145,7 +145,7 @@ namespace BanHangBeautify.Common
         public static byte ToByte(object obj, byte defaultValue)
         {
             byte retVal;
-            if ((obj != null) && byte.TryParse(obj.ToString(), out retVal))
+            if (obj != null && byte.TryParse(obj.ToString(), out retVal))
             {
                 return retVal;
             }
@@ -265,7 +265,7 @@ namespace BanHangBeautify.Common
         public static decimal ToDecimal(object obj, decimal defaultValue)
         {
             decimal retVal;
-            if ((obj != null) && decimal.TryParse(obj.ToString(), out retVal))
+            if (obj != null && decimal.TryParse(obj.ToString(), out retVal))
             {
                 return retVal;
             }
@@ -281,7 +281,7 @@ namespace BanHangBeautify.Common
         public static double ToDouble(object obj, double defaultValue)
         {
             double retVal;
-            if ((obj != null) && double.TryParse(obj.ToString(), out retVal))
+            if (obj != null && double.TryParse(obj.ToString(), out retVal))
             {
                 return retVal;
             }
@@ -317,7 +317,7 @@ namespace BanHangBeautify.Common
         public static short ToInt16(object obj, short defaultValue)
         {
             short retVal;
-            if ((obj != null) && short.TryParse(obj.ToString(), out retVal))
+            if (obj != null && short.TryParse(obj.ToString(), out retVal))
             {
                 return retVal;
             }
@@ -378,7 +378,7 @@ namespace BanHangBeautify.Common
         public static long ToInt64(object obj, long defaultValue)
         {
             long retVal;
-            if ((obj != null) && long.TryParse(obj.ToString(), out retVal))
+            if (obj != null && long.TryParse(obj.ToString(), out retVal))
             {
                 return retVal;
             }
@@ -447,7 +447,7 @@ namespace BanHangBeautify.Common
         {
             // If datatype is DateTime, then nothing else is necessary. 
             if (dt == DateTime.MinValue)
-                return String.Empty;
+                return string.Empty;
             return dt.ToShortTimeString();
         }
 
@@ -460,7 +460,7 @@ namespace BanHangBeautify.Common
                 return (Guid)obj;
 
             string str = obj.ToString();
-            if (str == String.Empty)
+            if (str == string.Empty)
                 return Guid.Empty;
             return XmlConvert.ToGuid(str);
         }
@@ -477,7 +477,7 @@ namespace BanHangBeautify.Common
             if (obj == null || obj == DBNull.Value)
                 return true;
             string str = obj.ToString();
-            if (str == String.Empty)
+            if (str == string.Empty)
                 return true;
             Guid g = XmlConvert.ToGuid(str);
             if (g == Guid.Empty)
@@ -507,7 +507,7 @@ namespace BanHangBeautify.Common
             if (obj.GetType() == Type.GetType("System.Guid"))
                 return obj;
             string str = obj.ToString();
-            if (str == String.Empty)
+            if (str == string.Empty)
                 return DBNull.Value;
             Guid g = XmlConvert.ToGuid(str);
             if (g == Guid.Empty)
@@ -538,7 +538,7 @@ namespace BanHangBeautify.Common
             return dt;
         }
 
-        public static object ToDBInteger(Int32 n)
+        public static object ToDBInteger(int n)
         {
             return n;
         }
@@ -551,14 +551,14 @@ namespace BanHangBeautify.Common
             if (obj.GetType() == Type.GetType("System.Int32"))
                 return obj;
             string str = obj.ToString();
-            if (str == String.Empty || !Information.IsNumeric(str))
+            if (str == string.Empty || !Information.IsNumeric(str))
                 return DBNull.Value;
             // 03/05/2011 Paul.  Lets start using TryParse to protect against non-numeric strings. 
             // This should prevent ugly exceptions when an alpha string is used. 
             //return Int32.Parse(str, NumberStyles.Any);
-            Int32 nValue = 0;
+            int nValue = 0;
             // 03/16/2011 Paul.  We need to allow any style so that separators will get ignored. 
-            Int32.TryParse(str, NumberStyles.Any, System.Threading.Thread.CurrentThread.CurrentCulture, out nValue);
+            int.TryParse(str, NumberStyles.Any, System.Threading.Thread.CurrentThread.CurrentCulture, out nValue);
             return nValue;
         }
 
@@ -580,7 +580,7 @@ namespace BanHangBeautify.Common
 
         public static bool IsDbNull(object value)
         {
-            return (value == DBNull.Value);
+            return value == DBNull.Value;
         }
     }
 
@@ -592,11 +592,11 @@ namespace BanHangBeautify.Common
                 return false;
             else if (o is DateTime)
                 return true;
-            else if (o is String)
+            else if (o is string)
             {
                 try
                 {
-                    DateTime.Parse(o as String);
+                    DateTime.Parse(o as string);
                     return true;
                 }
                 catch
@@ -611,16 +611,16 @@ namespace BanHangBeautify.Common
         {
             if (o == null || o is DateTime)
                 return false;
-            else if (o is Int16 || o is Int32 || o is Int64 || o is Decimal || o is Single || o is Double)
+            else if (o is short || o is int || o is long || o is decimal || o is float || o is double)
                 return true;
             else
             {
                 try
                 {
-                    if (o is String)
-                        Double.Parse(o as String);
+                    if (o is string)
+                        double.Parse(o as string);
                     else
-                        Double.Parse(o.ToString());
+                        double.Parse(o.ToString());
                     return true;
                 }
                 catch

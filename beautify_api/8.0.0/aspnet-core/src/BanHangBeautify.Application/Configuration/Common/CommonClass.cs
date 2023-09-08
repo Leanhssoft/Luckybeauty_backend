@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BanHangBeautify.Common
+namespace BanHangBeautify.Configuration.Common
 {
     public class CommonClass
     {

@@ -6,7 +6,7 @@ using Abp.Notifications;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Bookings.Bookings.BookingRepository;
 using BanHangBeautify.Bookings.Bookings.Dto;
-using BanHangBeautify.Common.Consts;
+using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Notifications;

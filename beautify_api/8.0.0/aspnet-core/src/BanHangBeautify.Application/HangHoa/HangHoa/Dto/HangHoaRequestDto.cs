@@ -1,4 +1,4 @@
-﻿using static BanHangBeautify.Common.CommonClass;
+﻿using static BanHangBeautify.Configuration.Common.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Dto
 {
