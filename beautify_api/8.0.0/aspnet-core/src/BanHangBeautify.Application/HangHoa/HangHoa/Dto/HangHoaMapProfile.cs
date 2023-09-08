@@ -9,7 +9,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
         {
             CreateMap<DM_HangHoa, HangHoaDto>().ReverseMap();
             CreateMap<DM_HangHoa, CreateOrEditHangHoaDto>().ReverseMap();
-            CreateMap<HangHoaDto, ExcelHangHoaDto>().ReverseMap();
+            CreateMap<HangHoaDto, ExportExcelHangHoaDto>().ReverseMap();
         }
     }
 }
