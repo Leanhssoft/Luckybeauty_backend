@@ -26,9 +26,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
-using static BanHangBeautify.Common.CommonClass;
-using static BanHangBeautify.Common.ObjectHelper;
-
+using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.Configuration.Common.ObjectHelper;
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {

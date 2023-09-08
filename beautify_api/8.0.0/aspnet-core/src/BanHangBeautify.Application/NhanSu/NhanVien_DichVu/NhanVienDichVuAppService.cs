@@ -4,7 +4,7 @@ using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.Common.Consts;
+using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien_DichVu.Dto;

@@ -1,6 +1,6 @@
 ﻿using Abp.Runtime.Session;
 using Abp.Timing.Timezone;
-using BanHangBeautify.Common;
+using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;

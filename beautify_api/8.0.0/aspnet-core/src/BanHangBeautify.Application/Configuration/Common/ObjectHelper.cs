@@ -9,9 +9,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using static BanHangBeautify.Common.CommonClass;
+using static BanHangBeautify.Configuration.Common.CommonClass;
 
-namespace BanHangBeautify.Common
+namespace BanHangBeautify.Configuration.Common
 {
     public static class ObjectHelper
     {
@@ -84,7 +84,7 @@ namespace BanHangBeautify.Common
                     {
                         Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                         var value = row[property.Name];
-                        object safeValue = (value == null) ? null
+                        object safeValue = value == null ? null
                                                            : Convert.ChangeType(value, t);
 
                         property.SetValue(objTarget, safeValue, null);
@@ -114,7 +114,7 @@ namespace BanHangBeautify.Common
                     {
                         Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                         var value = dr[property.Name];
-                        object safeValue = (value == null) ? null
+                        object safeValue = value == null ? null
                                                            : Convert.ChangeType(value, t);
 
                         property.SetValue(objTarget, safeValue, null);
@@ -141,7 +141,7 @@ namespace BanHangBeautify.Common
 
         public static U FillCollection<U, T>(IDataReader _dr)
         {
-            U u = default(U);
+            U u = default;
             try
             {
                 u = Activator.CreateInstance<U>();
@@ -157,11 +157,11 @@ namespace BanHangBeautify.Common
                     {
                         try
                         {
-                            if ((_dr.GetOrdinal(property.Name) >= 0) && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
+                            if (_dr.GetOrdinal(property.Name) >= 0 && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
                             {
                                 Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                                 var value = _dr[property.Name];
-                                object safeValue = (value == null) ? null
+                                object safeValue = value == null ? null
                                                                    : Convert.ChangeType(value, t);
 
                                 property.SetValue(objTarget, safeValue, null);
@@ -197,7 +197,7 @@ namespace BanHangBeautify.Common
         public static object GetSafeValue(object value, Type typeOfValue)
         {
             Type t = Nullable.GetUnderlyingType(typeOfValue) ?? typeOfValue;
-            object safeValue = (value == null) ? null
+            object safeValue = value == null ? null
                                                : Convert.ChangeType(value, t);
             return safeValue;
         }
@@ -216,11 +216,11 @@ namespace BanHangBeautify.Common
                         {
                             if (property != null)
                             {
-                                if ((_dr.GetOrdinal(property.Name) >= 0) && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
+                                if (_dr.GetOrdinal(property.Name) >= 0 && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
                                 {
                                     Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                                     var value = _dr[property.Name];
-                                    object safeValue = (value == null) ? null
+                                    object safeValue = value == null ? null
                                                                        : Convert.ChangeType(value, t);
 
                                     property.SetValue(objTarget, safeValue, null);
@@ -257,7 +257,7 @@ namespace BanHangBeautify.Common
             List<T> _list = new List<T>();
             try
             {
-                if ((ds != null) && (ds.Tables.Count > 0))
+                if (ds != null && ds.Tables.Count > 0)
                 {
                     _list = FillCollection<T>(ds.Tables[0], propertyNames);
                 }
@@ -273,7 +273,7 @@ namespace BanHangBeautify.Common
             List<T> _list = new List<T>();
             try
             {
-                if ((dt == null) || (dt.Rows.Count <= 0))
+                if (dt == null || dt.Rows.Count <= 0)
                 {
                     return _list;
                 }
@@ -305,7 +305,7 @@ namespace BanHangBeautify.Common
                     for (int i = 0; i < proNames.Length; i++)
                     {
                         PropertyInfo property = objTarget.GetType().GetProperty(proNames[i]);
-                        if ((_dr.GetOrdinal(property.Name) >= 0) && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
+                        if (_dr.GetOrdinal(property.Name) >= 0 && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
                         {
                             property.SetValue(objTarget, Convert.ChangeType(_dr[property.Name], property.PropertyType), null);
                         }
@@ -325,7 +325,7 @@ namespace BanHangBeautify.Common
 
         public static T FillObject<T>(DataRow row)
         {
-            T objTarget = default(T);
+            T objTarget = default;
             try
             {
                 if (row == null)
@@ -341,7 +341,7 @@ namespace BanHangBeautify.Common
                         if (row.Table.Columns[property.Name].DataType.Name == t.Name)
                         {
                             var value = row[property.Name];
-                            object safeValue = (value == null) ? null : Convert.ChangeType(value, t);
+                            object safeValue = value == null ? null : Convert.ChangeType(value, t);
                             property.SetValue(objTarget, safeValue, null);
                         }
                     }
@@ -355,7 +355,7 @@ namespace BanHangBeautify.Common
 
         public static T FillObject<T>(IDataReader _dr)
         {
-            T objTarget = default(T);
+            T objTarget = default;
             try
             {
                 if (!_dr.Read())
@@ -367,11 +367,11 @@ namespace BanHangBeautify.Common
                 {
                     try
                     {
-                        if ((_dr.GetOrdinal(property.Name) >= 0) && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
+                        if (_dr.GetOrdinal(property.Name) >= 0 && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
                         {
                             Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                             var value = _dr[property.Name];
-                            object safeValue = (value == null) ? null
+                            object safeValue = value == null ? null
                                                                : Convert.ChangeType(value, t);
 
                             property.SetValue(objTarget, safeValue, null);
@@ -401,7 +401,7 @@ namespace BanHangBeautify.Common
             {
                 return FillObject<T>(row);
             }
-            T objTarget = default(T);
+            T objTarget = default;
             try
             {
                 if (row != null)
@@ -416,7 +416,7 @@ namespace BanHangBeautify.Common
                         {
                             Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                             var value = row[property.Name];
-                            object safeValue = (value == null) ? null
+                            object safeValue = value == null ? null
                                                                : Convert.ChangeType(value, t);
 
                             property.SetValue(objTarget, safeValue, null);
@@ -437,7 +437,7 @@ namespace BanHangBeautify.Common
             {
                 return FillObject<T>(_dr);
             }
-            T objTarget = default(T);
+            T objTarget = default;
             try
             {
                 if (_dr.Read())
@@ -452,7 +452,7 @@ namespace BanHangBeautify.Common
                         {
                             Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
                             var value = _dr[property.Name];
-                            object safeValue = (value == null) ? null
+                            object safeValue = value == null ? null
                                                                : Convert.ChangeType(value, t);
 
                             property.SetValue(objTarget, safeValue, null);
@@ -470,7 +470,7 @@ namespace BanHangBeautify.Common
 
         public static Type GetCoreType(Type t)
         {
-            if ((t != null) && IsNullable(t))
+            if (t != null && IsNullable(t))
             {
                 if (!t.IsValueType)
                 {
@@ -483,7 +483,7 @@ namespace BanHangBeautify.Common
 
         public static bool IsNullable(Type t)
         {
-            return (!t.IsValueType || (t.IsGenericType && (t.GetGenericTypeDefinition() == typeof(Nullable<>))));
+            return !t.IsValueType || t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         public static DataTable ToDataTable<T>(List<T> items)
@@ -515,7 +515,7 @@ namespace BanHangBeautify.Common
             string result = string.Empty;
             try
             {
-                Int32 ordinal = dataReader.GetOrdinal(columnName);
+                int ordinal = dataReader.GetOrdinal(columnName);
 
                 if (!dataReader.IsDBNull(ordinal))
                     result = dataReader.GetString(ordinal);
@@ -562,7 +562,7 @@ namespace BanHangBeautify.Common
             if (obj == null || obj == DBNull.Value)
                 return true;
             string str = obj.ToString();
-            if (str == String.Empty)
+            if (str == string.Empty)
                 return true;
             Guid g = XmlConvert.ToGuid(str);
             if (g == Guid.Empty)

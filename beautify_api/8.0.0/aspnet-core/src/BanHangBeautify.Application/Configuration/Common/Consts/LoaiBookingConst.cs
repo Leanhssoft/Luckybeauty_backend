@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.Common.Consts
+namespace BanHangBeautify.Configuration.Common.Consts
 {
     public class LoaiBookingConst
     {
