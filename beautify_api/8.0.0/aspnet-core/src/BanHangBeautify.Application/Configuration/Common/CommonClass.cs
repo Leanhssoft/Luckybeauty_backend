@@ -27,9 +27,9 @@ namespace BanHangBeautify.Configuration.Common
         {
             public int RowNumber { get; set; }
             public string TenTruongDuLieu { get; set; }
-            public string ThuocTinh { get; set; }
+            public string GiaTriDuLieu { get; set; }
             public string DienGiai { get; set; }
-            public int LoaiErr { get; set; }
+            public int LoaiErr { get; set; }//  -1. exception, 0. lỗi định dạng file, 1. lỗi dữ liệu, 2.lỗi import không thành công
         }
     }
 }
