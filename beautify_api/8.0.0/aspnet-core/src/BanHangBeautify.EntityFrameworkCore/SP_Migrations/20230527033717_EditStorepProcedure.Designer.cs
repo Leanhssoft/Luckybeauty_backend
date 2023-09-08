@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BanHangBeautify.SPMigrations
+namespace BanHangBeautify.Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    [Migration("20230712090752_ChangeFloatToDouble")]
-    partial class ChangeFloatToDouble
+    [Migration("20230527033717_EditStorepProcedure")]
+    partial class EditStorepProcedure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1609,6 +1609,9 @@ namespace BanHangBeautify.SPMigrations
                     b.Property<Guid?>("IdNhomHangHoa")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1700,7 +1703,7 @@ namespace BanHangBeautify.SPMigrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("TenantId")
+                    b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
                     b.Property<int>("TrangThai")
@@ -1714,31 +1717,28 @@ namespace BanHangBeautify.SPMigrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(327),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5312),
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(501),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5338),
                             IsDeleted = false,
                             MaLoaiHangHoa = "DV",
                             TenLoaiHangHoa = "Dịch Vụ",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(505),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5341),
                             IsDeleted = false,
                             MaLoaiHangHoa = "CB",
                             TenLoaiHangHoa = "Combo",
-                            TenantId = 0,
                             TrangThai = 1
                         });
                 });
@@ -3055,7 +3055,7 @@ namespace BanHangBeautify.SPMigrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("TenantId")
+                    b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
                     b.Property<int>("TrangThai")
@@ -3069,141 +3069,127 @@ namespace BanHangBeautify.SPMigrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1079),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5873),
                             IsDeleted = false,
                             MaLoaiChungTu = "HD",
                             TenLoaiChungTu = "Hóa đơn bán",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1084),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5878),
                             IsDeleted = false,
                             MaLoaiChungTu = "GDV",
                             TenLoaiChungTu = "Gói dịch vụ",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1086),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5880),
                             IsDeleted = false,
                             MaLoaiChungTu = "BG",
                             TenLoaiChungTu = "Báo giá",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 4,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1089),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5882),
                             IsDeleted = false,
                             MaLoaiChungTu = "PNK",
                             TenLoaiChungTu = "Phiếu nhập kho",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 5,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1091),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5885),
                             IsDeleted = false,
                             MaLoaiChungTu = "PXK",
                             TenLoaiChungTu = "Phiếu xuất kho",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 6,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1094),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5887),
                             IsDeleted = false,
                             MaLoaiChungTu = "TH",
                             TenLoaiChungTu = "Khách trả hàng",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 7,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1101),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5894),
                             IsDeleted = false,
                             MaLoaiChungTu = "THNCC",
                             TenLoaiChungTu = "Trả hàng nhà cung cấp",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 8,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1103),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5896),
                             IsDeleted = false,
                             MaLoaiChungTu = "TGT",
                             TenLoaiChungTu = "Thẻ giá trị",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 9,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1105),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5898),
                             IsDeleted = false,
                             MaLoaiChungTu = "PKK",
                             TenLoaiChungTu = "Phiếu kiểm kê",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 10,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1107),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5899),
                             IsDeleted = false,
                             MaLoaiChungTu = "CH",
                             TenLoaiChungTu = "Chuyển hàng",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 11,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1111),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5901),
                             IsDeleted = false,
                             MaLoaiChungTu = "SQPT",
                             TenLoaiChungTu = "Phiếu thu",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 12,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1112),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5903),
                             IsDeleted = false,
                             MaLoaiChungTu = "SQPC",
                             TenLoaiChungTu = "Phiếu chi",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 13,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1114),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5904),
                             IsDeleted = false,
                             MaLoaiChungTu = "DCGV",
                             TenLoaiChungTu = "Điều chỉnh giá vốn",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 14,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1116),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5906),
                             IsDeleted = false,
                             MaLoaiChungTu = "NH",
                             TenLoaiChungTu = "Nhận hàng",
-                            TenantId = 0,
                             TrangThai = 1
                         });
                 });
@@ -3251,7 +3237,7 @@ namespace BanHangBeautify.SPMigrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("TenantId")
+                    b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
                     b.Property<int>("TrangThai")
@@ -3265,21 +3251,19 @@ namespace BanHangBeautify.SPMigrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1021),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5812),
                             IsDeleted = false,
                             MaLoaiKhachHang = "KH",
                             TenLoaiKhachHang = "Khách hàng",
-                            TenantId = 0,
                             TrangThai = 1
                         },
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 7, 12, 16, 7, 50, 113, DateTimeKind.Local).AddTicks(1039),
+                            CreationTime = new DateTime(2023, 9, 8, 14, 37, 17, 728, DateTimeKind.Local).AddTicks(5833),
                             IsDeleted = false,
                             MaLoaiKhachHang = "NCC",
                             TenLoaiKhachHang = "Nhà cung cấp",
-                            TenantId = 0,
                             TrangThai = 1
                         });
                 });
@@ -3487,15 +3471,6 @@ namespace BanHangBeautify.SPMigrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<Guid?>("NguoiSua")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("NguoiTao")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("NguoiXoa")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("TenNguon")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -3553,15 +3528,6 @@ namespace BanHangBeautify.SPMigrations
 
                     b.Property<string>("MoTa")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("NguoiSua")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("NguoiTao")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("NguoiXoa")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("TenNhomHang")
                         .HasMaxLength(256)
@@ -3882,9 +3848,6 @@ namespace BanHangBeautify.SPMigrations
                     b.Property<DateTime?>("DeletionTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("IdChiNhanh")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("IdDonViQuyDoi")
                         .HasColumnType("uniqueidentifier");
 
@@ -3904,8 +3867,6 @@ namespace BanHangBeautify.SPMigrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IdChiNhanh");
 
                     b.HasIndex("IdDonViQuyDoi");
 
@@ -4429,6 +4390,9 @@ namespace BanHangBeautify.SPMigrations
                     b.Property<DateTime>("GioVao")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("IdChiNhanh")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -4456,6 +4420,8 @@ namespace BanHangBeautify.SPMigrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdChiNhanh");
 
                     b.ToTable("NS_CaLamViec");
                 });
@@ -5684,12 +5650,6 @@ namespace BanHangBeautify.SPMigrations
 
             modelBuilder.Entity("BanHangBeautify.Entities.DichVu_NhanVien", b =>
                 {
-                    b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
-                        .WithMany()
-                        .HasForeignKey("IdChiNhanh")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("BanHangBeautify.Entities.DM_DonViQuiDoi", "DM_DonViQuiDoi")
                         .WithMany()
                         .HasForeignKey("IdDonViQuyDoi")
@@ -5701,8 +5661,6 @@ namespace BanHangBeautify.SPMigrations
                         .HasForeignKey("IdNhanVien")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("DM_ChiNhanh");
 
                     b.Navigation("DM_DonViQuiDoi");
 
@@ -5792,6 +5750,17 @@ namespace BanHangBeautify.SPMigrations
                     b.Navigation("DM_ChiNhanh");
 
                     b.Navigation("DM_KhachHang");
+                });
+
+            modelBuilder.Entity("BanHangBeautify.Entities.NS_CaLamViec", b =>
+                {
+                    b.HasOne("BanHangBeautify.Entities.DM_ChiNhanh", "DM_ChiNhanh")
+                        .WithMany()
+                        .HasForeignKey("IdChiNhanh")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DM_ChiNhanh");
                 });
 
             modelBuilder.Entity("BanHangBeautify.Entities.NS_ChietKhauDichVu", b =>

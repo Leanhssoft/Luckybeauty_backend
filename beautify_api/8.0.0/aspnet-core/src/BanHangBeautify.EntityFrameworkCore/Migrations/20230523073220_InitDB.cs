@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -8,7 +8,7 @@ using System;
 namespace BanHangBeautify.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDB : Migration
+    public partial class initDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -365,6 +365,7 @@ namespace BanHangBeautify.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EmailAddress = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     NhanSuId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    IsAdmin = table.Column<bool>(type: "bit", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -487,7 +488,7 @@ namespace BanHangBeautify.Migrations
                     TrangThai = table.Column<int>(type: "int", nullable: true),
                     TongTichDiem = table.Column<float>(type: "real", nullable: true),
                     MaSoThue = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Avatar = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NgaySinh = table.Column<DateTime>(type: "datetime2", nullable: true),
                     KieuNgaySinh = table.Column<int>(type: "int", nullable: true),
                     IdLoaiKhach = table.Column<int>(type: "int", nullable: true),
@@ -575,7 +576,7 @@ namespace BanHangBeautify.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: true),
                     MaLoaiChungTu = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     TenLoaiChungTu = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
@@ -602,7 +603,7 @@ namespace BanHangBeautify.Migrations
                     Id = table.Column<int>(type: "int", nullable: false),
                     MaLoaiHangHoa = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     TenLoaiHangHoa = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
@@ -625,7 +626,7 @@ namespace BanHangBeautify.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: true),
                     MaLoaiKhachHang = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
                     TenLoaiKhachHang = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
@@ -705,9 +706,6 @@ namespace BanHangBeautify.Migrations
                     MaNguon = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TenNguon = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
-                    NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -734,9 +732,6 @@ namespace BanHangBeautify.Migrations
                     IdParent = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MoTa = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -882,31 +877,6 @@ namespace BanHangBeautify.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_HT_CongTy", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "NS_CaLamViec",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenantId = table.Column<int>(type: "int", nullable: false),
-                    MaCa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    TenCa = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    GioVao = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    GioRa = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TongGioCong = table.Column<float>(type: "real", nullable: false),
-                    TrangThai = table.Column<int>(type: "int", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
-                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
-                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_NS_CaLamViec", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1287,6 +1257,7 @@ namespace BanHangBeautify.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TenHangHoa = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     TenHangHoaKhongDau = table.Column<string>(name: "TenHangHoa_KhongDau", type: "nvarchar(256)", maxLength: 256, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
@@ -1457,7 +1428,6 @@ namespace BanHangBeautify.Migrations
                     Ho = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     TenLot = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TenNhanVien = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    TenNhanVienKhongDau = table.Column<string>(name: "TenNhanVien_KhongDau", type: "nvarchar(256)", maxLength: 256, nullable: true),
                     DiaChi = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     SoDienThoai = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     CCCD = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -1466,12 +1436,9 @@ namespace BanHangBeautify.Migrations
                     GioiTinh = table.Column<byte>(type: "tinyint", nullable: true),
                     NgayCap = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NoiCap = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
-                    Avatar = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
+                    Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdChucVu = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TenantId = table.Column<int>(type: "int", nullable: false),
-                    NguoiTao = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NguoiSua = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    NguoiXoa = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1603,7 +1570,7 @@ namespace BanHangBeautify.Migrations
                     MaHangHoa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TenDonViTinh = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TyLeChuyenDoi = table.Column<float>(type: "real", nullable: true),
-                    GiaBan = table.Column<float>(type: "real", nullable: true),
+                    GiaBan = table.Column<double>(type: "float", nullable: true),
                     LaDonViTinhChuan = table.Column<int>(type: "int", nullable: true),
                     IdHangHoa = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1875,6 +1842,40 @@ namespace BanHangBeautify.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NS_CaLamViec",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    IdChiNhanh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MaCa = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    TenCa = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    GioVao = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    GioRa = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    GioNghiTu = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    GioNghiDen = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TongGioCong = table.Column<float>(type: "real", nullable: false),
+                    TrangThai = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
+                    LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModifierUserId = table.Column<long>(type: "bigint", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeleterUserId = table.Column<long>(type: "bigint", nullable: true),
+                    DeletionTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NS_CaLamViec", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NS_CaLamViec_DM_ChiNhanh_IdChiNhanh",
+                        column: x => x.IdChiNhanh,
+                        principalTable: "DM_ChiNhanh",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "NS_ChietKhauHoaDon",
                 columns: table => new
                 {
@@ -1882,7 +1883,7 @@ namespace BanHangBeautify.Migrations
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     IdChiNhanh = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     LoaiChietKhau = table.Column<byte>(type: "tinyint", nullable: true),
-                    GiaTriChietKhau = table.Column<float>(type: "real", nullable: true),
+                    GiaTriChietKhau = table.Column<double>(type: "float", nullable: true),
                     ChungTuApDung = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1913,7 +1914,7 @@ namespace BanHangBeautify.Migrations
                     MaHoaDon = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     NgayLapHoaDon = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IdChiNhanh = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TongTienThu = table.Column<float>(type: "real", nullable: true),
+                    TongTienThu = table.Column<double>(type: "float", nullable: true),
                     NoiDungThu = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     HachToanKinhDoanh = table.Column<bool>(type: "bit", nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
@@ -1957,20 +1958,20 @@ namespace BanHangBeautify.Migrations
                     IdNhanVien = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdPhong = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdHoaDon = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    TongTienHangChuaChietKhau = table.Column<float>(type: "real", nullable: true),
-                    PTChietKhauHang = table.Column<float>(type: "real", nullable: true),
-                    TongChietKhauHangHoa = table.Column<float>(type: "real", nullable: true),
-                    TongTienHang = table.Column<float>(type: "real", nullable: true),
-                    PTThueHD = table.Column<float>(type: "real", nullable: true),
-                    TongTienThue = table.Column<float>(type: "real", nullable: true),
-                    TongTienHDSauVAT = table.Column<float>(type: "real", nullable: true),
-                    PTGiamGiaHD = table.Column<float>(type: "real", nullable: true),
-                    TongGiamGiaHD = table.Column<float>(type: "real", nullable: true),
-                    ChiPhiTraHang = table.Column<float>(type: "real", nullable: true),
-                    TongThanhToan = table.Column<float>(type: "real", nullable: true),
-                    ChiPhiHD = table.Column<float>(type: "real", nullable: true),
+                    TongTienHangChuaChietKhau = table.Column<double>(type: "float", nullable: true),
+                    PTChietKhauHang = table.Column<double>(type: "float", nullable: true),
+                    TongChietKhauHangHoa = table.Column<double>(type: "float", nullable: true),
+                    TongTienHang = table.Column<double>(type: "float", nullable: true),
+                    PTThueHD = table.Column<double>(type: "float", nullable: true),
+                    TongTienThue = table.Column<double>(type: "float", nullable: true),
+                    TongTienHDSauVAT = table.Column<double>(type: "float", nullable: true),
+                    PTGiamGiaHD = table.Column<double>(type: "float", nullable: true),
+                    TongGiamGiaHD = table.Column<double>(type: "float", nullable: true),
+                    ChiPhiTraHang = table.Column<double>(type: "float", nullable: true),
+                    TongThanhToan = table.Column<double>(type: "float", nullable: true),
+                    ChiPhiHD = table.Column<double>(type: "float", nullable: true),
                     ChiPhiGhiChu = table.Column<string>(name: "ChiPhi_GhiChu", type: "nvarchar(4000)", maxLength: 4000, nullable: true),
-                    DiemGiaoDich = table.Column<float>(type: "real", nullable: true),
+                    DiemGiaoDich = table.Column<double>(type: "float", nullable: true),
                     GhiChuHD = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2079,6 +2080,7 @@ namespace BanHangBeautify.Migrations
                     LapLai = table.Column<bool>(type: "bit", nullable: false),
                     KieuLapLai = table.Column<int>(type: "int", nullable: false),
                     GiaTriLap = table.Column<int>(type: "int", nullable: false),
+                    NgayLamViecTrongTuan = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -2175,7 +2177,6 @@ namespace BanHangBeautify.Migrations
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     IdDonViQuyDoi = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdNhanVien = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdChiNhanh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -2187,12 +2188,6 @@ namespace BanHangBeautify.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DichVu_NhanVien", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DichVu_NhanVien_DM_ChiNhanh_IdChiNhanh",
-                        column: x => x.IdChiNhanh,
-                        principalTable: "DM_ChiNhanh",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_DichVu_NhanVien_DM_DonViQuiDoi_IdDonViQuyDoi",
                         column: x => x.IdDonViQuyDoi,
@@ -2274,7 +2269,7 @@ namespace BanHangBeautify.Migrations
                     IdNhanVien = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdDonViQuiDoi = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LoaiChietKhau = table.Column<byte>(type: "tinyint", nullable: true),
-                    GiaTri = table.Column<float>(type: "real", nullable: true),
+                    GiaTri = table.Column<double>(type: "float", nullable: true),
                     LaPhanTram = table.Column<bool>(type: "bit", nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2443,18 +2438,18 @@ namespace BanHangBeautify.Migrations
                     STT = table.Column<int>(type: "int", nullable: false),
                     IdDonViQuyDoi = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdChiTietHoaDon = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    SoLuong = table.Column<float>(type: "real", nullable: true),
-                    DonGiaTruocCK = table.Column<float>(type: "real", nullable: true),
-                    ThanhTienTruocCK = table.Column<float>(type: "real", nullable: true),
-                    PTChietKhau = table.Column<float>(type: "real", nullable: true),
-                    TienChietKhau = table.Column<float>(type: "real", nullable: true),
-                    DonGiaSauCK = table.Column<float>(type: "real", nullable: true),
-                    ThanhTienSauCK = table.Column<float>(type: "real", nullable: true),
-                    PTThue = table.Column<float>(type: "real", nullable: true),
-                    TienThue = table.Column<float>(type: "real", nullable: true),
-                    DonGiaSauVAT = table.Column<float>(type: "real", nullable: true),
-                    ThanhTienSauVAT = table.Column<float>(type: "real", nullable: true),
-                    TonLuyKe = table.Column<float>(type: "real", nullable: true),
+                    SoLuong = table.Column<double>(type: "float", nullable: true),
+                    DonGiaTruocCK = table.Column<double>(type: "float", nullable: true),
+                    ThanhTienTruocCK = table.Column<double>(type: "float", nullable: true),
+                    PTChietKhau = table.Column<double>(type: "float", nullable: true),
+                    TienChietKhau = table.Column<double>(type: "float", nullable: true),
+                    DonGiaSauCK = table.Column<double>(type: "float", nullable: true),
+                    ThanhTienSauCK = table.Column<double>(type: "float", nullable: true),
+                    PTThue = table.Column<double>(type: "float", nullable: true),
+                    TienThue = table.Column<double>(type: "float", nullable: true),
+                    DonGiaSauVAT = table.Column<double>(type: "float", nullable: true),
+                    ThanhTienSauVAT = table.Column<double>(type: "float", nullable: true),
+                    TonLuyKe = table.Column<double>(type: "float", nullable: true),
                     GhiChu = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: true),
                     TrangThai = table.Column<int>(type: "int", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2538,12 +2533,12 @@ namespace BanHangBeautify.Migrations
                     IdNhanVien = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdTaiKhoanNganHang = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdKhoanThuChi = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    LaPTChiPhiNganHang = table.Column<float>(type: "real", nullable: true),
-                    ChiPhiNganHang = table.Column<float>(type: "real", nullable: true),
-                    ThuPhiTienGui = table.Column<float>(type: "real", nullable: true),
-                    DiemThanhToan = table.Column<float>(type: "real", nullable: true),
+                    LaPTChiPhiNganHang = table.Column<double>(type: "float", nullable: true),
+                    ChiPhiNganHang = table.Column<double>(type: "float", nullable: true),
+                    ThuPhiTienGui = table.Column<double>(type: "float", nullable: true),
+                    DiemThanhToan = table.Column<double>(type: "float", nullable: true),
                     HinhThucThanhToan = table.Column<byte>(type: "tinyint", nullable: false),
-                    TienThu = table.Column<float>(type: "real", nullable: true),
+                    TienThu = table.Column<double>(type: "float", nullable: true),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -2595,8 +2590,9 @@ namespace BanHangBeautify.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TenantId = table.Column<int>(type: "int", nullable: false),
                     IdCaLamViec = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdLichLamViec = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    GiaTri = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdLichLamViec = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NSLichLamViecId = table.Column<Guid>(name: "NS_LichLamViecId", type: "uniqueidentifier", nullable: true),
+                    NgayLamViec = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatorUserId = table.Column<long>(type: "bigint", nullable: true),
                     LastModificationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -2615,8 +2611,8 @@ namespace BanHangBeautify.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_NS_LichLamViec_Ca_NS_LichLamViec_IdLichLamViec",
-                        column: x => x.IdLichLamViec,
+                        name: "FK_NS_LichLamViec_Ca_NS_LichLamViec_NS_LichLamViecId",
+                        column: x => x.NSLichLamViecId,
                         principalTable: "NS_LichLamViec",
                         principalColumn: "Id");
                 });
@@ -2631,8 +2627,8 @@ namespace BanHangBeautify.Migrations
                     IdHoaDon = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdHoaDonChiTiet = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IdQuyHoaDon = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    PTChietKhau = table.Column<float>(type: "real", nullable: true),
-                    TienChietKhau = table.Column<float>(type: "real", nullable: true),
+                    PTChietKhau = table.Column<double>(type: "float", nullable: true),
+                    TienChietKhau = table.Column<double>(type: "float", nullable: true),
                     HeSo = table.Column<float>(type: "real", nullable: true),
                     ChiaDeuChietKhau = table.Column<bool>(type: "bit", nullable: true),
                     TinhHoaHongTruocCK = table.Column<bool>(type: "bit", nullable: true),
@@ -2676,20 +2672,20 @@ namespace BanHangBeautify.Migrations
                 columns: new[] { "Id", "CreationTime", "CreatorUserId", "DeleterUserId", "DeletionTime", "IsDeleted", "LastModificationTime", "LastModifierUserId", "MaLoaiChungTu", "NguoiSua", "NguoiTao", "NguoiXoa", "TenLoaiChungTu", "TenantId", "TrangThai" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(3998), null, null, null, false, null, null, "HD", null, null, null, "Hóa đơn bán", 0, 1 },
-                    { 2, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4002), null, null, null, false, null, null, "GDV", null, null, null, "Gói dịch vụ", 0, 1 },
-                    { 3, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4004), null, null, null, false, null, null, "BG", null, null, null, "Báo giá", 0, 1 },
-                    { 4, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4005), null, null, null, false, null, null, "PNK", null, null, null, "Phiếu nhập kho", 0, 1 },
-                    { 5, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4008), null, null, null, false, null, null, "PXK", null, null, null, "Phiếu xuất kho", 0, 1 },
-                    { 6, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4009), null, null, null, false, null, null, "TH", null, null, null, "Khách trả hàng", 0, 1 },
-                    { 7, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4015), null, null, null, false, null, null, "THNCC", null, null, null, "Trả hàng nhà cung cấp", 0, 1 },
-                    { 8, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4017), null, null, null, false, null, null, "TGT", null, null, null, "Thẻ giá trị", 0, 1 },
-                    { 9, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4019), null, null, null, false, null, null, "PKK", null, null, null, "Phiếu kiểm kê", 0, 1 },
-                    { 10, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4020), null, null, null, false, null, null, "CH", null, null, null, "Chuyển hàng", 0, 1 },
-                    { 11, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4022), null, null, null, false, null, null, "SQPT", null, null, null, "Phiếu thu", 0, 1 },
-                    { 12, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4023), null, null, null, false, null, null, "SQPC", null, null, null, "Phiếu chi", 0, 1 },
-                    { 13, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4025), null, null, null, false, null, null, "DCGV", null, null, null, "Điều chỉnh giá vốn", 0, 1 },
-                    { 14, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(4026), null, null, null, false, null, null, "NH", null, null, null, "Nhận hàng", 0, 1 }
+                    { 1, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3775), null, null, null, false, null, null, "HD", null, null, null, "Hóa đơn bán", null, 1 },
+                    { 2, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3779), null, null, null, false, null, null, "GDV", null, null, null, "Gói dịch vụ", null, 1 },
+                    { 3, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3781), null, null, null, false, null, null, "BG", null, null, null, "Báo giá", null, 1 },
+                    { 4, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3783), null, null, null, false, null, null, "PNK", null, null, null, "Phiếu nhập kho", null, 1 },
+                    { 5, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3784), null, null, null, false, null, null, "PXK", null, null, null, "Phiếu xuất kho", null, 1 },
+                    { 6, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3786), null, null, null, false, null, null, "TH", null, null, null, "Khách trả hàng", null, 1 },
+                    { 7, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3791), null, null, null, false, null, null, "THNCC", null, null, null, "Trả hàng nhà cung cấp", null, 1 },
+                    { 8, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3792), null, null, null, false, null, null, "TGT", null, null, null, "Thẻ giá trị", null, 1 },
+                    { 9, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3794), null, null, null, false, null, null, "PKK", null, null, null, "Phiếu kiểm kê", null, 1 },
+                    { 10, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3795), null, null, null, false, null, null, "CH", null, null, null, "Chuyển hàng", null, 1 },
+                    { 11, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3796), null, null, null, false, null, null, "SQPT", null, null, null, "Phiếu thu", null, 1 },
+                    { 12, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3798), null, null, null, false, null, null, "SQPC", null, null, null, "Phiếu chi", null, 1 },
+                    { 13, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3799), null, null, null, false, null, null, "DCGV", null, null, null, "Điều chỉnh giá vốn", null, 1 },
+                    { 14, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3800), null, null, null, false, null, null, "NH", null, null, null, "Nhận hàng", null, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -2697,9 +2693,9 @@ namespace BanHangBeautify.Migrations
                 columns: new[] { "Id", "CreationTime", "CreatorUserId", "DeleterUserId", "DeletionTime", "IsDeleted", "LastModificationTime", "LastModifierUserId", "MaLoaiHangHoa", "NguoiSua", "NguoiTao", "NguoiXoa", "TenLoaiHangHoa", "TenantId", "TrangThai" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(3608), null, null, null, false, null, null, "HH", null, null, null, "Hàng Hóa", 0, 1 },
-                    { 2, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(3626), null, null, null, false, null, null, "DV", null, null, null, "Dịch Vụ", 0, 1 },
-                    { 3, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(3628), null, null, null, false, null, null, "CB", null, null, null, "Combo", 0, 1 }
+                    { 1, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3326), null, null, null, false, null, null, "HH", null, null, null, "Hàng Hóa", null, 1 },
+                    { 2, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3352), null, null, null, false, null, null, "DV", null, null, null, "Dịch Vụ", null, 1 },
+                    { 3, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3354), null, null, null, false, null, null, "CB", null, null, null, "Combo", null, 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -2707,8 +2703,8 @@ namespace BanHangBeautify.Migrations
                 columns: new[] { "Id", "CreationTime", "CreatorUserId", "DeleterUserId", "DeletionTime", "IsDeleted", "LastModificationTime", "LastModifierUserId", "MaLoaiKhachHang", "NguoiSua", "NguoiTao", "NguoiXoa", "TenLoaiKhachHang", "TenantId", "TrangThai" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(3946), null, null, null, false, null, null, "KH", null, null, null, "Khách hàng", 0, 1 },
-                    { 2, new DateTime(2023, 5, 23, 14, 32, 19, 457, DateTimeKind.Local).AddTicks(3970), null, null, null, false, null, null, "NCC", null, null, null, "Nhà cung cấp", 0, 1 }
+                    { 1, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3735), null, null, null, false, null, null, "KH", null, null, null, "Khách hàng", null, 1 },
+                    { 2, new DateTime(2023, 9, 8, 14, 17, 24, 841, DateTimeKind.Local).AddTicks(3749), null, null, null, false, null, null, "NCC", null, null, null, "Nhà cung cấp", null, 1 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -3179,11 +3175,6 @@ namespace BanHangBeautify.Migrations
                 column: "IdDonViQuiDoi");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DichVu_NhanVien_IdChiNhanh",
-                table: "DichVu_NhanVien",
-                column: "IdChiNhanh");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DichVu_NhanVien_IdDonViQuyDoi",
                 table: "DichVu_NhanVien",
                 column: "IdDonViQuyDoi");
@@ -3324,6 +3315,11 @@ namespace BanHangBeautify.Migrations
                 column: "IdKhachHang");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NS_CaLamViec_IdChiNhanh",
+                table: "NS_CaLamViec",
+                column: "IdChiNhanh");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_NS_ChietKhauDichVu_IdChiNhanh",
                 table: "NS_ChietKhauDichVu",
                 column: "IdChiNhanh");
@@ -3369,9 +3365,9 @@ namespace BanHangBeautify.Migrations
                 column: "IdCaLamViec");
 
             migrationBuilder.CreateIndex(
-                name: "IX_NS_LichLamViec_Ca_IdLichLamViec",
+                name: "IX_NS_LichLamViec_Ca_NS_LichLamViecId",
                 table: "NS_LichLamViec_Ca",
-                column: "IdLichLamViec");
+                column: "NS_LichLamViecId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NS_NhanVien_IdChucVu",
