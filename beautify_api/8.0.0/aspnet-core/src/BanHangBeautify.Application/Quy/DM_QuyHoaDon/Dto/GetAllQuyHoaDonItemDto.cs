@@ -6,6 +6,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
     {
         public Guid Id { set; get; }
         public Guid? IdChiNhanh { set; get; }
+        public int? IdLoaiChungTu { set; get; } = 11;// used to check print many
         public Guid? IdHoaDonLienQuan { set; get; } // get để check bên ngoài giao diện (phiếu nào thu/chi từ hóa đơn)
         public string LoaiPhieu { get; set; }// 11.thu/12.chi
         public string MaHoaDon { get; set; }
