@@ -68,7 +68,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.Id = Guid.NewGuid();
-            khachHang.MaKhachHang = "KH00" + checkMa.Count;
+            khachHang.MaKhachHang = "KH00" + (checkMa.Count + 1).ToString();
             khachHang.CreationTime = DateTime.Now;
             khachHang.GioiTinhNam = dto.GioiTinh;
             khachHang.CreatorUserId = AbpSession.UserId;

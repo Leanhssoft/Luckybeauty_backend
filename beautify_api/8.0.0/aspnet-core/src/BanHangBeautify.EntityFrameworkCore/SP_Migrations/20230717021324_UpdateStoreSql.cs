@@ -11,29 +11,7 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "NguoiSua",
-                table: "DM_NhomHangHoa");
-
-            migrationBuilder.DropColumn(
-                name: "NguoiTao",
-                table: "DM_NhomHangHoa");
-
-            migrationBuilder.DropColumn(
-                name: "NguoiXoa",
-                table: "DM_NhomHangHoa");
-
-            migrationBuilder.DropColumn(
-                name: "NguoiSua",
-                table: "DM_NguonKhach");
-
-            migrationBuilder.DropColumn(
-                name: "NguoiTao",
-                table: "DM_NguonKhach");
-
-            migrationBuilder.DropColumn(
-                name: "NguoiXoa",
-                table: "DM_NguonKhach");
+            
             migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
 			@TenantId int =7,
 			@IdChiNhanhs nvarchar(max)=null,
@@ -185,41 +163,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<Guid>(
-                name: "NguoiSua",
-                table: "DM_NhomHangHoa",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "NguoiTao",
-                table: "DM_NhomHangHoa",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "NguoiXoa",
-                table: "DM_NhomHangHoa",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "NguoiSua",
-                table: "DM_NguonKhach",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "NguoiTao",
-                table: "DM_NguonKhach",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "NguoiXoa",
-                table: "DM_NguonKhach",
-                type: "uniqueidentifier",
-                nullable: true);
+           
         }
     }
 }

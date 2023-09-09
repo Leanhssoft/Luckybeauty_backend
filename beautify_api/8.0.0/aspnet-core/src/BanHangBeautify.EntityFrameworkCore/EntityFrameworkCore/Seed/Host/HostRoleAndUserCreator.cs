@@ -5,9 +5,11 @@ using Abp.MultiTenancy;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System;
 using System.Linq;
 
 namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
@@ -78,7 +80,8 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
                     Surname = "admin",
                     EmailAddress = "admin@aspnetboilerplate.com",
                     IsEmailConfirmed = true,
-                    IsActive = true
+                    IsActive = true,
+                    IsAdmin= true
                 };
 
                 user.Password = new PasswordHasher<User>(new OptionsWrapper<PasswordHasherOptions>(new PasswordHasherOptions())).HashPassword(user, "123qwe");
@@ -90,9 +93,34 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
                 // Assign Admin role to admin user
                 _context.UserRoles.Add(new UserRole(null, adminUserForHost.Id, adminRoleForHost.Id));
                 _context.SaveChanges();
-
+                
                 _context.SaveChanges();
             }
+            var congTyExist = _context.HT_CongTy.IgnoreQueryFilters().FirstOrDefault();
+            if (congTyExist == null)
+            {
+                var congTy = new HT_CongTy();
+                congTy.CreationTime = DateTime.Now;
+                congTy.IsDeleted = false;
+                congTy.Id = Guid.NewGuid();
+                congTy.TenCongTy = "HOST";
+                congTy.TenantId = 1;
+                _context.HT_CongTy.Add(congTy);
+                _context.SaveChanges();
+                var chiNhanhExist = _context.DM_ChiNhanh.IgnoreQueryFilters().FirstOrDefault();
+                if (chiNhanhExist==null)
+                {
+                    DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
+                    chiNhanh.Id = Guid.NewGuid();
+                    chiNhanh.IdCongTy = congTy.Id;
+                    chiNhanh.TenChiNhanh = congTy.TenCongTy;
+                    chiNhanh.IsDeleted = false;
+                    chiNhanh.TenantId = 1;
+                    _context.DM_ChiNhanh.Add(chiNhanh);
+                    _context.SaveChanges();
+                }
+            }
+
         }
     }
 }
