@@ -38,7 +38,7 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaRepository;
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
         IRepository<HT_CongTy, Guid> _congTyRepository;
-        IRepository<DM_KhachHang,Guid> _dmKhachHangRepository;
+        IRepository<DM_KhachHang, Guid> _dmKhachHangRepository;
         private readonly IAppNotifier _appNotifier;
         INotificationAppService _notificationAppService;
         public OnlineBookingAppService(
@@ -55,7 +55,7 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<HT_CongTy, Guid> congTyRepository,
             IAppNotifier appNotifier,
             INotificationAppService notificationAppService,
-            IRepository<DM_KhachHang,Guid> khachHangRepository
+            IRepository<DM_KhachHang, Guid> khachHangRepository
             )
         {
             _tenantRepository = tenantRepository;
@@ -419,7 +419,7 @@ namespace BanHangBeautify.DatLichOnline
                     _bookingServiceRepository.Insert(bookingService);
                     await CurrentUnitOfWork.SaveChangesAsync();
                     var listUser = await (from us in UserManager.Users
-                                      select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+                                          select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
                     await _notificationAppService.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
                     result.Message = "Đặt lịch thành công!";
                     result.Status = "success";
@@ -481,29 +481,60 @@ namespace BanHangBeautify.DatLichOnline
         public async Task<List<AvailableTime>> GetAviableTime(PagedRequestAvailableTime input)
         {
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == input.TenantName);
-           
-                List<AvailableTime> times = new List<AvailableTime>();
-                using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
+
+            List<AvailableTime> times = new List<AvailableTime>();
+            using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
+            {
+                var nhanVien = _bookingNhanVienRepository.GetAll().Where(
+                        x => x.IdNhanVien == input.IdNhanVien &&
+                        x.TenantId == tenant.Id && x.IsDeleted == false).ToList();
+                var appointments = _bookingRepository.GetAll().Where(x => nhanVien.Select(z => z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date && x.IsDeleted == false).ToList();
+                var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IsDeleted == false).ToList();
+                var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date == input.DateBooking.Date && x.IsDeleted == false).ToList();
+                var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id) && x.IsDeleted == false).ToList();
+                foreach (var x in caLamViec)
                 {
-                    var nhanVien = _bookingNhanVienRepository.GetAll().Where(
-                            x => x.IdNhanVien == input.IdNhanVien &&
-                            x.TenantId == tenant.Id && x.IsDeleted == false).ToList();
-                    var appointments = _bookingRepository.GetAll().Where(x => nhanVien.Select(z => z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date &&x.IsDeleted==false).ToList();
-                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IsDeleted==false).ToList();
-                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date== input.DateBooking.Date&& x.IsDeleted==false).ToList();
-                    var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id) && x.IsDeleted==false).ToList();
-                    foreach (var x in caLamViec)
+                    var gioVaoStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioVao.ToString("HH:mm");
+                    var startTime = DateTime.Parse(gioVaoStr);
+                    var gioRaStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioRa.ToString("HH:mm");
+                    var endTime = DateTime.Parse(gioRaStr);
+                    var currentTime = startTime;
+                    while (currentTime.AddMinutes(input.ServiceTime) <= endTime)
                     {
-                        var gioVaoStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioVao.ToString("HH:mm");
-                        var startTime = DateTime.Parse(gioVaoStr);
-                        var gioRaStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioRa.ToString("HH:mm");
-                        var endTime = DateTime.Parse(gioRaStr);
-                        var currentTime = startTime;
-                        while (currentTime.AddMinutes(input.ServiceTime) <= endTime)
+                        AvailableTime time = new AvailableTime();
+                        bool isAvailableTime = true;
+                        time.Time = currentTime.ToString("HH:mm");
+                        if (x.LaNghiGiuaCa == true)
                         {
-                            AvailableTime time = new AvailableTime();
-                            bool isAvailableTime = true;
-                            time.Time = currentTime.ToString("HH:mm");
+                            var nghiTuStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioNghiTu.Value.ToString("HH:mm");
+                            var nghiTu = DateTime.Parse(nghiTuStr);
+                            var nghiDenStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioNghiDen.Value.ToString("HH:mm");
+                            var nghiDen = DateTime.Parse(nghiDenStr);
+                            if (currentTime < DateTime.Now)
+                            {
+                                isAvailableTime = false;
+                            }
+                            else if (currentTime >= nghiTu && currentTime <= nghiDen)
+                            {
+                                isAvailableTime = false;
+                            }
+                            else
+                            {
+                                foreach (var appointment in appointments)
+                                {
+                                    if ((currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime))
+                                    {
+                                        isAvailableTime = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            time.IsAvailableTime = isAvailableTime;
+                            times.Add(time);
+                            currentTime = currentTime.AddMinutes(input.ServiceTime);
+                        }
+                        else
+                        {
                             if (currentTime < DateTime.Now)
                             {
                                 isAvailableTime = false;
@@ -519,13 +550,14 @@ namespace BanHangBeautify.DatLichOnline
                                     }
                                 }
                             }
-                            
                             time.IsAvailableTime = isAvailableTime;
                             times.Add(time);
                             currentTime = currentTime.AddMinutes(input.ServiceTime);
                         }
                     }
+
                 }
+            }
             return times.OrderByDescending(x => x.Time).Reverse().ToList();
         }
 

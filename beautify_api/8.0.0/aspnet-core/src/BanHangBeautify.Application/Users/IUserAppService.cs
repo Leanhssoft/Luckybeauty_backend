@@ -12,6 +12,5 @@ namespace BanHangBeautify.Users
         Task Activate(EntityDto<long> user);
         Task<ListResultDto<RoleDto>> GetRoles();
         Task ChangeLanguage(ChangeUserLanguageDto input);
-        Task<ExecuteResultDto> ChangeUserPassword(ChangePasswordDto input);
     }
 }

@@ -106,7 +106,7 @@ namespace BanHangBeautify.Users
         }
         [HttpPost]
         public async Task<UserDto> UpdateUser(UpdateUserDto input)
-        {
+            {
             CheckUpdatePermission();
             var user = await _userManager.FindByIdAsync(input.Id.ToString());
             //var user = await _userManager.GetUserByIdAsync(input.Id);
@@ -286,40 +286,6 @@ namespace BanHangBeautify.Users
             }
             return new ProfileDto();
         }
-        [HttpPost]
-        public async Task<bool> UpdateProfile(ProfileDto input)
-        {
-            var user = _userManager.GetUserById(input.Id);
-            if (user == null)
-            {
-                return false;
-            }
-            user.Name = input.Name;
-            user.Surname = input.Surname;
-            user.PhoneNumber = input.PhoneNumber;
-            user.EmailAddress = input.EmailAddress;
-            if (user.NhanSuId != null)
-            {
-                var nhanSu = await _nhanVienRepository.FirstOrDefaultAsync(x => x.Id == input.NhanSuId);
-                if (nhanSu != null)
-                {
-                    nhanSu.Avatar = input.Avatar;
-                    nhanSu.SoDienThoai = input.PhoneNumber;
-                    nhanSu.Ho = input.Name;
-                    nhanSu.TenLot = input.Surname;
-                    nhanSu.TenNhanVien = nhanSu.Ho + " " + nhanSu.TenLot;
-                    nhanSu.CCCD = input.CCCD;
-                    nhanSu.NgayCap = input.NgayCap;
-                    if (!string.IsNullOrEmpty(input.NgaySinh))
-                    {
-                        nhanSu.NgaySinh = DateTime.Parse(input.NgaySinh);
-                    }
-                    await _nhanVienRepository.UpdateAsync(nhanSu);
-                }
-            }
-            await _userManager.UpdateAsync(user);
-            return true;
-        }
         public async Task<bool> ResetPassword(ResetPasswordDto input)
         {
             if (_abpSession.UserId == null)
@@ -354,40 +320,6 @@ namespace BanHangBeautify.Users
 
             return true;
         }
-        public async Task<ExecuteResultDto> ChangeUserPassword(ChangePasswordDto input)
-        {
-            ExecuteResultDto result = new ExecuteResultDto();
-            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
-
-            var user = await _userManager.FindByIdAsync(AbpSession.GetUserId().ToString());
-            if (user == null)
-            {
-                result.Status = "error";
-                result.Message = "Người dùng không tồn tại!";
-            }
-            if (await _userManager.CheckPasswordAsync(user, input.CurrentPassword))
-            {
-                var check = await _userManager.ChangePasswordAsync(user, input.NewPassword);
-                if (check.Succeeded)
-                {
-                    result.Status = "success";
-                    result.Message = "Thay đổi mật khẩu thành công!";
-                }
-                else
-                {
-                    result.Status = "error";
-                    result.Message = string.Join(",", check.Errors.Select(x => x.Description).ToList());
-                }
-            }
-            else
-            {
-                result.Status = "error";
-                result.Message = "Mật khẩu hiện tại không đúng vui lòng kiểm tra lại";
-            }
-
-            return result;
-        }
-
     }
 }
 

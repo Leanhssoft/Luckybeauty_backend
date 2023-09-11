@@ -18,6 +18,7 @@ namespace BanHangBeautify.Entities
         public string TenCa { set; get; }
         public DateTime GioVao { set; get; }
         public DateTime GioRa { set; get; }
+        public bool LaNghiGiuaCa { set; get; }
         public DateTime? GioNghiTu { set; get; }
         public DateTime? GioNghiDen { set; get; }
         public float TongGioCong { set; get; }

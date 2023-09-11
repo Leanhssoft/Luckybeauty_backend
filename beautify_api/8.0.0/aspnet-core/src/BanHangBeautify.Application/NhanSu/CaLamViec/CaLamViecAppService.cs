@@ -54,9 +54,23 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
             data.TrangThai = 0;
-            data.GioVao = DateTime.Parse(dto.GioVao.ToString());
-            data.GioRa = DateTime.Parse(dto.GioRa.ToString());
-            data.TongGioCong = (float)(data.GioRa.Subtract(data.GioVao).TotalMinutes / 60);
+            data.LaNghiGiuaCa = data.LaNghiGiuaCa== true? true: false;
+            if (dto.LaNghiGiuaCa==true&& !string.IsNullOrEmpty(dto.GioNghiTu)&& !string.IsNullOrEmpty(dto.GioNghiDen))
+            {
+                data.GioVao = DateTime.Parse(dto.GioVao.ToString());
+                data.GioRa = DateTime.Parse(dto.GioRa.ToString());
+                data.GioNghiTu = DateTime.Parse(dto.GioNghiTu.ToString());
+                data.GioNghiDen = DateTime.Parse(dto.GioNghiDen.ToString());
+                var thoiGianNghi = (float)(data.GioNghiDen.Value.Subtract(data.GioNghiTu.Value).TotalMinutes /60);
+                data.TongGioCong = (float)(data.GioRa.Subtract(data.GioVao).TotalMinutes / 60) - thoiGianNghi;
+            }
+            else
+            {
+                data.GioVao = DateTime.Parse(dto.GioVao.ToString());
+                data.GioRa = DateTime.Parse(dto.GioRa.ToString());
+                data.TongGioCong = (float)(data.GioRa.Subtract(data.GioVao).TotalMinutes / 60);
+            }
+            
             data.CreationTime = DateTime.Now;
             var result = ObjectMapper.Map<CaLamViecDto>(data);
             await _repository.InsertAsync(data);
@@ -70,9 +84,23 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             data.IdChiNhanh = dto.IdChiNhanh;
             data.LastModifierUserId = AbpSession.UserId;
             data.TrangThai = 0;
-            data.GioVao = DateTime.Parse(dto.GioVao.ToString());
-            data.GioRa = DateTime.Parse(dto.GioRa.ToString());
-            data.TongGioCong = (float)(data.GioRa.Subtract(data.GioVao).TotalMinutes / 60);
+            data.LaNghiGiuaCa = dto.LaNghiGiuaCa;
+            if (dto.LaNghiGiuaCa == true && !string.IsNullOrEmpty(dto.GioNghiTu) && !string.IsNullOrEmpty(dto.GioNghiDen))
+            {
+                data.GioVao = DateTime.Parse(dto.GioVao.ToString());
+                data.GioRa = DateTime.Parse(dto.GioRa.ToString());
+                data.GioNghiTu = DateTime.Parse(dto.GioNghiTu.ToString());
+                data.GioNghiDen = DateTime.Parse(dto.GioNghiDen.ToString());
+                var thoiGianNghi =(float)(data.GioNghiDen.Value.Subtract(data.GioNghiTu.Value).TotalMinutes/60);
+                data.TongGioCong = (float)(data.GioRa.Subtract(data.GioVao).TotalMinutes / 60) - thoiGianNghi;
+            }
+            else
+            {
+                data.GioVao = DateTime.Parse(dto.GioVao.ToString());
+                data.GioRa = DateTime.Parse(dto.GioRa.ToString());
+                data.TongGioCong = (float)(data.GioRa.Subtract(data.GioVao).TotalMinutes / 60);
+            }
+            
             data.LastModificationTime = DateTime.Now;
             var result = ObjectMapper.Map<CaLamViecDto>(data);
             await _repository.UpdateAsync(data);
@@ -102,6 +130,9 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                 var data = ObjectMapper.Map<CreateOrEditCaLamViecDto>(caLamViec);
                 data.GioVao = caLamViec.GioVao.ToString("HH:mm");
                 data.GioRa = caLamViec.GioRa.ToString("HH:mm");
+                data.GioNghiTu = caLamViec.GioNghiTu.HasValue? caLamViec.GioNghiTu.Value.ToString("HH:mm") : null;
+                data.GioNghiDen = caLamViec.GioNghiDen.HasValue? caLamViec.GioNghiDen.Value.ToString("HH:mm"): null;
+                data.LaNghiGiuaCa = caLamViec.LaNghiGiuaCa;
                 return data;
             }
             return new CreateOrEditCaLamViecDto();
