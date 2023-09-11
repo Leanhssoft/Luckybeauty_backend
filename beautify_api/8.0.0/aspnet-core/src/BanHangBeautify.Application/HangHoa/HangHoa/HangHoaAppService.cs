@@ -148,6 +148,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TenHangHoa_KhongDau = dto.TenHangHoa_KhongDau;
+            hangHoa.SoPhutThucHien = dto.SoPhutThucHien;
             hangHoa.Image = dto.Image;
             hangHoa.MoTa = dto.MoTa;
             hangHoa.TrangThai = dto.TrangThai;
