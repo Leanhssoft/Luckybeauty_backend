@@ -546,11 +546,12 @@ BEGIN
 			declare @tblMaHangHoa table(MaLoaiHang varchar(5), MaxVal float)
 			insert into @tblMaHangHoa
 			exec dbo.SpGetProductCode @TenantId, @IdLoaiHangHoa
-
+			
 			declare @max float, @maloaihang varchar(5)
 			select top 1 @maloaihang = MaLoaiHang, @max = MaxVal from @tblMaHangHoa
 
-			set @MaHangHoa = concat(@maloaihang, iif(@max < 10, '0'+ @max, @max)) --- nếu mã <10: thêm số 0 ở đầu		
+			declare @maxFormat NVARCHAR(max)= FORMAT(@max, 'F0');
+			set @MaHangHoa = concat(@maloaihang, iif(@max < 10, '0'+ @maxFormat, @maxFormat)) --- nếu mã <10: thêm số 0 ở đầu		
 		end
 	else
 		begin		
