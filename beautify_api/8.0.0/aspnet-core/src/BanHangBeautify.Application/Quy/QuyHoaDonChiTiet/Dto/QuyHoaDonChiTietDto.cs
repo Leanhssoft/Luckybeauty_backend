@@ -17,5 +17,6 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto
         public double? DiemThanhToan { get; set; } = 0;
         public byte HinhThucThanhToan { get; set; } = 1;
         public double? TienThu { get; set; } = 0;
+        public string MaHoaDonLienQuan { get; set; }
     }
 }

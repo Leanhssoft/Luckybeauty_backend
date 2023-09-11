@@ -4,6 +4,7 @@ using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
+using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -82,6 +83,25 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
                     }
                 }
                 return new List<QuyHoaDonViewItemDto>();
+            }
+        }
+        public async Task<List<QuyHoaDonChiTietDto>> GetQuyChiTiet_byIQuyHoaDon(Guid idQuyHoaDon)
+        {
+            using (var command = CreateCommand("spGetQuyChiTiet_byIQuyHoaDon"))
+            {
+                command.Parameters.Add(new SqlParameter("@IdQuyHoaDon", idQuyHoaDon));
+                using (var dataReader = await command.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<QuyHoaDonChiTietDto>(ds.Tables[0]);
+                        return data;
+                    }
+                }
+                return new List<QuyHoaDonChiTietDto>();
             }
         }
     }

@@ -179,6 +179,24 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return new QuyHoaDonDto();
         }
+
+        [HttpPost]
+        public async Task DeleteMultiple_QuyHoaDon(List<Guid>lstId)
+        {
+            _quyHoaDon.GetAllList(x => lstId.Contains(x.Id)).ToList().ForEach(x =>
+            {
+                x.TrangThai = 0;
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+            });
+            _quyHoaDonChiTiet.GetAllList(x => lstId.Contains(x.IdQuyHoaDon)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+            });
+        }
         [HttpGet]
         public async Task HuyPhieuThuChi_ofHoaDonLienQuan(Guid idHoaDonLienQuan)
         {
@@ -197,6 +215,8 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                 lstQCT.ForEach(x => { x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; });
             }
         }
+
+        [HttpGet]
         public async Task<CreateOrEditQuyHoaDonDto> GetForEdit(Guid id)
         {
             var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == id);
@@ -212,6 +232,12 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                 return result;
             }
             return new CreateOrEditQuyHoaDonDto();
+        }
+        [HttpGet]
+        public async Task<List<QuyHoaDonChiTietDto>> GetQuyChiTiet_byIQuyHoaDon(Guid idQuyHoaDon)
+        {
+            var ctQuy = await _repoQuyHD.GetQuyChiTiet_byIQuyHoaDon(idQuyHoaDon);
+            return ctQuy;
         }
         public async Task<List<QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoadonLienQuan)
         {

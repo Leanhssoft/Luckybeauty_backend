@@ -148,6 +148,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             hangHoa.IdLoaiHangHoa = dto.IdLoaiHangHoa;
             hangHoa.TenHangHoa = dto.TenHangHoa;
             hangHoa.TenHangHoa_KhongDau = dto.TenHangHoa_KhongDau;
+            hangHoa.SoPhutThucHien = dto.SoPhutThucHien;
             hangHoa.Image = dto.Image;
             hangHoa.MoTa = dto.MoTa;
             hangHoa.TrangThai = dto.TrangThai;
@@ -478,13 +479,17 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     //string loaiHang = worksheet.Cells[i, 4].Value?.ToString().Trim(); (mặc định all dịch vụ)
                     string giaban = worksheet.Cells[i, 4].Value?.ToString();
                     string dataType_giaBan = worksheet.Cells[i, 4].Value?.GetType().ToString();
+                    string sophutThucHien = worksheet.Cells[i, 5].Value?.ToString();
+                    string dataType_sophut = worksheet.Cells[i, 5].Value?.GetType().ToString();
 
                     // nếu dòng trống: bỏ qua và nhảy sang dòng tiếp theo
                     if (!string.IsNullOrEmpty(tenNhomHangHoa)
                             || !string.IsNullOrEmpty(maHangHoa)
                             || !string.IsNullOrEmpty(tenHangHoa)
                            //|| !string.IsNullOrEmpty(loaiHang)
-                           || !string.IsNullOrEmpty(giaban))
+                           || !string.IsNullOrEmpty(giaban)
+                           || !string.IsNullOrEmpty(sophutThucHien)
+                           )
                     {
                         rowEmpty = false;
                     }
@@ -563,6 +568,21 @@ namespace BanHangBeautify.HangHoa.HangHoa
                             });
                         }
                     }
+                    if (!string.IsNullOrEmpty(sophutThucHien))
+                    {
+                        bool isNumber = Excel_CheckNumber(dataType_sophut);
+                        if (!isNumber)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Số phút thực hiện",
+                                GiaTriDuLieu = sophutThucHien,
+                                DienGiai = "Số phút thực hiện không phải dạng số",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
                 }
 
                 #endregion
@@ -611,12 +631,16 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     //string loaiHang = worksheet.Cells[i, 4].Value?.ToString().Trim();
                     string giaban = worksheet.Cells[i, 4].Value?.ToString();
                     double giaBanNew = !string.IsNullOrEmpty(giaban) ? double.Parse(giaban) : 0;
+                    string sophutThucHien = worksheet.Cells[i, 5].Value?.ToString();
+                    float sophutThucHienNew = !string.IsNullOrEmpty(sophutThucHien) ? float.Parse(sophutThucHien) : 0;
 
                     if (!string.IsNullOrEmpty(maHangHoa)
                         || !string.IsNullOrEmpty(maHangHoa)
                         || !string.IsNullOrEmpty(tenHangHoa)
-                           //|| !string.IsNullOrEmpty(loaiHang)
-                           || !string.IsNullOrEmpty(giaban))
+                        //|| !string.IsNullOrEmpty(loaiHang)
+                        || !string.IsNullOrEmpty(giaban)
+                        || !string.IsNullOrEmpty(sophutThucHien)
+                           )
                     {
                         rowEmpty = false;
                     }
@@ -629,6 +653,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                         IdLoaiHangHoa = 2,
                         //IdLoaiHangHoa = loaiHang == "HH" ? 1 : loaiHang == "DV" ? 2 : 3,
                         GiaBan = giaBanNew,
+                        SoPhutThucHien = sophutThucHienNew,
                         GhiChu = worksheet.Cells[i, 6].Value?.ToString().Trim(),
                     };
                     try
