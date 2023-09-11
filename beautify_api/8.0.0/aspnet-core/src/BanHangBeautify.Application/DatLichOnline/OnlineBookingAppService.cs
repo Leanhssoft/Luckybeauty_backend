@@ -38,6 +38,7 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaRepository;
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
         IRepository<HT_CongTy, Guid> _congTyRepository;
+        IRepository<DM_KhachHang,Guid> _dmKhachHangRepository;
         private readonly IAppNotifier _appNotifier;
         INotificationAppService _notificationAppService;
         public OnlineBookingAppService(
@@ -52,7 +53,9 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaRepository,
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
             IRepository<HT_CongTy, Guid> congTyRepository,
-            IAppNotifier appNotifier, INotificationAppService notificationAppService
+            IAppNotifier appNotifier,
+            INotificationAppService notificationAppService,
+            IRepository<DM_KhachHang,Guid> khachHangRepository
             )
         {
             _tenantRepository = tenantRepository;
@@ -68,6 +71,7 @@ namespace BanHangBeautify.DatLichOnline
             _congTyRepository = congTyRepository;
             _appNotifier = appNotifier;
             _notificationAppService = notificationAppService;
+            _dmKhachHangRepository = khachHangRepository;
         }
         public List<string> GetAllTenant()
         {
@@ -371,10 +375,21 @@ namespace BanHangBeautify.DatLichOnline
                 using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
                 {
                     await CurrentUnitOfWork.SaveChangesAsync();
+                    DM_KhachHang kh = new DM_KhachHang();
+                    kh.Id = Guid.NewGuid();
+                    var checkMa = _dmKhachHangRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
+                    kh.MaKhachHang = "KH00" + (checkMa.Count + 1).ToString();
+                    kh.TenantId = tenant.Id;
+                    kh.TenKhachHang = data.TenKhachHang;
+                    kh.SoDienThoai = data.SoDienThoai;
+                    kh.IsDeleted = false;
+                    kh.CreationTime = DateTime.Now;
+                    await _dmKhachHangRepository.InsertAsync(kh);
                     Booking bk = new Booking();
                     bk.Id = Guid.NewGuid();
                     bk.IdChiNhanh = data.IdChiNhanh;
                     bk.BookingDate = DateTime.Parse(data.BookingDate);
+                    bk.IdKhachHang = kh.Id;
                     var startTime = bk.BookingDate.ToString("yyyy-MM-dd") + " " + data.StartTime;
                     bk.StartTime = DateTime.Parse(startTime);
                     bk.EndTime = bk.StartTime.AddMinutes(data.SoPhutThucHien);
@@ -386,6 +401,7 @@ namespace BanHangBeautify.DatLichOnline
                     bk.TenantId = tenant.Id;
                     bk.CreationTime = DateTime.Now;
                     bk.IsDeleted = false;
+
                     _bookingRepository.Insert(bk);
                     var idDichVu = _donViQuiDoiRepository.FirstOrDefault(x => x.Id == data.IdDichVu).IdHangHoa;
                     var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
@@ -472,10 +488,10 @@ namespace BanHangBeautify.DatLichOnline
                     var nhanVien = _bookingNhanVienRepository.GetAll().Where(
                             x => x.IdNhanVien == input.IdNhanVien &&
                             x.TenantId == tenant.Id && x.IsDeleted == false).ToList();
-                    var appointments = _bookingRepository.GetAll().Where(x => nhanVien.Select(z => z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date).ToList();
-                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien).ToList();
-                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date== input.DateBooking.Date).ToList();
-                    var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id)).ToList();
+                    var appointments = _bookingRepository.GetAll().Where(x => nhanVien.Select(z => z.IdBooking).Contains(x.Id) && x.BookingDate.Date == input.DateBooking.Date &&x.IsDeleted==false).ToList();
+                    var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IsDeleted==false).ToList();
+                    var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date== input.DateBooking.Date&& x.IsDeleted==false).ToList();
+                    var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id) && x.IsDeleted==false).ToList();
                     foreach (var x in caLamViec)
                     {
                         var gioVaoStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioVao.ToString("HH:mm");

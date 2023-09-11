@@ -119,10 +119,13 @@ namespace BanHangBeautify.Users
             user.IsActive = input.IsActive;
             user.LastModificationTime = DateTime.Now;
             user.LastModifierUserId = AbpSession.UserId;
+            
             if (!string.IsNullOrEmpty(input.Password))
             {
-                CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
-                
+                if (input.Password != user.Password)
+                {
+                    CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
+                }
             }
             
             await _userManager.ChangeEmailAsync(user, input.EmailAddress, null);

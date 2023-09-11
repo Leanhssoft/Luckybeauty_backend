@@ -96,7 +96,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
                 
                 _context.SaveChanges();
             }
-            var congTyExist = _context.HT_CongTy.IgnoreQueryFilters().FirstOrDefault();
+            var congTyExist = _context.HT_CongTy.IgnoreQueryFilters().FirstOrDefault(x=>x.TenantId==1);
             if (congTyExist == null)
             {
                 var congTy = new HT_CongTy();
@@ -107,7 +107,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
                 congTy.TenantId = 1;
                 _context.HT_CongTy.Add(congTy);
                 _context.SaveChanges();
-                var chiNhanhExist = _context.DM_ChiNhanh.IgnoreQueryFilters().FirstOrDefault();
+                var chiNhanhExist = _context.DM_ChiNhanh.IgnoreQueryFilters().FirstOrDefault(x => x.TenantId == 1&& x.IdCongTy== congTy.Id);
                 if (chiNhanhExist==null)
                 {
                     DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
