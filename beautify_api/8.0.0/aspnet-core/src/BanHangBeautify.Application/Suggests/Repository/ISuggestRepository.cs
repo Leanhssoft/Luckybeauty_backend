@@ -11,5 +11,6 @@ namespace BanHangBeautify.Suggests.Repository
         Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienThucHienDichVu(int tenantId, Guid idChiNhanh, Guid? idNhanVien);
         Task<List<SuggestEmpolyeeExecuteServiceDto>> SuggestNhanVienByIdDichVu(int tenantId, Guid idChiNhanh, Guid idDichVu);
         Task<List<SuggestNhanSu>> SuggestNhanSu(int tenantId,Guid idChiNhanh);
+        Task<List<SuggestLoaiChungTu>> SuggestLoaiChungTu();
     }
 }

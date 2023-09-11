@@ -32,6 +32,7 @@ namespace BanHangBeautify.Suggests
         private readonly IRepository<NS_CaLamViec, Guid> _caLamViecRepository;//
         private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;
         private readonly IRepository<DM_NhomHangHoa, Guid> _nhomHangHoaRepository;
+        private readonly IRepository<DM_LoaiChungTu,int> _loaiChungTuRepository;
         private readonly ISuggestRepository _suggestRepository;
         public SuggestAppService(
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
@@ -48,6 +49,7 @@ namespace BanHangBeautify.Suggests
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
             IRepository<DM_PhongBan, Guid> phongBanRepository,
             IRepository<DM_NhomHangHoa,Guid> nhomHangHoaRepository,
+            IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
             ISuggestRepository suggestRepository
             )
         {
@@ -351,6 +353,24 @@ namespace BanHangBeautify.Suggests
             }
             return result;
 
+        }
+        [HttpPost]
+        public async Task<List<SuggestLoaiChungTu>> SuggestLoaiChungTus()
+        {
+            List<SuggestLoaiChungTu> result = new List<SuggestLoaiChungTu>();
+            var listLoaiChungTu = await _suggestRepository.SuggestLoaiChungTu();
+            if (listLoaiChungTu != null && listLoaiChungTu.Count() > 0)
+            {
+                foreach (var item in listLoaiChungTu)
+                {
+                    SuggestLoaiChungTu rdo = new SuggestLoaiChungTu();
+                    rdo.Id = item.Id;
+                    rdo.TenLoaiChungTu = item.TenLoaiChungTu;
+                    result.Add(rdo);
+                }
+            }
+
+            return result;
         }
     }
 }

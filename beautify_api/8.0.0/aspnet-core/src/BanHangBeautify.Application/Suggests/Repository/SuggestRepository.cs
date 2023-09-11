@@ -19,6 +19,28 @@ namespace BanHangBeautify.Suggests.Repository
         {
         }
 
+        public async Task<List<SuggestLoaiChungTu>> SuggestLoaiChungTu()
+        {
+            string query = "SELECT Id,TenLoaiChungTu FROM DM_LoaiChungTu where IsDeleted = 0;";
+            using(var cmd = CreateCommand(query,commandType: CommandType.Text))
+            {
+                using (var dataReader = await cmd.ExecuteReaderAsync())
+                {
+                    string[] array = { "Data" };
+                    var ds = new DataSet();
+                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                    var ddd = ds.Tables;
+
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<SuggestLoaiChungTu>(ds.Tables[0]);
+                        return data;
+                    }
+                }
+                return new List<SuggestLoaiChungTu>();
+            }
+        }
+
         public async Task<List<SuggestNhanSu>> SuggestNhanSu(int tenantId,Guid idChiNhanh)
         {
             using (var cmd = CreateCommand("prc_SuggestNhanVien"))
