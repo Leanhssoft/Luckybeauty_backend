@@ -509,6 +509,7 @@ END;");
 	@TenHangHoa nvarchar(max)='',
 	@IdLoaiHangHoa int = 2,
 	@GiaBan float =0,
+	@SoPhutThucHien float =0,
 	@GhiChu nvarchar(max)=''
 AS
 BEGIN
@@ -545,12 +546,11 @@ BEGIN
 			declare @tblMaHangHoa table(MaLoaiHang varchar(5), MaxVal float)
 			insert into @tblMaHangHoa
 			exec dbo.SpGetProductCode @TenantId, @IdLoaiHangHoa
-			
+
 			declare @max float, @maloaihang varchar(5)
 			select top 1 @maloaihang = MaLoaiHang, @max = MaxVal from @tblMaHangHoa
 
-			declare @maxFormat NVARCHAR(max)= FORMAT(@max, 'F0');
-			set @MaHangHoa = concat(@maloaihang, iif(@max < 10, '0'+ @maxFormat, @maxFormat)) --- nếu mã <10: thêm số 0 ở đầu		
+			set @MaHangHoa = concat(@maloaihang, iif(@max < 10, '0'+ @max, @max)) --- nếu mã <10: thêm số 0 ở đầu		
 		end
 	else
 		begin		
@@ -561,8 +561,8 @@ BEGIN
 
 	if  @isUpdate ='0'
 		begin
-				insert into DM_HangHoa (TenantId, Id, IdLoaiHangHoa, IdNhomHangHoa, TenHangHoa, TenHangHoa_KhongDau, MoTa, TrangThai, IsDeleted, CreatorUserId, CreationTime)
-				values (@TenantId, @idHangHoa, @IdLoaiHangHoa, @idNhomHangHoa, @TenHangHoa, @tenHangHoa_KhongDau,	@GhiChu,			
+				insert into DM_HangHoa (TenantId, Id, IdLoaiHangHoa, IdNhomHangHoa, TenHangHoa, TenHangHoa_KhongDau, SoPhutThucHien, MoTa, TrangThai, IsDeleted, CreatorUserId, CreationTime)
+				values (@TenantId, @idHangHoa, @IdLoaiHangHoa, @idNhomHangHoa, @TenHangHoa, @tenHangHoa_KhongDau, @SoPhutThucHien,	@GhiChu,			
 					1,'0',@CreatorUserId, GETDATE())
 
 				insert into DM_DonViQuiDoi (TenantId, Id, IdHangHoa, MaHangHoa, TyLeChuyenDoi, LaDonViTinhChuan, TenDonViTinh, GiaBan, CreatorUserId, CreationTime, IsDeleted)
@@ -575,6 +575,7 @@ BEGIN
 								IdNhomHangHoa = @idNhomHangHoa,
 								TenHangHoa = @TenHangHoa, 
 								TenHangHoa_KhongDau = @tenHangHoa_KhongDau,
+								SoPhutThucHien = @SoPhutThucHien,
 								MoTa = @GhiChu,
 								LastModifierUserId = @CreatorUserId,
 								LastModificationTime =  GETDATE()					

@@ -15,6 +15,7 @@
         public string TenHangHoa { get; set; }
         public int IdLoaiHangHoa { get; set; }
         public double? GiaBan { get; set; }
+        public float? SoPhutThucHien { get; set; } //= real sql
         public string GhiChu { get; set; }
     }
 }

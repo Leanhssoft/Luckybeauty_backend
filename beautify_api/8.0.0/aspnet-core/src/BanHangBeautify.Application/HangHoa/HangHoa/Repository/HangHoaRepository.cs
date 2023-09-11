@@ -140,6 +140,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
             command.Parameters.Add(new SqlParameter("@TenHangHoa", dataHangHoa.TenHangHoa ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@IdLoaiHangHoa", dataHangHoa.IdLoaiHangHoa));
             command.Parameters.Add(new SqlParameter("@GiaBan", dataHangHoa.GiaBan ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoPhutThucHien", dataHangHoa.SoPhutThucHien ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@GhiChu", dataHangHoa.GhiChu ?? (object)DBNull.Value));
             await command.ExecuteNonQueryAsync();
         }
