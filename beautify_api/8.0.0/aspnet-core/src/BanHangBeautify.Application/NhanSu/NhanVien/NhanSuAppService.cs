@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NewFolder;
@@ -17,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -32,12 +34,15 @@ namespace BanHangBeautify.NhanSu.NhanVien
         private readonly INhanSuRepository _nhanSuRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhService;
         private readonly INhanVienExcelExporter _nhanVienExcelExporter;
+        private readonly IRepository<User, long> _userService;
+
         public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository,
             IRepository<NS_ChucVu, Guid> chucVuRepository,
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTac,
             INhanSuRepository nhanSuRepository, IHostingEnvironment env,
             IRepository<DM_ChiNhanh, Guid> chiNhanhService,
-            INhanVienExcelExporter nhanVienExcelExporter
+            INhanVienExcelExporter nhanVienExcelExporter,
+            IRepository<User, long> userService
          )
         {
             _repository = repository;
@@ -47,6 +52,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             _env = env;
             _chiNhanhService = chiNhanhService;
             _nhanVienExcelExporter = nhanVienExcelExporter;
+            _userService = userService;
         }
         [AbpAuthorize(PermissionNames.Pages_NhanSu_Create, PermissionNames.Pages_NhanSu_Edit)]
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
@@ -167,6 +173,14 @@ namespace BanHangBeautify.NhanSu.NhanVien
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (find != null)
             {
+                var user = _userService.FirstOrDefault(x=>x.NhanSuId==id);
+                if (user!=null)
+                {
+                    user.IsActive = false;
+                    user.LastModificationTime= DateTime.Now;
+                    user.LastModifierUserId= AbpSession.UserId;
+                    await _userService.UpdateAsync(user);
+                }
                 find.IsDeleted = true;
                 find.DeleterUserId = AbpSession.UserId;
                 find.DeletionTime = DateTime.Now;

@@ -296,6 +296,7 @@ namespace BanHangBeautify.Suggests
                     rdo.Id = item.Id;
                     rdo.TenDichVu = item.DM_HangHoa.TenHangHoa;
                     rdo.DonGia = decimal.Parse(item.GiaBan.ToString() ?? "0");
+                    rdo.ThoiGianThucHien = item.DM_HangHoa.SoPhutThucHien.HasValue ? item.DM_HangHoa.SoPhutThucHien.Value.ToString() + " phút":"0 phút";
                     result.Add(rdo);
                 }
             }

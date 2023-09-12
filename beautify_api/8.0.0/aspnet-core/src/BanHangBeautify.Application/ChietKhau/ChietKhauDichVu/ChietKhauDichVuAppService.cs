@@ -102,7 +102,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                 data.IsDeleted = true;
                 data.DeletionTime = DateTime.Now;
                 data.DeleterUserId = AbpSession.UserId;
-                await _hoahongDichVu.UpdateAsync(data);
+                await _hoahongDichVu.DeleteAsync(data);
                 return new ExecuteResultDto()
                 {
                     Status = "success",
