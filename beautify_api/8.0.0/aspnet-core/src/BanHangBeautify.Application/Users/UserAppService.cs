@@ -78,8 +78,8 @@ namespace BanHangBeautify.Users
                 string[] tachChuoiTenNhanVien = nhanSu.TenNhanVien.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (tachChuoiTenNhanVien.Length>=2)
                 {
-                    user.Surname = string.Join(" ",tachChuoiTenNhanVien,tachChuoiTenNhanVien.Length-1);
-                    user.Name = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length-1];
+                    user.Name = string.Join(" ",tachChuoiTenNhanVien,0,tachChuoiTenNhanVien.Length-1);
+                    user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length-1];
                 }
                 user.PhoneNumber = nhanSu.SoDienThoai;
             }
@@ -128,8 +128,8 @@ namespace BanHangBeautify.Users
                 string[] tachChuoiTenNhanVien = nhanSu.TenNhanVien.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (tachChuoiTenNhanVien.Length >= 2)
                 {
-                    user.Surname = string.Join(" ", tachChuoiTenNhanVien, tachChuoiTenNhanVien.Length - 1);
-                    user.Name = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length - 1];
+                    user.Name = string.Join(" ", tachChuoiTenNhanVien,0, tachChuoiTenNhanVien.Length - 1);
+                    user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length - 1];
                 }
                 user.PhoneNumber = nhanSu.SoDienThoai;
             }
