@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.AppDanhMuc.MauIn.Dto;
 using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Entities;
@@ -19,15 +20,17 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         private readonly IRepository<DM_MauIn, Guid> _dmMauInRepository;
         private readonly IRepository<DM_LoaiChungTu> _dmLoaiChungTu;
         private readonly IWebHostEnvironment _hostEnvironment;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
         //public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         //public static readonly string Templates = Path.Combine(App, "Template");
         //private readonly IHostingEnvironment _env;
-
-        public MauInAppService(IWebHostEnvironment hostEnvironment, IRepository<DM_MauIn, Guid> dmMauInRepository, IRepository<DM_LoaiChungTu> dmLoaiChungTu)
+        public MauInAppService(IWebHostEnvironment hostEnvironment, IRepository<DM_MauIn, Guid> dmMauInRepository, IRepository<DM_LoaiChungTu> dmLoaiChungTu,
+            IUnitOfWorkManager unitOfWorkManager)
         {
             _dmMauInRepository = dmMauInRepository;
             _hostEnvironment = hostEnvironment;
             _dmLoaiChungTu = dmLoaiChungTu;
+            _unitOfWorkManager = unitOfWorkManager;
         }
         [HttpPost]
         public async Task<CreateOrEditMauInDto> InsertMauIn(CreateOrEditMauInDto input)
@@ -127,7 +130,11 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         public async Task<string> GetContentMauInMacDinh(int type = 1, int idLoaiChungTu = 1)
         {
             string contents = string.Empty, tenMauIn = string.Empty;
-            var loaiChungTu = await _dmLoaiChungTu.FirstOrDefaultAsync(x => x.Id == idLoaiChungTu);
+            DM_LoaiChungTu loaiChungTu = null;
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant)) // tắt bộ lọc tenantId
+            {
+                loaiChungTu = await _dmLoaiChungTu.FirstOrDefaultAsync(x => x.Id == idLoaiChungTu);
+            }
 
             if (loaiChungTu != null)
             {
