@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.LichLamViec.Dto;
@@ -66,11 +67,11 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             {
                 for (int i = 1; i <= item.TongSoNgay; i++)
                 {
-                    var day = data.TuNgay.AddDays(i);
+                    var day = item.TuNgay.AddDays(i);
                     danhSachNgayNghi.Add(day);
                 }
             }
-            for (int i = 0; i < tongSoNgay; i++)
+            for (int i = 0; i < tongSoNgay+1; i++)
             {
                 var day = data.TuNgay.AddDays(i);
                 if (danhSachNgayNghi.Contains(day))
@@ -113,18 +114,28 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_NhanSu_Delete)]
-        public async Task<LichLamViecDto> Delete(Guid id)
+        public async Task<ExecuteResultDto> Delete(Guid id)
         {
             var checkExist = await _lichLamViecService.FirstOrDefaultAsync(x => x.Id == id);
             if (checkExist != null)
             {
+
+                var listLichLamViecCa = _lichLamViecCaService.GetAll().Where(x => x.IdLichLamViec == id).ToList();
+                _lichLamViecCaService.RemoveRange(listLichLamViecCa);
                 checkExist.IsDeleted = true;
                 checkExist.DeleterUserId = AbpSession.UserId;
                 checkExist.DeletionTime = DateTime.Now;
-                await _lichLamViecService.UpdateAsync(checkExist);
-                return ObjectMapper.Map<LichLamViecDto>(checkExist);
+                await _lichLamViecService.DeleteAsync(checkExist);
+                return new ExecuteResultDto()
+                {
+                    Status = "success",
+                    Message = "Xóa dữ liệu thành công!"
+                };
             }
-            return new LichLamViecDto();
+            return new ExecuteResultDto() { 
+                Status="error",
+                Message="Có lỗi sảy ra vu lòng thử lại sau!"
+            };
         }
         public async Task<NS_LichLamViec> GetDetail(Guid id)
         {

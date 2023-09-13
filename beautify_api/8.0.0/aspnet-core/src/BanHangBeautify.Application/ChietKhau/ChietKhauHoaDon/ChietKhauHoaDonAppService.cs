@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository;
@@ -129,14 +130,14 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                                 var itemRemove = _chietKhauHoaDonCTService.GetAll().Where(x => !input.IdNhanViens.Contains(x.IdNhanVien)).ToList();
                                 if (itemRemove != null && itemRemove.Count > 0)
                                 {
-                                    foreach (var remove in itemRemove)
-                                    {
-                                        remove.IsDeleted = true;
-                                        remove.DeleterUserId = AbpSession.UserId;
-                                        remove.DeletionTime = DateTime.Now;
-                                        await _chietKhauHoaDonCTService.UpdateAsync(remove);
-                                    }
-
+                                    _chietKhauHoaDonCTService.RemoveRange(itemRemove);
+                                    //foreach (var remove in itemRemove)
+                                    //{
+                                    //    remove.IsDeleted = true;
+                                    //    remove.DeleterUserId = AbpSession.UserId;
+                                    //    remove.DeletionTime = DateTime.Now;
+                                    //    await _chietKhauHoaDonCTService.UpdateAsync(remove);
+                                    //}
                                 }
                             }
                         }
@@ -188,10 +189,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
-                data.IsDeleted = true;
-                data.DeletionTime = DateTime.Now;
-                data.DeleterUserId = AbpSession.UserId;
-                await _repository.UpdateAsync(data);
+                await _repository.DeleteAsync(data);
                 return ObjectMapper.Map<ChietKhauHoaDonDto>(data);
             }
             return new ChietKhauHoaDonDto();

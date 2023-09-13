@@ -72,7 +72,17 @@ namespace BanHangBeautify.Users
             {
                 user.IsEmailConfirmed = false;
             }
-
+            var nhanSu = _nhanVienRepository.FirstOrDefault(x => x.Id == input.NhanSuId);
+            if (nhanSu!=null)
+            {
+                string[] tachChuoiTenNhanVien = nhanSu.TenNhanVien.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (tachChuoiTenNhanVien.Length>=2)
+                {
+                    user.Name = string.Join(" ",tachChuoiTenNhanVien,0,tachChuoiTenNhanVien.Length-1);
+                    user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length-1];
+                }
+                user.PhoneNumber = nhanSu.SoDienThoai;
+            }
 
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
 
@@ -112,9 +122,17 @@ namespace BanHangBeautify.Users
             //var user = await _userManager.GetUserByIdAsync(input.Id);
             user.NhanSuId = input.NhanSuId;
             user.IsAdmin = input.IsAdmin ?? false;
-            user.Surname = input.Surname;
-            user.Name = input.Name;
-            user.PhoneNumber = input.PhoneNumber;
+            var nhanSu = _nhanVienRepository.FirstOrDefault(x => x.Id == input.NhanSuId);
+            if (nhanSu != null)
+            {
+                string[] tachChuoiTenNhanVien = nhanSu.TenNhanVien.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (tachChuoiTenNhanVien.Length >= 2)
+                {
+                    user.Name = string.Join(" ", tachChuoiTenNhanVien,0, tachChuoiTenNhanVien.Length - 1);
+                    user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length - 1];
+                }
+                user.PhoneNumber = nhanSu.SoDienThoai;
+            }
             user.EmailAddress = input.EmailAddress;
             user.IsActive = input.IsActive;
             user.LastModificationTime = DateTime.Now;
@@ -212,6 +230,7 @@ namespace BanHangBeautify.Users
         protected override void MapToEntity(UserDto input, User user)
         {
             ObjectMapper.Map(input, user);
+            user.Password = null;
             user.SetNormalizedNames();
         }
 
@@ -222,8 +241,8 @@ namespace BanHangBeautify.Users
             var roles = _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).Select(r => r.NormalizedName);
 
             var userDto = base.MapToEntityDto(user);
-            userDto.Password = user.Password;
-            userDto.ConfirmPassword = userDto.Password;
+            userDto.Password = null;
+            //userDto.ConfirmPassword = userDto.Password;
             userDto.RoleNames = roles.ToArray();
 
             return userDto;
