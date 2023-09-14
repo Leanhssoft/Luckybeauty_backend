@@ -62,7 +62,7 @@ namespace BanHangBeautify.KhachHang.NhomKhach
 
             return result;
         }
-        [HttpPost]
+        [HttpGet]
         [AbpAuthorize(PermissionNames.Pages_NhomKhach_Delete)]
         public async Task<NhomKhachDto> Delete(Guid id)
         {
