@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
@@ -131,6 +132,28 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 result = ObjectMapper.Map<KhachHangDto>(delete);
             }
             return result;
+        }
+        [HttpPost]
+        public async Task DeleteMultipleCustomer(List<Guid> lstId)
+        {
+            _repository.GetAllList(x => lstId.Contains(x.Id)).ForEach(x =>
+            {
+                x.TrangThai = 0;
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+            });
+            // todo remove image in google api
+        }
+        [HttpPost]
+        public async Task ChuyenNhomKhachHang(List<Guid> lstIdKhachHang, Guid idNhomKhach)
+        {
+            _repository.GetAllList(x => lstIdKhachHang.Contains(x.Id)).ForEach(x =>
+            {
+                x.IdNhomKhach = idNhomKhach;
+                x.LastModifierUserId = AbpSession.UserId;
+                x.LastModificationTime = DateTime.Now;
+            });
         }
         public async Task<KhachHangDetailDto> GetKhachHangDetail(Guid id)
         {
