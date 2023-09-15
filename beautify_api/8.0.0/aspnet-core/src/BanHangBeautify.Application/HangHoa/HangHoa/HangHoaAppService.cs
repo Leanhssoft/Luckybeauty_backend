@@ -454,8 +454,8 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 int rowCount = worksheet.Dimension.Rows;
 
                 #region Check dữ liệu file
-                // cột B: mã dịch vụ
-                var errDuplicate = Excel_CheckDuplicateData(worksheet, "B", 3, rowCount);
+                // cột B: mã dịch vụ (cột thứ 2), đọc bắt đàu từ dòng số 3 --> rowCount
+                var errDuplicate = Excel_CheckDuplicateData(worksheet, "B", 2, 3, rowCount);
                 if (errDuplicate.Count > 0)
                 {
                     foreach (var item in errDuplicate)

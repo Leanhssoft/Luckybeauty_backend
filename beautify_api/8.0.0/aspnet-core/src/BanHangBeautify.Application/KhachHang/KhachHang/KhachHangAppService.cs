@@ -5,6 +5,7 @@ using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
@@ -12,6 +13,7 @@ using BanHangBeautify.NewFolder;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.Configuration.Common.ObjectHelper;
+
 
 namespace BanHangBeautify.KhachHang.KhachHang
 {
@@ -396,6 +401,242 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
 
             return result;
+        }
+
+
+        [HttpPost]
+        [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        public async Task<List<ExcelErrorDto>> ImportFile_DanhMucKhachHang(FileUpload file)
+        {
+            List<ExcelErrorDto> lstErr = new();
+            try
+            {
+                if (file.Type != ".xlsx")
+                {
+                    lstErr.Add(new ExcelErrorDto
+                    {
+                        RowNumber = 0,
+                        GiaTriDuLieu = "Định dạng file",
+                        DienGiai = "File không đúng định dạng",
+                        LoaiErr = 0,
+                    });
+                    return lstErr;
+                }
+
+                using MemoryStream stream = new MemoryStream(file.File);
+                using var package = new ExcelPackage();
+                package.Load(stream);
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+
+                #region Check dữ liệu file
+                // cột C: số điện thoại (cột thứ 3), đọc bắt đàu từ dòng số 3 --> rowCount
+                var errDuplicate = Excel_CheckDuplicateData(worksheet, "C", 3, 3, rowCount);
+                if (errDuplicate.Count > 0)
+                {
+                    foreach (var item in errDuplicate)
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = item.RowNumber,
+                            TenTruongDuLieu = "Số điện thoại",
+                            GiaTriDuLieu = item.GiaTriDuLieu,
+                            DienGiai = "Số điện thoại bị trùng lặp",
+                            LoaiErr = 1,
+                        });
+                    }
+                }
+                for (int i = 3; i <= rowCount; i++)
+                {
+                    bool rowEmpty = true;
+                    string tenNhomKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
+                    string tenKhachHang = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    string soDienThoai = worksheet.Cells[i, 3].Value?.ToString().Trim();
+                    string ngaySinh = worksheet.Cells[i, 4].Value?.ToString();
+                    string gioiTinh = worksheet.Cells[i, 5].Value?.ToString();
+                    string diaChi = worksheet.Cells[i, 6].Value?.ToString();
+                    string ghiChu = worksheet.Cells[i, 7].Value?.ToString();
+
+                    // nếu dòng trống: bỏ qua và nhảy sang dòng tiếp theo
+                    if (!string.IsNullOrEmpty(tenNhomKhachHang)
+                            || !string.IsNullOrEmpty(tenKhachHang)
+                           || !string.IsNullOrEmpty(soDienThoai)
+                           || !string.IsNullOrEmpty(ngaySinh)
+                           || !string.IsNullOrEmpty(diaChi)
+                           )
+                    {
+                        rowEmpty = false;
+                    }
+                    if (rowEmpty) { continue; }
+
+                    if (string.IsNullOrEmpty(tenKhachHang))
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = i,
+                            TenTruongDuLieu = "Tên khách hàng",
+                            GiaTriDuLieu = tenKhachHang,
+                            DienGiai = "Tên khách hàng không được để trống",
+                            LoaiErr = 1,
+                        });
+                    }
+
+                    //if (string.IsNullOrEmpty(soDienThoai))
+                    //{
+                    //    lstErr.Add(new ExcelErrorDto
+                    //    {
+                    //        RowNumber = i,
+                    //        TenTruongDuLieu = "Số điện thoại",
+                    //        GiaTriDuLieu = soDienThoai,
+                    //        DienGiai = "Số điện thoại không được để trống",
+                    //        LoaiErr = 1,
+                    //    });
+                    //}
+                    //else
+                    //{
+                    //    // sodienthoai exists DB
+                    //}
+
+                    if (!string.IsNullOrEmpty(ngaySinh))
+                    {
+                        try
+                        {
+                            Convert.ToDateTime(ngaySinh);
+                        }
+                        catch (Exception)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Ngày sinh",
+                                GiaTriDuLieu = ngaySinh,
+                                DienGiai = "Ngày sinh không đúng định dạng",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(gioiTinh))
+                    {
+                        string[] arrLoai = { "Nam", "Nữ" };
+                        if (!arrLoai.Contains(gioiTinh))
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Giới tính",
+                                GiaTriDuLieu = gioiTinh,
+                                DienGiai = "Giới tính không đúng định dạng",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                lstErr.Add(new ExcelErrorDto
+                {
+                    RowNumber = -1,
+                    TenTruongDuLieu = "Exception",
+                    GiaTriDuLieu = "",
+                    DienGiai = ex.Message.ToString(),
+                    LoaiErr = -1,
+                });
+            }
+            if (lstErr.Count == 0)
+            {
+                // thực hiện import
+                lstErr = await Execute_ImportDanhMucKhachHang(file);// phải load lại file, vì Excel bị dispose
+            }
+            return lstErr;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public async Task<List<ExcelErrorDto>> Execute_ImportDanhMucKhachHang(FileUpload file)
+        {
+            List<ExcelErrorDto> lstErr = new();
+            try
+            {
+                using MemoryStream stream = new MemoryStream(file.File);
+                using var package = new ExcelPackage();
+                package.Load(stream);
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+
+                for (int i = 3; i <= rowCount; i++)
+                {
+                    bool rowEmpty = true;
+                    string tenNhomKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
+                    string tenKhachHang = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    string soDienThoai = worksheet.Cells[i, 3].Value?.ToString().Trim();
+                    string ngaySinh = worksheet.Cells[i, 4].Value?.ToString();
+                    string gioiTinh = worksheet.Cells[i, 5].Value?.ToString();
+                    string diaChi = worksheet.Cells[i, 6].Value?.ToString();
+                    string ghiChu = worksheet.Cells[i, 7].Value?.ToString();
+
+                    if (!string.IsNullOrEmpty(tenNhomKhachHang)
+                             || !string.IsNullOrEmpty(tenKhachHang)
+                            || !string.IsNullOrEmpty(soDienThoai)
+                            || !string.IsNullOrEmpty(ngaySinh)
+                            || !string.IsNullOrEmpty(diaChi)
+                            )
+                    {
+                        rowEmpty = false;
+                    }
+                    if (rowEmpty) { continue; }
+
+                    DateTime? ngaySinhFormat = null;
+                    if (!string.IsNullOrEmpty(ngaySinh))
+                    {
+                        ngaySinhFormat = Convert.ToDateTime(ngaySinh);
+                    }
+
+                    ImportExcelKhachHangDto newObj = new()
+                    {
+                        TenNhomKhachHang = tenNhomKhachHang,
+                        TenKhachHang = tenKhachHang,
+                        SoDienThoai = soDienThoai,
+                        GioiTinhNam = gioiTinh == "Nam" ? true : false,
+                        NgaySinh = ngaySinhFormat,
+                        DiaChi = diaChi,
+                        MoTa = ghiChu
+                    };
+                    try
+                    {
+                        await _customerRepo.ImportDanhMucKhachHang(AbpSession.TenantId ?? 1, AbpSession.UserId, newObj);
+                    }
+                    catch (Exception ex)
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = i,
+                            TenTruongDuLieu = "Import",
+                            GiaTriDuLieu = "Import",
+                            DienGiai = ex.Message.ToString(),
+                            LoaiErr = 2,
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lstErr.Add(new ExcelErrorDto
+                {
+                    RowNumber = -1,
+                    TenTruongDuLieu = "Exception",
+                    GiaTriDuLieu = "Exception",
+                    DienGiai = ex.Message.ToString(),
+                    LoaiErr = -1,
+                });
+            }
+            return lstErr;
         }
     }
 }
