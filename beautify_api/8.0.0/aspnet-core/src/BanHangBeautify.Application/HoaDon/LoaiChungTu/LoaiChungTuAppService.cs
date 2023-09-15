@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.ChungTu.Dto;
@@ -16,9 +17,11 @@ namespace BanHangBeautify.HoaDon.ChungTu
     public class LoaiChungTuAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_LoaiChungTu> _loaiChungTuRepository;
-        public LoaiChungTuAppService(IRepository<DM_LoaiChungTu> loaiChungTuRepository)
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+        public LoaiChungTuAppService(IRepository<DM_LoaiChungTu> loaiChungTuRepository, IUnitOfWorkManager unitOfWorkManager)
         {
             _loaiChungTuRepository = loaiChungTuRepository;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         [AbpAuthorize(PermissionNames.Pages_LoaiChungTu_Create, PermissionNames.Pages_LoaiChungTu_Delete)]
@@ -85,9 +88,12 @@ namespace BanHangBeautify.HoaDon.ChungTu
         public async Task<PagedResultDto<DM_LoaiChungTu>> GetAll()
         {
             PagedResultDto<DM_LoaiChungTu> result = new PagedResultDto<DM_LoaiChungTu>();
-            var data = await _loaiChungTuRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
-            result.TotalCount = data.Count;
-            result.Items = data;
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))// tắt bộ lọc tenantId
+            {
+                var data = await _loaiChungTuRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
+                result.TotalCount = data.Count;
+                result.Items = data;
+            }
             return result;
         }
 

@@ -10,6 +10,9 @@ namespace BanHangBeautify.EntityFrameworkCore
 {
     public class SPADbContext : AbpZeroDbContext<Tenant, Role, User, SPADbContext>
     {
+        #region Extending Non-Abstract Entities
+        public virtual DbSet<UserRoleChiNhanh> UserRoleChiNhanh { get; set; }
+        #endregion
         #region Booking
         public DbSet<Booking> Booking { set; get; }
         public DbSet<BookingNhanVien> BookingNhanVien { set; get; }
