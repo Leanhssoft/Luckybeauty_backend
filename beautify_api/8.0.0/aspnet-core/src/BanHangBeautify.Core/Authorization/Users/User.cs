@@ -24,7 +24,7 @@ namespace BanHangBeautify.Authorization.Users
 
         public bool IsAdmin { set; get; }
 
-        public static User CreateTenantAdminUser(int tenantId, string emailAddress, Guid? idChiNhanh)
+        public static User CreateTenantAdminUser(int tenantId, string emailAddress)
         {
             var user = new User
             {
@@ -34,7 +34,6 @@ namespace BanHangBeautify.Authorization.Users
                 Surname = AdminUserName,
                 EmailAddress = emailAddress,
                 IsAdmin = true,
-                IdChiNhanhMacDinh = idChiNhanh,
                 Roles = new List<UserRole>()
             };
 
