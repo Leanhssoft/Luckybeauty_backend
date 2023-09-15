@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository;
@@ -113,6 +114,26 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                 Status = "error",
                 Message= "Có lỗi say ra vui lòng thử lại sau!"
             };
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            {
+                var finds = await _hoahongDichVu.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+                if (finds != null && finds.Count > 0)
+                {
+                    _hoahongDichVu.RemoveRange(finds);
+                    result.Status = "success";
+                    result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                }
+                return result;
+            }
         }
         public async Task<CreateOrEditChietKhauDichVuDto> GetForEdit(Guid id)
         {

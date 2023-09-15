@@ -13,7 +13,7 @@ namespace BanHangBeautify.SP_Migrations
             migrationBuilder.Sql(@"CREATE PROCEDURE prc_chietKhauHoaDon_getAll 
 	@TenantId INT,
 	@IdChiNhanh UNIQUEIDENTIFIER,
-	@Filter NVARCHAR(70),
+	@Filter NVARCHAR(200),
 	@SortBy NVARCHAR(20),
 	@SortType VARCHAR(4),
 	@SkipCount INT = 0,

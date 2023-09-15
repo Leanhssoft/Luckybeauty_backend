@@ -2,6 +2,8 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.EntityFrameworkCore.EFPlus;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
@@ -13,6 +15,7 @@ using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -184,11 +187,37 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 find.IsDeleted = true;
                 find.DeleterUserId = AbpSession.UserId;
                 find.DeletionTime = DateTime.Now;
-                _repository.Update(find);
+                _repository.Delete(find);
                 return ObjectMapper.Map<NhanSuItemDto>(find);
             }
             return new NhanSuItemDto();
         }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto() { 
+                Status= "error",
+                Message= "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            if (ids!=null && ids.Count>0)
+            {
+                var findNhanViens = await _repository.GetAll().Where(x=>ids.Contains(x.Id)).ToListAsync();
+                var findUsers = await _userService.GetAll().Where(x=>ids.Contains((Guid)x.NhanSuId)).ToListAsync();
+                _repository.RemoveRange(findNhanViens);
+                foreach (var item in findUsers)
+                {
+                    item.IsActive= false;
+                    item.LastModificationTime= DateTime.Now;
+                    item.LastModifierUserId= AbpSession.UserId;
+                    await _userService.UpdateAsync(item);
+                }
+                result.Status = "success";
+                result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+            }
+            return result;
+        }
+
         public async Task<NS_NhanVien> GetDetail(Guid id)
         {
             return await _repository.GetAsync(id);

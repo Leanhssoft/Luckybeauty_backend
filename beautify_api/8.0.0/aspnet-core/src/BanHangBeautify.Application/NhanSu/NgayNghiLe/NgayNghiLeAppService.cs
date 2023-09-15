@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NewFolder;
@@ -10,8 +11,10 @@ using BanHangBeautify.NhanSu.NgayNghiLe.Exporting;
 using BanHangBeautify.NhanSu.NgayNghiLe.Repository;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -106,6 +109,24 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                 checkExists.DeleterUserId = AbpSession.UserId;
                 _ngayNghiLeService.Update(checkExists);
                 result = true;
+            }
+            return result;
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_NgayNghiLe_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            var checkExists = await _ngayNghiLeService.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+            if (checkExists != null && checkExists.Count>0)
+            {
+                _ngayNghiLeService.RemoveRange(checkExists);
+                result.Status = "success";
+                result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
             }
             return result;
         }

@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NewFolder;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -121,6 +123,26 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                 return ObjectMapper.Map<CaLamViecDto>(caLamViec);
             }
             return new CaLamViecDto();
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_CaLamViec_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            {
+                var finds = await _repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+                if (finds != null && finds.Count > 0)
+                {
+                    _repository.RemoveRange(finds);
+                    result.Status = "success";
+                    result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                }
+                return result;
+            }
         }
         public async Task<CreateOrEditCaLamViecDto> GetForEdit(Guid id)
         {

@@ -2,6 +2,7 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
@@ -15,7 +16,9 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
@@ -160,6 +163,7 @@ namespace BanHangBeautify.MultiTenancy
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Delete)]
         public async Task DeleteTenant(int id)
         {
             CheckDeletePermission();
@@ -167,8 +171,26 @@ namespace BanHangBeautify.MultiTenancy
             await _tenantManager.DeleteAsync(tenant);
         }
 
-
-
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<int> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            {
+                var finds = await Repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+                if (finds != null && finds.Count > 0)
+                {
+                    Repository.RemoveRange(finds);
+                    result.Status = "success";
+                    result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                }
+                return result;
+            }
+        }
         protected override IQueryable<Tenant> CreateFilteredQuery(PagedTenantResultRequestDto input)
         {
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;

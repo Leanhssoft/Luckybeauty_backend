@@ -2,6 +2,7 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
@@ -135,6 +136,24 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 delete.TrangThai = 0;
                 _repository.Update(delete);
                 result = ObjectMapper.Map<KhachHangDto>(delete);
+            }
+            return result;
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_CaLamViec_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            var checkExists = await _repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+            if (checkExists != null && checkExists.Count > 0)
+            {
+                _repository.RemoveRange(checkExists);
+                result.Status = "success";
+                result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
             }
             return result;
         }

@@ -16,7 +16,7 @@ namespace BanHangBeautify.SP_Migrations
                 CREATE PROCEDURE prc_khachHang_getAll
 					@TenantId INT,
 					@IdChiNhanh UNIQUEIDENTIFIER,
-					@Filter NVARCHAR,
+					@Filter NVARCHAR(200),
 					@SkipCount INT = 0,
 					@MaxResultCount INT = 10,
 					@SortBy NVARCHAR(50),

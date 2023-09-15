@@ -15,7 +15,7 @@ namespace BanHangBeautify.SP_Migrations
 					@TenantId INT,
 					@IdNhanVien UNIQUEIDENTIFIER,
 					@IdChiNhanh UNIQUEIDENTIFIER, 
-					@Filter NVARCHAR(50),
+					@Filter NVARCHAR(200),
 					@SkipCount INT,
 					@MaxResultCount INT,
 					@SortBy NVARCHAR(30),

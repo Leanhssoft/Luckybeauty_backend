@@ -14,7 +14,7 @@ namespace BanHangBeautify.SP_Migrations
                 CREATE PROCEDURE prc_HoaDon_GetAll 
 					@TenantId int,
 					@IdChiNhanh UNIQUEIDENTIFIER,  
-					@Filter NVARCHAR(MAX),
+					@Filter NVARCHAR(200),
 					@SortBy VARCHAR(50),
 					@SortType VARCHAR(4) = 'desc',
 					@SkipCount INT = 0,
