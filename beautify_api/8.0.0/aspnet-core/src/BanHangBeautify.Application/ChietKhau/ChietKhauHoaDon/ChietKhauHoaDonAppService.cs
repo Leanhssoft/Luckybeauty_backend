@@ -7,7 +7,9 @@ using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -193,6 +195,24 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                 return ObjectMapper.Map<ChietKhauHoaDonDto>(data);
             }
             return new ChietKhauHoaDonDto();
+        }
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            {
+                var finds = await _repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+                if (finds != null && finds.Count > 0)
+                {
+                    _repository.RemoveRange(finds);
+                    result.Status = "success";
+                    result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                }
+                return result;
+            }
         }
         public async Task<CreateOrEditChietKhauHDDto> GetForEdit(Guid id)
             {

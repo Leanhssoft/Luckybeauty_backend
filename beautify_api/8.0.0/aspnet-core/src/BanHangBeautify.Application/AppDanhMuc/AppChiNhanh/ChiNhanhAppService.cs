@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Repository;
 using BanHangBeautify.Authorization;
@@ -206,6 +207,27 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 Detail = ""
             };
         }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            {
+                var finds = await _chiNhanhService.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+                if (finds != null && finds.Count > 0)
+                {
+                    _chiNhanhService.RemoveRange(finds);
+                    result.Status = "success";
+                    result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                }
+                return result;
+            }
+        }
+
         public async Task<List<SuggestChiNhanh>> GetChiNhanhByUser()
         {
             List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();

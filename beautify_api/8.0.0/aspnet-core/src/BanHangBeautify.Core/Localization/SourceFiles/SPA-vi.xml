@@ -232,5 +232,17 @@
     <text name="DeleteHoaDon">Xóa hóa đơn</text>
     <text name="NhanVienDichVu">Nhân viên - Dịch vụ</text>
     <text name="AddNewBooking">Lịch hẹn mới</text>
+    <text name="RoleNameIsAlreadyTaken" value="Tên vai trò đã tồn tại"/>
+    <text name="RoleDisplayNameIsAlreadyTaken">Tên hiển thị đã tồn tại</text>
+    <text name="CanNotDeleteStaticRole">Không thể xóa vai trò mặc định</text>
+    <text name="CanNotDeleteAdminUser">Không thể xóa tài khoản Admin</text>
+    <text name="CanNotRenameAdminUser">Không thể sửa tên tài khoản Admin</text>
+    <text name="Identity.DuplicateUserName">Tên người dùng đã tồn tại</text>
+    <text name="Identity.DuplicateEmail">Email đã tồn tại</text>
+    <text name="UnknownDashboard">Trang Dashboard không xác định</text>
+    <text name="ThisNotificationDoesntBelongToYou">Thông báo không thuộc về bạn</text>
+    <text name="RequestedFileDoesNotExists">File không tồn tại</text>
+    <text name="RequiresPasswordChange">Mật khẩu cần thay đổi</text>
+    <text name="RequiresTwoFactorAuth">Yêu cầu xác thực hai yếu tố</text>
   </texts>
 </localizationDictionary>

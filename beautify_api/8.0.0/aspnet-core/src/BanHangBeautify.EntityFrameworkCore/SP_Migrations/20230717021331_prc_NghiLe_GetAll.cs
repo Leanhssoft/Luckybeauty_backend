@@ -12,7 +12,7 @@ namespace BanHangBeautify.SP_Migrations
         {
             migrationBuilder.Sql(@"CREATE PROCEDURE prc_nghiLe_getAll 
 	@TenantId INT,
-	@Filter NVARCHAR(70),
+	@Filter NVARCHAR(200),
 	@SortBy NVARCHAR(20),
 	@SortType VARCHAR(4),
 	@SkipCount INT = 0,

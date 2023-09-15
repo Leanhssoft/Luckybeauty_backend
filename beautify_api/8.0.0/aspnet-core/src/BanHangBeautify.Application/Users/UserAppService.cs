@@ -3,6 +3,7 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
@@ -185,7 +186,24 @@ namespace BanHangBeautify.Users
             }
             return result;
         }
-
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<long> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            var checkExists = await Repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+            if (checkExists != null && checkExists.Count > 0)
+            {
+                Repository.RemoveRange(checkExists);
+                result.Status = "success";
+                result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+            }
+            return result;
+        }
 
         [AbpAuthorize(PermissionNames.Pages_Users_Activation)]
         public async Task Activate(EntityDto<long> user)
@@ -230,7 +248,7 @@ namespace BanHangBeautify.Users
         protected override void MapToEntity(UserDto input, User user)
         {
             ObjectMapper.Map(input, user);
-            user.Password = null;
+            user.Password = "";
             user.SetNormalizedNames();
         }
 
@@ -241,8 +259,8 @@ namespace BanHangBeautify.Users
             var roles = _roleManager.Roles.Where(r => roleIds.Contains(r.Id)).Select(r => r.NormalizedName);
 
             var userDto = base.MapToEntityDto(user);
-            userDto.Password = null;
-            //userDto.ConfirmPassword = userDto.Password;
+            userDto.Password = "";
+            userDto.ConfirmPassword ="";
             userDto.RoleNames = roles.ToArray();
 
             return userDto;

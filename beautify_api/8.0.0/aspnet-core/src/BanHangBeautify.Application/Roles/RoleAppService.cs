@@ -2,6 +2,7 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
@@ -38,8 +39,9 @@ namespace BanHangBeautify.Roles
 
             var role = ObjectMapper.Map<Role>(input);
             role.SetNormalizedName();
-
-            CheckErrors(await _roleManager.CreateAsync(role));
+            var checkCreate = await _roleManager.CreateAsync(role);
+            CheckErrors(checkCreate);
+            //CheckErrors(await _roleManager.CreateAsync(role));
 
             var grantedPermissions = PermissionManager
                 .GetAllPermissions()
@@ -101,7 +103,8 @@ namespace BanHangBeautify.Roles
             CheckUpdatePermission();
             var role = new Role(AbpSession.TenantId, input.Name, input.DisplayName) { };
             role.SetNormalizedName();
-            CheckErrors(await _roleManager.CreateAsync(role));
+            var checkCreate = await _roleManager.CreateAsync(role);
+            CheckErrors(checkCreate);
             await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
             await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
             return MapToEntityDto(role);
@@ -164,6 +167,24 @@ namespace BanHangBeautify.Roles
             }
             return result;
 
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<int> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+            };
+            var checkExists = await Repository.GetAll().Where(x=>ids.Contains(x.Id)).ToListAsync();
+            if (checkExists != null && checkExists.Count > 0)
+            {
+                Repository.RemoveRange(checkExists);
+                result.Status = "success";
+                result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+            }
+            return result;
         }
 
         public Task<ListResultDto<PermissionDto>> GetAllPermissions()
