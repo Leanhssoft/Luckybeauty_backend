@@ -16,7 +16,7 @@ namespace BanHangBeautify.SPMigrations
                 table: "AbpUserRoles",
                 type: "nvarchar(max)",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: "UserRoleChiNhanh");
 
             migrationBuilder.AddColumn<Guid>(
                 name: "IdChiNhanh",
