@@ -14,5 +14,10 @@ namespace BanHangBeautify.Entities
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
         public DM_ChiNhanh DM_ChiNhanh { get; set; }
+
+        public UserRoleChiNhanh(int? tenantId, long userId, int roleId, Guid? idChiNhanh= null) : base(tenantId, userId, roleId)
+        {
+            this.IdChiNhanh = idChiNhanh;
+        }
     }
 }

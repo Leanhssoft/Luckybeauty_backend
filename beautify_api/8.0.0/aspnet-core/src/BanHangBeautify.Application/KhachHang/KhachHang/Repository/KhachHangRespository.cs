@@ -4,6 +4,7 @@ using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
+using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.Data.SqlClient;
 using System;
@@ -161,6 +162,23 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                 }
                 return new List<KhachHangView>();
             }
+        }
+
+        public async Task ImportDanhMucKhachHang(int? tenantId, long? userId, ImportExcelKhachHangDto dataKhachHang)
+        {
+            using var command = CreateCommand("spImportDanhMucKhachHang");
+            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            command.Parameters.Add(new SqlParameter("@CreatorUserId", userId));
+            command.Parameters.Add(new SqlParameter("@TenNhomKhachHang", dataKhachHang.TenNhomKhachHang ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdLoaiKhach", dataKhachHang.IdLoaiKhach ?? 1));
+            command.Parameters.Add(new SqlParameter("@MaKhachHang", dataKhachHang.MaKhachHang ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@TenKhachHang", dataKhachHang.TenKhachHang ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoDienThoai", dataKhachHang.SoDienThoai ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@NgaySinh", dataKhachHang.NgaySinh ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@GioiTinhNam", dataKhachHang.GioiTinhNam ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@DiaChi", dataKhachHang.DiaChi ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@MoTa", dataKhachHang.MoTa ?? (object)DBNull.Value));
+            await command.ExecuteNonQueryAsync();
         }
     }
 }

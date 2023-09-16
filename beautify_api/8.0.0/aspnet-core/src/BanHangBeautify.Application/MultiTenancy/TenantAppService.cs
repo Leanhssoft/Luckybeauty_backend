@@ -58,9 +58,9 @@ namespace BanHangBeautify.MultiTenancy
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
         {
             string dbName = input.TenancyName;
-            string dataSource = "DESKTOP-8D36GBJ";
+            string dataSource = "DEV3\\SQL2018";
             string userId = "sa";
-            string password = "123";
+            string password = "sa@123";
             string connecStringInServer = $"data source={dataSource};initial catalog={dbName};persist security info=True;user id={userId};password={password};multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
             if (string.IsNullOrEmpty(input.ConnectionString))
             {
@@ -98,9 +98,13 @@ namespace BanHangBeautify.MultiTenancy
                 var adminRole = _roleManager.Roles.Single(r => r.Name == StaticRoleNames.Tenants.Admin);
                 await _roleManager.GrantAllPermissionsAsync(adminRole);
 
+                // create chinhanh truoc khi tao user
+                Guid idChiNhanh = await CreateCuaHangWithTenant(input.Name, tenant.Id);
+
                 // Create admin user for the tenant
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
                 await _userManager.InitializeOptionsAsync(tenant.Id);
+
                 //CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword));
                 CheckErrors(await _userManager.CreateAsync(adminUser, "123qwe"));
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get admin user's id
@@ -108,14 +112,12 @@ namespace BanHangBeautify.MultiTenancy
                 // Assign admin user to role!
                 CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name));
                 await CurrentUnitOfWork.SaveChangesAsync();
-
-                await CreateCuaHangWithTenant(input.Name, tenant.Id);
             }
 
             return MapToEntityDto(tenant);
         }
         [NonAction]
-        public async Task CreateCuaHangWithTenant(string tenCuaHang, int idTenant)
+        public async Task<Guid> CreateCuaHangWithTenant(string tenCuaHang, int idTenant)
         {
             HT_CongTy data = new HT_CongTy();
             data.Id = Guid.NewGuid();
@@ -134,6 +136,7 @@ namespace BanHangBeautify.MultiTenancy
             chiNhanh.TenantId = idTenant;
             chiNhanh.CreatorUserId = AbpSession.UserId;
             await _chiNhanhRepository.InsertAsync(chiNhanh);
+            return chiNhanh.Id;
         }
 
         [AbpAuthorize(PermissionNames.Pages_Tenants_Edit)]

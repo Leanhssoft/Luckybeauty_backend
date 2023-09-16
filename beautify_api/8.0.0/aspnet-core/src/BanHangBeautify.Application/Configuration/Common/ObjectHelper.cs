@@ -33,14 +33,15 @@ namespace BanHangBeautify.Configuration.Common
         //}
 
         /// <summary>
-        /// kiểm tra trùng dữ liệu (khi import excel)
+        /// kiểm tra trùng dữ liệu ở cột colName (vị trí thứ indexColumn), từ dòng fromRow -->  toRow
         /// </summary>
         /// <param name="worksheet"></param>
-        /// <param name="colName"></param>
-        /// <param name="fromRow"></param>
-        /// <param name="toRow"></param>
-        /// <returns>trả về giá trị bị trùng lặp (string)</returns>
-        public static List<ExcelErrorDto> Excel_CheckDuplicateData(ExcelWorksheet worksheet, string colName, int fromRow, int toRow)
+        /// <param name="colName">Tên cột kiểm tra (A,B,C..)</param>
+        /// <param name="indexColumn">Vị trí của cột (1,2,3...)</param>
+        /// <param name="fromRow">Đọc từ dòng</param>
+        /// <param name="toRow">Đọc đến dòng</param>
+        /// <returns>trả về danh sách bị trùng lặp ExcelErrorDto[] </returns>
+        public static List<ExcelErrorDto> Excel_CheckDuplicateData(ExcelWorksheet worksheet, string colName, int indexColumn, int fromRow, int toRow)
         {
             List<ExcelErrorDto> lstErr = new List<ExcelErrorDto>();
             try
@@ -50,7 +51,7 @@ namespace BanHangBeautify.Configuration.Common
                     .Select(x => x.Value.ToString().Trim().ToUpper()).ToList();// convert to UpperCase
                 for (int row = 3; row <= toRow; row++)
                 {
-                    var valCell = worksheet.Cells[row, 2].Value?.ToString();
+                    var valCell = worksheet.Cells[row, indexColumn].Value?.ToString();
                     if (!string.IsNullOrEmpty(valCell))
                     {
                         valCell = valCell.Trim().ToUpper();
