@@ -10,9 +10,6 @@ using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
 {
@@ -53,7 +50,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.DiaChi);
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.SoDienThoai);
                    
-                        ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.SoDienThoai);
+                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.SoDienThoai);
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.MaSoThue);
                     if (!string.IsNullOrWhiteSpace(item.NgayApDung.ToString()))
                     {
@@ -61,7 +58,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
                     }
                     if (!string.IsNullOrWhiteSpace(item.NgayApDung.ToString()))
                     {
-                        ws.Cells[startRow, 8].Value = ConvertHelper.ToDateTime(item.NgayHetHan).ToString("dd/MM/yyyy");
+                        ws.Cells[startRow, 9].Value = ConvertHelper.ToDateTime(item.NgayHetHan).ToString("dd/MM/yyyy");
                     }
                     startRow++;
                     stt++;
