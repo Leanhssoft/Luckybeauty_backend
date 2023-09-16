@@ -1,20 +1,28 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
+using BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Repository;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NewFolder;
+using BanHangBeautify.NhanSu.NhanVien.Dto;
+using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
 {
@@ -26,16 +34,19 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public readonly IRepository<User, long> _userRepository;
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
+        private readonly IChiNhanhExcelExcelExporter _chiNhanhExcelExcelExporter;
         public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService, IRepository<User, long> userRepository,
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository,
-            IChiNhanhRepository chiNhanhRepository)
+            IChiNhanhRepository chiNhanhRepository,
+            IChiNhanhExcelExcelExporter chiNhanhExcelExcelExporter)
         {
             _chiNhanhService = chiNhanhService;
             _userRepository = userRepository;
             _nhanSuRepository = nhanSuRepository;
             _quaTrinhCongTacRepository = quaTrinhCongTacRepository;
             _chiNhanhReponsitory = chiNhanhRepository;
+            _chiNhanhExcelExcelExporter = chiNhanhExcelExcelExporter;
         }
         [HttpGet]
         public async Task<PagedResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedRequestDto input)
@@ -268,6 +279,103 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 }
             }
             result.Reverse();
+            return result;
+        }
+        public async Task<FileDto> ExportDanhSach(PagedRequestDto input)
+        {
+            input.Keyword = (input.Keyword ?? string.Empty).Trim();
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await GetAllChiNhanh(input);
+            List<ChiNhanhDto> model = new List<ChiNhanhDto>();
+            model = (List<ChiNhanhDto>)data.Items;
+            return _chiNhanhExcelExcelExporter.ExportDanhSachChiNhanh(model);
+        }
+        public async Task<FileDto> ExportSelectDanhSach(List<Guid> IdChiNhanhs)
+        {
+            PagedRequestDto input = new PagedRequestDto();
+            input.Keyword = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await GetAllChiNhanh(input);
+            List<ChiNhanhDto> model = new List<ChiNhanhDto>();
+            model = (List<ChiNhanhDto>)data.Items.Where(x=>IdChiNhanhs.Contains(x.Id)).ToList();
+            return _chiNhanhExcelExcelExporter.ExportDanhSachChiNhanh(model);
+        }
+        [HttpPost]
+        [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                int countImportData = 0;
+                int countImportLoi = 0;
+                if (file.Type == ".xlsx")
+                {
+                    using (MemoryStream stream = new MemoryStream(file.File))
+                    {
+                        using (var package = new ExcelPackage())
+                        {
+                            package.Load(stream);
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
+
+                            int rowCount = worksheet.Dimension.Rows;
+
+                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
+                            {
+                                CreateChiNhanhDto data = new CreateChiNhanhDto();
+                                data.Id = Guid.NewGuid();
+                                data.MaChiNhanh = worksheet.Cells[row, 2].Value?.ToString();
+                                data.TenChiNhanh = worksheet.Cells[row, 3].Value?.ToString();
+                                data.SoDienThoai = worksheet.Cells[row, 4].Value?.ToString();
+                                var checkPhoneNumber = await _chiNhanhService.FirstOrDefaultAsync(x => x.SoDienThoai == data.SoDienThoai);
+                                await UnitOfWorkManager.Current.SaveChangesAsync();
+                                var checkChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh.ToLower().Trim() == data.TenChiNhanh.ToLower().Trim());
+                                await UnitOfWorkManager.Current.SaveChangesAsync();
+                                if (checkPhoneNumber != null || data.TenChiNhanh == null || data.SoDienThoai == null || checkChiNhanh == null)
+                                {
+                                    countImportLoi++;
+                                    continue;
+                                }
+                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 4].Value?.ToString()))
+                                {
+                                    data.NgayApDung = DateTime.Parse(worksheet.Cells[row, 4].Value.ToString());
+                                }
+                                data.MaSoThue = worksheet.Cells[row, 5].Value?.ToString();
+                                data.DiaChi = worksheet.Cells[row, 6].Value?.ToString();
+                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 7].Value?.ToString()))
+                                {
+                                    data.NgayApDung = DateTime.Parse(worksheet.Cells[row, 7].Value.ToString());
+                                }
+                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 8].Value?.ToString()))
+                                {
+                                    data.NgayHetHan = DateTime.Parse(worksheet.Cells[row, 8].Value.ToString());
+                                }
+                                await Create(data);
+                                countImportData++;
+                            }
+                        }
+                    }
+                    if (countImportData > 0)
+                    {
+                        result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
+                        result.Status = "success";
+                    }
+                    else
+                    {
+                        result.Message = "Không có dữ liệu được nhập";
+                        result.Status = "info";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
+
             return result;
         }
     }
