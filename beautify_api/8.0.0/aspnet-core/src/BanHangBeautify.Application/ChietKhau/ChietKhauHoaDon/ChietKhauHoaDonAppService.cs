@@ -88,7 +88,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             ExecuteResultDto result = new ExecuteResultDto()
             {
                 Status = "error",
-                Message = "Có lỗi sảy ra vui lòng thử lại sau"
+                Message = "Có lỗi xảy ra vui lòng thử lại sau"
             };
             try
             {
@@ -179,7 +179,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             catch (Exception)
             {
                 result.Status = "error";
-                result.Message = "Có lỗi sảy ra vui lòng thử lại sau";
+                result.Message = "Có lỗi xảy ra vui lòng thử lại sau";
             }
 
             return result;
@@ -201,7 +201,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             ExecuteResultDto result = new ExecuteResultDto()
             {
                 Status = "error",
-                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             {
                 var finds = await _repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();

@@ -89,6 +89,8 @@
         public const string Pages_CaLamViec_Create = "Pages.CaLamViec.Create";
         public const string Pages_CaLamViec_Edit = "Pages.CaLamViec.Edit";
         public const string Pages_CaLamViec_Delete = "Pages.CaLamViec.Delete";
+        public const string Pages_CaLamViec_Import = "Pages.CaLamViec.Import";
+        public const string Pages_CaLamViec_Export = "Pages.CaLamViec.Export";
 
         public const string Pages_QuaTrinhCongTac = "Pages.QuaTrinhCongTac";
         public const string Pages_QuaTrinhCongTac_Create = "Pages.QuaTrinhCongTac.Create";
@@ -221,11 +223,15 @@
         public const string Pages_NhanSu_NgayNghiLe_Create = "Pages.NhanSu_NgayNghiLe.Create";
         public const string Pages_NhanSu_NgayNghiLe_Edit = "Pages.NhanSu_NgayNghiLe.Edit";
         public const string Pages_NhanSu_NgayNghiLe_Delete = "Pages.NhanSu_NgayNghiLe.Delete";
+        public const string Pages_NhanSu_NgayNghiLe_Import = "Pages.NhanSu_NgayNghiLe.Import";
+        public const string Pages_NhanSu_NgayNghiLe_Export = "Pages.NhanSu_NgayNghiLe.Export";
 
         public const string Pages_NhanSu_TimeOff = "Pages.NhanSu_TimeOff";
         public const string Pages_NhanSu_TimeOff_Create = "Pages.NhanSu_TimeOff.Create";
         public const string Pages_NhanSu_TimeOff_Edit = "Pages.NhanSu_TimeOff.Edit";
         public const string Pages_NhanSu_TimeOff_Delete = "Pages.NhanSu_TimeOff.Delete";
+        public const string Pages_NhanSu_TimeOff_Import = "Pages.NhanSu_TimeOff.Import";
+        public const string Pages_NhanSu_TimeOff_Export = "Pages.NhanSu_TimeOff.Export";
 
         public const string Pages_NhatKyThaoTac = "Pages.NhatKyThaoTac";
         public const string Pages_NhatKyThaoTac_Create = "Pages.NhatKyThaoTac.Create";

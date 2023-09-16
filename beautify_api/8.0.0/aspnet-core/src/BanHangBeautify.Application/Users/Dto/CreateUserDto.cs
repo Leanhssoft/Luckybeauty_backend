@@ -40,6 +40,7 @@ namespace BanHangBeautify.Users.Dto
         public string Password { get; set; }
 
         public Guid? NhanSuId { set; get; } = Guid.Empty;
+        public Guid? IdChiNhanh { set; get; } = Guid.Empty;
         public void Normalize()
         {
             if (RoleNames == null)

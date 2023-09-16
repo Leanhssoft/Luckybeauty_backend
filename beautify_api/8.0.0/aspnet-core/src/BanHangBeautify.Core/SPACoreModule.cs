@@ -38,8 +38,8 @@ namespace BanHangBeautify
             // Configure roles
             AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
             Configuration.Settings.Providers.Add<AppSettingProvider>();
-
             Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
+            Configuration.Localization.Languages.Add(new LanguageInfo("vn", "Việt Nam 2", "famfamfam-flags vi"));
 
             Configuration.Settings.SettingEncryptionConfiguration.DefaultPassPhrase = SPAConsts.DefaultPassPhrase;
             SimpleStringCipher.DefaultPassPhrase = SPAConsts.DefaultPassPhrase;

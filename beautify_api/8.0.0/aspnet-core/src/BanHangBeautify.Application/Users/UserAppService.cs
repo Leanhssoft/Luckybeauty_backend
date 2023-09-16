@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
@@ -15,6 +16,7 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.Entities;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +35,7 @@ namespace BanHangBeautify.Users
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IRepository<Role> _roleRepository;
+        private readonly IRepository<UserRole,long> _userRoleRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
@@ -46,6 +49,7 @@ namespace BanHangBeautify.Users
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
             LogInManager logInManager,
+            IRepository<UserRole, long> userRoleRepository,
             IRepository<NS_NhanVien, Guid> nhanVienRepository)
             : base(repository)
         {
@@ -56,6 +60,7 @@ namespace BanHangBeautify.Users
             _abpSession = abpSession;
             _logInManager = logInManager;
             _nhanVienRepository = nhanVienRepository;
+            _userRoleRepository= userRoleRepository;
         }
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
@@ -93,8 +98,16 @@ namespace BanHangBeautify.Users
             {
                 CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
             }
-
+            
             CurrentUnitOfWork.SaveChanges();
+            var userRole = await _userRoleRepository.FirstOrDefaultAsync(x=>x.UserId==user.Id);
+            if (userRole != null)
+            {
+                //userRole.IdChiNhanh = input.IdChiNhanh;
+                _userRoleRepository.Update(userRole);
+            }
+
+
 
             return MapToEntityDto(user);
         }
@@ -155,6 +168,12 @@ namespace BanHangBeautify.Users
             if (input.RoleNames != null)
             {
                 CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
+                var userRole = _userRoleRepository.GetAll().ToList();// (x => x.UserId == user.Id);
+                //if (userRole != null)
+                //{
+                //    userRole.IdChiNhanh = input.IdChiNhanh;
+                //    _userRoleRepository.Update(userRole);
+                //}
             }
             var result = ObjectMapper.Map<UserDto>(user);
             return result;
@@ -193,7 +212,7 @@ namespace BanHangBeautify.Users
             ExecuteResultDto result = new ExecuteResultDto()
             {
                 Status = "error",
-                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             var checkExists = await Repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
             if (checkExists != null && checkExists.Count > 0)
@@ -357,6 +376,7 @@ namespace BanHangBeautify.Users
 
             return true;
         }
+
     }
 }
 

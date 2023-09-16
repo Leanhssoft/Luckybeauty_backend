@@ -131,7 +131,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             ExecuteResultDto result = new ExecuteResultDto()
             {
                 Status = "error",
-                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             {
                 var finds = await _repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
@@ -181,6 +181,15 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             var data = await _caLamViecRepository.GetAll(input, AbpSession.TenantId ?? 1);
             return _caLamViecExcelExporter.ExportDanhSachCaLamViec(data.Items.ToList());
         }
+        public async Task<FileDto> ExportSelectedCaLamViec(List<Guid> IdCaLamViecs)
+        {
+            PagedRequestDto input = new PagedRequestDto();
+            input.Keyword = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await _caLamViecRepository.GetAll(input, AbpSession.TenantId ?? 1);
+            return _caLamViecExcelExporter.ExportDanhSachCaLamViec(data.Items.Where(x=>IdCaLamViecs.Contains(x.Id)).ToList());
+        }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
         public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
@@ -227,7 +236,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             }
             catch (Exception ex)
             {
-                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
                 result.Status = "error";
                 result.Detail = ex.Message;
             }

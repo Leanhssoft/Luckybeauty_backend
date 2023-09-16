@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Entities
 {
+    [Table("AbpUserRoles")]
     public class UserRoleChiNhanh:UserRole
     {
         public Guid? IdChiNhanh { get; set; }

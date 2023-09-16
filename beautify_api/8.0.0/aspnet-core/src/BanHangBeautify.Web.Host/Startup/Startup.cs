@@ -12,6 +12,7 @@ using BanHangBeautify.SignalR.Notification;
 using Castle.Facilities.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -107,7 +108,6 @@ namespace BanHangBeautify.Web.Host.Startup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
-
             app.UseCors(_defaultCorsPolicyName); // Enable CORS!
             app.UseStaticFiles();
 
@@ -116,7 +116,10 @@ namespace BanHangBeautify.Web.Host.Startup
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseAbpRequestLocalization();
+            app.UseAbpRequestLocalization(options =>
+            {
+                options.SetDefaultCulture("vi");
+            });
 
             app.UseEndpoints(endpoints =>
             {

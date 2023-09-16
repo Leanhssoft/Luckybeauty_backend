@@ -420,7 +420,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             }
             catch (Exception ex)
             {
-                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
                 result.Status = "error";
                 result.Detail = ex.Message;
             }

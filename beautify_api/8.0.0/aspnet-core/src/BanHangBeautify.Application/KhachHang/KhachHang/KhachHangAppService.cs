@@ -141,7 +141,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             ExecuteResultDto result = new ExecuteResultDto()
             {
                 Status = "error",
-                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             var checkExists = await _repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
             if (checkExists != null && checkExists.Count > 0)
@@ -409,7 +409,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
             catch (Exception ex)
             {
-                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
                 result.Status = "error";
                 result.Detail = ex.Message;
             }

@@ -134,7 +134,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             }
             return new ExecuteResultDto() { 
                 Status="error",
-                Message="Có lỗi sảy ra vu lòng thử lại sau!"
+                Message="Có lỗi xảy ra vu lòng thử lại sau!"
             };
         }
         public async Task<NS_LichLamViec> GetDetail(Guid id)

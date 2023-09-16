@@ -198,7 +198,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         {
             ExecuteResultDto result = new ExecuteResultDto() { 
                 Status= "error",
-                Message= "Có lỗi sảy ra vui lòng thử lại sau!"
+                Message= "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             if (ids!=null && ids.Count>0)
             {
@@ -250,6 +250,17 @@ namespace BanHangBeautify.NhanSu.NhanVien
             var data = await GetAll(input);
             List<NhanSuItemDto> model = new List<NhanSuItemDto>();
             model = (List<NhanSuItemDto>)data.Items;
+            return _nhanVienExcelExporter.ExportDanhSachNhanVien(model);
+        }
+        public async Task<FileDto> ExportSelectedNhanVien(List<Guid> IdNhanViens)
+        {
+            PagedNhanSuRequestDto input = new PagedNhanSuRequestDto();
+            input.Filter = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await GetAll(input);
+            List<NhanSuItemDto> model = new List<NhanSuItemDto>();
+            model = (List<NhanSuItemDto>)data.Items.Where(x => IdNhanViens.Contains(x.Id)).ToList();
             return _nhanVienExcelExporter.ExportDanhSachNhanVien(model);
         }
         [HttpPost]
@@ -325,7 +336,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             }
             catch (Exception ex)
             {
-                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
                 result.Status = "error";
                 result.Detail = ex.Message;
             }

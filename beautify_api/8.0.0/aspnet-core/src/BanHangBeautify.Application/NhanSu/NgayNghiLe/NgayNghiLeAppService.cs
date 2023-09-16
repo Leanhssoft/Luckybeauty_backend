@@ -119,7 +119,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             ExecuteResultDto result = new ExecuteResultDto()
             {
                 Status = "error",
-                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             var checkExists = await _ngayNghiLeService.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
             if (checkExists != null && checkExists.Count>0)
@@ -141,6 +141,15 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             input.MaxResultCount = int.MaxValue;
             var data = await _ngayNghiLeReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
             return _ngayNghiLeExcelExporter.ExportDanhSachNgayNghiLe(data.Items.ToList());
+        }
+        public async Task<FileDto> ExportSelectedNghiLe(List<Guid> IdLichNghis)
+        {
+            PagedRequestDto input = new PagedRequestDto();
+            input.Keyword = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await _ngayNghiLeReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
+            return _ngayNghiLeExcelExporter.ExportDanhSachNgayNghiLe(data.Items.Where(x=>IdLichNghis.Contains(x.Id)).ToList());
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
@@ -188,7 +197,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             }
             catch (Exception ex)
             {
-                result.Message = "Có lỗi sảy ra trong quá trình import dữ liệu";
+                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
                 result.Status = "error";
                 result.Detail = ex.Message;
             }

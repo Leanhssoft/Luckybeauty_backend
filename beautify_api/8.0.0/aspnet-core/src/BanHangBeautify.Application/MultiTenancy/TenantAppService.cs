@@ -175,7 +175,7 @@ namespace BanHangBeautify.MultiTenancy
             ExecuteResultDto result = new ExecuteResultDto()
             {
                 Status = "error",
-                Message = "Có lỗi sảy ra vui lòng thử lại sau!"
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             {
                 var finds = await Repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();

@@ -125,7 +125,6 @@
     <text name="DeletingTenant">Xóa Tenant</text>
     <text name="ChangingFeatures">Thay đổi tính năng</text>
     <text name="AuditLogs">Nhật ký sử dụng</text>
-    <Text name="Unlock">Mở khóa</Text>
     <text name="LoginForUsers">Đăng nhập cho người dùng</text>
     <text name="ChangingPermissions">Thay đổi quyền</text>
     <text name="DeletingUser">Xóa người dùng</text>
@@ -227,9 +226,7 @@
     <text name="EditNhomHangHoa">Sửa hàng hóa</text>
     <text name="DeleteNhomHangHoa">Xóa hàng hóa</text>
     <text name="ExportHangHoa">Export hàng hóa</text>
-    <text name="CreateHoaDon">Thêm hóa đơn</text>
-    <text name="EditHoaDon">Sửa hóa đơn</text>
-    <text name="DeleteHoaDon">Xóa hóa đơn</text>
+    <text name="ImportHangHoa">Import hàng hóa</text>
     <text name="NhanVienDichVu">Nhân viên - Dịch vụ</text>
     <text name="AddNewBooking">Lịch hẹn mới</text>
     <text name="RoleNameIsAlreadyTaken" value="Tên vai trò đã tồn tại"/>
@@ -244,5 +241,8 @@
     <text name="RequestedFileDoesNotExists">File không tồn tại</text>
     <text name="RequiresPasswordChange">Mật khẩu cần thay đổi</text>
     <text name="RequiresTwoFactorAuth">Yêu cầu xác thực hai yếu tố</text>
+    <text name="CreateHoaDon">Tạo hóa đơn</text>
+    <text name="EditHoaDon">Sửa hóa đơn</text>
+    <text name="DeleteHoaDon">Xóa hóa đơn</text>
   </texts>
 </localizationDictionary>

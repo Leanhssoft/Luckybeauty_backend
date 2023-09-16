@@ -103,6 +103,8 @@ namespace BanHangBeautify.Authorization
             caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Create, L("CreateCaLamViec"));
             caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Edit, L("EditCaLamViec"));
             caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Delete, L("DeleteCaLamViec"));
+            caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Import, L("Import"));
+            caLamViec.CreateChildPermission(PermissionNames.Pages_CaLamViec_Export, L("Export"));
 
             #endregion
 
@@ -223,11 +225,15 @@ namespace BanHangBeautify.Authorization
             ngayNghiLe.CreateChildPermission(PermissionNames.Pages_NhanSu_NgayNghiLe_Create, L("Create"));
             ngayNghiLe.CreateChildPermission(PermissionNames.Pages_NhanSu_NgayNghiLe_Edit, L("Edit"));
             ngayNghiLe.CreateChildPermission(PermissionNames.Pages_NhanSu_NgayNghiLe_Delete, L("Delete"));
+            ngayNghiLe.CreateChildPermission(PermissionNames.Pages_NhanSu_NgayNghiLe_Import, L("Import"));
+            ngayNghiLe.CreateChildPermission(PermissionNames.Pages_NhanSu_NgayNghiLe_Export, L("Export"));
 
             var timeOff = pages.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff, L("NhanVienNghi"));
             timeOff.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff_Create, L("Create"));
             timeOff.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff_Edit, L("Edit"));
             timeOff.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff_Delete, L("Delete"));
+            timeOff.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff_Import, L("Import"));
+            timeOff.CreateChildPermission(PermissionNames.Pages_NhanSu_TimeOff_Export, L("Export"));
 
             var nhatKyThaoTac = pages.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac, L("NhatKyThaoTac"));
             nhatKyThaoTac.CreateChildPermission(PermissionNames.Pages_NhatKyThaoTac_Create, L("Create"));
