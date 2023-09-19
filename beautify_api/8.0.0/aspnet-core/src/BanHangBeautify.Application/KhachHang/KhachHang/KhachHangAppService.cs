@@ -341,6 +341,17 @@ namespace BanHangBeautify.KhachHang.KhachHang
             model = (List<KhachHangView>)data.Items;
             return _khachHangExcelExporter.ExportDanhSachKhachHang(model);
         }
+        public async Task<FileDto> ExporSelectedtDanhSach(List<Guid> IdKhachHangs)
+        {
+            PagedKhachHangResultRequestDto input = new PagedKhachHangResultRequestDto();
+            input.keyword = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await Search(input);
+            List<KhachHangView> model = new List<KhachHangView>();
+            model = (List<KhachHangView>)data.Items.Where(x=>IdKhachHangs.Contains(x.Id)).ToList();
+            return _khachHangExcelExporter.ExportDanhSachKhachHang(model);
+        }
 
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_KhachHang_Import)]

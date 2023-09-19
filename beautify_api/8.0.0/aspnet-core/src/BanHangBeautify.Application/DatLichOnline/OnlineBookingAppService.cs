@@ -11,6 +11,8 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.NhanSu.NhanVien.Dto;
+using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Notifications;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +41,7 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
         IRepository<HT_CongTy, Guid> _congTyRepository;
         IRepository<DM_KhachHang, Guid> _dmKhachHangRepository;
+        INhanSuRepository _nhanSuService;
         private readonly IAppNotifier _appNotifier;
         INotificationAppService _notificationAppService;
         public OnlineBookingAppService(
@@ -55,7 +58,8 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<HT_CongTy, Guid> congTyRepository,
             IAppNotifier appNotifier,
             INotificationAppService notificationAppService,
-            IRepository<DM_KhachHang, Guid> khachHangRepository
+            IRepository<DM_KhachHang, Guid> khachHangRepository,
+            INhanSuRepository nhanSuService
             )
         {
             _tenantRepository = tenantRepository;
@@ -72,6 +76,7 @@ namespace BanHangBeautify.DatLichOnline
             _appNotifier = appNotifier;
             _notificationAppService = notificationAppService;
             _dmKhachHangRepository = khachHangRepository;
+            _nhanSuService= nhanSuService;
         }
         public List<string> GetAllTenant()
         {
@@ -418,8 +423,7 @@ namespace BanHangBeautify.DatLichOnline
                     _bookingNhanVienRepository.Insert(bookingNhanVien);
                     _bookingServiceRepository.Insert(bookingService);
                     await CurrentUnitOfWork.SaveChangesAsync();
-                    var listUser = await (from us in UserManager.Users
-                                          select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+                    var listUser = await getUserAdmin(data.IdChiNhanh,tenant.Id);
                     await _notificationAppService.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
                     result.Message = "Đặt lịch thành công!";
                     result.Status = "success";
@@ -436,6 +440,25 @@ namespace BanHangBeautify.DatLichOnline
 
 
             return result;
+        }
+        [NonAction]
+        private async Task<List<UserIdentifier>> getUserAdmin(Guid idChiNhanh,int tenantId)
+        {
+            var users = await (from us in UserManager.Users
+                               select new { us.TenantId, us.Id, us.NhanSuId, us.IsAdmin }).ToListAsync();
+            PagedNhanSuRequestDto input = new PagedNhanSuRequestDto();
+            input.Filter = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            input.IdChiNhanh = idChiNhanh;
+            input.TenantId = tenantId;
+            var nhanViens = await _nhanSuService.GetAllNhanSu(input);
+            var idNhanViens = nhanViens.Items.Select(x => x.Id).ToList();
+            var userIds = users.Where(x => x.IsAdmin == true || idNhanViens.Contains(Guid.Parse(x.NhanSuId.ToString()))).Select(x => x.Id).ToList();
+            var listUser = await (from us in UserManager.Users
+                                  select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+            listUser = listUser.Where(x => userIds.Contains(x.UserId)).ToList();
+            return listUser;
         }
         [NonAction]
         public BookingService CreateBookingService(Guid idBooking, Guid idDichVuQuiDoi)

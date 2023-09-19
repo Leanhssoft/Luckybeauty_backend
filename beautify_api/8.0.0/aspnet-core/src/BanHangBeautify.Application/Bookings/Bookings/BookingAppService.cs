@@ -9,11 +9,14 @@ using BanHangBeautify.Bookings.Bookings.Dto;
 using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NhanSu.NhanVien.Dto;
+using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Notifications;
 using BanHangBeautify.SignalR.Notification;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Atp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +33,8 @@ namespace BanHangBeautify.Bookings.Bookings
         private readonly IRepository<BookingService, Guid> _bookingServiceRepository;
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
-        private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
+        private readonly IRepository<NS_NhanVien, Guid> _nhanVienService;
+        private readonly INhanSuRepository _nhanSuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
         private readonly IAppNotifier _appNotifier;
         public BookingAppService(
@@ -41,7 +45,8 @@ namespace BanHangBeautify.Bookings.Bookings
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             IRepository<DM_HangHoa, Guid> dichVuRepository,
             IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
-             IRepository<NS_NhanVien, Guid> nhanVienRepository,
+             IRepository<NS_NhanVien, Guid> nhanVienService,
+             INhanSuRepository nhanSuRepository,
             IAppNotifier appNotifier)
         {
             _repository = repository;
@@ -51,13 +56,26 @@ namespace BanHangBeautify.Bookings.Bookings
             _khachHangRepository = khachHangRepository;
             _dichVuRepository = dichVuRepository;
             _donViQuiDoiRepository = donViQuiDoiRepository;
-            _nhanVienRepository = nhanVienRepository;
+            _nhanVienService = nhanVienService;
+            _nhanSuRepository = nhanSuRepository;
             _appNotifier = appNotifier;
         }
-        private async Task<List<UserIdentifier>> getUserAdmin()
+        private async Task<List<UserIdentifier>> getUserAdmin(Guid idChiNhanh)
         {
+            var users = await (from us in UserManager.Users
+                                select new { us.TenantId, us.Id, us.NhanSuId,us.IsAdmin }).ToListAsync();
+            PagedNhanSuRequestDto input = new PagedNhanSuRequestDto();
+            input.Filter = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            input.IdChiNhanh = idChiNhanh;
+            input.TenantId = AbpSession.TenantId ?? 1;
+            var nhanViens = await _nhanSuRepository.GetAllNhanSu(input);
+            var idNhanViens = nhanViens.Items.Select(x => x.Id).ToList();
+            var userIds = users.Where(x => x.IsAdmin == true || idNhanViens.Contains(Guid.Parse(x.NhanSuId.ToString()))).Select(x => x.Id).ToList();
             var listUser = await (from us in UserManager.Users
-                                  select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
+                                  select new UserIdentifier( us.TenantId, us.Id)).ToListAsync();
+            listUser = listUser.Where(x => userIds.Contains(x.UserId)).ToList();
             return listUser;
         }
         [HttpPost]
@@ -98,7 +116,7 @@ namespace BanHangBeautify.Bookings.Bookings
             _repository.Insert(booking);
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
-            var listUser = await getUserAdmin();
+            var listUser = await getUserAdmin((Guid)dto.IdChiNhanh);
             string mess = "Khách hàng: " + booking.TenKhachHang + "(" + booking.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("HH:mm");
             var notificationData = NewMessageNotification(mess);
             await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);

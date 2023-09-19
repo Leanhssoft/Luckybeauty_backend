@@ -35,11 +35,13 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
         private readonly IChiNhanhExcelExporter _chiNhanhExcelExporter;
+        private readonly IRepository<HT_CongTy, Guid> _congTyRpository;
         public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService, IRepository<User, long> userRepository,
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository,
             IChiNhanhRepository chiNhanhRepository,
-            IChiNhanhExcelExporter chiNhanhExcelExporter
+            IChiNhanhExcelExporter chiNhanhExcelExporter,
+            IRepository<HT_CongTy, Guid> congTyRpository
 
             )
         {
@@ -49,6 +51,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             _quaTrinhCongTacRepository = quaTrinhCongTacRepository;
             _chiNhanhReponsitory = chiNhanhRepository;
             _chiNhanhExcelExporter = chiNhanhExcelExporter;
+            _congTyRpository = congTyRpository;
         }
         [HttpGet]
         public async Task<PagedResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedRequestDto input)
@@ -134,7 +137,15 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                     chiNhanh.NgayHetHan = dto.NgayHetHan;
                     chiNhanh.TenantId = AbpSession.TenantId ?? 1;
                     chiNhanh.CreatorUserId = AbpSession.UserId;
-                    chiNhanh.IdCongTy = dto.IdCongTy;
+                    var congTy =await _congTyRpository.GetAll().FirstOrDefaultAsync();
+                    if (congTy==null)
+                    {
+                        chiNhanh.IdCongTy = dto.IdCongTy;
+                    }
+                    else
+                    {
+                        chiNhanh.IdCongTy = congTy.Id;
+                    }
                     chiNhanh.TrangThai = dto.TrangThai;
                     chiNhanh.CreationTime = DateTime.Now;
                     await _chiNhanhService.InsertAsync(chiNhanh);
@@ -293,7 +304,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             model = (List<ChiNhanhDto>)data.Items;
             return _chiNhanhExcelExporter.ExportDanhSachChiNhanh(model);
         }
-        public async Task<FileDto> ExportSelectDanhSach(List<Guid> IdChiNhanhs)
+        public async Task<FileDto> ExportSelectedDanhSach(List<Guid> IdChiNhanhs)
         {
             PagedRequestDto input = new PagedRequestDto();
             input.Keyword = "";
@@ -335,14 +346,10 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                                 await UnitOfWorkManager.Current.SaveChangesAsync();
                                 var checkChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh.ToLower().Trim() == data.TenChiNhanh.ToLower().Trim());
                                 await UnitOfWorkManager.Current.SaveChangesAsync();
-                                if (checkPhoneNumber != null || data.TenChiNhanh == null || data.SoDienThoai == null || checkChiNhanh == null)
+                                if (checkPhoneNumber != null || data.TenChiNhanh == null || data.SoDienThoai == null || checkChiNhanh != null)
                                 {
                                     countImportLoi++;
                                     continue;
-                                }
-                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 4].Value?.ToString()))
-                                {
-                                    data.NgayApDung = DateTime.Parse(worksheet.Cells[row, 4].Value.ToString());
                                 }
                                 data.MaSoThue = worksheet.Cells[row, 5].Value?.ToString();
                                 data.DiaChi = worksheet.Cells[row, 6].Value?.ToString();
