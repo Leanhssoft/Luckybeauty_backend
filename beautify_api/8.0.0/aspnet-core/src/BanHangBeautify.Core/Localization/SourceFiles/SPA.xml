@@ -1,137 +1,137 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <localizationDictionary culture="en">
   <texts>
-    <text name="HomePage" value="Home page" />
-    <text name="About" value="About" />
-    <text name="IncorrectPassword">Incorrect Password</text>
-    <text name="WelcomeMessage" value="Welcome to SPA!" />
-    <text name="FormIsNotValidMessage" value="Form is not valid. Please check and fix errors." />
-    <text name="TenantNameCanNotBeEmpty" value="Tenant name can not be empty" />
-    <text name="InvalidUserNameOrPassword" value="Invalid user name or password" />
-    <text name="ThereIsNoTenantDefinedWithName{0}" value="There is no tenant defined with name {0}" />
-    <text name="TenantIsNotActive" value="Tenant {0} is not active." />
-    <text name="UserIsNotActiveAndCanNotLogin" value="User {0} is not active and can not log in." />
-    <text name="UserEmailIsNotConfirmedAndCanNotLogin">Your email address is not confirmed. You can not login.</text>
-    <text name="UserLockedOutMessage">The user account has been locked out. Please try again later.</text>
-    <text name="PleaseEnterLoginInformation" value="Please enter login information" />
-    <text name="TenancyName" value="Tenancy name" />
-    <text name="UserNameOrEmail" value="User name or email" />
-    <text name="Password" value="Password" />
-    <text name="ResetPassword" value="Reset Password" />
-    <text name="UpdatePassword" value="Update Password" />
-    <text name="RememberMe" value="Remember me" />
-    <text name="LogIn" value="Log in" />
-    <text name="LoginFailed" value="Login failed!" />
-    <text name="NameSurname" value="Name surname" />
-    <text name="UserName" value="User name" />
-    <text name="Name" value="Name" />
-    <text name="Surname" value="Surname" />
-    <text name="EmailAddress" value="Email address" />
+    <text name="HomePage" value="Trang chủ" />
+    <text name="About" value="Giới thiệu" />
+    <text name="WelcomeMessage" value="Chào mừng đến với SPA!" />
+    <text name="FormIsNotValidMessage" value="Biểu mẫu không hợp lệ. Vui lòng kiểm tra và sửa lỗi." />
+    <text name="TenantNameCanNotBeEmpty" value="Tenant không được để trống" />
+    <text name="InvalidUserNameOrPassword" value="Tên đăng nhập hoặc mật khẩu không chính xác" />
+    <text name="ThereIsNoTenantDefinedWithName{0}" value="Không có Tenant nào là {0}" />
+    <text name="TenantIsNotActive" value="Tenant {0} không hoạt động." />
+    <text name="UserIsNotActiveAndCanNotLogin" value="Tài khoản {0} chưa được kích hoạt để đăng nhập." />
+    <text name="UserEmailIsNotConfirmedAndCanNotLogin">Tài khoản email chưa được xác nhận. Bạn không thể đăng nhập.</text>
+    <text name="UserLockedOutMessage">Tài khoản người dùng đã bị khóa. Vui lòng thử lại sau.</text>
+    <text name="PleaseEnterLoginInformation" value="Vui lòng nhập thông tin đăng nhập" />
+    <text name="TenancyName" value="Tên tenancy" />
+    <text name="UserNameOrEmail" value="Tên đăng nhập hoặc email" />
+    <text name="Password" value="Mật khẩu" />
+    <text name="ResetPassword" value="Khôi phục mật khẩu" />
+    <text name="UpdatePassword" value="Cập nhật mật khẩu" />
+    <text name="RememberMe" value="Ghi nhớ" />
+    <text name="LogIn" value="Đăng nhập" />
+    <text name="LoginFailed" value="Đăng nhập thất bại!" />
+    <text name="NameSurname" value="Họ tên" />
+    <text name="UserName" value="Tên đăng nhập" />
+    <text name="Name" value="Tên" />
+    <text name="Surname" value="Họ" />
+    <text name="EmailAddress" value="Địa chỉ email" />
     <text name="Tenants" value="Tenants" />
-    <text name="SavedSuccessfully" value="Saved successfully" />
-    <text name="CreateNewTenant" value="Create new tenant" />
-    <text name="AdminEmailAddress" value="Admin email address" />
-    <text name="AdminPassword" value="Admin password" />
-    <text name="Save" value="Save" />
-    <text name="Cancel" value="Cancel" />
-    <text name="TenantName_Regex_Description" value="Tenant name must be at least 2 chars, starts with a letter and continue with letter, number, dash or underscore." />
-    <text name="DefaultPasswordIs" value="Default password is {0}" />
-    <text name="CanBeEmptyToLoginAsHost" value="Can be empty to login as host." />
-    <text name="Register" value="Register" />
-    <text name="OrLoginWith" value="Or login with" />
-    <text name="WaitingForActivationMessage" value="Your account is waiting to be activated by system admin." />
-    <text name="TenantSelection" value="Tenant Selection" />
-    <text name="TenantSelection_Detail" value="Please select one of the following tenants." />
-    <text name="Logout" value="Logout" />
-    <text name="RegisterFormUserNameInvalidMessage">Please don't enter an email address for username.</text>
-    <text name="DatabaseConnectionString" value="Database connection string" />
-    <text name="Users" value="Users" />
-    <text name="IsActive" value="Is active" />
-    <text name="FullName" value="Full name" />
-    <text name="CreateNewUser" value="Create new user" />
-    <text name="Yes" value="Yes" />
-    <text name="No" value="No" />
-    <text name="Optional" value="Optional" />
-    <text name="LeaveEmptyToSwitchToHost">Leave empty to switch to the host</text>
-    <text name="CurrentTenant">Current tenant</text>
-    <text name="NotSelected">Not selected</text>
-    <text name="Change">Change</text>
-    <text name="ChangeTenant">Change tenant</text>
-    <text name="MultiLevelMenu">Multi Level Menu</text>
-    <text name="Back">Back</text>
-    <text name="SuccessfullyRegistered">Successfully registered</text>
-    <text name="WaitingForEmailActivation">Your email address should be activated</text>
-    <text name="Roles">Roles</text>
-    <text name="DisplayName">Display Name</text>
-    <text name="Edit">Edit</text>
-    <text name="Delete">Delete</text>
-    <text name="CreateNewRole">Create new role</text>
-    <text name="RoleName">Role Name</text>
-    <text name="Actions">Actions</text>
-    <text name="CouldNotCompleteLoginOperation">Could not complete login operation. Please try again later.</text>
-    <text name="CouldNotValidateExternalUser">Could not validate external user</text>
-    <text name="EditRole">Edit role</text>
-    <text name="EditTenant">Edit tenant</text>
-    <text name="EditUser">Edit user</text>
-    <text name="TenantIdIsNotActive{0}">TenantId {0} is not active</text>
-    <text name="UnknownTenantId{0}">Unknown tenantId {0}</text>
-    <text name="ThisFieldIsRequired">This field is required</text>
-    <text name="PleaseWait">Please wait...</text>
-    <text name="Administration">Administration</text>
-    <text name="ClearAll">Clear all</text>
-    <text name="ClearOthers">Clear others</text>
-    <text name="LabelOptions">Label options</text>
-    <text name="Permissions">Permissions</text>
-    <text name="RoleDescription">Role description</text>
-    <text name="Refresh">Refresh</text>
-    <text name="Create">Create</text>
-    <text name="UserDetails">User details</text>
-    <text name="UserRoles">User roles</text>
-    <text name="ConfirmPassword">Confirm password</text>
-    <text name="Version">Version</text>
-    <text name="On">On</text>
-    <text name="Off">Off</text>
-    <text name="AreYouSureWantToDelete">Are you sure want to delete {0}?</text>
-    <text name="SuccessfullyDeleted">Successfully deleted</text>
-    <text name="StartTyping">Start Typing</text>
-    <text name="Skins">Skins</text>
-    <text name="Settings">Settings</text>
-    <text name="Filter">Filter</text>
-    <text name="CurrentPassword">Current Password</text>
-    <text name="NewPassword">New Password</text>
-    <text name="ConfirmNewPassword">Confirm New Password</text>
-    <text name="PasswordsDoNotMatch">Passwords do not match</text>
-    <text name="PasswordsMustBeAtLeast8CharactersContainLowercaseUppercaseNumber">Passwords must be at least 8 characters, contain a lowercase, uppercase, and number</text>
-    <text name="UserDeleteWarningMessage">User {0} will be deleted.</text>
-    <text name="RoleDeleteWarningMessage">Role {0} will be deleted and unassigned from all assigned users.</text>
-    <text name="TenantDeleteWarningMessage">Tenant {0} will be deleted.</text>
-    <text name="SearchWithThreeDot">Search...</text>
-    <text name="PleaseEnterAtLeastNCharacter">Please enter at least {0} characters</text>
-    <text name="PleaseEnterNoMoreThanNCharacter">Please enter no more than {0} characters</text>
-    <text name="InvalidEmailAddress">Invalid email address</text>
-    <text name="InvalidPattern">Invalid</text>
-    <text name="PairsDoNotMatch">Do not match</text>
-    <text name="All">All</text>
-    <text name="TotalRecordsCount">Total: {0}</text>
-    <text name="Search">Search</text>
-    <text name="EditingRole">Sửa vai trò</text>
-    <text name="Clear">Clear</text>
-    <text name="ResetPasswordStepOneInfo">1. Enter your administrator password</text>
-    <text name="ResetPasswordStepTwoInfo">2. Copy this random password so you can send it to the user</text>
-    <text name="UsersActivation">Users activation</text>
+    <text name="SavedSuccessfully" value="Lưu dữ liệu thành công" />
+    <text name="CreateNewTenant" value="Tạo mới tenant" />
+    <text name="AdminEmailAddress" value="Địa chỉ email quản trị viên" />
+    <text name="AdminPassword" value="Mật khẩu quản trị viên" />
+    <text name="Save" value="Lưu" />
+    <text name="Cancel" value="Hủy bỏ" />
+    <text name="TenantName_Regex_Description" value="Tên người sử dụng phải có ít nhất 2 ký tự, bắt đầu bằng một chữ cái và tiếp tục với chữ cái, số, dấu gạch ngang hoặc gạch dưới." />
+    <text name="DefaultPasswordIs" value="Mật khẩu mặc định là {0}" />
+    <text name="CanBeEmptyToLoginAsHost" value="Có thể để trống để đăng nhập với tư cách là máy chủ." />
+    <text name="Register" value="Đăng ký" />
+    <text name="OrLoginWith" value="Hoặc đăng nhập với" />
+    <text name="WaitingForActivationMessage" value="Tài khoản của bạn đang chờ được kích hoạt bởi quản trị viên hệ thống." />
+    <text name="TenantSelection" value="Chọn người dùng" />
+    <text name="TenantSelection_Detail" value="Vui lòng chọn một trong các người dùng sau." />
+    <text name="Logout" value="Đăng xuất" />
+    <text name="RegisterFormUserNameInvalidMessage">Vui lòng không nhập địa chỉ email cho tên người dùng.</text>
+    <text name="DatabaseConnectionString" value="Chuỗi kết nối cơ sở dữ liệu" />
+    <text name="Users" value="Người dùng" />
+    <text name="IsActive" value="Đang hoạt động" />
+    <text name="FullName" value="Họ tên đầy đủ" />
+    <text name="CreateNewUser" value="Tạo người dùng mới" />
+    <text name="Yes" value="Có" />
+    <text name="No" value="Không" />
+    <text name="Optional" value="Tùy chọn" />
+    <text name="LeaveEmptyToSwitchToHost">Để trống để chuyển sang máy chủ</text>
+    <text name="CurrentTenant">Người dùng hiện tại</text>
+    <text name="NotSelected">Không được chọn</text>
+    <text name="Change">Thay đổi</text>
+    <text name="ChangeTenant">Thay đổi người dùng</text>
+    <text name="MultiLevelMenu">Menu đa cấp</text>
+    <text name="Back">Quay lại</text>
+    <text name="SuccessfullyRegistered">Đăng ký thành công</text>
+    <text name="WaitingForEmailActivation">Địa chỉ email của bạn sẽ được kích hoạt</text>
+    <text name="Roles">Vai trò</text>
+    <text name="DisplayName">Tên hiển thị</text>
+    <text name="Edit">Chỉnh sửa</text>
+    <text name="Delete">Xóa</text>
+    <text name="CreateNewRole">Tạo vai trò mới</text>
+    <text name="RoleName">Tên vai trò</text>
+    <text name="Actions">Hoạt động</text>
+    <text name="CouldNotCompleteLoginOperation">Không thể hoàn thành thao tác đăng nhập. Vui lòng thử lại sau.</text>
+    <text name="CouldNotValidateExternalUser">Không thể xác thực người dùng bên ngoài</text>
+    <text name="EditRole">Chỉnh sửa vai trò</text>
+    <text name="EditUser">Chỉnh sửa người dùng</text>
+    <text name="TenantIdIsNotActive{0}">Mã đơn vị {0} không hoạt động</text>
+    <text name="UnknownTenantId{0}">Mã đơn vị {0} không xác định</text>
+    <text name="ThisFieldIsRequired">Trường này là bắt buộc</text>
+    <text name="PleaseWait">Vui lòng đợi...</text>
+    <text name="Administration">Quản trị</text>
+    <text name="ClearAll">Xóa tất cả</text>
+    <text name="ClearOthers">Xóa các mục khác</text>
+    <text name="LabelOptions">Tùy chọn nhãn</text>
+    <text name="Permissions">Quyền</text>
+    <text name="RoleDescription">Mô tả vai trò</text>
+    <text name="Refresh">Làm mới</text>
+    <text name="Create">Tạo mới</text>
+    <text name="UserDetails">Chi tiết người dùng</text>
+    <text name="UserRoles">Vai trò người dùng</text>
+    <text name="ConfirmPassword">Xác nhận mật khẩu</text>
+    <text name="Version">Phiên bản</text>
+    <text name="On">Bật</text>
+    <text name="Off">Tắt</text>
+    <text name="AreYouSureWantToDelete">Bạn có chắc chắn muốn xóa {0} không?</text>
+    <text name="SuccessfullyDeleted">Xóa thành công</text>
+    <text name="StartTyping">Bắt đầu nhập</text>
+    <text name="Skins">Giao diện</text>
+    <text name="Settings">Cài đặt</text>
+    <text name="Filter">Lọc</text>
+    <text name="IncorrectPassword">Mật khẩu không chính xác</text>
+    <text name="CurrentPassword">Mật khẩu hiện tại</text>
+    <text name="NewPassword">Mật khẩu mới</text>
+    <text name="ConfirmNewPassword">Xác nhận mật khẩu mới</text>
+    <text name="PasswordsDoNotMatch">Mật khẩu không khớp</text>
+    <text name="PasswordsMustBeAtLeast8CharactersContainLowercaseUppercaseNumber">Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ thường, chữ hoa và số</text>
+    <text name="UserDeleteWarningMessage">Người dùng {0} sẽ bị xóa.</text>
+    <text name="RoleDeleteWarningMessage">Vai trò {0} sẽ bị xóa và không được gán cho bất kỳ người dùng nào.</text>
+    <text name="TenantDeleteWarningMessage">Đơn vị {0} sẽ bị xóa.</text>
+    <text name="SearchWithThreeDot">Tìm kiếm...</text>
+    <text name="PleaseEnterAtLeastNCharacter">Vui lòng nhập ít nhất {0} ký tự</text>
+    <text name="PleaseEnterNoMoreThanNCharacter">Vui lòng không nhập quá {0} ký tự</text>
+    <text name="InvalidEmailAddress">Địa chỉ email không hợp lệ</text>
+    <text name="InvalidPattern">Không hợp lệ</text>
+    <text name="PairsDoNotMatch">Không khớp</text>
+    <text name="All">Tất cả</text>
+    <text name="TotalRecordsCount">Tổng: {0}</text>
+    <text name="Search">Tìm kiếm</text>
+    <text name="Clear">Xóa</text>
+    <text name="ResetPasswordStepOneInfo">1. Nhập mật khẩu quản trị của bạn</text>
+    <text name="ResetPasswordStepTwoInfo">2. Sao chép mật khẩu ngẫu nhiên này để bạn có thể gửi cho người dùng</text>
+    <text name="UsersActivation">Kích hoạt người dùng</text>
+    <text name ="Unlock">Mở khóa</text>
+    <text name ="NhomKhach">Nhóm khách hàng</text>
     <text name="NhatKyThaoTac">Nhật ký thao tác</text>
     <text name="CreatingNewTenant">Thêm mới Tenant</text>
     <text name="EditingTenant">Sửa Tenant</text>
     <text name="DeletingTenant">Xóa Tenant</text>
     <text name="ChangingFeatures">Thay đổi tính năng</text>
     <text name="AuditLogs">Nhật ký sử dụng</text>
-    <Text name="Unlock">Mở khóa</Text>
     <text name="LoginForUsers">Đăng nhập cho người dùng</text>
     <text name="ChangingPermissions">Thay đổi quyền</text>
     <text name="DeletingUser">Xóa người dùng</text>
     <text name="EditingUser">Sửa người dùng</text>
     <text name="CreatingNewUser">Thêm mới người dùng</text>
     <text name="Pages">Trang</text>
+    <text name="EditingRole">Sửa vai trò</text>
     <text name="DeletingRole">Xóa vai rò</text>
     <text name="CreatingNewRole">Thêm vai trò</text>
     <text name ="CauHinhPhanMem">Cấu hình phần mềm</text>
@@ -152,6 +152,7 @@
     <text name ="NhanVienThucHien">Nhân viên thực hiện</text>
     <text name ="NangNhomKhach">Nâng nhóm khách</text>
     <text name ="KhuyenMaiApDung">Khuyễn mãi áp dụng</text>
+    <text name ="KhuyenMai">Khuyễn mại</text>
     <text name ="LichLamViec">Lịch làm việc</text>
     <text name ="LichLamViecCa">Lịch làm việc ca</text>
     <text name ="NgayNghiLe">Ngày nghỉ lễ</text>
@@ -218,8 +219,30 @@
     <text name="EditCompany">Sửa công ty</text>
     <text name="CreateCompany">Tạo công ty</text>
     <text name="Company">Công ty</text>
-    <text name ="KhuyenMai">Khuyễn mại</text>
-    <text name="Import">Import</text>
-    <text name ="Export">Export</text>
+    <text name="Import">Nhập dữ liệu</text>
+    <text name="Export">Xuất dữ liệu</text>
+    <text name="NhomHangHoa">Nhóm hàng hóa</text>
+    <text name="CreateNhomHangHoa">Thêm hàng hóa</text>
+    <text name="EditNhomHangHoa">Sửa hàng hóa</text>
+    <text name="DeleteNhomHangHoa">Xóa hàng hóa</text>
+    <text name="ExportHangHoa">Export hàng hóa</text>
+    <text name="ImportHangHoa">Import hàng hóa</text>
+    <text name="NhanVienDichVu">Nhân viên - Dịch vụ</text>
+    <text name="AddNewBooking">Lịch hẹn mới</text>
+    <text name="RoleNameIsAlreadyTaken" value="Tên vai trò đã tồn tại"/>
+    <text name="RoleDisplayNameIsAlreadyTaken">Tên hiển thị đã tồn tại</text>
+    <text name="CanNotDeleteStaticRole">Không thể xóa vai trò mặc định</text>
+    <text name="CanNotDeleteAdminUser">Không thể xóa tài khoản Admin</text>
+    <text name="CanNotRenameAdminUser">Không thể sửa tên tài khoản Admin</text>
+    <text name="Identity.DuplicateUserName">Tên người dùng đã tồn tại</text>
+    <text name="Identity.DuplicateEmail">Email đã tồn tại</text>
+    <text name="UnknownDashboard">Trang Dashboard không xác định</text>
+    <text name="ThisNotificationDoesntBelongToYou">Thông báo không thuộc về bạn</text>
+    <text name="RequestedFileDoesNotExists">File không tồn tại</text>
+    <text name="RequiresPasswordChange">Mật khẩu cần thay đổi</text>
+    <text name="RequiresTwoFactorAuth">Yêu cầu xác thực hai yếu tố</text>
+    <text name="CreateHoaDon">Tạo hóa đơn</text>
+    <text name="EditHoaDon">Sửa hóa đơn</text>
+    <text name="DeleteHoaDon">Xóa hóa đơn</text>
   </texts>
 </localizationDictionary>

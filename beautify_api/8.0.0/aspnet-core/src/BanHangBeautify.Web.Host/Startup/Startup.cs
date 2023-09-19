@@ -116,10 +116,7 @@ namespace BanHangBeautify.Web.Host.Startup
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseAbpRequestLocalization(options =>
-            {
-                options.SetDefaultCulture("vi");
-            });
+            app.UseAbpRequestLocalization();
 
             app.UseEndpoints(endpoints =>
             {

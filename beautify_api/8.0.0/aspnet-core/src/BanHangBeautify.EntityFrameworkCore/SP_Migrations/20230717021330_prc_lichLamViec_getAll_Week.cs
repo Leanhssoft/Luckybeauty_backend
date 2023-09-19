@@ -119,7 +119,7 @@ BEGIN
 	CONVERT(NVARCHAR(Max), SUM(TongThoiGian)) as TongThoiGian,
 	MAX(Monday) as Monday,
 	MAX(Tuesday) as Tuesday,
-	MAX(Wednesday) as Wendnesday,
+	MAX(Wednesday) as Wednesday,
 	MAX(Thursday) as Thursday,
 	MAX(Friday) as Friday,
 	MAX(Saturday) as Saturday,
