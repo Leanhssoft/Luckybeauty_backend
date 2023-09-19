@@ -2,7 +2,6 @@
 using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Net.MimeTypes;
-using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Hosting;
 using OfficeOpenXml;
@@ -10,13 +9,16 @@ using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
 {
-    public class ChiNhanhExcelExporter : EpPlusExcelExporterBase, IChiNhanhExcelExcelExporter
+    public class ChiNhanhExcelExporter: EpPlusExcelExporterBase, IChiNhanhExcelExporter
     {
         private readonly IHostingEnvironment _env;
-        public ChiNhanhExcelExporter(ITempFileCacheManager tempFileCacheManager,IHostingEnvironment env) : base(tempFileCacheManager)
+        public ChiNhanhExcelExporter(ITempFileCacheManager tempFileCacheManager, IHostingEnvironment env) : base(tempFileCacheManager)
         {
             _env = env;
         }
@@ -49,7 +51,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
                     ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.TenChiNhanh);
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.DiaChi);
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.SoDienThoai);
-                   
+
                     ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.SoDienThoai);
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.MaSoThue);
                     if (!string.IsNullOrWhiteSpace(item.NgayApDung.ToString()))

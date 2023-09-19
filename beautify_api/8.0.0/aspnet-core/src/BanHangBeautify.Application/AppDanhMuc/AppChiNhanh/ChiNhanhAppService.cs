@@ -34,19 +34,21 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public readonly IRepository<User, long> _userRepository;
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
-        private readonly IChiNhanhExcelExcelExporter _chiNhanhExcelExcelExporter;
+        private readonly IChiNhanhExcelExporter _chiNhanhExcelExporter;
         public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService, IRepository<User, long> userRepository,
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository,
             IChiNhanhRepository chiNhanhRepository,
-            IChiNhanhExcelExcelExporter chiNhanhExcelExcelExporter)
+            IChiNhanhExcelExporter chiNhanhExcelExporter
+
+            )
         {
             _chiNhanhService = chiNhanhService;
             _userRepository = userRepository;
             _nhanSuRepository = nhanSuRepository;
             _quaTrinhCongTacRepository = quaTrinhCongTacRepository;
             _chiNhanhReponsitory = chiNhanhRepository;
-            _chiNhanhExcelExcelExporter = chiNhanhExcelExcelExporter;
+            _chiNhanhExcelExporter = chiNhanhExcelExporter;
         }
         [HttpGet]
         public async Task<PagedResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedRequestDto input)
@@ -289,7 +291,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             var data = await GetAllChiNhanh(input);
             List<ChiNhanhDto> model = new List<ChiNhanhDto>();
             model = (List<ChiNhanhDto>)data.Items;
-            return _chiNhanhExcelExcelExporter.ExportDanhSachChiNhanh(model);
+            return _chiNhanhExcelExporter.ExportDanhSachChiNhanh(model);
         }
         public async Task<FileDto> ExportSelectDanhSach(List<Guid> IdChiNhanhs)
         {
@@ -299,8 +301,8 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             input.MaxResultCount = int.MaxValue;
             var data = await GetAllChiNhanh(input);
             List<ChiNhanhDto> model = new List<ChiNhanhDto>();
-            model = (List<ChiNhanhDto>)data.Items.Where(x=>IdChiNhanhs.Contains(x.Id)).ToList();
-            return _chiNhanhExcelExcelExporter.ExportDanhSachChiNhanh(model);
+            model = (List<ChiNhanhDto>)data.Items.Where(x => IdChiNhanhs.Contains(x.Id)).ToList();
+            return _chiNhanhExcelExporter.ExportDanhSachChiNhanh(model);
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]

@@ -1,5 +1,4 @@
 ﻿using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
-using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.Storage;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
 {
-    public interface IChiNhanhExcelExcelExporter
+    public interface IChiNhanhExcelExporter
     {
         FileDto ExportDanhSachChiNhanh(List<ChiNhanhDto> data);
     }
