@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
 {
@@ -14,10 +15,15 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
         public bool TatCaKhachHang { get; set; }
         public bool TatCaChiNhanh { get; set; }
         public bool TatCaNhanVien { get; set; }
-        public string NgayApDung { set; get; }
-        public string ThangApDunng { get; set; }
-        public string ThuApDung { get; set; }
-        public string GioApDung { get; set; }
+        public List<string> NgayApDung { set; get; }
+        public List<string> ThangApDung { get; set; }
+        public List<string> ThuApDung { get; set; }
+        public List<string> GioApDung { get; set; }
+        public List<Guid> IdNhaViens { set; get; }
+        public List<Guid> IdChiNhanhs { set; get; }
+        public List<Guid> IdNhomKhachs { set; get; }
+        public decimal TongTienHang { set; get; }
+        public bool GiamGiaTheoPhanTram { set; get; }
         public string GhiChu { get; set; }
     }
 }

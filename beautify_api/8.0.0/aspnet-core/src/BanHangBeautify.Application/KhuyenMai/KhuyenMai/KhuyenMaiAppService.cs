@@ -6,6 +6,7 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.KhuyenMai.KhuyenMai.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,15 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
     public class KhuyenMaiAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_KhuyenMai, Guid> _khuyenMaiRepository;
-        public KhuyenMaiAppService(IRepository<DM_KhuyenMai, Guid> khuyenMaiRepository)
+        private readonly IRepository<DM_KhuyenMai_ApDung, Guid> _khuyenMaiApDungService;
+        private readonly IRepository<DM_KhuyenMai_ChiTiet, Guid> _khuyenMaiChiTIetService;
+        public KhuyenMaiAppService(IRepository<DM_KhuyenMai, Guid> khuyenMaiRepository,
+            IRepository<DM_KhuyenMai_ApDung, Guid> khuyenMaiApDungService,
+            IRepository<DM_KhuyenMai_ChiTiet, Guid> khuyenMaiChiTIetService)
         {
             _khuyenMaiRepository = khuyenMaiRepository;
+            _khuyenMaiApDungService = khuyenMaiApDungService;
+            _khuyenMaiChiTIetService = khuyenMaiChiTIetService;
         }
         [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Create, PermissionNames.Pages_KhuyenMai_Edit)]
         public async Task<KhuyenMaiDto> CreateOrEdit(CreateOrEditKhuyenMaiDto input)
@@ -38,6 +45,107 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
             DM_KhuyenMai data = new DM_KhuyenMai();
             data = ObjectMapper.Map<DM_KhuyenMai>(input);
             data.Id = Guid.NewGuid();
+            data.ThangApDung = string.Join(";", input.ThangApDung);
+            data.ThuApDung = string.Join(";", input.ThuApDung);
+            data.NgayApDung = string.Join(";", input.NgayApDung);
+            data.GioApDung = string.Join(";", input.GioApDung);
+            if (input.IdChiNhanhs.Count > 0)
+            {
+                foreach (var chiNhanh in input.IdChiNhanhs)
+                {
+                    if (input.IdNhaViens.Count > 0)
+                    {
+                        foreach (var nhanVien in input.IdNhaViens)
+                        {
+                            if (input.IdNhomKhachs.Count > 0)
+                            {
+                                foreach (var nhomKhach in input.IdNhomKhachs)
+                                {
+                                    DM_KhuyenMai_ApDung khuyenMaiApDung = new DM_KhuyenMai_ApDung();
+                                    khuyenMaiApDung.Id = Guid.NewGuid();
+                                    khuyenMaiApDung.IdChiNhanh = chiNhanh;
+                                    khuyenMaiApDung.IdNhanVien = nhanVien;
+                                    khuyenMaiApDung.IdNhomKhach = nhomKhach;
+                                    khuyenMaiApDung.CreationTime = DateTime.Now;
+                                    khuyenMaiApDung.CreatorUserId = AbpSession.UserId;
+                                    khuyenMaiApDung.TenantId = AbpSession.TenantId ?? 1;
+                                    await _khuyenMaiApDungService.InsertAsync(khuyenMaiApDung);
+                                }
+                            }
+                            else
+                            {
+                                DM_KhuyenMai_ApDung khuyenMaiApDung = new DM_KhuyenMai_ApDung();
+                                khuyenMaiApDung.Id = Guid.NewGuid();
+                                khuyenMaiApDung.IdChiNhanh = chiNhanh;
+                                khuyenMaiApDung.IdNhanVien = nhanVien;
+                                khuyenMaiApDung.CreationTime = DateTime.Now;
+                                khuyenMaiApDung.CreatorUserId = AbpSession.UserId;
+                                khuyenMaiApDung.TenantId = AbpSession.TenantId ?? 1;
+                                await _khuyenMaiApDungService.InsertAsync(khuyenMaiApDung);
+                            }
+                        }
+                    }
+                    else if (input.IdNhomKhachs.Count > 0)
+                    {
+                        foreach (var nhomKhach in input.IdNhomKhachs)
+                        {
+                            DM_KhuyenMai_ApDung khuyenMaiApDung = new DM_KhuyenMai_ApDung();
+                            khuyenMaiApDung.Id = Guid.NewGuid();
+                            khuyenMaiApDung.IdChiNhanh = chiNhanh;
+                            khuyenMaiApDung.IdNhomKhach = nhomKhach;
+                            khuyenMaiApDung.CreationTime = DateTime.Now;
+                            khuyenMaiApDung.CreatorUserId = AbpSession.UserId;
+                            khuyenMaiApDung.TenantId = AbpSession.TenantId ?? 1;
+                            await _khuyenMaiApDungService.InsertAsync(khuyenMaiApDung);
+                        }
+                    }
+                }
+            }
+            else if (input.IdNhaViens.Count > 0 && input.IdChiNhanhs == null)
+            {
+
+                foreach (var nhanVien in input.IdNhaViens)
+                {
+                    if (input.IdNhomKhachs.Count > 0)
+                    {
+                        foreach (var nhomKhach in input.IdNhomKhachs)
+                        {
+                            DM_KhuyenMai_ApDung khuyenMaiApDung = new DM_KhuyenMai_ApDung();
+                            khuyenMaiApDung.Id = Guid.NewGuid();
+                            khuyenMaiApDung.IdNhanVien = nhanVien;
+                            khuyenMaiApDung.IdNhomKhach = nhomKhach;
+                            khuyenMaiApDung.CreationTime = DateTime.Now;
+                            khuyenMaiApDung.CreatorUserId = AbpSession.UserId;
+                            khuyenMaiApDung.TenantId = AbpSession.TenantId ?? 1;
+                            await _khuyenMaiApDungService.InsertAsync(khuyenMaiApDung);
+                        }
+                    }
+                    else
+                    {
+                        DM_KhuyenMai_ApDung khuyenMaiApDung = new DM_KhuyenMai_ApDung();
+                        khuyenMaiApDung.Id = Guid.NewGuid();
+                        khuyenMaiApDung.IdNhanVien = nhanVien;
+                        khuyenMaiApDung.CreationTime = DateTime.Now;
+                        khuyenMaiApDung.CreatorUserId = AbpSession.UserId;
+                        khuyenMaiApDung.TenantId = AbpSession.TenantId ?? 1;
+                        await _khuyenMaiApDungService.InsertAsync(khuyenMaiApDung);
+                    }
+                }
+            }
+            else if (input.IdNhomKhachs.Count > 0 && input.IdNhaViens==null && input.IdNhomKhachs==null && input.IdNhaViens.Count==0 && input.IdNhomKhachs.Count==0)
+            {
+                foreach (var nhomKhach in input.IdNhomKhachs)
+                {
+                    DM_KhuyenMai_ApDung khuyenMaiApDung = new DM_KhuyenMai_ApDung();
+                    khuyenMaiApDung.Id = Guid.NewGuid();
+                    khuyenMaiApDung.IdNhomKhach = nhomKhach;
+                    khuyenMaiApDung.CreationTime = DateTime.Now;
+                    khuyenMaiApDung.CreatorUserId = AbpSession.UserId;
+                    khuyenMaiApDung.TenantId = AbpSession.TenantId ?? 1;
+                    await _khuyenMaiApDungService.InsertAsync(khuyenMaiApDung);
+                }
+            }
+
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
@@ -54,9 +162,10 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
             oldData.TatCaChiNhanh = input.TatCaChiNhanh;
             oldData.TatCaNhanVien = input.TatCaNhanVien;
             oldData.TatCaKhachHang = input.TatCaKhachHang;
-            oldData.ThuApDung = input.ThuApDung;
-            oldData.NgayApDung = input.NgayApDung;
-            oldData.GioApDung = input.GioApDung;
+            oldData.ThangApDung = string.Join(";", input.ThangApDung);
+            oldData.ThuApDung = string.Join(";", input.ThuApDung);
+            oldData.NgayApDung = string.Join(";", input.NgayApDung);
+            oldData.GioApDung = string.Join(";", input.GioApDung);
             oldData.MaKhuyenMai = input.MaKhuyenMai;
             oldData.TenKhuyenMai = input.TenKhuyenMai;
             oldData.ThoiGianApDung = input.ThoiGianApDung;
