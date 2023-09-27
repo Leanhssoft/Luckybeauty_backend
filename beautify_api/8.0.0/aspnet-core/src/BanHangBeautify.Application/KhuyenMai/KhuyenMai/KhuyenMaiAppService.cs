@@ -49,13 +49,18 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
             data.ThuApDung = string.Join(";", input.ThuApDung);
             data.NgayApDung = string.Join(";", input.NgayApDung);
             data.GioApDung = string.Join(";", input.GioApDung);
-            if (input.IdChiNhanhs.Count > 0)
+            data.CreationTime = DateTime.Now;
+            data.CreatorUserId = AbpSession.UserId;
+            data.TenantId = AbpSession.TenantId ?? 1;
+            data.IsDeleted = false;
+            await _khuyenMaiRepository.InsertAsync(data);
+            if (input.IdChiNhanhs.Count > 0 && input.TatCaChiNhanh==false)
             {
                 foreach (var chiNhanh in input.IdChiNhanhs)
                 {
-                    if (input.IdNhaViens.Count > 0)
+                    if (input.IdNhanViens.Count > 0)
                     {
-                        foreach (var nhanVien in input.IdNhaViens)
+                        foreach (var nhanVien in input.IdNhanViens)
                         {
                             if (input.IdNhomKhachs.Count > 0)
                             {
@@ -101,10 +106,10 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                     }
                 }
             }
-            else if (input.IdNhaViens.Count > 0 && input.IdChiNhanhs == null)
+            else if (input.IdNhanViens.Count > 0 && input.IdChiNhanhs == null && input.IdChiNhanhs.Count==0 && input.TatCaNhanVien==false)
             {
 
-                foreach (var nhanVien in input.IdNhaViens)
+                foreach (var nhanVien in input.IdNhanViens)
                 {
                     if (input.IdNhomKhachs.Count > 0)
                     {
@@ -132,7 +137,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                     }
                 }
             }
-            else if (input.IdNhomKhachs.Count > 0 && input.IdNhaViens==null && input.IdNhomKhachs==null && input.IdNhaViens.Count==0 && input.IdNhomKhachs.Count==0)
+            else if (input.IdNhomKhachs.Count > 0 && input.IdNhanViens==null && input.IdNhomKhachs==null && input.IdNhanViens.Count==0 && input.IdNhomKhachs.Count==0 && input.TatCaKhachHang==false)
             {
                 foreach (var nhomKhach in input.IdNhomKhachs)
                 {
@@ -146,11 +151,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                 }
             }
 
-            data.CreationTime = DateTime.Now;
-            data.CreatorUserId = AbpSession.UserId;
-            data.TenantId = AbpSession.TenantId ?? 1;
-            data.IsDeleted = false;
-            await _khuyenMaiRepository.InsertAsync(data);
+            
             result = ObjectMapper.Map<KhuyenMaiDto>(input);
             return result;
         }

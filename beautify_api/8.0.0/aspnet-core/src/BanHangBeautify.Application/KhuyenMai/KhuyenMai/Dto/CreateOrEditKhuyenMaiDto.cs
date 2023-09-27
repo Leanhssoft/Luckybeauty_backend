@@ -19,7 +19,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
         public List<string> ThangApDung { get; set; }
         public List<string> ThuApDung { get; set; }
         public List<string> GioApDung { get; set; }
-        public List<Guid> IdNhaViens { set; get; }
+        public List<Guid> IdNhanViens { set; get; }
         public List<Guid> IdChiNhanhs { set; get; }
         public List<Guid> IdNhomKhachs { set; get; }
         public decimal TongTienHang { set; get; }
