@@ -85,25 +85,21 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
             //nhanSu.IdPhongBan = dto.IdPhongBan;
-            var curentTenant = await GetCurrentTenantAsync();
-            string tenantName = "";
-            if (curentTenant == null)
-            {
-                tenantName = "AdminTenant";
-            }
-            else
-            {
-                tenantName = curentTenant.TenancyName;
-            }
+            //var curentTenant = await GetCurrentTenantAsync();
+            //string tenantName = "";
+            //if (curentTenant == null)
+            //{
+            //    tenantName = "AdminTenant";
+            //}
+            //else
+            //{
+            //    tenantName = curentTenant.TenancyName;
+            //}
             var countNhanVien = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList().Count();
             nhanSu.MaNhanVien = "NS00" + countNhanVien + 1;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
             nhanSu.TenNhanVien = dto.TenNhanVien;
-            if (dto.AvatarFile != null && !string.IsNullOrWhiteSpace(dto.AvatarFile.FileBase64))
-            {
-                nhanSu.Avatar = SaveFile(dto.AvatarFile, tenantName + "/NhanSu/" + nhanSu.TenNhanVien);
-            }
             nhanSu.CCCD = dto.CCCD;
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;
