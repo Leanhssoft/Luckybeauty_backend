@@ -85,25 +85,25 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
             //nhanSu.IdPhongBan = dto.IdPhongBan;
-            var curentTenant = await GetCurrentTenantAsync();
-            string tenantName = "";
-            if (curentTenant == null)
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                tenantName = "AdminTenant";
+                var countNhanVien = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList().Count();
+                if(countNhanVien.ToString().Length>=3) {
+                    nhanSu.MaNhanVien = "NS" + countNhanVien + 1;
+                }
+                else if (countNhanVien.ToString().Length==2)
+                {
+                    nhanSu.MaNhanVien = "NS0" + countNhanVien + 1;
+                }
+                else
+                {
+                    nhanSu.MaNhanVien = "NS00" + countNhanVien + 1;
+                }
+                
             }
-            else
-            {
-                tenantName = curentTenant.TenancyName;
-            }
-            var countNhanVien = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList().Count();
-            nhanSu.MaNhanVien = "NS00" + countNhanVien + 1;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
             nhanSu.TenNhanVien = dto.TenNhanVien;
-            if (dto.AvatarFile != null && !string.IsNullOrWhiteSpace(dto.AvatarFile.FileBase64))
-            {
-                nhanSu.Avatar = SaveFile(dto.AvatarFile, tenantName + "/NhanSu/" + nhanSu.TenNhanVien);
-            }
             nhanSu.CCCD = dto.CCCD;
             nhanSu.GioiTinh = dto.GioiTinh;
             nhanSu.DiaChi = dto.DiaChi;
@@ -342,28 +342,6 @@ namespace BanHangBeautify.NhanSu.NhanVien
             }
 
             return result;
-        }
-        private string SaveFile(AvatarFile file, string thumuc = "")
-        {
-            String path = _env.ContentRootPath + "/Common/" + thumuc; //Path
-
-            //Check if directory exist
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path); //Create directory if it doesn't exist
-            }
-
-            var timeStamp = DateTime.Now.ToString("yyyyMMddHHmmssffff");
-            var filename = Path.GetFileNameWithoutExtension(file.FileName).Trim();
-            var newFileName = $"{filename}_{timeStamp}{Path.GetExtension(file.FileName)}";
-            //set the image path
-            string filePath = Path.Combine(path, newFileName);
-
-            byte[] fileBytes = Convert.FromBase64String(file.FileBase64);
-
-            File.WriteAllBytes(filePath, fileBytes);
-
-            return $"/Common/{thumuc}/{newFileName}";
         }
     }
 }

@@ -48,9 +48,13 @@ namespace BanHangBeautify.NhanSu.CaLamViec
         public async Task<CaLamViecDto> Create(CreateOrEditCaLamViecDto dto)
         {
             NS_CaLamViec data = new NS_CaLamViec();
-            var count = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
+            
             data.Id = Guid.NewGuid();
-            data.MaCa = "MS00" + (count.Count + 1).ToString();
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var count = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
+                data.MaCa = "MS00" + (count.Count + 1).ToString();
+            }
             data.IdChiNhanh = dto.IdChiNhanh;
             data.TenCa = dto.TenCa;
             data.TenantId = AbpSession.TenantId ?? 1;

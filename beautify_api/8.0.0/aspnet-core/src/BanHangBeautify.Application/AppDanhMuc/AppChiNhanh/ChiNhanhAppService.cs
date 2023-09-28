@@ -125,8 +125,11 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 if (checkTenChiNhanh == null)
                 {
                     chiNhanh.Id = Guid.NewGuid();
-                    var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
-                    chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
+                    using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                    {
+                        var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
+                        chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
+                    }
                     chiNhanh.SoDienThoai = dto.SoDienThoai;
                     chiNhanh.TenChiNhanh = dto.TenChiNhanh;
                     chiNhanh.MaSoThue = dto.MaSoThue;

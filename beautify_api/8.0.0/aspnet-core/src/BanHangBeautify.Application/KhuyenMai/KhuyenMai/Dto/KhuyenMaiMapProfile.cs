@@ -10,6 +10,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
             CreateMap<KhuyenMaiDto, DM_KhuyenMai>().ReverseMap();
             CreateMap<CreateOrEditKhuyenMaiDto, DM_KhuyenMai>().ReverseMap();
             CreateMap<CreateOrEditKhuyenMaiDto, KhuyenMaiDto>().ReverseMap();
+            CreateMap<KhuyenMaiChiTiet,DM_KhuyenMai_ChiTiet>().ReverseMap();
         }
     }
 }
