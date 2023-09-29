@@ -517,9 +517,9 @@ namespace BanHangBeautify.DatLichOnline
                 var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id) && x.IsDeleted == false).ToList();
                 foreach (var x in caLamViec)
                 {
-                    var gioVaoStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioVao.ToString("HH:mm");
+                    var gioVaoStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioVao.ToString("HH:mm");
                     var startTime = DateTime.Parse(gioVaoStr);
-                    var gioRaStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioRa.ToString("HH:mm");
+                    var gioRaStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioRa.ToString("HH:mm");
                     var endTime = DateTime.Parse(gioRaStr);
                     var currentTime = startTime;
                     while (currentTime.AddMinutes(input.ServiceTime) <= endTime)
@@ -529,9 +529,9 @@ namespace BanHangBeautify.DatLichOnline
                         time.Time = currentTime.ToString("HH:mm");
                         if (x.LaNghiGiuaCa == true)
                         {
-                            var nghiTuStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioNghiTu.Value.ToString("HH:mm");
+                            var nghiTuStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiTu.Value.ToString("HH:mm");
                             var nghiTu = DateTime.Parse(nghiTuStr);
-                            var nghiDenStr = input.DateBooking.ToString("MM/dd/yyyy") + " " + x.GioNghiDen.Value.ToString("HH:mm");
+                            var nghiDenStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiDen.Value.ToString("HH:mm");
                             var nghiDen = DateTime.Parse(nghiDenStr);
                             if (currentTime < DateTime.Now)
                             {

@@ -21,14 +21,14 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
         public List<string> ThangApDung { get; set; }
         public List<string> ThuApDung { get; set; }
         public List<string> GioApDung { get; set; }
-        public List<Guid> IdNhanViens { set; get; }
-        public List<Guid> IdChiNhanhs { set; get; }
-        public List<Guid> IdNhomKhachs { set; get; }
-        public List<KhuyenMaiChiTiet> KhuyenMaiChiTiets { set; get; }
+        public List<Guid?> IdNhanViens { set; get; }
+        public List<Guid?> IdChiNhanhs { set; get; }
+        public List<Guid?> IdNhomKhachs { set; get; }
+        public List<KhuyenMaiChiTietMap> KhuyenMaiChiTiets { set; get; }
         public string GhiChu { get; set; }
         public int TrangThai { get; set; }
     }
-    public class KhuyenMaiChiTiet
+    public class KhuyenMaiChiTietMap
     {
         public Guid Id { get; set; }
         public float? TongTienHang { get; set; } = 0;
@@ -38,6 +38,10 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
         public Guid? IdDonViQuiDoiMua { get; set; }
         public Guid? IdNhomHangTang { get; set; }
         public Guid? IdDonViQuiDoiTang { get; set; }
+        public string TenNhomHangMua { get; set; }
+        public string TenNhomHangTang { get; set; }
+        public string TenHangHoaMua { get; set; }
+        public string TenHangHoaTang { get; set; }
         public float? SoLuongMua { get; set; } = 0;
         public float? SoLuongTang { get; set; } = 0;
         public float? GiaKhuyenMai { get; set; } = 0;

@@ -38,8 +38,8 @@ namespace BanHangBeautify.NhanSu.CaLamViec.Repository
                         var data = ObjectHelper.FillCollection<CaLamViecDto>(ds.Tables[0]);
                         for (int i = 0; i < data.Count; i++)
                         {
-                            data[i].GioVao = ds.Tables[0].Rows[i]["GioVao"].ToString();
-                            data[i].GioRa = ds.Tables[0].Rows[i]["GioRa"].ToString();
+                            data[i].GioVao = DateTime.Parse(ds.Tables[0].Rows[i]["GioVao"].ToString()).ToString("yyyy/MM/dd HH:mm");
+                            data[i].GioRa = DateTime.Parse(ds.Tables[0].Rows[i]["GioRa"].ToString()).ToString("yyyy/MM/dd HH:mm");
                         }
                         return new PagedResultDto<CaLamViecDto>()
                         {
