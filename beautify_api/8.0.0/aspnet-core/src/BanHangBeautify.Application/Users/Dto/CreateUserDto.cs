@@ -40,8 +40,8 @@ namespace BanHangBeautify.Users.Dto
         [DisableAuditing]
         public string Password { get; set; }
 
-        public Guid? NhanSuId { set; get; } = Guid.Empty;
-        public Guid? IdChiNhanh { set; get; } = null;
+        public Guid? NhanSuId { set; get; } = null;
+        public Guid? IdChiNhanhMacDinh { get; set; } = null;
         public void Normalize()
         {
             if (RoleNames == null)
