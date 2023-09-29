@@ -1,3 +1,4 @@
+using Abp.Application.Services.Dto;
 using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
@@ -40,7 +41,7 @@ namespace BanHangBeautify.Users.Dto
         public string Password { get; set; }
 
         public Guid? NhanSuId { set; get; } = Guid.Empty;
-        public Guid? IdChiNhanh { set; get; } = Guid.Empty;
+        public Guid? IdChiNhanh { set; get; } = null;
         public void Normalize()
         {
             if (RoleNames == null)
