@@ -97,6 +97,14 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         [NonAction]
         public async Task<LichLamViecDto> Update(CreateOrEditLichLamViecDto input, NS_LichLamViec oldData)
         {
+            var lichLamViecCaAll = _lichLamViecCaService.GetAll().Where(x=>x.IdLichLamViec==oldData.Id).ToList();
+            if(lichLamViecCaAll!=null && lichLamViecCaAll.Count > 0)
+            {
+                foreach (var item in lichLamViecCaAll)
+                {
+                    await _lichLamViecCaService.HardDeleteAsync(item);
+                }
+            }
             LichLamViecDto result = new LichLamViecDto();
             oldData.GiaTriLap = input.GiaTriLap;
             oldData.KieuLapLai = input.KieuLapLai;
@@ -105,9 +113,41 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             oldData.DenNgay = input.DenNgay;
             oldData.IdNhanVien = input.IdNhanVien;
             oldData.IdChiNhanh = input.IdChiNhanh;
+            oldData.NgayLamViecTrongTuan = string.Join(";", input.NgayLamViec);
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             await _lichLamViecService.UpdateAsync(oldData);
+            var tongSoNgay = oldData.DenNgay.Value.Subtract(oldData.TuNgay).TotalDays;
+            List<DateTime> danhSachNgayNghi = new List<DateTime>();
+            var ngayNghi = _dmNgayNghiLeService.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
+            foreach (var item in ngayNghi)
+            {
+                for (int i = 1; i <= item.TongSoNgay; i++)
+                {
+                    var day = item.TuNgay.AddDays(i);
+                    danhSachNgayNghi.Add(day);
+                }
+            }
+            for (int i = 0; i < tongSoNgay + 1; i++)
+            {
+                var day = oldData.TuNgay.AddDays(i);
+                if (danhSachNgayNghi.Contains(day))
+                {
+                    continue;
+                }
+                if (input.NgayLamViec.Contains(day.DayOfWeek.ToString()))
+                {
+                    NS_LichLamViec_Ca rdo = new NS_LichLamViec_Ca();
+                    rdo.Id = Guid.NewGuid();
+                    rdo.IdCaLamViec = input.IdCaLamViec;
+                    rdo.IdLichLamViec = oldData.Id;
+                    rdo.NgayLamViec = DateTime.Parse(day.ToString("yyyy-MM-dd"));
+                    rdo.TenantId = AbpSession.TenantId ?? 1;
+                    rdo.CreatorUserId = AbpSession.UserId;
+                    rdo.IsDeleted = false;
+                    await _lichLamViecCaService.InsertAsync(rdo);
+                }
+            }
             result = ObjectMapper.Map<LichLamViecDto>(input);
             return result;
 
@@ -153,6 +193,14 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             if (checkExist != null)
             {
                 var createOrEdit = ObjectMapper.Map<CreateOrEditLichLamViecDto>(checkExist);
+                var ngayLamViec = new List<string>();
+                ngayLamViec.AddRange(checkExist.NgayLamViecTrongTuan.Split(';'));
+                createOrEdit.NgayLamViec = ngayLamViec;
+                var lichLamViecCa =await _lichLamViecCaService.FirstOrDefaultAsync(x => x.IdLichLamViec == checkExist.Id);
+                if (lichLamViecCa!=null)
+                {
+                    createOrEdit.IdCaLamViec = lichLamViecCa.IdCaLamViec;
+                }
                 return createOrEdit;
             }
             return new CreateOrEditLichLamViecDto();

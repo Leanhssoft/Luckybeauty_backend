@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.NguonKhach.Dto;
@@ -27,6 +28,11 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             NguonKhachDto result = new NguonKhachDto();
             var nguonKhach = ObjectMapper.Map<DM_NguonKhach>(dto);
             nguonKhach.Id = Guid.NewGuid();
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
+                nguonKhach.MaNguon = "MS00" + (checkMa.Count + 1).ToString();
+            }
             nguonKhach.CreationTime = DateTime.Now;
             nguonKhach.CreatorUserId = AbpSession.UserId;
             nguonKhach.TenantId = AbpSession.TenantId ?? 1;

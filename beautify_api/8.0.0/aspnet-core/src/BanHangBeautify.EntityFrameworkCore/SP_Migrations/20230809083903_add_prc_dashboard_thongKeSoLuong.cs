@@ -63,7 +63,7 @@ BEGIN
 
 	-- lấy tổng lịch hẹn trong khoảng thời gian @ThoiGianTu đến @ThoiGianDen
 	SELECT @tongLichHen = COUNT(*) FROM Booking where TenantId = @TenantId and IsDeleted = 0
-	AND CAST(CreationTime AS DATE) BETWEEN CAST(@ThoiGianTu AS DATE) AND CAST(@ThoiGianDen AS DATE)
+	AND CAST(BookingDate AS DATE) BETWEEN CAST(@ThoiGianTu AS DATE) AND CAST(@ThoiGianDen AS DATE)
 	AND IdChiNhanh = @IdChiNhanh;
 	-- lấy tổng doanh thu từ @ThoiGianTu đến @ThoiGianDen
 	SELECT @tongDoanhThu = SUM(TongThanhToan) FROM BH_HoaDon where TenantId = 1 and IsDeleted = 0 and IdChiNhanh = @IdChiNhanh

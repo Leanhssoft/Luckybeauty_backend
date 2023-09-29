@@ -1,4 +1,4 @@
-using Abp.Application.Services.Dto;
+﻿using Abp.Application.Services.Dto;
 using Abp.Auditing;
 using Abp.Authorization.Users;
 using Abp.AutoMapper;
@@ -12,8 +12,8 @@ namespace BanHangBeautify.Users.Dto
     [AutoMapTo(typeof(User))]
     public class CreateUserDto : IShouldNormalize
     {
-        [Required]
-        [StringLength(AbpUserBase.MaxUserNameLength)]
+        [Required(ErrorMessage ="Tên tài khoản không được để trống")]
+        [StringLength(AbpUserBase.MaxUserNameLength,ErrorMessage ="Tên tài khoản không được quá 256 ký tự")]
         public string UserName { get; set; }
 
         [Required]

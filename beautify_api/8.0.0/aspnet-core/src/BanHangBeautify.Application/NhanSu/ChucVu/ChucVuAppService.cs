@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
@@ -46,9 +47,13 @@ namespace BanHangBeautify.NhanSu.ChucVu
         public async Task<ChucVuDto> Create(CreateOrEditChucVuDto dto)
         {
             NS_ChucVu chucVu = new NS_ChucVu();
-            var countIdChucVu = _repository.Count();
+            
             chucVu.Id = Guid.NewGuid();
-            chucVu.MaChucVu = "MCV0" + (countIdChucVu + 1).ToString();
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var countIdChucVu = _repository.Count();
+                chucVu.MaChucVu = "CV0" + (countIdChucVu + 1).ToString();
+            }
             chucVu.TenChucVu = dto.TenChucVu;
             chucVu.TrangThai = 0;
             chucVu.MoTa = dto.MoTa;
