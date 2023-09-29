@@ -17,6 +17,7 @@ using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -61,6 +62,63 @@ namespace BanHangBeautify.Users
             _logInManager = logInManager;
             _nhanVienRepository = nhanVienRepository;
             _userRoleRepository= userRoleRepository;
+        }
+
+        [HttpPost]
+        public async Task<UserDto> CreateUser(UpdateUserDto input)
+        {
+            CheckCreatePermission();
+
+            var user = ObjectMapper.Map<User>(input);
+            user.TenantId = AbpSession.TenantId;
+            if (!string.IsNullOrEmpty(input.EmailAddress))
+            {
+                user.IsEmailConfirmed = true;
+            }
+            else
+            {
+                user.IsEmailConfirmed = false;
+            }
+
+            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+
+            CheckErrors(await _userManager.CreateAsync(user, input.Password));
+            CurrentUnitOfWork.SaveChanges();
+            return ObjectMapper.Map<UserDto>(user);
+        }
+        [HttpPost]
+        public async Task<UserDto> UpdateUser_notRole(UpdateUserDto input)
+        {
+            CheckUpdatePermission();
+
+            var user = await _userManager.GetUserByIdAsync(input.Id);
+            user.LastModificationTime = DateTime.Now;
+            user.LastModifierUserId = AbpSession.UserId;
+            user.IdChiNhanhMacDinh = input.IdChiNhanhMacDinh;
+            user.NhanSuId = input.NhanSuId;
+            user.IsAdmin = input.IsAdmin ?? false;
+            user.EmailAddress = input.EmailAddress;
+            user.IsActive = input.IsActive;
+            user.PhoneNumber = input.PhoneNumber;
+            user.Name = input.Name;
+            user.Surname = input.Surname;
+
+            if (!string.IsNullOrEmpty(input.Password))
+            {
+                if (input.Password != user.Password)
+                {
+                    CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
+                }
+            }
+
+            CheckErrors(await _userManager.UpdateAsync(user));
+
+            await _userManager.ChangeEmailAsync(user, input.EmailAddress, null);
+            user.SetNormalizedNames();
+
+            CurrentUnitOfWork.SaveChanges();
+
+            return ObjectMapper.Map<UserDto>(user);
         }
 
         public override async Task<UserDto> CreateAsync(CreateUserDto input)
