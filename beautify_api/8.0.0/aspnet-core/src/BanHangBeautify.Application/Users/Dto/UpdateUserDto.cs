@@ -32,7 +32,7 @@ namespace BanHangBeautify.Users.Dto
         public bool? IsAdmin { get; set; }
 
         public string[] RoleNames { get; set; }
-        public Guid? NhanSuId { set; get; } = Guid.Empty;
-        public Guid? IdChiNhanhMacDinh { set; get; } = Guid.Empty;
+        public Guid? NhanSuId { set; get; } = null;
+        public Guid? IdChiNhanhMacDinh { set; get; } = null;
     }
 }
