@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Editions;
+using Abp.Application.Services.Dto;
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Editions;
 using BanHangBeautify.Entities;
@@ -22,11 +24,14 @@ namespace BanHangBeautify.Roles
     public class UserRoleAppService : SPAAppServiceBase
     {
         private readonly IRepository<UserRole, long> _userRole;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
+
         public UserRoleAppService(
-           IRepository<UserRole, long> userRole
+           IRepository<UserRole, long> userRole, IUnitOfWorkManager unitOfWorkManager
        )
         {
             _userRole = userRole;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         [HttpPost]
@@ -36,17 +41,38 @@ namespace BanHangBeautify.Roles
             await _userRole.InsertAsync(userRoleNew);
             await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the edition.
         }
-        public async Task UpdateUserRoleAsync(CreateOrUpdateUserRoleDto input)
+
+
+        [HttpPost]
+        public async Task CreateRole_byChiNhanhOfUser(long userId, List<CreateOrUpdateUserRoleDto> lst)
         {
-            var userRole = (UserRoleChiNhanh)await _userRole.FirstOrDefaultAsync(input.Id);
-            if (userRole != null)
+            if (lst != null)
             {
-                userRole.UserId = input.UserId;
-                userRole.RoleId = input.RoleId;
-                userRole.IdChiNhanh = input.IdChiNhanh;
-                await _userRole.UpdateAsync(userRole);
-                await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the edition.
+                // get role old && remove
+                var arrRoleOld = _userRole.GetAll().Where(x => x.UserId == userId).ToList();
+                using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete)) // xoa vinh vien
+                {
+                    foreach (var item in arrRoleOld)
+                    {
+                        await _userRole.DeleteAsync(item.Id);
+                    }
+                }
+
+                // add again
+                var tenantId = AbpSession.TenantId;
+                foreach (var item in lst)
+                {
+                    var userRoleNew = new UserRoleChiNhanh(item.TenantId?? tenantId, userId, item.RoleId, item.IdChiNhanh);
+                    await _userRole.InsertAsync(userRoleNew);
+                }
             }
+            await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the edition.
+        }
+
+        public async Task<List<UserRole>> GetRolebyChiNhanh_ofUser(long userId)
+        {
+            var data = _userRole.GetAll().Where(x=>x.UserId==userId).ToList();
+            return data;
         }
     }
 }

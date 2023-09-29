@@ -33,13 +33,6 @@ namespace BanHangBeautify.Users.Dto
 
         public string[] RoleNames { get; set; }
         public Guid? NhanSuId { set; get; } = Guid.Empty;
-        public Guid? IdChiNhanh { set; get; } = Guid.Empty;
-        public void Normalize()
-        {
-            if (RoleNames == null)
-            {
-                RoleNames = new string[0];
-            }
-        }
+        public Guid? IdChiNhanhMacDinh { set; get; } = Guid.Empty;
     }
 }
