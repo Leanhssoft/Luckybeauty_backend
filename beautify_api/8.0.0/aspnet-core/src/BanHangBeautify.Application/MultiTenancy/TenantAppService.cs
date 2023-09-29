@@ -58,9 +58,9 @@ namespace BanHangBeautify.MultiTenancy
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
         {
             string dbName = input.TenancyName;
-            string dataSource = "DEV3\\SQL2018";
+            string dataSource = "DESKTOP-8D36GBJ";
             string userId = "sa";
-            string password = "sa@123";
+            string password = "123";
             string connecStringInServer = $"data source={dataSource};initial catalog={dbName};persist security info=True;user id={userId};password={password};multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
             if (string.IsNullOrEmpty(input.ConnectionString))
             {
