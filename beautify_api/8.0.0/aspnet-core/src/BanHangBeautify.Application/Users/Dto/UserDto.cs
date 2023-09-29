@@ -41,5 +41,6 @@ namespace BanHangBeautify.Users.Dto
         public string[] RoleNames { get; set; }
 
         public Guid? NhanSuId { get; set; }
+        public Guid? IdChiNhanhMacDinh { get; set; }
     }
 }
