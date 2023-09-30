@@ -64,6 +64,44 @@ namespace BanHangBeautify.Users
             _userRoleRepository= userRoleRepository;
         }
 
+        [HttpGet]
+        public  async Task<bool> CheckMatchesPassword(long userId, string plainPassword)
+        {
+            var user = await _userManager.GetUserByIdAsync(userId);
+            bool matchesPassword = await _userManager.CheckPasswordAsync(user, plainPassword);
+            return matchesPassword;
+        }
+
+        [HttpGet]
+        public async Task<bool> CheckExistUser(long userId, string userName)
+        {
+            if (userId == 0)
+            {
+                var lstUser = _userManager.Users.Where(x => x.UserName == userName).ToList();
+                return lstUser.Count > 0;
+            }
+            else
+            {
+                var lstUser = _userManager.Users.Where(x => x.UserName == userName && x.Id != userId).ToList();
+                return lstUser.Count > 0;
+            }
+        }
+
+        [HttpGet]
+        public async Task<bool> CheckExistEmail(long userId, string email)
+        {
+            if (userId == 0)
+            {
+                var lstUser = _userManager.Users.Where(x => x.EmailAddress == email).ToList();
+                return lstUser.Count > 0;
+            }
+            else
+            {
+                var lstUser = _userManager.Users.Where(x => x.EmailAddress == email && x.Id != userId).ToList();
+                return lstUser.Count > 0;
+            }
+        }
+
         [HttpPost]
         public async Task<UserDto> CreateUser(UpdateUserDto input)
         {
@@ -96,6 +134,7 @@ namespace BanHangBeautify.Users
             user.LastModifierUserId = AbpSession.UserId;
             user.IdChiNhanhMacDinh = input.IdChiNhanhMacDinh;
             user.NhanSuId = input.NhanSuId;
+            user.UserName = input.UserName;
             user.IsAdmin = input.IsAdmin ?? false;
             user.EmailAddress = input.EmailAddress;
             user.IsActive = input.IsActive;
