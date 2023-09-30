@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.AppCuaHang
 {
-    [AbpAuthorize(PermissionNames.Pages_CongTy)]
+    [AbpAuthorize]
     public class CuaHangAppService : SPAAppServiceBase
     {
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
