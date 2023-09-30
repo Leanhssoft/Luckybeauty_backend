@@ -48,6 +48,12 @@
 
         #endregion
 
+        #region Notifications
+        public const string Notifications = "Pages.Notifications";
+        public const string Notifications_Booking = "Pages.Notifications.Booking";
+        public const string Notifications_Birthday = "Pages.Notifications.Birthday";
+        #endregion
+
         #region Khách Hàng
         public const string Pages_LoaiKhach = "Pages.LoaiKhach";
         public const string Pages_LoaiKhach_Create = "Pages.LoaiKhach.Create";
