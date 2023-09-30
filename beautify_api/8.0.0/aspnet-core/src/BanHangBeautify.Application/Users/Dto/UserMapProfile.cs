@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Abp;
+using AutoMapper;
 using BanHangBeautify.Authorization.Users;
 
 namespace BanHangBeautify.Users.Dto
@@ -7,6 +8,7 @@ namespace BanHangBeautify.Users.Dto
     {
         public UserMapProfile()
         {
+            CreateMap<UserIdentifierDto, UserIdentifier>();
             CreateMap<UserDto, User>();
             CreateMap<UserDto, User>()
                 .ForMember(x => x.Roles, opt => opt.Ignore())
