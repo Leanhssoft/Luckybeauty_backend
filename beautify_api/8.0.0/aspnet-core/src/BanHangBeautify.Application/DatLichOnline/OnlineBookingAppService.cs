@@ -14,6 +14,7 @@ using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Notifications;
+using BanHangBeautify.Roles.Repository;
 using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -31,6 +32,7 @@ namespace BanHangBeautify.DatLichOnline
     {
         IRepository<Tenant, int> _tenantRepository;
         IRepository<Booking, Guid> _bookingRepository;
+      
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
@@ -44,6 +46,8 @@ namespace BanHangBeautify.DatLichOnline
         INhanSuRepository _nhanSuService;
         private readonly IAppNotifier _appNotifier;
         INotificationAppService _notificationAppService;
+        IUserRoleRepository _userRoleRepository;
+
         public OnlineBookingAppService(
             IRepository<Tenant, int> tenantRepository,
             IRepository<Booking, Guid> bookingRepository,
@@ -59,7 +63,8 @@ namespace BanHangBeautify.DatLichOnline
             IAppNotifier appNotifier,
             INotificationAppService notificationAppService,
             IRepository<DM_KhachHang, Guid> khachHangRepository,
-            INhanSuRepository nhanSuService
+            INhanSuRepository nhanSuService,
+              IUserRoleRepository userRoleRepository
             )
         {
             _tenantRepository = tenantRepository;
@@ -77,6 +82,7 @@ namespace BanHangBeautify.DatLichOnline
             _notificationAppService = notificationAppService;
             _dmKhachHangRepository = khachHangRepository;
             _nhanSuService= nhanSuService;
+            _userRoleRepository = userRoleRepository;
         }
         public List<string> GetAllTenant()
         {
@@ -423,7 +429,9 @@ namespace BanHangBeautify.DatLichOnline
                     _bookingNhanVienRepository.Insert(bookingNhanVien);
                     _bookingServiceRepository.Insert(bookingService);
                     await CurrentUnitOfWork.SaveChangesAsync();
-                    var listUser = await getUserAdmin(data.IdChiNhanh,tenant.Id);
+                    //var listUser = await getUserAdmin(data.IdChiNhanh,tenant.Id);
+                    var listUserRole = await _userRoleRepository.GetListUser_havePermission(tenant.Id, data.IdChiNhanh, "Pages.Notifications.Booking");
+                    var listUser = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
                     await _notificationAppService.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
                     result.Message = "Đặt lịch thành công!";
                     result.Status = "success";
