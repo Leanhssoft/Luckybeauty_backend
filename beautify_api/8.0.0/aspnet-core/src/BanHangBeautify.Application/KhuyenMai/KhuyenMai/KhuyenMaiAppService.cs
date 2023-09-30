@@ -493,7 +493,6 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                             LoaiKhuyenMai = km.LoaiKhuyenMai == 1 ? "Hóa đơn" : "Hàng hóa",
                             TrangThai = km.TrangThai
                         };
-            var lstData = await _khuyenMaiRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = query.Count();
             var data = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             foreach (var item in data)

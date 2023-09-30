@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using Abp.Localization;
 using Abp.Notifications;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Bookings.Bookings.BookingRepository;
 using BanHangBeautify.Bookings.Bookings.Dto;
 using BanHangBeautify.Configuration.Common.Consts;
@@ -66,23 +67,31 @@ namespace BanHangBeautify.Bookings.Bookings
             _appNotifier = appNotifier;
             _userRoleRepository = userRoleRepository;
         }
-        private async Task<List<UserIdentifier>> getUserAdmin(Guid idChiNhanh)
+     
+        private async Task<List<UserIdentifier>> GetUserAdmin(Guid idChiNhanh)
         {
-            var users = await (from us in UserManager.Users
-                               select new { us.TenantId, us.Id, us.NhanSuId, us.IsAdmin }).ToListAsync();
-            PagedNhanSuRequestDto input = new PagedNhanSuRequestDto();
-            input.Filter = "";
-            input.SkipCount = 0;
-            input.MaxResultCount = int.MaxValue;
-            input.IdChiNhanh = idChiNhanh;
-            input.TenantId = AbpSession.TenantId ?? 1;
-            var nhanViens = await _nhanSuRepository.GetAllNhanSu(input);
-            var idNhanViens = nhanViens.Items.Select(x => x.Id).ToList();
-            var userIds = users.Where(x => x.IsAdmin == true || idNhanViens.Contains(Guid.Parse(x.NhanSuId.ToString()))).Select(x => x.Id).ToList();
-            var listUser = await (from us in UserManager.Users
-                                  select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
-            listUser = listUser.Where(x => userIds.Contains(x.UserId)).ToList();
-            return listUser;
+            var nhanViens = (await _nhanSuRepository.GetAllNhanSu(new PagedNhanSuRequestDto
+            {
+                Filter = "",
+                SkipCount = 0,
+                MaxResultCount = int.MaxValue,
+                IdChiNhanh = idChiNhanh,
+                TenantId = AbpSession.TenantId ?? 1
+            })).Items;
+            var idNhanViens = nhanViens.Select(x => x.Id).ToList();
+            var users = await UserManager.Users
+                .Where(us => us.NhanSuId!=null && idNhanViens.Contains((Guid)us.NhanSuId))
+                .Select(us => new UserIdentifier(us.TenantId, us.Id))
+                .ToListAsync();
+
+            var adminUserIds = await UserManager.Users
+                .Where(us => us.IsAdmin == true)
+                .Select(us => us.Id)
+                .ToListAsync();
+
+            users.AddRange(adminUserIds.Select(id => new UserIdentifier(1, id)));
+
+            return users.Distinct().ToList();
         }
         [HttpPost]
         public async Task<Booking> CreateOrEditBooking(CreateOrEditBookingDto data)
@@ -122,9 +131,7 @@ namespace BanHangBeautify.Bookings.Bookings
             _repository.Insert(booking);
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
-            //var listUser = await getUserAdmin((Guid)dto.IdChiNhanh);
-            var listUserRole = await _userRoleRepository.GetListUser_havePermission(booking.TenantId, booking.IdChiNhanh ?? Guid.Empty, "Pages.Notifications.Booking");
-            var listUser  = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
+            var listUser = await getUserAdmin((Guid)dto.IdChiNhanh);
             string mess = "Khách hàng: " + booking.TenKhachHang + "(" + booking.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("HH:mm");
             var notificationData = NewMessageNotification(mess);
             await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
