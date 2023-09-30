@@ -14,13 +14,13 @@ namespace BanHangBeautify.Users.Dto
         [StringLength(AbpUserBase.MaxUserNameLength,ErrorMessage ="Tên tài khoản không được quá 256 ký tự")]
         public string UserName { get; set; }
 
-        [Required]
-        [StringLength(AbpUserBase.MaxNameLength)]
+        //[Required]
+        //[StringLength(AbpUserBase.MaxNameLength)]
         public string Name { get; set; }
 
-        [Required]
-        [StringLength(AbpUserBase.MaxSurnameLength)]
-        public string Surname { get; set; }
+        //[Required]
+        //[StringLength(AbpUserBase.MaxSurnameLength)]
+        public string Surname { get; set; } 
         //[Phone]
         public string PhoneNumber { get; set; }
         //[Required]
