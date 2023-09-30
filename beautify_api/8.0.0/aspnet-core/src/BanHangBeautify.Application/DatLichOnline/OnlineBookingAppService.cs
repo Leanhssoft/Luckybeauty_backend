@@ -444,21 +444,28 @@ namespace BanHangBeautify.DatLichOnline
         [NonAction]
         private async Task<List<UserIdentifier>> getUserAdmin(Guid idChiNhanh,int tenantId)
         {
-            var users = await (from us in UserManager.Users
-                               select new { us.TenantId, us.Id, us.NhanSuId, us.IsAdmin }).ToListAsync();
-            PagedNhanSuRequestDto input = new PagedNhanSuRequestDto();
-            input.Filter = "";
-            input.SkipCount = 0;
-            input.MaxResultCount = int.MaxValue;
-            input.IdChiNhanh = idChiNhanh;
-            input.TenantId = tenantId;
-            var nhanViens = await _nhanSuService.GetAllNhanSu(input);
-            var idNhanViens = nhanViens.Items.Select(x => x.Id).ToList();
-            var userIds = users.Where(x => x.IsAdmin == true || idNhanViens.Contains(Guid.Parse(x.NhanSuId.ToString()))).Select(x => x.Id).ToList();
-            var listUser = await (from us in UserManager.Users
-                                  select new UserIdentifier(us.TenantId, us.Id)).ToListAsync();
-            listUser = listUser.Where(x => userIds.Contains(x.UserId)).ToList();
-            return listUser;
+            var nhanViens = (await _nhanSuService.GetAllNhanSu(new PagedNhanSuRequestDto
+            {
+                Filter = "",
+                SkipCount = 0,
+                MaxResultCount = int.MaxValue,
+                IdChiNhanh = idChiNhanh,
+                TenantId = tenantId
+            })).Items;
+            var idNhanViens = nhanViens.Select(x => x.Id).ToList();
+            var users = await UserManager.Users
+                .Where(us => us.NhanSuId != null && idNhanViens.Contains((Guid)us.NhanSuId))
+                .Select(us => new UserIdentifier(us.TenantId, us.Id))
+                .ToListAsync();
+
+            var adminUserIds = await UserManager.Users
+                .Where(us => us.IsAdmin == true)
+                .Select(us => us.Id)
+                .ToListAsync();
+
+            users.AddRange(adminUserIds.Select(id => new UserIdentifier(1, id)));
+
+            return users.Distinct().ToList();
         }
         [NonAction]
         public BookingService CreateBookingService(Guid idBooking, Guid idDichVuQuiDoi)

@@ -46,17 +46,30 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             ExecuteResultDto result = new ExecuteResultDto();
             try
             {
-                NS_ChietKhauDichVu data = new NS_ChietKhauDichVu();
-                data = ObjectMapper.Map<NS_ChietKhauDichVu>(input);
-                data.Id = Guid.NewGuid();
-                data.IdDonViQuiDoi = input.IdDonViQuiDoi;
-                data.CreationTime = DateTime.Now;
-                data.CreatorUserId = AbpSession.UserId;
-                data.TenantId = AbpSession.TenantId ?? 1;
-                data.IsDeleted = false;
-                await _hoahongDichVu.InsertAsync(data);
-                result.Message = "Thêm mới thành công !";
-                result.Status = "success";
+                if (input.IdNhanViens!=null && input.IdNhanViens.Count>0)
+                {
+                    foreach (var item in input.IdNhanViens)
+                    {
+                        NS_ChietKhauDichVu data = new NS_ChietKhauDichVu();
+                        data.Id = Guid.NewGuid();
+                        data.IdNhanVien = item;
+                        data.LaPhanTram = input.LaPhanTram;
+                        data.LoaiChietKhau = input.LoaiChietKhau;
+                        data.IdChiNhanh = input.IdChiNhanh;
+                        data.GiaTri = input.GiaTri;
+                        data.TrangThai = 1;
+                        data.IdDonViQuiDoi = input.IdDonViQuiDoi;
+                        data.CreationTime = DateTime.Now;
+                        data.CreatorUserId = AbpSession.UserId;
+                        data.TenantId = AbpSession.TenantId ?? 1;
+                        data.IsDeleted = false;
+                        await _hoahongDichVu.InsertAsync(data);
+                    }
+                    result.Message = "Thêm mới thành công !";
+                    result.Status = "success";
+                }
+                
+               
             }
             catch (Exception ex)
             {
@@ -74,7 +87,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             try
             {
                 oldData.IdDonViQuiDoi = input.IdDonViQuiDoi;
-                oldData.IdNhanVien = input.IdNhanVien;
+                oldData.IdNhanVien = input.IdNhanViens[0];
                 oldData.GiaTri = input.GiaTri;
                 oldData.LaPhanTram = input.LaPhanTram;
                 oldData.LoaiChietKhau = input.LoaiChietKhau;
@@ -140,7 +153,11 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             var data = await _hoahongDichVu.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
-                return ObjectMapper.Map<CreateOrEditChietKhauDichVuDto>(data);
+                var mapData = ObjectMapper.Map<CreateOrEditChietKhauDichVuDto>(data);
+                var listIdNhanVien = new List<Guid>();
+                listIdNhanVien.Add(data.IdNhanVien);
+                mapData.IdNhanViens = listIdNhanVien;
+                return mapData;
             }
             return new CreateOrEditChietKhauDichVuDto();
         }
