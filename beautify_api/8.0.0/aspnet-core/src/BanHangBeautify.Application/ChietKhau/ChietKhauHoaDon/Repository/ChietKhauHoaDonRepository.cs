@@ -36,7 +36,9 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
                     ds.Load(dataReader, LoadOption.OverwriteChanges, array);
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
+
                         var data = ObjectHelper.FillCollection<ChietKhauHoaDonItemDto>(ds.Tables[0]);
+                      
                         return new PagedResultDto<ChietKhauHoaDonItemDto>()
                         {
                             Items = data,

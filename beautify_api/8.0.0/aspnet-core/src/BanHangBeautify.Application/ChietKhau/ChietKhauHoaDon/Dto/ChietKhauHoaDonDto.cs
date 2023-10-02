@@ -10,5 +10,6 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto
         public byte LoaiChietKhau { set; get; }
         public double GiaTriChietKhau { set; get; }
         public string ChungTuApDung { set; get; }
+        public string GhiChu { get; set; }
     }
 }

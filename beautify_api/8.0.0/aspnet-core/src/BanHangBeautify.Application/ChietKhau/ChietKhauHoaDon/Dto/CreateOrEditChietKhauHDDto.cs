@@ -11,5 +11,6 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto
         public double? GiaTriChietKhau { set; get; } = 0;
         public string ChungTuApDung { set; get; }
         public List<Guid> IdNhanViens { set; get; }
+        public string GhiChu { get; set; }
     }
 }

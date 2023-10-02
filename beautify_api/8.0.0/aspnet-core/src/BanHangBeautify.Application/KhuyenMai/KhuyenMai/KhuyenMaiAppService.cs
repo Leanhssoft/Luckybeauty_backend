@@ -477,6 +477,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                             && (km.TenKhuyenMai.ToLower().Contains(input.Keyword.ToLower())
                                 || km.MaKhuyenMai.ToLower().Contains(input.Keyword.ToLower())
                             )
+                        orderby km.CreationTime descending
                         select new KhuyenMaiDto()
                         {
                             Id= km.Id,
@@ -494,6 +495,56 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                             TrangThai = km.TrangThai
                         };
             result.TotalCount = query.Count();
+            #region Sorting Data
+            if (input.SortType=="desc"&& input.SortBy=="hinhThucKM")
+            {
+               query.OrderByDescending(x => x.HinhThucKM).ToList();
+            }
+            else if (input.SortType == "asc" && input.SortBy == "hinhThucKM")
+            {
+                query.OrderByDescending(x => x.HinhThucKM).Reverse().ToList();
+            }
+            else if (input.SortType == "desc" && input.SortBy == "maKhuyenMai")
+            {
+                query.OrderByDescending(x => x.MaKhuyenMai).ToList();
+            }
+            else if (input.SortType == "asc" && input.SortBy == "maKhuyenMai")
+            {
+                query.OrderByDescending(x => x.HinhThucKM).Reverse().ToList();
+            }
+            else if (input.SortType == "desc" && input.SortBy == "tenKhuyenMai")
+            {
+                query.OrderByDescending(x => x.TenKhuyenMai).ToList();
+            }
+            else if (input.SortType == "asc" && input.SortBy == "tenKhuyenMai")
+            {
+                query.OrderByDescending(x => x.TenKhuyenMai).Reverse().ToList();
+            }
+            else if (input.SortType == "desc" && input.SortBy == "thoiGianApDung")
+            {
+                query.OrderByDescending(x => x.ThoiGianApDung).ToList();
+            }
+            else if (input.SortType == "asc" && input.SortBy == "thoiGianApDung")
+            {
+                query.OrderByDescending(x => x.ThoiGianApDung).Reverse().ToList();
+            }
+            else if (input.SortType == "desc" && input.SortBy == "thoiGianKetThuc")
+            {
+                query.OrderByDescending(x => x.ThoiGianKetThuc).ToList();
+            }
+            else if (input.SortType == "asc" && input.SortBy == "thoiGianKetThuc")
+            {
+                query.OrderByDescending(x => x.ThoiGianKetThuc).Reverse().ToList();
+            }
+            else if (input.SortType == "desc" && input.SortBy == "trangThai")
+            {
+                query.OrderByDescending(x => x.TrangThai).ToList();
+            }
+            else if (input.SortType == "asc" && input.SortBy == "trangThai")
+            {
+                query.OrderByDescending(x => x.TrangThai).Reverse().ToList();
+            }
+            #endregion
             var data = query.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             foreach (var item in data)
             {
@@ -558,6 +609,7 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                 }
                 
             }
+            data = data.Where(x => x.HinhThucKM.ToLower().Contains(input.Keyword.ToLower())).ToList();
             result.Items = ObjectMapper.Map<List<KhuyenMaiDto>>(data);
             return result;
         }

@@ -51,8 +51,20 @@ namespace BanHangBeautify.NhanSu.ChucVu
             chucVu.Id = Guid.NewGuid();
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                var countIdChucVu = _repository.Count();
-                chucVu.MaChucVu = "CV0" + (countIdChucVu + 1).ToString();
+                var countIdChucVu = _repository.Count() + 1;
+                if (countIdChucVu.ToString().Length>=3)
+                {
+                    chucVu.MaChucVu = "CV" + (countIdChucVu + 1).ToString();
+                }
+                else if (countIdChucVu.ToString().Length==2)
+                {
+                    chucVu.MaChucVu = "CV0" + (countIdChucVu + 1).ToString();
+                }
+                else
+                {
+                    chucVu.MaChucVu = "CV00" + (countIdChucVu + 1).ToString();
+                }
+                
             }
             chucVu.TenChucVu = dto.TenChucVu;
             chucVu.TrangThai = 0;

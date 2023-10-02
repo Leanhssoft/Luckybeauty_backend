@@ -52,8 +52,20 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             data.Id = Guid.NewGuid();
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                var count = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToListAsync();
-                data.MaCa = "MS00" + (count.Count + 1).ToString();
+                var count = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).Count() + 1;
+                if (count.ToString().Length>=3)
+                {
+                    data.MaCa = "MS" + count.ToString();
+                }
+                else if (count.ToString().Length==2)
+                {
+                    data.MaCa = "MS0" + count.ToString();
+                }
+                else
+                {
+                    data.MaCa = "MS00" + count.ToString();
+                }
+                
             }
             data.IdChiNhanh = dto.IdChiNhanh;
             data.TenCa = dto.TenCa;

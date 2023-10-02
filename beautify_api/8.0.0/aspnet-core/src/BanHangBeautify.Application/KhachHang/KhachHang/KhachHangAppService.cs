@@ -79,7 +79,19 @@ namespace BanHangBeautify.KhachHang.KhachHang
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
-                khachHang.MaKhachHang = "KH00" + (checkMa.Count + 1).ToString();
+                if ((checkMa.Count + 1).ToString().Length>=3)
+                {
+                    khachHang.MaKhachHang = "KH" + (checkMa.Count + 1).ToString();
+                }
+                else if ((checkMa.Count + 1).ToString().Length == 2)
+                {
+                    khachHang.MaKhachHang = "KH0" + (checkMa.Count + 1).ToString();
+                }
+                else
+                {
+                    khachHang.MaKhachHang = "KH00" + (checkMa.Count + 1).ToString();
+                }
+                
             }
             khachHang.CreationTime = DateTime.Now;
             khachHang.GioiTinhNam = dto.GioiTinh;

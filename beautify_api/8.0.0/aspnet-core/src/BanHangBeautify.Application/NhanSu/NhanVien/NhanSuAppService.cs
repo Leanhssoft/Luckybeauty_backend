@@ -87,17 +87,17 @@ namespace BanHangBeautify.NhanSu.NhanVien
             //nhanSu.IdPhongBan = dto.IdPhongBan;
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                var countNhanVien = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList().Count();
+                var countNhanVien = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList().Count() + 1;
                 if(countNhanVien.ToString().Length>=3) {
-                    nhanSu.MaNhanVien = "NS" + countNhanVien + 1;
+                    nhanSu.MaNhanVien = "NS" + countNhanVien;
                 }
                 else if (countNhanVien.ToString().Length==2)
                 {
-                    nhanSu.MaNhanVien = "NS0" + countNhanVien + 1;
+                    nhanSu.MaNhanVien = "NS0" + countNhanVien;
                 }
                 else
                 {
-                    nhanSu.MaNhanVien = "NS00" + countNhanVien + 1;
+                    nhanSu.MaNhanVien = "NS00" + countNhanVien;
                 }
                 
             }

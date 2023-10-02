@@ -25,8 +25,9 @@ BEGIN
 		ChungTuApDung,
 		CASE WHEN LoaiChietKhau = 1 THEN CONVERT(NVARCHAR(MAX),GiaTriChietKhau) + N' % thực thu'
 			 WHEN LoaiChietKhau = 2 THEN CONVERT(NVARCHAR(MAX),GiaTriChietKhau) + N' % doanh thu'
-			 WHEN LoaiChietKhau = 3 THEN CONVERT(NVARCHAR(MAX),GiaTriChietKhau) + N' VNĐ'
+			 WHEN LoaiChietKhau = 3 THEN CONVERT(NVARCHAR(MAX),REPLACE(REPlace(REPLACE(FORMAT(GiaTriChietKhau, '###,###.##'),'.','@'),',','.'),'@',',')) + N' VNĐ'
 		ELSE '0' END AS GiaTriChietKhau
+		GhiChu
 	FROM NS_ChietKhauHoaDon 
 	WHERE TenantId = @TenantId
 		AND IsDeleted = 0

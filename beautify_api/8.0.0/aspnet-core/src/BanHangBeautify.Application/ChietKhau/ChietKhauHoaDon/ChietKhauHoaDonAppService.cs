@@ -51,6 +51,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                 data.Id = Guid.NewGuid();
                 data.ChungTuApDung =input.ChungTuApDung;
                 data.CreationTime = DateTime.Now;
+                data.GhiChu = input.GhiChu;
                 data.CreatorUserId = AbpSession.UserId;
                 data.TenantId = AbpSession.TenantId ?? 1;
                 data.IsDeleted = false;
@@ -97,6 +98,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                 oldData.GiaTriChietKhau = input.GiaTriChietKhau;
                 oldData.ChungTuApDung = input.ChungTuApDung;
                 oldData.TrangThai = 0;
+                oldData.GhiChu = input.GhiChu;
                 oldData.LastModificationTime = DateTime.Now;
                 oldData.LastModifierUserId = AbpSession.UserId;
                 await _repository.UpdateAsync(oldData);

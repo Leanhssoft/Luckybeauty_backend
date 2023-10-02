@@ -16,6 +16,7 @@ namespace BanHangBeautify.Entities
         public double? GiaTriChietKhau { get; set; } = 0;
         [MaxLength(50)]
         public string ChungTuApDung { get; set; }
+        public string GhiChu { get; set; }
         public int TrangThai { get; set; } = 1;
     }
 }
