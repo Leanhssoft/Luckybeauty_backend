@@ -13,6 +13,7 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.Notifications;
+using BanHangBeautify.Roles.Repository;
 using BanHangBeautify.SignalR.Notification;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -38,6 +39,7 @@ namespace BanHangBeautify.Bookings.Bookings
         private readonly INhanSuRepository _nhanSuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
         private readonly IAppNotifier _appNotifier;
+        IUserRoleRepository _userRoleRepository;
         public BookingAppService(
             IRepository<Booking, Guid> repository,
             IBookingRepository bookingRepository,
@@ -48,7 +50,10 @@ namespace BanHangBeautify.Bookings.Bookings
             IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
              IRepository<NS_NhanVien, Guid> nhanVienService,
              INhanSuRepository nhanSuRepository,
-            IAppNotifier appNotifier)
+            IAppNotifier appNotifier,
+              IUserRoleRepository userRoleRepository
+
+            )
         {
             _repository = repository;
             _bookingRepository = bookingRepository;
@@ -60,8 +65,9 @@ namespace BanHangBeautify.Bookings.Bookings
             _nhanVienService = nhanVienService;
             _nhanSuRepository = nhanSuRepository;
             _appNotifier = appNotifier;
+            _userRoleRepository = userRoleRepository;
         }
-     
+
         private async Task<List<UserIdentifier>> GetUserAdmin(Guid idChiNhanh)
         {
             var nhanViens = (await _nhanSuRepository.GetAllNhanSu(new PagedNhanSuRequestDto
@@ -74,7 +80,7 @@ namespace BanHangBeautify.Bookings.Bookings
             })).Items;
             var idNhanViens = nhanViens.Select(x => x.Id).ToList();
             var users = await UserManager.Users
-                .Where(us => us.NhanSuId!=null && idNhanViens.Contains((Guid)us.NhanSuId))
+                .Where(us => us.NhanSuId != null && idNhanViens.Contains((Guid)us.NhanSuId))
                 .Select(us => new UserIdentifier(us.TenantId, us.Id))
                 .ToListAsync();
 
@@ -93,7 +99,7 @@ namespace BanHangBeautify.Bookings.Bookings
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == data.Id);
             if (checkExist != null)
             {
-                return await UpdateBooking(data,checkExist);
+                return await UpdateBooking(data, checkExist);
             }
             return await CreateBooking(data);
         }
@@ -125,7 +131,8 @@ namespace BanHangBeautify.Bookings.Bookings
             _repository.Insert(booking);
             _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
-            var listUser = await GetUserAdmin((Guid)dto.IdChiNhanh);
+            var listUserRole = await _userRoleRepository.GetListUser_havePermission(booking.TenantId, booking.IdChiNhanh ?? Guid.Empty, "Pages.Notifications.Booking");
+            var listUser = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
             string mess = "Khách hàng: " + booking.TenKhachHang + "(" + booking.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("HH:mm");
             var notificationData = NewMessageNotification(mess);
             await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);

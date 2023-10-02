@@ -36,12 +36,15 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
         private readonly IChiNhanhExcelExporter _chiNhanhExcelExporter;
         private readonly IRepository<HT_CongTy, Guid> _congTyRpository;
+        private readonly IRepository<UserRoleChiNhanh, long> _userRole;
+
         public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService, IRepository<User, long> userRepository,
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository,
             IChiNhanhRepository chiNhanhRepository,
             IChiNhanhExcelExporter chiNhanhExcelExporter,
-            IRepository<HT_CongTy, Guid> congTyRpository
+            IRepository<HT_CongTy, Guid> congTyRpository,
+             IRepository<UserRoleChiNhanh, long> userRole
 
             )
         {
@@ -52,6 +55,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             _chiNhanhReponsitory = chiNhanhRepository;
             _chiNhanhExcelExporter = chiNhanhExcelExporter;
             _congTyRpository = congTyRpository;
+            _userRole = userRole;
         }
         [HttpGet]
         public async Task<PagedResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedRequestDto input)
@@ -140,8 +144,8 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                     chiNhanh.NgayHetHan = dto.NgayHetHan;
                     chiNhanh.TenantId = AbpSession.TenantId ?? 1;
                     chiNhanh.CreatorUserId = AbpSession.UserId;
-                    var congTy =await _congTyRpository.GetAll().FirstOrDefaultAsync();
-                    if (congTy==null)
+                    var congTy = await _congTyRpository.GetAll().FirstOrDefaultAsync();
+                    if (congTy == null)
                     {
                         chiNhanh.IdCongTy = dto.IdCongTy;
                     }
@@ -277,20 +281,32 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 }
                 else
                 {
-                    var qtct = _quaTrinhCongTacRepository.GetAll().
-                        Include(x => x.NS_NhanVien).
-                        Where(x => x.NS_NhanVien.Id == user.NhanSuId &&
-                            x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)
-                            ).
-                        OrderByDescending(x => x.CreationTime).Take(1).ToList().FirstOrDefault();
-                    var chiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == qtct.IdChiNhanh);
-                    if (chiNhanh != null)
+                    //var qtct = _quaTrinhCongTacRepository.GetAll().
+                    //    Include(x => x.NS_NhanVien).
+                    //    Where(x => x.NS_NhanVien.Id == user.NhanSuId &&
+                    //        x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)
+                    //        ).
+                    //    OrderByDescending(x => x.CreationTime).Take(1).ToList().FirstOrDefault();
+                    //var chiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == qtct.IdChiNhanh);
+                    //if (chiNhanh != null)
+                    //{
+                    //    result.Add(new SuggestChiNhanh()
+                    //    {
+                    //        Id = chiNhanh.Id,
+                    //        TenChiNhanh = chiNhanh.TenChiNhanh
+                    //    });
+                    //}
+
+                    // get list chinhanh by role
+                    var arrIdChiNhanh = _userRole.GetAll().Where(x => x.UserId == AbpSession.UserId).Select(x => x.IdChiNhanh).ToList();
+                    if (arrIdChiNhanh != null && arrIdChiNhanh.Count > 0)
                     {
-                        result.Add(new SuggestChiNhanh()
+                        result = _chiNhanhService.GetAll().Where(x => arrIdChiNhanh.Contains(x.Id)).Select(x =>
+                        new SuggestChiNhanh
                         {
-                            Id = chiNhanh.Id,
-                            TenChiNhanh = chiNhanh.TenChiNhanh
-                        });
+                            Id = x.Id,
+                            TenChiNhanh = x.TenChiNhanh
+                        }).ToList();
                     }
                 }
             }

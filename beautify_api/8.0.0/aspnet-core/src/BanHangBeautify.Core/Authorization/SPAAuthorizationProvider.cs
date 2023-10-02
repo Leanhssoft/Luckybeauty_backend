@@ -253,6 +253,11 @@ namespace BanHangBeautify.Authorization
 
             #endregion
 
+            // Notification
+            var notification = pages.CreateChildPermission(PermissionNames.Notifications, L("Notifications"));
+            notification.CreateChildPermission(PermissionNames.Notifications_Booking, L("Booking"));
+            notification.CreateChildPermission(PermissionNames.Notifications_Birthday, L("Birthday"));
+
             //adminsitrantion
             var administration = pages.CreateChildPermission(PermissionNames.Pages_Administration, L("Administration"));
 

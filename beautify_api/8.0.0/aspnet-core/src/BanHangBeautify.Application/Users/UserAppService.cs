@@ -36,7 +36,7 @@ namespace BanHangBeautify.Users
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
         private readonly IRepository<Role> _roleRepository;
-        private readonly IRepository<UserRole,long> _userRoleRepository;
+        private readonly IRepository<UserRole, long> _userRoleRepository;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
@@ -61,11 +61,11 @@ namespace BanHangBeautify.Users
             _abpSession = abpSession;
             _logInManager = logInManager;
             _nhanVienRepository = nhanVienRepository;
-            _userRoleRepository= userRoleRepository;
+            _userRoleRepository = userRoleRepository;
         }
 
         [HttpGet]
-        public  async Task<bool> CheckMatchesPassword(long userId, string plainPassword)
+        public async Task<bool> CheckMatchesPassword(long userId, string plainPassword)
         {
             var user = await _userManager.GetUserByIdAsync(userId);
             bool matchesPassword = await _userManager.CheckPasswordAsync(user, plainPassword);
@@ -109,6 +109,8 @@ namespace BanHangBeautify.Users
 
             var user = ObjectMapper.Map<User>(input);
             user.TenantId = AbpSession.TenantId;
+            user.NhanSuId = input.NhanSuId == Guid.Empty ? null : input.NhanSuId;
+            user.IdChiNhanhMacDinh = input.IdChiNhanhMacDinh == Guid.Empty ? null : input.IdChiNhanhMacDinh;
             if (!string.IsNullOrEmpty(input.EmailAddress))
             {
                 user.IsEmailConfirmed = true;
@@ -133,7 +135,8 @@ namespace BanHangBeautify.Users
             user.LastModificationTime = DateTime.Now;
             user.LastModifierUserId = AbpSession.UserId;
             user.IdChiNhanhMacDinh = input.IdChiNhanhMacDinh;
-            user.NhanSuId = input.NhanSuId;
+            user.NhanSuId = input.NhanSuId == Guid.Empty ? null : input.NhanSuId;
+            user.IdChiNhanhMacDinh = input.IdChiNhanhMacDinh == Guid.Empty ? null : input.IdChiNhanhMacDinh;
             user.UserName = input.UserName;
             user.IsAdmin = input.IsAdmin ?? false;
             user.EmailAddress = input.EmailAddress;
@@ -176,13 +179,13 @@ namespace BanHangBeautify.Users
                 user.IsEmailConfirmed = false;
             }
             var nhanSu = _nhanVienRepository.FirstOrDefault(x => x.Id == input.NhanSuId);
-            if (nhanSu!=null)
+            if (nhanSu != null)
             {
                 string[] tachChuoiTenNhanVien = nhanSu.TenNhanVien.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (tachChuoiTenNhanVien.Length>=2)
+                if (tachChuoiTenNhanVien.Length >= 2)
                 {
-                    user.Name = string.Join(" ",tachChuoiTenNhanVien,0,tachChuoiTenNhanVien.Length-1);
-                    user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length-1];
+                    user.Name = string.Join(" ", tachChuoiTenNhanVien, 0, tachChuoiTenNhanVien.Length - 1);
+                    user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length - 1];
                 }
                 user.PhoneNumber = nhanSu.SoDienThoai;
             }
@@ -195,9 +198,9 @@ namespace BanHangBeautify.Users
             {
                 CheckErrors(await _userManager.SetRolesAsync(user, input.RoleNames));
             }
-            
+
             CurrentUnitOfWork.SaveChanges();
-            var userRole = await _userRoleRepository.FirstOrDefaultAsync(x=>x.UserId==user.Id);
+            var userRole = await _userRoleRepository.FirstOrDefaultAsync(x => x.UserId == user.Id);
             if (userRole != null)
             {
                 //userRole.IdChiNhanh = input.IdChiNhanh;
@@ -227,7 +230,7 @@ namespace BanHangBeautify.Users
         }
         [HttpPost]
         public async Task<UserDto> UpdateUser(UpdateUserDto input)
-            {
+        {
             CheckUpdatePermission();
             var user = await _userManager.FindByIdAsync(input.Id.ToString());
             //var user = await _userManager.GetUserByIdAsync(input.Id);
@@ -239,7 +242,7 @@ namespace BanHangBeautify.Users
                 string[] tachChuoiTenNhanVien = nhanSu.TenNhanVien.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (tachChuoiTenNhanVien.Length >= 2)
                 {
-                    user.Name = string.Join(" ", tachChuoiTenNhanVien,0, tachChuoiTenNhanVien.Length - 1);
+                    user.Name = string.Join(" ", tachChuoiTenNhanVien, 0, tachChuoiTenNhanVien.Length - 1);
                     user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length - 1];
                 }
                 user.PhoneNumber = nhanSu.SoDienThoai;
@@ -248,7 +251,7 @@ namespace BanHangBeautify.Users
             user.IsActive = input.IsActive;
             user.LastModificationTime = DateTime.Now;
             user.LastModifierUserId = AbpSession.UserId;
-            
+
             if (!string.IsNullOrEmpty(input.Password))
             {
                 if (input.Password != user.Password)
@@ -256,7 +259,7 @@ namespace BanHangBeautify.Users
                     CheckErrors(await _userManager.ChangePasswordAsync(user, input.Password));
                 }
             }
-            
+
             await _userManager.ChangeEmailAsync(user, input.EmailAddress, null);
             user.SetNormalizedNames();
 
@@ -376,7 +379,7 @@ namespace BanHangBeautify.Users
 
             var userDto = base.MapToEntityDto(user);
             userDto.Password = "";
-            userDto.ConfirmPassword ="";
+            userDto.ConfirmPassword = "";
             userDto.RoleNames = roles.ToArray();
 
             return userDto;
