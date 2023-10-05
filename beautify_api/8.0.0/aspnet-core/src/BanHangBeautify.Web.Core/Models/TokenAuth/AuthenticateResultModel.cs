@@ -15,5 +15,6 @@ namespace BanHangBeautify.Models.TokenAuth
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Avatar { get; set; }
+        public Guid? IdChiNhanhMacDinh { get; set; }
     }
 }
