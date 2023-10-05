@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
-    [AbpAuthorize(PermissionNames.Pages_HoaDon)]
+    [AbpAuthorize]
     public class HoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;

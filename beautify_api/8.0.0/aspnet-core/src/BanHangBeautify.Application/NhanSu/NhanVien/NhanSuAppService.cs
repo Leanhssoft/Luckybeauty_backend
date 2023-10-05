@@ -27,7 +27,7 @@ using System.Transactions;
 
 namespace BanHangBeautify.NhanSu.NhanVien
 {
-    [AbpAuthorize(PermissionNames.Pages_NhanSu)]
+    [AbpAuthorize]
     public class NhanSuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_NhanVien, Guid> _repository;
