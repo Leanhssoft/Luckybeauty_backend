@@ -1,9 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using BanHangBeautify.AppDanhMuc.SMS.Dto;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
+using BanHangBeautify.SMS.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.AppDanhMuc.SMS
+namespace BanHangBeautify.SMS
 {
     [AbpAuthorize(PermissionNames.Pages_HeThongSMS)]
     public class HeThongSMSAppService : SPAAppServiceBase
@@ -52,10 +52,9 @@ namespace BanHangBeautify.AppDanhMuc.SMS
             oldData.IdChiNhanh = input.IdChiNhanh;
             oldData.IdTinNhan = input.IdTinNhan;
             oldData.IdKhachHang = input.IdKhachHang;
-            oldData.IdNguoiGui = input.IdNguoiGui;
             oldData.IdHoaDon = input.IdHoaDon;
             oldData.SoTinGui = input.SoTinGui;
-            oldData.LoaiTin = input.LoaiTin;
+            oldData.IdLoaiTin = input.LoaiTin;
             oldData.NoiDungTin = input.NoiDungTin;
             oldData.ThoiGianGui = input.ThoiGianGui;
             oldData.LastModificationTime = DateTime.Now;
@@ -92,7 +91,7 @@ namespace BanHangBeautify.AppDanhMuc.SMS
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<HeThongSMSDto> result = new PagedResultDto<HeThongSMSDto>();
-            var lstData = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId)).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstData = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == AbpSession.TenantId).OrderByDescending(x => x.CreationTime).ToListAsync();
             result.TotalCount = lstData.Count;
             var data = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<HeThongSMSDto>>(data);

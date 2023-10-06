@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BanHangBeautify.Entities;
 
-namespace BanHangBeautify.AppDanhMuc.SMS.Dto
+namespace BanHangBeautify.SMS.Dto
 {
     public class HeThongSMSMapProfile : Profile
     {
@@ -10,6 +10,8 @@ namespace BanHangBeautify.AppDanhMuc.SMS.Dto
             CreateMap<CreateOrEditHeThongSMSDto, HeThong_SMS>().ReverseMap();
             CreateMap<HeThongSMSDto, HeThong_SMS>().ReverseMap();
             CreateMap<CreateOrEditHeThongSMSDto, HeThongSMSDto>().ReverseMap();
+            CreateMap<HT_SMSBrandname, BrandnameDto>().ReverseMap();
+            CreateMap<HT_SMSBrandname, PageBrandnameDto>().ReverseMap();
         }
     }
 }

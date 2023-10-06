@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BanHangBeautify.AppDanhMuc.SMS.Dto
+namespace BanHangBeautify.SMS.Dto
 {
     public class HeThongSMSDto
     {

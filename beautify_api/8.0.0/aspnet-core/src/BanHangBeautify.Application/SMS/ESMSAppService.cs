@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using Twilio.TwiML.Messaging;
 using Twilio.TwiML.Voice;
 
-namespace BanHangBeautify.AppDanhMuc.SMS
+namespace BanHangBeautify.SMS
 {
     public class ESMSAppService : SPAAppServiceBase
     {
