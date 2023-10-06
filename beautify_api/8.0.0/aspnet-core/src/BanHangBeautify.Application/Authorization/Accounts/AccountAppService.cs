@@ -88,7 +88,7 @@ namespace BanHangBeautify.Authorization.Accounts
                     await CurrentUnitOfWork.SaveChangesAsync();
                     var user = await GetUserByChecking(input.EmailAddress);
                     user.SetNewPasswordResetCode();
-                    var url = AppUrlService.CreatePasswordResetUrlFormat(AbpSession.TenantId);
+                    var url = AppUrlService.CreatePasswordResetUrlFormat(input.TenantId);
                     await _userEmailer.SendPasswordResetLinkAsync(
                         user,
                         url

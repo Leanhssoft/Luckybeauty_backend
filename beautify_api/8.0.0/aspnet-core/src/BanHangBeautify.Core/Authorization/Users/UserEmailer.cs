@@ -156,7 +156,7 @@ namespace BanHangBeautify.Authorization.Users
 
                 mailMessage.AppendLine("<br />");
                 mailMessage.AppendLine(L("PasswordResetEmail_ClickTheLinkBelowToResetYourPassword") + "<br /><br />");
-                mailMessage.AppendLine("<a style=\"" + _emailButtonStyle + "\" bg-color=\"" + _emailButtonColor + "\" href=\"" + link + "\">" + L("Reset") + "</a>");
+                mailMessage.AppendLine("<a style=\"" + _emailButtonStyle + "\" bg-color=\"" + _emailButtonColor + "\" href=\"" + link + "\">" + L("ResetPassword") + "</a>");
                 mailMessage.AppendLine("<br />");
                 mailMessage.AppendLine("<br />");
                 mailMessage.AppendLine("<br />");

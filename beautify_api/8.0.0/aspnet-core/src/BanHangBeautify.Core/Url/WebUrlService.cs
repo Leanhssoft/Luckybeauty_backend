@@ -52,12 +52,12 @@ namespace BanHangBeautify.Url
 
             if (siteRootFormat.Contains(TenancyNamePlaceHolder + "."))
             {
-                siteRootFormat = siteRootFormat.Replace(TenancyNamePlaceHolder + ".", TenancyNamePlaceHolder);
+                siteRootFormat = siteRootFormat.Replace(TenancyNamePlaceHolder + ".", "Account/ChangePassword");
             }
 
             if (tenancyName.IsNullOrEmpty())
             {
-                return siteRootFormat.Replace(TenancyNamePlaceHolder, "");
+                return siteRootFormat.Replace(TenancyNamePlaceHolder, "Account/ChangePassword");
             }
 
             return siteRootFormat.Replace(TenancyNamePlaceHolder, "Account/ChangePassword");
