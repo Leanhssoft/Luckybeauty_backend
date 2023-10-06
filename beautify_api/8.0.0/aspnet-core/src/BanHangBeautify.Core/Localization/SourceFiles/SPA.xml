@@ -246,5 +246,10 @@
     <text name="DeleteHoaDon">Xóa hóa đơn</text>
     <text name="Notifications">Thông báo</text>
     <text name="Birthday">Sinh nhật</text>
-  </texts>
+    <text name="ResetCode">Mã khôi phục</text>
+    <text name="PasswordResetEmail_ClickTheLinkBelowToResetYourPassword">Nhấn vào đường dẫn sau để thay đổi mật khẩu</text>
+    <text name="EmailMessage_CopyTheLinkBelowToYourBrowser">Sao chép đường dẫn</text>
+    <text name="InvalidPasswordResetCode">Mã đặt lại mật khẩu không chính xác</text>
+    <text name="InvalidPasswordResetCode_Detail">Mã đặt lại mật khẩu không chính xác (Chi tiết)</text>
+  </texts> 
 </localizationDictionary>

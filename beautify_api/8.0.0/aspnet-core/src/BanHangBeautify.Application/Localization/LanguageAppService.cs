@@ -2,7 +2,9 @@
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Localization;
+using Abp.Runtime.Session;
 using BanHangBeautify.Localization.Dto;
+using BanHangBeautify.Users.Dto;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -28,6 +30,14 @@ namespace BanHangBeautify.Localization
             _languageRepository = languageRepository;
             _applicationLanguageTextManager = applicationLanguageTextManager;
             _applicationCulturesProvider = applicationCulturesProvider;
+        }
+        public async Task ChangeLanguage(ChangeUserLanguageDto input)
+        {
+            await SettingManager.ChangeSettingForUserAsync(
+                AbpSession.ToUserIdentifier(),
+                LocalizationSettingNames.DefaultLanguage,
+                input.LanguageName
+            );
         }
         public async Task<GetLanguagesOutput> GetLanguages()
         {

@@ -244,5 +244,7 @@
     <text name="CreateHoaDon">Tạo hóa đơn</text>
     <text name="EditHoaDon">Sửa hóa đơn</text>
     <text name="DeleteHoaDon">Xóa hóa đơn</text>
+    <text name="Notifications">Thông báo</text>
+    <text name="Birthday">Sinh nhật</text>
   </texts>
 </localizationDictionary>

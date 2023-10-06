@@ -1,9 +1,12 @@
-using Abp.Configuration;
+﻿using Abp.Configuration;
+using Abp.Domain.Uow;
 using Abp.Runtime.Session;
+using Abp.UI;
 using Abp.Zero.Configuration;
 using BanHangBeautify.Authorization.Accounts.Dto;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.Url;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +15,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Threading.Tasks;
+using static Asd.AbpZeroTemplate.Configuration.AppSettings.ExternalLoginProvider;
 
 namespace BanHangBeautify.Authorization.Accounts
 {
@@ -23,13 +27,22 @@ namespace BanHangBeautify.Authorization.Accounts
         private ISession _session { set; get; }
         private readonly IConfiguration _config;
         private readonly UserRegistrationManager _userRegistrationManager;
-
+        private readonly IUserEmailer _userEmailer;
+        public IAppUrlService AppUrlService { get; set; }
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
         public AccountAppService(
-            UserRegistrationManager userRegistrationManager, IAbpSession session)
+            UserRegistrationManager userRegistrationManager, 
+            IAbpSession session, 
+            IUserEmailer userEmailer,
+            IAppUrlService appUrlService,
+            IUnitOfWorkManager unitOfWorkManager
+            )
         {
             _userRegistrationManager = userRegistrationManager;
             _AbpSession = session;
-
+            _userEmailer = userEmailer;
+            AppUrlService = appUrlService;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input)
@@ -64,6 +77,116 @@ namespace BanHangBeautify.Authorization.Accounts
             {
                 CanLogin = user.IsActive && (user.IsEmailConfirmed || !isEmailConfirmationRequiredForLogin)
             };
+        }
+        public async Task<bool> SendPasswordResetCode(SendPasswordResetCodeInput input)
+        {
+            bool result = false;
+            try
+            {
+                using (_unitOfWorkManager.Current.SetTenantId(input.TenantId))
+                {
+                    await CurrentUnitOfWork.SaveChangesAsync();
+                    var user = await GetUserByChecking(input.EmailAddress);
+                    user.SetNewPasswordResetCode();
+                    var url = AppUrlService.CreatePasswordResetUrlFormat(AbpSession.TenantId);
+                    await _userEmailer.SendPasswordResetLinkAsync(
+                        user,
+                        url
+                        );
+                    result = true;
+                }
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            
+            return result;
+        }
+
+        public async Task<ResetPasswordOutput> ResetPassword(ResetPasswordInput input)
+        {
+            try
+            {
+                using (_unitOfWorkManager.Current.SetTenantId(input.TenantId))
+                {
+                    await CurrentUnitOfWork.SaveChangesAsync();
+                    var user = await UserManager.GetUserByIdAsync(input.UserId);
+                    if (user == null || user.PasswordResetCode.IsNullOrEmpty() || user.PasswordResetCode != input.ResetCode)
+                    {
+                        return new ResetPasswordOutput
+                        {
+                            CanLogin = false,
+                            UserName = user.UserName,
+                            Message = L("InvalidPasswordResetCode")
+                        };
+                    }
+
+
+                    await UserManager.InitializeOptionsAsync(AbpSession.TenantId);
+                    CheckErrors(await UserManager.ChangePasswordAsync(user, input.Password));
+                    user.PasswordResetCode = null;
+                    user.IsEmailConfirmed = true;
+
+                    await UserManager.UpdateAsync(user);
+
+                    return new ResetPasswordOutput
+                    {
+                        CanLogin = user.IsActive,
+                        UserName = user.UserName,
+                        Message = "Thay đổi mật khẩu thành công"
+                    };
+                }
+            }
+            catch (Exception)
+            {
+                return new ResetPasswordOutput
+                {
+                    CanLogin = false,
+                    UserName = "",
+                    Message = "Có lỗi xảy ra vui lòng thử lại sau!"
+                };
+            }
+            
+        }
+
+        public async Task SendEmailActivationLink(SendEmailActivationLinkInput input)
+        {
+            var user = await GetUserByChecking(input.EmailAddress);
+            user.SetNewEmailConfirmationCode();
+            await _userEmailer.SendEmailActivationLinkAsync(
+            user,
+                AppUrlService.CreateEmailActivationUrlFormat(AbpSession.TenantId)
+            );
+        }
+
+        public async Task ActivateEmail(ActivateEmailInput input)
+        {
+            var user = await UserManager.GetUserByIdAsync(input.UserId);
+            if (user != null && user.IsEmailConfirmed)
+            {
+                return;
+            }
+
+            if (user == null || user.EmailConfirmationCode.IsNullOrEmpty() || user.EmailConfirmationCode != input.ConfirmationCode)
+            {
+                throw new UserFriendlyException(L("InvalidEmailConfirmationCode"), L("InvalidEmailConfirmationCode_Detail"));
+            }
+
+            user.IsEmailConfirmed = true;
+            user.EmailConfirmationCode = null;
+
+            await UserManager.UpdateAsync(user);
+        }
+        private async Task<User> GetUserByChecking(string inputEmailAddress)
+        {
+            var user = await UserManager.FindByEmailAsync(inputEmailAddress);
+            if (user == null)
+            {
+                throw new UserFriendlyException(L("InvalidEmailAddress"));
+            }
+
+            return user;
         }
         [NonAction]
         private string GenerateToken(int? id)
