@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HangHoa.NhomHangHoa
 {
-    [AbpAuthorize(PermissionNames.Pages_DM_NhomHangHoa)]
+    [AbpAuthorize]
     public class NhomHangHoaAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_NhomHangHoa, Guid> _dmNhomHangHoa;

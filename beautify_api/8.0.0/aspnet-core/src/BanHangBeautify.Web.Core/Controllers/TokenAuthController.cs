@@ -72,6 +72,7 @@ namespace BanHangBeautify.Controllers
                 ExpireInSeconds = (int)_configuration.Expiration.TotalSeconds,
                 UserId = loginResult.User.Id,
                 IdNhanVien = loginResult.User.NhanSuId,
+                IdChiNhanhMacDinh = loginResult.User.IdChiNhanhMacDinh,
                 Email = loginResult.User.EmailAddress,
                 Avatar = nhanSu==null?"":nhanSu.Avatar,
                 FullName = loginResult.User.FullName
