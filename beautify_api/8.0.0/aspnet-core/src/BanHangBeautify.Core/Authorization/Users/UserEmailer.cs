@@ -175,7 +175,7 @@ namespace BanHangBeautify.Authorization.Users
                 To = { emailAddress },
                 Subject = subject,
                 Body = emailTemplate.ToString(),
-                IsBodyHtml = true
+                IsBodyHtml = true,
             });
         }
         private string GetTenancyNameOrNull(int? tenantId)

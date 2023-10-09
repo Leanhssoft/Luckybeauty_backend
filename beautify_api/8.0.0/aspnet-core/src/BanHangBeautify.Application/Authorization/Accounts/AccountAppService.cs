@@ -23,7 +23,7 @@ namespace BanHangBeautify.Authorization.Accounts
     {
         // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
         public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
-        public IAbpSession _AbpSession { get; set; }
+        public IAbpSession _abpSession { get; set; }
         private ISession _session { set; get; }
         private readonly IConfiguration _config;
         private readonly UserRegistrationManager _userRegistrationManager;
@@ -39,7 +39,7 @@ namespace BanHangBeautify.Authorization.Accounts
             )
         {
             _userRegistrationManager = userRegistrationManager;
-            _AbpSession = session;
+            _abpSession = session;
             _userEmailer = userEmailer;
             AppUrlService = appUrlService;
             _unitOfWorkManager = unitOfWorkManager;

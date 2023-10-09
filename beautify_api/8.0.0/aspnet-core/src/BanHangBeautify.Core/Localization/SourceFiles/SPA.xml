@@ -16,7 +16,7 @@
     <text name="TenancyName" value="Tên tenancy" />
     <text name="UserNameOrEmail" value="Tên đăng nhập hoặc email" />
     <text name="Password" value="Mật khẩu" />
-    <text name="ResetPassword" value="Khôi phục mật khẩu" />
+    <text name="ResetPassword" value="Đặt lại mật khẩu" />
     <text name="UpdatePassword" value="Cập nhật mật khẩu" />
     <text name="RememberMe" value="Ghi nhớ" />
     <text name="LogIn" value="Đăng nhập" />
