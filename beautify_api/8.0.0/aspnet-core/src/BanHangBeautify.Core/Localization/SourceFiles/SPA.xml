@@ -16,7 +16,7 @@
     <text name="TenancyName" value="Tên tenancy" />
     <text name="UserNameOrEmail" value="Tên đăng nhập hoặc email" />
     <text name="Password" value="Mật khẩu" />
-    <text name="ResetPassword" value="Khôi phục mật khẩu" />
+    <text name="ResetPassword" value="Đặt lại mật khẩu" />
     <text name="UpdatePassword" value="Cập nhật mật khẩu" />
     <text name="RememberMe" value="Ghi nhớ" />
     <text name="LogIn" value="Đăng nhập" />
@@ -246,5 +246,11 @@
     <text name="DeleteHoaDon">Xóa hóa đơn</text>
     <text name="Notifications">Thông báo</text>
     <text name="Birthday">Sinh nhật</text>
-  </texts>
+    <text name="ResetCode">Mã khôi phục</text>
+    <text name="PasswordResetEmail_ClickTheLinkBelowToResetYourPassword">Nhấn vào đường dẫn sau để thay đổi mật khẩu</text>
+    <text name="EmailMessage_CopyTheLinkBelowToYourBrowser">Nếu nút không hoạt động hay sao chép đường dẫn dưới đây và dán vào trình duyệt</text>
+    <text name="InvalidPasswordResetCode">Mã đặt lại mật khẩu không chính xác</text>
+    <text name="InvalidPasswordResetCode_Detail">Mã đặt lại mật khẩu không chính xác (Chi tiết)</text>
+    <text name="Reset">Đặt lại</text>
+  </texts> 
 </localizationDictionary>

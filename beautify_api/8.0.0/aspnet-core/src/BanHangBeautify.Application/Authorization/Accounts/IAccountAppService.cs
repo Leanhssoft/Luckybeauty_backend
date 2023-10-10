@@ -9,5 +9,12 @@ namespace BanHangBeautify.Authorization.Accounts
         Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input);
 
         Task<RegisterOutput> Register(RegisterInput input);
+        Task<bool> SendPasswordResetCode(SendPasswordResetCodeInput input);
+
+        Task<ResetPasswordOutput> ResetPassword(ResetPasswordInput input);
+
+        Task SendEmailActivationLink(SendEmailActivationLinkInput input);
+
+        Task ActivateEmail(ActivateEmailInput input);
     }
 }

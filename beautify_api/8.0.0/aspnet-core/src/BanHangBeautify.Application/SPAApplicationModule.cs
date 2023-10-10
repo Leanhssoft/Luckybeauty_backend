@@ -1,4 +1,6 @@
 ﻿using Abp.AutoMapper;
+using Abp.Configuration.Startup;
+using Abp.MailKit;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Asd.AbpZeroTemplate.DashboardCustomization.Definitions;
@@ -8,12 +10,14 @@ namespace BanHangBeautify
 {
     [DependsOn(
         typeof(SPACoreModule),
-        typeof(AbpAutoMapperModule))]
+        typeof(AbpAutoMapperModule),typeof(AbpMailKitModule))]
+
     public class SPAApplicationModule : AbpModule
     {
         public override void PreInitialize()
         {
             Configuration.Authorization.Providers.Add<SPAAuthorizationProvider>();
+            Configuration.ReplaceService<IMailKitSmtpBuilder, SPAMailKitSmtpBuilder>();
             IocManager.Register<DashboardConfiguration>();
         }
 
