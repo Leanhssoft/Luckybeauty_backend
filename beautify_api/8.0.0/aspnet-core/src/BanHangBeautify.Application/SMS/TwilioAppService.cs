@@ -20,7 +20,7 @@ using Twilio.Rest.Verify.V2.Service;
 using Twilio.TwiML.Messaging;
 using Twilio.Types;
 
-namespace BanHangBeautify.AppDanhMuc.SMS
+namespace BanHangBeautify.SMS
 {
     public class TwilioAppService : SPAAppServiceBase
     {
