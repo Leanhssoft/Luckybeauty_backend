@@ -80,13 +80,16 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
             }
         }
 
-        public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, int tenantId)
+        public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, int tenantId, PagedRequestDto input)
         {
             using (var command = CreateCommand("prc_lichSuDatLich"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
-
+                command.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
+                command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
+                command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
+                command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data", "TotalCount" };
@@ -112,13 +115,16 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                 return new PagedResultDto<LichSuDatLichDto>();
             }
         }
-        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang, int tenantId)
+        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang, int tenantId, PagedRequestDto input)
         {
             using (var command = CreateCommand("prc_lichSuGiaoDich"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
-
+                command.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
+                command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
+                command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
+                command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data", "TotalCount" };

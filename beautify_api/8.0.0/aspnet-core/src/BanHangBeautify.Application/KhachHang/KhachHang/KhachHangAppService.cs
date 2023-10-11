@@ -222,15 +222,17 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
             return result;
         }
-        public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang)
+        public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, PagedRequestDto input)
         {
             int tenantId = AbpSession.TenantId ?? 1;
-            return await _customerRepo.LichSuDatLich(idKhachHang, tenantId);
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            return await _customerRepo.LichSuDatLich(idKhachHang, tenantId,input);
         }
-        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang)
+        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang,PagedRequestDto input)
         {
             int tenantId = AbpSession.TenantId ?? 1;
-            return await _customerRepo.LichSuGiaoDich(idKhachHang, tenantId);
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            return await _customerRepo.LichSuGiaoDich(idKhachHang, tenantId,input);
         }
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input)
         {

@@ -278,28 +278,56 @@ namespace BanHangBeautify.Suggests
 
         }
 
-        public async Task<List<SuggestDichVuDto>> SuggestDichVu()
+        public async Task<List<SuggestDichVuDto>> SuggestDichVu(Guid? idNhanVien)
         {
             List<SuggestDichVuDto> result = new List<SuggestDichVuDto>();
-            var lst = await _donViQuiDoiRepository
+            if (idNhanVien.HasValue==false)
+            {
+                var lst = await _donViQuiDoiRepository
                 .GetAll()
                 .Include(x => x.DM_HangHoa)
                 .Where(
                     x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false &&
                     x.DM_HangHoa.IdLoaiHangHoa != LoaiHangHoaConst.HangHoa
                 ).ToListAsync();
-            if (lst != null || lst.Count > 0)
-            {
-                foreach (var item in lst)
+                if (lst != null || lst.Count > 0)
                 {
-                    SuggestDichVuDto rdo = new SuggestDichVuDto();
-                    rdo.Id = item.Id;
-                    rdo.TenDichVu = item.DM_HangHoa.TenHangHoa;
-                    rdo.DonGia = decimal.Parse(item.GiaBan.ToString() ?? "0");
-                    rdo.ThoiGianThucHien = item.DM_HangHoa.SoPhutThucHien.HasValue ? item.DM_HangHoa.SoPhutThucHien.Value.ToString() + " phút":"0 phút";
-                    result.Add(rdo);
+                    foreach (var item in lst)
+                    {
+                        SuggestDichVuDto rdo = new SuggestDichVuDto();
+                        rdo.Id = item.Id;
+                        rdo.TenDichVu = item.DM_HangHoa.TenHangHoa;
+                        rdo.DonGia = decimal.Parse(item.GiaBan.ToString() ?? "0");
+                        rdo.ThoiGianThucHien = item.DM_HangHoa.SoPhutThucHien.HasValue ? item.DM_HangHoa.SoPhutThucHien.Value.ToString() + " phút" : "0 phút";
+                        result.Add(rdo);
+                    }
                 }
             }
+            else
+            {
+                var dichVus = await _dichVuNhanVienRespository.GetAllListAsync(x => x.IdNhanVien == idNhanVien.Value);
+                var idDichVus = dichVus.Select(x => x.IdDonViQuyDoi).ToList();
+                var lst = await _donViQuiDoiRepository
+                .GetAll()
+                .Include(x => x.DM_HangHoa)
+                .Where(
+                    x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false &&
+                    x.DM_HangHoa.IdLoaiHangHoa != LoaiHangHoaConst.HangHoa && idDichVus.Contains(x.Id)
+                ).ToListAsync();
+                if (lst != null || lst.Count > 0)
+                {
+                    foreach (var item in lst)
+                    {
+                        SuggestDichVuDto rdo = new SuggestDichVuDto();
+                        rdo.Id = item.Id;
+                        rdo.TenDichVu = item.DM_HangHoa.TenHangHoa;
+                        rdo.DonGia = decimal.Parse(item.GiaBan.ToString() ?? "0");
+                        rdo.ThoiGianThucHien = item.DM_HangHoa.SoPhutThucHien.HasValue ? item.DM_HangHoa.SoPhutThucHien.Value.ToString() + " phút" : "0 phút";
+                        result.Add(rdo);
+                    }
+                }
+            }
+            
             return result;
 
         }
