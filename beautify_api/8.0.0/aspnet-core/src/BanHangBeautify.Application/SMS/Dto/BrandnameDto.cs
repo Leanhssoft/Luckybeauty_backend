@@ -9,6 +9,7 @@ namespace BanHangBeautify.SMS.Dto
     public class BrandnameDto
     {
         public Guid Id { get; set; }
+        public int TenantId { get; set; }
         public string Brandname { get; set; }
         public string SDTCuaHang { get; set; }
         public DateTime? NgayKichHoat { get; set; }

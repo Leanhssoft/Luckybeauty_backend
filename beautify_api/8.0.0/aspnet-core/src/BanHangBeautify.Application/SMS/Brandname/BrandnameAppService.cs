@@ -5,6 +5,7 @@ using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.SMS.Brandname.Repository;
 using BanHangBeautify.SMS.Dto;
 using BanHangBeautify.Storage;
@@ -64,13 +65,14 @@ namespace BanHangBeautify.SMS.Brandname
             var data = await _repository.GetListBandname(param, AbpSession.TenantId ?? 1);
             return data;
         }
+
         [HttpPost]
         public BrandnameDto CreateBrandname(BrandnameDto dto)
         {
             if (dto == null) { return new BrandnameDto(); };
             HT_SMSBrandname objNew = ObjectMapper.Map<HT_SMSBrandname>(dto);
             objNew.Id = Guid.NewGuid();
-            objNew.TenantId = AbpSession.TenantId ?? 1;
+            objNew.TenantId = dto.TenantId;
             objNew.CreatorUserId = AbpSession.UserId;
             objNew.CreationTime = DateTime.Now;
             _dmBrandname.InsertAsync(objNew);
@@ -88,6 +90,7 @@ namespace BanHangBeautify.SMS.Brandname
                 {
                     return "object null";
                 }
+                objUp.TenantId = dto.TenantId;
                 objUp.Brandname = dto.Brandname;
                 objUp.SDTCuaHang = dto.SDTCuaHang;
                 objUp.NgayKichHoat = dto.NgayKichHoat;
