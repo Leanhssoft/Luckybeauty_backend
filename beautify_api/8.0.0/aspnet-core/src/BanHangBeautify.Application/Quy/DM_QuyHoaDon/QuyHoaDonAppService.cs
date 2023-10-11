@@ -88,6 +88,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             oldData.IdLoaiChungTu = input.IdLoaiChungTu;
             oldData.NgayLapHoaDon = input.NgayLapHoaDon;
             oldData.IdChiNhanh = input.IdChiNhanh;
+            oldData.IdBrandname = input.IdBrandname;
             oldData.TongTienThu = input.TongTienThu;
             oldData.HachToanKinhDoanh = input.HachToanKinhDoanh;
             oldData.NoiDungThu = input.NoiDungThu;

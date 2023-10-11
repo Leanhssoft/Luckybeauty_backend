@@ -8,6 +8,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
     {
         public Guid Id { set; get; }
         public Guid? IdChiNhanh { set; get; }
+        public Guid? IdBrandname { set; get; }
         public int IdLoaiChungTu { set; get; }
         public string MaHoaDon { set; get; }
         public DateTime NgayLapHoaDon { set; get; }
