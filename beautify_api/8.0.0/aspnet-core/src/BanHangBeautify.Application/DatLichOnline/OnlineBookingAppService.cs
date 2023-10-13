@@ -387,15 +387,23 @@ namespace BanHangBeautify.DatLichOnline
                 {
                     await CurrentUnitOfWork.SaveChangesAsync();
                     DM_KhachHang kh = new DM_KhachHang();
-                    kh.Id = Guid.NewGuid();
-                    var checkMa = _dmKhachHangRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
-                    kh.MaKhachHang = "KH00" + (checkMa.Count + 1).ToString();
-                    kh.TenantId = tenant.Id;
-                    kh.TenKhachHang = data.TenKhachHang;
-                    kh.SoDienThoai = data.SoDienThoai;
-                    kh.IsDeleted = false;
-                    kh.CreationTime = DateTime.Now;
-                    await _dmKhachHangRepository.InsertAsync(kh);
+                    var checkKhachHang =await _dmKhachHangRepository.GetAll().Where(x=>x.SoDienThoai==data.SoDienThoai).FirstOrDefaultAsync();
+                    if (checkKhachHang!=null)
+                    {
+                        kh.Id = checkKhachHang.Id;
+                    }
+                    else
+                    {
+                        kh.Id = Guid.NewGuid();
+                        var checkMa = _dmKhachHangRepository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
+                        kh.MaKhachHang = "KH00" + (checkMa.Count + 1).ToString();
+                        kh.TenantId = tenant.Id;
+                        kh.TenKhachHang = data.TenKhachHang;
+                        kh.SoDienThoai = data.SoDienThoai;
+                        kh.IsDeleted = false;
+                        kh.CreationTime = DateTime.Now;
+                        await _dmKhachHangRepository.InsertAsync(kh);
+                    }
                     Booking bk = new Booking();
                     bk.Id = Guid.NewGuid();
                     bk.IdChiNhanh = data.IdChiNhanh;
