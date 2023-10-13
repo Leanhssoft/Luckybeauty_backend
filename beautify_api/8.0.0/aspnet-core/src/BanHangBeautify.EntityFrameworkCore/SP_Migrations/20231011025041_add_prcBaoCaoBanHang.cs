@@ -44,7 +44,7 @@ BEGIN
 		hd.NgayLapHoaDon,
 		kh.TenKhachHang,
 		kh.SoDienThoai,
-		ISNULL(nhh.TenNhomHang,'Chưa phân nhóm') as NhomHangHoa,
+		ISNULL(nhh.TenNhomHang,N'Chưa phân nhóm') as NhomHangHoa,
 		hh.TenHangHoa,
 		dvqd.GiaBan,
 		hdct.SoLuong,
@@ -55,7 +55,7 @@ BEGIN
 		JOIN DM_DonViQuiDoi dvqd on hdct.IdDonViQuyDoi= dvqd.Id
 		JOIN DM_HangHoa hh on dvqd.IdHangHoa = hh.Id
 		LEFT JOIN DM_NhomHangHoa nhh on hh.IdNhomHangHoa = nhh.Id
-		JOIN DM_KhachHang kh on hd.IdKhachHang = kh.Id
+		LEFT JOIN DM_KhachHang kh on hd.IdKhachHang = kh.Id
 		WHERE hd.TenantId = @TenantId and hd.IsDeleted = 0
 		AND hd.NgayLapHoaDon between @TimeFrom and @TimeTo
 		AND (@IdDichVu IS NULL OR (hdct.IdDonViQuyDoi = @IdDichVu AND @IdDichVu IS NOT NULL))
@@ -65,7 +65,7 @@ BEGIN
 			OR LOWER(kh.TenKhachHang) LIKE N'%' + LOWER(@Filter) + N'%'
 			OR LOWER(kh.SoDienThoai) LIKE N'%' + LOWER(@Filter) + N'%'
 			OR LOWER(hd.MaHoaDon) LIKE N'%' + LOWER(@Filter) + N'%'
-			OR LOWER(ISNULL(nhh.TenNhomHang,'Chưa phân nhóm')) LIKE N'%' + LOWER(@Filter) + N'%'
+			OR LOWER(ISNULL(nhh.TenNhomHang,N'Chưa phân nhóm')) LIKE N'%' + LOWER(@Filter) + N'%'
 			OR LOWER(hh.TenHangHoa) LIKE N'%' + LOWER(@Filter) + N'%'
 			OR CONVERT(nvarchar(50),hdct.SoLuong) = @Filter
 			OR CONVERT(nvarchar(50),hdct.SoLuong * dvqd.GiaBan) = @Filter
@@ -123,7 +123,7 @@ AS
 		SELECT 
 		hh.TenHangHoa,
 		dvqd.MaHangHoa,
-		ISNULL(nhh.TenNhomHang,'Chưa phân nhóm') as NhomHangHoa,
+		ISNULL(nhh.TenNhomHang,N'Chưa phân nhóm') as NhomHangHoa,
 		dvqd.GiaBan,
 		SUM(hdct.SoLuong) as SoLuong,
 		SUM(hdct.SoLuong) * dvqd.GiaBan as DoanhThu
@@ -140,7 +140,7 @@ AS
 			ISNULL(@Filter,'') = ''
 			OR LOWER(hh.TenHangHoa) LIKE N'%' + LOWER(@Filter) + N'%'
 			OR LOWER(dvqd.MaHangHoa) LIKE N'%' + LOWER(@Filter) + N'%'
-			OR LOWER(ISNULL(nhh.TenNhomHang,'Chưa phân nhóm')) LIKE N'%' + LOWER(@Filter) + N'%'
+			OR LOWER(ISNULL(nhh.TenNhomHang,N'Chưa phân nhóm')) LIKE N'%' + LOWER(@Filter) + N'%'
 			OR LOWER(hh.TenHangHoa) LIKE N'%' + LOWER(@Filter) + N'%'
 			OR CONVERT(nvarchar(50),hdct.SoLuong) = @Filter
 			OR CONVERT(nvarchar(50),hdct.SoLuong * dvqd.GiaBan) = @Filter
@@ -149,7 +149,7 @@ AS
 		GROUP BY
 		hh.TenHangHoa,
 		dvqd.MaHangHoa,
-		ISNULL(nhh.TenNhomHang,'Chưa phân nhóm'),
+		ISNULL(nhh.TenNhomHang,N'Chưa phân nhóm'),
 		dvqd.GiaBan
 
 	SELECT * FROM @DataTable

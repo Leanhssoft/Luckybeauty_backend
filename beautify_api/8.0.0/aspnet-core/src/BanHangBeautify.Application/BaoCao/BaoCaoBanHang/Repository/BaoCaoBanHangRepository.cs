@@ -22,7 +22,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Repository
         {
         }
 
-        public async Task<PagedResultDto<BaoCaoBanHangChiTietDto>> GetBaoCaoBanHangChiTiet(PagedBaoCaoBanHangRequestDto input,int tenantId,DateTime timeFrom,DateTime timeTo)
+        public async Task<PagedResultDto<BaoCaoBanHangChiTietDto>> GetBaoCaoBanHangChiTiet(PagedBaoCaoBanHangRequestDto input,int tenantId)
         {
             using (var command = CreateCommand("prc_baoCao_BanHangChiTiet"))
             {
@@ -34,8 +34,8 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Repository
                 command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
                 command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
                 command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
-                command.Parameters.Add(new SqlParameter("@TimeFrom",timeFrom));
-                command.Parameters.Add(new SqlParameter("@TimeTo", timeTo));
+                command.Parameters.Add(new SqlParameter("@TimeFrom",input.TimeFrom));
+                command.Parameters.Add(new SqlParameter("@TimeTo", input.TimeTo));
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
@@ -57,7 +57,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Repository
                 return new PagedResultDto<BaoCaoBanHangChiTietDto>();
             }
         }
-        public async Task<PagedResultDto<BaoCaoBanHangTongHopDto>> GetBaoCaoBanHangTongHop(PagedBaoCaoBanHangRequestDto input, int tenantId, DateTime timeFrom, DateTime timeTo)
+        public async Task<PagedResultDto<BaoCaoBanHangTongHopDto>> GetBaoCaoBanHangTongHop(PagedBaoCaoBanHangRequestDto input, int tenantId)
         {
             using (var command = CreateCommand("prc_baoCao_BanHangTongHop"))
             {
@@ -69,8 +69,8 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Repository
                 command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
                 command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
                 command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
-                command.Parameters.Add(new SqlParameter("@TimeFrom", timeFrom));
-                command.Parameters.Add(new SqlParameter("@TimeTo", timeTo));
+                command.Parameters.Add(new SqlParameter("@TimeFrom", input.TimeFrom));
+                command.Parameters.Add(new SqlParameter("@TimeTo", input.TimeTo));
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {

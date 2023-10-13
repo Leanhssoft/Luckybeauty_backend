@@ -10,7 +10,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Repository
 {
     public interface IBaoCaoBanHangRepository
     {
-        public Task<PagedResultDto<BaoCaoBanHangChiTietDto>> GetBaoCaoBanHangChiTiet(PagedBaoCaoBanHangRequestDto input, int tenantId, DateTime timeFrom, DateTime timeTo);
-        public Task<PagedResultDto<BaoCaoBanHangTongHopDto>> GetBaoCaoBanHangTongHop(PagedBaoCaoBanHangRequestDto input, int tenantId, DateTime timeFrom, DateTime timeTo);
+        public Task<PagedResultDto<BaoCaoBanHangChiTietDto>> GetBaoCaoBanHangChiTiet(PagedBaoCaoBanHangRequestDto input, int tenantId);
+        public Task<PagedResultDto<BaoCaoBanHangTongHopDto>> GetBaoCaoBanHangTongHop(PagedBaoCaoBanHangRequestDto input, int tenantId);
     }
 }

@@ -16,6 +16,8 @@ namespace BanHangBeautify.Configuration.Common.Consts
     {
         public const int DatLich = 1;
         public const int DaXacNhan = 2;
+        public const int CheckIn = 3;
+        public const int HoanThanh = 4;
         public const int Huy = 0;
         public const string AddNewBooking = "Lịch hẹn mới";
     }
