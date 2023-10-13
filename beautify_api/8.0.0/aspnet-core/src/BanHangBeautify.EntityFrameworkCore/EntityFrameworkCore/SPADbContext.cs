@@ -48,10 +48,15 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<HT_CauHinh_TichDiem> HT_CauHinh_TichDiem { get; set; }
         public DbSet<HT_CauHinh_TichDiemChiTiet> HT_CauHinh_TichDiemChiTiet { get; set; }
         public DbSet<HT_CauHinh_ChungTu> HT_CauHinh_ChungTu { get; set; }
+
+        #endregion
+
+        #region SMS
         public DbSet<HeThong_SMS> HeThong_SMS { get; set; }
         public DbSet<HT_SMSBrandname> HT_SMSBrandname { get; set; }
         public DbSet<SMS_Template> SMS_Template { get; set; }
         public DbSet<SMS_CaiDat_NhacNho> SMS_CaiDat_NhacNho { get; set; }
+        public DbSet<SMS_LichSuNap_ChuyenTien> SMS_LichSuNap_ChuyenTien { get; set; }
         #endregion
 
         #region Nhân viên
