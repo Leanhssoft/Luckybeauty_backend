@@ -1,5 +1,6 @@
 ﻿using BanHangBeautify.BaoCao.BaoCaoBanHang.Dto;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
+using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Storage;
 using System;
@@ -14,6 +15,9 @@ namespace BanHangBeautify.BaoCao.Exporting
     {
         FileDto ExportBaoCaoBanHangTongHop(List<BaoCaoBanHangTongHopDto> model);
         FileDto ExportBaoCaoBanHangChiTiet(List<BaoCaoBanHangChiTietDto> model);
-        FileDto ExportBaoLichHen(List<BaoCaoLichHenDto> model);
+        FileDto ExportBaoCaoLichHen(List<BaoCaoLichHenDto> model);
+
+        FileDto ExportBaoCaoSoQuy_TienMat(List<BaoCaoSoQuyDto> model);
+        FileDto ExportBaoCaoSoQuy_NganHang(List<BaoCaoSoQuyDto> model);
     }
 }

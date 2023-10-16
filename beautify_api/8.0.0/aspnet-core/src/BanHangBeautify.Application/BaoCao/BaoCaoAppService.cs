@@ -3,6 +3,8 @@ using BanHangBeautify.BaoCao.BaoCaoBanHang.Dto;
 using BanHangBeautify.BaoCao.BaoCaoBanHang.Repository;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Respository;
+using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
+using BanHangBeautify.BaoCao.BaoCaoSoQuy.Repository;
 using BanHangBeautify.BaoCao.Exporting;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Storage;
@@ -19,16 +21,19 @@ namespace BanHangBeautify.BaoCao
     {
         IBaoCaoBanHangRepository _baoCaoBanHangRepository;
         IBaoCaoLichHenRepository _baoCaoLichHenRepository;
+        IBaoCaoSoQuyRepository _baoCaoSoQuyRepository;
         IBaoCaoExcelExporter _baoCaoExcelExporter;
         public BaoCaoAppService(
             IBaoCaoBanHangRepository baoCaoBanHangRepository,
             IBaoCaoExcelExporter baoCaoExcelExporter,
-            IBaoCaoLichHenRepository baoCaoLichHenRepository
+            IBaoCaoLichHenRepository baoCaoLichHenRepository,
+            IBaoCaoSoQuyRepository baoCaoSoQuyRepository
         )
         {
             _baoCaoBanHangRepository = baoCaoBanHangRepository;
             _baoCaoExcelExporter = baoCaoExcelExporter;
             _baoCaoLichHenRepository = baoCaoLichHenRepository;
+            _baoCaoSoQuyRepository = baoCaoSoQuyRepository;
         }
         #region Báo cáo bán hàng
         [HttpPost]
@@ -116,7 +121,68 @@ namespace BanHangBeautify.BaoCao
             var data = await _baoCaoLichHenRepository.GetBaoCaoLichHen(input, tenantId);
             List<BaoCaoLichHenDto> model = new List<BaoCaoLichHenDto>();
             model = (List<BaoCaoLichHenDto>)data.Items;
-            return _baoCaoExcelExporter.ExportBaoLichHen(model);
+            return _baoCaoExcelExporter.ExportBaoCaoLichHen(model);
+        }
+        #endregion
+
+        #region Báo cáo sổ quỹ
+        [HttpPost]
+        public async Task<PagedResultDto<BaoCaoSoQuyDto>> GetBaoCaoSoQuy_TienMat(PagedBaoCaoSoQuyRequestDto input)
+        {
+            try
+            {
+                int tenantId = AbpSession.TenantId ?? 1;
+                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+                return await _baoCaoSoQuyRepository.GetBaoCaoSoQuy_TienMat(input, tenantId);
+            }
+            catch (Exception)
+            {
+                return new PagedResultDto<BaoCaoSoQuyDto>()
+                {
+                    Items = new List<BaoCaoSoQuyDto>(),
+                    TotalCount = 0,
+                };
+            }
+        }
+        [HttpPost]
+        public async Task<FileDto> ExportBaoCaoSoQuy_TienMat(PagedBaoCaoSoQuyRequestDto input)
+        {
+            int tenantId = AbpSession.TenantId ?? 1;
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await _baoCaoSoQuyRepository.GetBaoCaoSoQuy_TienMat(input, tenantId);
+            List<BaoCaoSoQuyDto> model = new List<BaoCaoSoQuyDto>();
+            model = (List<BaoCaoSoQuyDto>)data.Items;
+            return _baoCaoExcelExporter.ExportBaoCaoSoQuy_TienMat(model);
+        }
+        [HttpPost]
+        public async Task<PagedResultDto<BaoCaoSoQuyDto>> GetBaoCaoSoQuy_NganHang(PagedBaoCaoSoQuyRequestDto input)
+        {
+            try
+            {
+                int tenantId = AbpSession.TenantId ?? 1;
+                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+                return await _baoCaoSoQuyRepository.GetBaoCaoSoQuy_NganHang(input, tenantId);
+            }
+            catch (Exception)
+            {
+                return new PagedResultDto<BaoCaoSoQuyDto>()
+                {
+                    Items = new List<BaoCaoSoQuyDto>(),
+                    TotalCount = 0,
+                };
+            }
+        }
+        [HttpPost]
+        public async Task<FileDto> ExportBaoCaoSoQuy_NganHang(PagedBaoCaoSoQuyRequestDto input)
+        {
+            int tenantId = AbpSession.TenantId ?? 1;
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await _baoCaoSoQuyRepository.GetBaoCaoSoQuy_NganHang(input, tenantId);
+            List<BaoCaoSoQuyDto> model = new List<BaoCaoSoQuyDto>();
+            model = (List<BaoCaoSoQuyDto>)data.Items;
+            return _baoCaoExcelExporter.ExportBaoCaoSoQuy_NganHang(model);
         }
         #endregion
     }

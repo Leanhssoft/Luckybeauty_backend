@@ -15,6 +15,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
 using BanHangBeautify.Configuration.Common.Consts;
+using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
 
 namespace BanHangBeautify.BaoCao.Exporting
 {
@@ -126,7 +127,7 @@ namespace BanHangBeautify.BaoCao.Exporting
             }
         }
 
-        public FileDto ExportBaoLichHen(List<BaoCaoLichHenDto> model)
+        public FileDto ExportBaoCaoLichHen(List<BaoCaoLichHenDto> model)
         {
             var pathTemplate = Path.Combine(_env.WebRootPath, $"ExcelTemplate", $"BaoCaoLichHen_Export_Template.xlsx");
             string fileName = "BaoCaoLichHen_" + DateTime.Now.Ticks.ToString() + ".xlsx";
@@ -192,6 +193,94 @@ namespace BanHangBeautify.BaoCao.Exporting
             {
                 throw ex;
             }
+        }
+
+        public FileDto ExportBaoCaoSoQuy_TienMat(List<BaoCaoSoQuyDto> model)
+        {
+            var pathTemplate = Path.Combine(_env.WebRootPath, $"ExcelTemplate", $"BaoCaoSoQuy_TienMat_Export_Template.xlsx");
+            string fileName = "BaoCaoSoQuy_TienMat_" + DateTime.Now.Ticks.ToString() + ".xlsx";
+            var file = new FileDto(fileName, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
+            var template = new FileInfo(pathTemplate);
+            using (ExcelPackage excelPackage = new ExcelPackage(template, true))
+            {
+                int startRow = 5;
+                int firstRow = 5;
+                int stt = 1;
+                try
+                {
+                    ExcelWorksheet ws = excelPackage.Workbook.Worksheets[0];
+                    foreach (var item in model)
+                    {
+                        ws.Cells[startRow, 1].Value = stt.ToString();
+                        ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.MaHoaDon);
+                        ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.NgayLapHoaDon.ToString("dd/MM/yyyy"));
+                        ws.Cells[startRow, 4].Value = ConvertHelper.ToDecimal(item.TienThu);
+                        ws.Cells[startRow, 5].Value = ConvertHelper.ToDecimal(item.TienChi);
+                        ws.Cells[startRow, 6].Value = ConvertHelper.ToDecimal(item.TonLuyKe);
+                        ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.NguoiNop);
+                        ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.GhiChu);
+                        startRow++;
+                        stt++;
+                    }
+                    if (model.Count > 0)
+                    {
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                Save(excelPackage, file);
+            }
+            return file;
+        }
+
+        public FileDto ExportBaoCaoSoQuy_NganHang(List<BaoCaoSoQuyDto> model)
+        {
+            var pathTemplate = Path.Combine(_env.WebRootPath, $"ExcelTemplate", $"BaoCaoSoQuy_NganHang_Export_Template.xlsx");
+            string fileName = "BaoCaoSoQuy_NganHang_" + DateTime.Now.Ticks.ToString() + ".xlsx";
+            var file = new FileDto(fileName, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
+            var template = new FileInfo(pathTemplate);
+            using (ExcelPackage excelPackage = new ExcelPackage(template, true))
+            {
+                int startRow = 5;
+                int firstRow = 5;
+                int stt = 1;
+                try
+                {
+                    ExcelWorksheet ws = excelPackage.Workbook.Worksheets[0];
+                    foreach (var item in model)
+                    {
+                        ws.Cells[startRow, 1].Value = stt.ToString();
+                        ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.MaHoaDon);
+                        ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.NgayLapHoaDon.ToString("dd/MM/yyyy"));
+                        ws.Cells[startRow, 4].Value = ConvertHelper.ToDecimal(item.TienThu);
+                        ws.Cells[startRow, 5].Value = ConvertHelper.ToDecimal(item.TienChi);
+                        ws.Cells[startRow, 6].Value = ConvertHelper.ToDecimal(item.TonLuyKe);
+                        ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.NguoiNop);
+                        ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.GhiChu);
+                        startRow++;
+                        stt++;
+                    }
+                    if (model.Count > 0)
+                    {
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                        ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                Save(excelPackage, file);
+            }
+            return file;
         }
     }
 }
