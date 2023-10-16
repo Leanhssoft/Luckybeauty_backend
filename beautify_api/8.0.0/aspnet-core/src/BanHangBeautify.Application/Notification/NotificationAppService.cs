@@ -37,6 +37,7 @@ namespace BanHangBeautify.Notification
             _notificationPublisher = notificationPublisher;
         }
         [DisableAuditing]
+        [AbpAuthorize]
         public async Task<GetNotificationsOutput> GetUserNotifications(GetUserNotificationsInput input)
         {
             try
@@ -84,8 +85,8 @@ namespace BanHangBeautify.Notification
             }
            
         }
+        [AbpAuthorize]        
         
-
         public async Task SetAllNotificationsAsRead()
         {
             await _userNotificationManager.UpdateAllUserNotificationStatesAsync(AbpSession.ToUserIdentifier(), UserNotificationState.Read);
