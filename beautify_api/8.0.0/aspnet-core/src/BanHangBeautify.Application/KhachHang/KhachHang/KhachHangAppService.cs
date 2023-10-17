@@ -132,7 +132,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             if (KhachHang != null)
             {
                 var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
-                result.GioiTinh = (bool)KhachHang.GioiTinhNam;
+                result.GioiTinh = KhachHang.GioiTinhNam;
                 return result;
             }
 

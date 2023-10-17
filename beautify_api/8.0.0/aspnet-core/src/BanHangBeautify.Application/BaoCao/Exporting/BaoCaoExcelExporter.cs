@@ -214,9 +214,9 @@ namespace BanHangBeautify.BaoCao.Exporting
                         ws.Cells[startRow, 1].Value = stt.ToString();
                         ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.MaHoaDon);
                         ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.NgayLapHoaDon.ToString("dd/MM/yyyy"));
-                        ws.Cells[startRow, 4].Value = ConvertHelper.ToDecimal(item.TienThu);
-                        ws.Cells[startRow, 5].Value = ConvertHelper.ToDecimal(item.TienChi);
-                        ws.Cells[startRow, 6].Value = ConvertHelper.ToDecimal(item.TonLuyKe);
+                        ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TienThu);
+                        ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.TienChi);
+                        ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.TonLuyKe);
                         ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.NguoiNop);
                         ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.GhiChu);
                         startRow++;
@@ -258,9 +258,9 @@ namespace BanHangBeautify.BaoCao.Exporting
                         ws.Cells[startRow, 1].Value = stt.ToString();
                         ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.MaHoaDon);
                         ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.NgayLapHoaDon.ToString("dd/MM/yyyy"));
-                        ws.Cells[startRow, 4].Value = ConvertHelper.ToDecimal(item.TienThu);
-                        ws.Cells[startRow, 5].Value = ConvertHelper.ToDecimal(item.TienChi);
-                        ws.Cells[startRow, 6].Value = ConvertHelper.ToDecimal(item.TonLuyKe);
+                        ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TienThu);
+                        ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.TienChi);
+                        ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.TonLuyKe);
                         ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.NguoiNop);
                         ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.GhiChu);
                         startRow++;
