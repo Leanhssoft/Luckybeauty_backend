@@ -7,6 +7,7 @@ using Abp.Json;
 using Abp.Notifications;
 using Abp.Runtime.Session;
 using Abp.UI;
+using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Notifications;
 using BanHangBeautify.Notifications.Dto;
 using Microsoft.AspNetCore.Authorization;
@@ -62,6 +63,7 @@ namespace BanHangBeautify.Notification
                         dto.UserId = item.UserId;
                         dto.TenantId = item.TenantId;
                         dto.Id = item.Id;
+                        dto.Url = TrangThaiBookingConst.AddNewBooking == item.Notification.NotificationName ? "lich-hens" : "";
                         MessageNotification message = new MessageNotification();
                         message = JsonSerializer.Deserialize<MessageNotification>(item.Notification.Data.Properties["Message"].ToJsonString());
                         dto.Notification = new NotificationCustomData()

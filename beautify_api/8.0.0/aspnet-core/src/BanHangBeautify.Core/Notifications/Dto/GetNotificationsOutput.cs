@@ -25,6 +25,7 @@ namespace BanHangBeautify.Notifications.Dto
         public int? TenantId { get; set; }
 
         public long UserId { get; set; }
+        public string Url { get; set; }
         public UserNotificationState State { get; set; }
 
         public NotificationCustomData Notification { set; get; }
