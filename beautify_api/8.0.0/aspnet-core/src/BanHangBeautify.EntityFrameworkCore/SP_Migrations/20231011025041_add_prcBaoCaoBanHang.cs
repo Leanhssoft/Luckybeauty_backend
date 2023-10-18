@@ -95,7 +95,7 @@ BEGIN
 		CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'creationTime' THEN CreationTime END DESC,
 		CASE WHEN ISNULL(@SortType,'') = '' AND ISNULL(@SortBy,'') = '' THEN CreationTime END DESC
 	OFFSET @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY;
-	SELECT COUNT(*) as TotalCount * FROM @DataTable;
+	SELECT COUNT(*) as TotalCount FROM @DataTable;
 END;");
             migrationBuilder.Sql(@"CREATE PROC prc_baoCao_BanHangTongHop
 	@TenantId int,
