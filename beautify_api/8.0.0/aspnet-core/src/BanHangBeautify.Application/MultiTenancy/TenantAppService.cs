@@ -8,6 +8,7 @@ using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Security;
+using Abp.UI;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
@@ -53,6 +54,7 @@ namespace BanHangBeautify.MultiTenancy
             _abpZeroDbMigrator = abpZeroDbMigrator;
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
+            LocalizationSourceName = SPAConsts.LocalizationSourceName;
         }
         [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
@@ -80,7 +82,11 @@ namespace BanHangBeautify.MultiTenancy
             {
                 tenant.EditionId = defaultEdition.Id;
             }
-
+            var checkExist = await _tenantManager.FindByTenancyNameAsync(tenant.TenancyName);
+            if (checkExist!=null)
+            {
+                throw new UserFriendlyException(string.Format(L("TenancyNameIsAlreadyTaken{0}"), tenant.TenancyName));
+            }
             await _tenantManager.CreateAsync(tenant);
             await CurrentUnitOfWork.SaveChangesAsync(); // To get new tenant's id.
 
@@ -158,6 +164,11 @@ namespace BanHangBeautify.MultiTenancy
             if (!string.IsNullOrEmpty(input.ConnectionString))
             {
                 tenant.ConnectionString = SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
+            }
+            var checkExist = await Repository.FirstOrDefaultAsync(x=>x.TenancyName==tenant.TenancyName&& x.Id!=tenant.Id);
+            if (checkExist != null)
+            {
+                throw new UserFriendlyException(string.Format(L("TenancyNameIsAlreadyTaken{0}"), tenant.TenancyName));
             }
             await _tenantManager.UpdateAsync(tenant);
         }

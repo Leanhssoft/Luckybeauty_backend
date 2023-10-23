@@ -1,4 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using BanHangBeautify.BaoCao.BaoCaoBanHang.Dto;
 using BanHangBeautify.BaoCao.BaoCaoBanHang.Repository;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.BaoCao
 {
+    [AbpAuthorize]
     public class BaoCaoAppService: SPAAppServiceBase
     {
         IBaoCaoBanHangRepository _baoCaoBanHangRepository;

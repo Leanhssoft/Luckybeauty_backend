@@ -2,10 +2,13 @@
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
+using Abp.Localization.Sources;
+using Abp.UI;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
@@ -17,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Twilio.Base;
 
 namespace BanHangBeautify.Roles
 {
@@ -25,12 +29,13 @@ namespace BanHangBeautify.Roles
     {
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
-
+        
         public RoleAppService(IRepository<Role> repository, RoleManager roleManager, UserManager userManager)
             : base(repository)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            LocalizationSourceName = SPAConsts.LocalizationSourceName;
         }
         [NonAction]
         public override async Task<RoleDto> CreateAsync(CreateRoleDto input)
@@ -86,7 +91,7 @@ namespace BanHangBeautify.Roles
             return MapToEntityDto(role);
         }
         [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Create, PermissionNames.Pages_Administration_Roles_Edit)]
-        public async Task<RoleDto> CreateOrUpdateRole(CreateOrUpdateRoleInput input)
+        public async Task<ExecuteResultDto> CreateOrUpdateRole(CreateOrUpdateRoleInput input)
         {
             if (input.Id.Value > 0)
             {
@@ -98,26 +103,77 @@ namespace BanHangBeautify.Roles
             }
         }
 
-        protected virtual async Task<RoleDto> CreateRole(CreateOrUpdateRoleInput input)
+        protected virtual async Task<ExecuteResultDto> CreateRole(CreateOrUpdateRoleInput input)
         {
             CheckUpdatePermission();
             var role = new Role(AbpSession.TenantId, input.Name, input.DisplayName) { };
             role.SetNormalizedName();
-            var checkCreate = await _roleManager.CreateAsync(role);
-            CheckErrors(checkCreate);
-            await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
-            await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
-            return MapToEntityDto(role);
+            var checkError = await CheckDuplicateRoleNameAsync(role.Id, role.Name, role.DisplayName);
+            if (checkError.Status=="error")
+            {
+                return checkError;
+            }
+            else
+            {
+                CheckErrors(await _roleManager.CreateAsync(role));
+                await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
+                await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
+                checkError.Message = "Thêm mới thành công!";
+                return checkError;
+            }
         }
-        protected virtual async Task<RoleDto> UpdateRole(CreateOrUpdateRoleInput input)
+        public virtual async Task<ExecuteResultDto> CheckDuplicateRoleNameAsync(
+            int? expectedRoleId,
+            string name,
+            string displayName)
+        {
+            var role = await _roleManager.FindByNameAsync(name);
+            if (role != null && role.Id != expectedRoleId)
+            {
+                return new ExecuteResultDto()
+                {
+                    Status = "error",
+                    Message = string.Format(L("RoleDisplayNameIsAlreadyTaken{0}"), name),
+                    Detail = displayName
+                };
+            }
+
+            role = await Repository.FirstOrDefaultAsync(x => x.DisplayName == displayName);
+            if (role != null && role.Id != expectedRoleId)
+            {
+               return new ExecuteResultDto() { 
+               Status="error",
+               Message=string.Format(L("RoleDisplayNameIsAlreadyTaken{0}"),displayName),
+               Detail = displayName
+               };
+            }
+
+            return new ExecuteResultDto()
+            {
+                Status = "success"
+            };
+        }
+        protected virtual async Task<ExecuteResultDto> UpdateRole(CreateOrUpdateRoleInput input)
         {
             CheckUpdatePermission();
             var role = await _roleManager.GetRoleByIdAsync(input.Id.Value);
             role.Name = input.Name;
             role.DisplayName = input.DisplayName;
             role.Description = input.Description;
+            var checkError = await CheckDuplicateRoleNameAsync(role.Id, role.Name, role.DisplayName);
             await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
-            return MapToEntityDto(role);
+            if (checkError.Status == "error")
+            {
+                return checkError;
+            }
+            else
+            {
+                CheckErrors(await _roleManager.UpdateAsync(role));
+                await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
+                await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
+                checkError.Message = "Cập nhật thành công!";
+                return checkError;
+            }
         }
         private async Task UpdateGrantedPermissionsAsync(Role role, List<string> grantedPermissionNames)
         {

@@ -6,6 +6,7 @@
     <text name="WelcomeMessage" value="Chào mừng đến với SPA!" />
     <text name="FormIsNotValidMessage" value="Biểu mẫu không hợp lệ. Vui lòng kiểm tra và sửa lỗi." />
     <text name="TenantNameCanNotBeEmpty" value="Tenant không được để trống" />
+    <text name="TenancyNameIsAlreadyTaken{0}" value="Tenancy {0} đã tồn tại"/>
     <text name="InvalidUserNameOrPassword" value="Tên đăng nhập hoặc mật khẩu không chính xác" />
     <text name="ThereIsNoTenantDefinedWithName{0}" value="Không có Tenant nào là {0}" />
     <text name="TenantIsNotActive" value="Tenant {0} không hoạt động." />
@@ -229,13 +230,16 @@
     <text name="ImportHangHoa">Import hàng hóa</text>
     <text name="NhanVienDichVu">Nhân viên - Dịch vụ</text>
     <text name="AddNewBooking">Lịch hẹn mới</text>
-    <text name="RoleNameIsAlreadyTaken" value="Tên vai trò đã tồn tại"/>
-    <text name="RoleDisplayNameIsAlreadyTaken">Tên hiển thị đã tồn tại</text>
+    <text name="RoleNameIsAlreadyTaken{0}" value="Tên vai trò {0} đã tồn tại"/>
+    <text name="RoleDisplayNameIsAlreadyTaken{0}">Tên hiển thị {0} đã tồn tại</text>
+    <text name="RoleNameIsAlreadyTaken" value="Tên vai trò {0} đã tồn tại"/>
+    <text name="RoleDisplayNameIsAlreadyTaken">Tên hiển thị {0} đã tồn tại</text>
     <text name="CanNotDeleteStaticRole">Không thể xóa vai trò mặc định</text>
     <text name="CanNotDeleteAdminUser">Không thể xóa tài khoản Admin</text>
     <text name="CanNotRenameAdminUser">Không thể sửa tên tài khoản Admin</text>
     <text name="Identity.DuplicateUserName">Tên người dùng đã tồn tại</text>
     <text name="Identity.DuplicateEmail">Email đã tồn tại</text>
+    <text name="Identity.DuplicateRoleName">Tên vai trò {0} đã tồn tại</text>
     <text name="UnknownDashboard">Trang Dashboard không xác định</text>
     <text name="ThisNotificationDoesntBelongToYou">Thông báo không thuộc về bạn</text>
     <text name="RequestedFileDoesNotExists">File không tồn tại</text>
