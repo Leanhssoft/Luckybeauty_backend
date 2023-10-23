@@ -195,7 +195,7 @@ namespace BanHangBeautify.Bookings.Bookings
             findBooking.TrangThai = dto.TrangThai;
             findBooking.LastModificationTime = DateTime.Now;
             findBooking.LastModifierUserId = AbpSession.UserId;
-            var dichVu = await _donViQuiDoiRepository.GetAllIncluding().Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
+            var dichVu = await _donViQuiDoiRepository.GetAllIncluding(x=>x.DM_HangHoa).Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
             if (dichVu != null && dichVu.DM_HangHoa != null)
             {
                 findBooking.EndTime = findBooking.StartTime.AddMinutes(dichVu.DM_HangHoa.SoPhutThucHien ?? 0);
@@ -203,6 +203,11 @@ namespace BanHangBeautify.Bookings.Bookings
             await _repository.UpdateAsync(findBooking);
             await UpdateBookingNhanVien(dto.Id, dto.IdNhanVien);
             await UpdateBookingService(dto.Id, dto.IdDonViQuiDoi);
+            var listUserRole = await _userRoleRepository.GetListUser_havePermission(findBooking.TenantId, findBooking.IdChiNhanh ?? Guid.Empty, "Pages.Notifications.Booking");
+            var listUser = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
+            string mess = "Khách hàng: " + findBooking.TenKhachHang + "(" + findBooking.SoDienThoai + ")" + " đã thay đổi lịch hẹn làm dịch vụ : " + dichVu.DM_HangHoa.TenHangHoa??"" + " vào " + findBooking.BookingDate.ToString("dd/MM/yyyy") + " " + findBooking.StartTime.ToString("HH:mm");
+            var notificationData = NewMessageNotification(mess);
+            await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
             return findBooking;
 
         }

@@ -133,7 +133,7 @@ namespace BanHangBeautify.Roles
                 return new ExecuteResultDto()
                 {
                     Status = "error",
-                    Message = string.Format(L("RoleDisplayNameIsAlreadyTaken{0}"), name),
+                    Message = string.Format(L("RoleNameIsAlreadyTaken{0}"), name),
                     Detail = displayName
                 };
             }
