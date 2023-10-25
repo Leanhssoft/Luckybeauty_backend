@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
@@ -33,6 +34,7 @@ namespace BanHangBeautify.Suggests
         private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;
         private readonly IRepository<DM_NhomHangHoa, Guid> _nhomHangHoaRepository;
         private readonly IRepository<DM_LoaiChungTu,int> _loaiChungTuRepository;
+        private readonly IRepository<DM_NganHang,Guid> _nganHangRepository;
         private readonly ISuggestRepository _suggestRepository;
         public SuggestAppService(
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
@@ -50,6 +52,7 @@ namespace BanHangBeautify.Suggests
             IRepository<DM_PhongBan, Guid> phongBanRepository,
             IRepository<DM_NhomHangHoa,Guid> nhomHangHoaRepository,
             IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
+            IRepository<DM_NganHang,Guid> nganHangRespository,
             ISuggestRepository suggestRepository
             )
         {
@@ -68,6 +71,7 @@ namespace BanHangBeautify.Suggests
             _phongBanRepository = phongBanRepository;
             _nhomHangHoaRepository = nhomHangHoaRepository;
             _suggestRepository = suggestRepository;
+            _nganHangRepository = nganHangRespository;
         }
         public async Task<List<SuggestChucVu>> SuggestChucVus()
         {
@@ -398,6 +402,32 @@ namespace BanHangBeautify.Suggests
                     result.Add(rdo);
                 }
             }
+
+            return result;
+        }
+
+        [HttpPost]
+        public async Task<List<SuggestNganHangDto>> SuggestNganHang()
+        {
+            List<SuggestNganHangDto> result = new List<SuggestNganHangDto>();
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
+            {
+                var listNganHang = await _nganHangRepository.GetAll().ToListAsync();
+                if (listNganHang != null && listNganHang.Count() > 0)
+                {
+                    foreach (var item in listNganHang)
+                    {
+                        SuggestNganHangDto rdo = new SuggestNganHangDto();
+                        rdo.Id = item.Id; rdo.MaNganHang = item.MaNganHang;
+                        rdo.TenNganHang = item.TenNganHang;
+                        rdo.BIN = item.BIN;
+                        rdo.TenRutGon = item.TenRutGon;
+                        rdo.Logo = item.Logo;
+                        result.Add(rdo);
+                    }
+                }
+            }
+                
 
             return result;
         }

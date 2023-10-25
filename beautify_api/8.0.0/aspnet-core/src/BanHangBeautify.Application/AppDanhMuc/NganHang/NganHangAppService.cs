@@ -44,12 +44,29 @@ namespace BanHangBeautify.AppDanhMuc.NganHang
             result = ObjectMapper.Map<NganHangDto>(data);
             return result;
         }
+
+        public async Task CreateMany(List<CreateOrEditNganHangManyDto> input)
+        {
+            foreach (var item in input)
+            {
+                DM_NganHang data = new DM_NganHang();
+                data = ObjectMapper.Map<DM_NganHang>(item);
+                data.Id = Guid.NewGuid();
+                data.CreationTime = DateTime.Now;
+                data.IsDeleted = false;
+                data.TenantId = null;
+                await _nganHangRepository.InsertAsync(data);
+            }
+        }
         [NonAction]
         public async Task<NganHangDto> Update(CreateOrEditNganHangDto input, DM_NganHang oldData)
         {
             NganHangDto result = new NganHangDto();
             oldData.MaNganHang = input.MaNganHang;
             oldData.TenNganHang = input.TenNganHang;
+            oldData.BIN = input.BIN;
+            oldData.TenRutGon = input.TenRutGon;
+            oldData.Logo = input.Logo;
             oldData.ThuPhiThanhToan = input.ThuPhiThanhToan;
             oldData.TheoPhanTram = input.TheoPhanTram;
             oldData.ChungTuApDung = input.ChungTuApDung;

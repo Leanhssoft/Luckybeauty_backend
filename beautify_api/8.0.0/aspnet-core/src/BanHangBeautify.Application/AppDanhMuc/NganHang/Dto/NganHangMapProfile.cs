@@ -9,6 +9,7 @@ namespace BanHangBeautify.AppDanhMuc.NganHang.Dto
         {
             CreateMap<NganHangDto, DM_NganHang>().ReverseMap();
             CreateMap<CreateOrEditNganHangDto, DM_NganHang>().ReverseMap();
+            CreateMap<CreateOrEditNganHangManyDto, DM_NganHang>().ReverseMap();
             CreateMap<NganHangDto, CreateOrEditNganHangDto>().ReverseMap();
         }
     }
