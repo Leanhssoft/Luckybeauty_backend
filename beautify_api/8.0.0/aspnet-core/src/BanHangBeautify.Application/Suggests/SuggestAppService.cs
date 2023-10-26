@@ -35,6 +35,7 @@ namespace BanHangBeautify.Suggests
         private readonly IRepository<DM_NhomHangHoa, Guid> _nhomHangHoaRepository;
         private readonly IRepository<DM_LoaiChungTu,int> _loaiChungTuRepository;
         private readonly IRepository<DM_NganHang,Guid> _nganHangRepository;
+        private readonly IRepository<DM_TaiKhoanNganHang, Guid> _taiKhoanNganHangRepository;
         private readonly ISuggestRepository _suggestRepository;
         public SuggestAppService(
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
@@ -53,6 +54,7 @@ namespace BanHangBeautify.Suggests
             IRepository<DM_NhomHangHoa,Guid> nhomHangHoaRepository,
             IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
             IRepository<DM_NganHang,Guid> nganHangRespository,
+            IRepository<DM_TaiKhoanNganHang, Guid> taiKhoanNganHangRepository,
             ISuggestRepository suggestRepository
             )
         {
@@ -72,6 +74,7 @@ namespace BanHangBeautify.Suggests
             _nhomHangHoaRepository = nhomHangHoaRepository;
             _suggestRepository = suggestRepository;
             _nganHangRepository = nganHangRespository;
+            _taiKhoanNganHangRepository = taiKhoanNganHangRepository;
         }
         public async Task<List<SuggestChucVu>> SuggestChucVus()
         {
@@ -429,6 +432,29 @@ namespace BanHangBeautify.Suggests
             }
                 
 
+            return result;
+        }
+        [HttpPost]
+        public async Task<List<SuggestTaiKhoanNganHangQRDto>> SuggestTaiKhoanNganHangQr(Guid idChiNhanh)
+        {
+            List<SuggestTaiKhoanNganHangQRDto> result = new List<SuggestTaiKhoanNganHangQRDto>();
+            var tknh = _taiKhoanNganHangRepository.GetAll().Where(x=>x.IdChiNhanh== idChiNhanh).ToList();
+            foreach (var item in tknh)
+            {
+                SuggestTaiKhoanNganHangQRDto rdo = new SuggestTaiKhoanNganHangQRDto();
+                rdo.SoTaiKhoan = item.SoTaiKhoan;
+                rdo.TenTaiKhoan = item.TenChuThe;
+                using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
+                {
+                    var nganHang =await _nganHangRepository.FirstOrDefaultAsync(x=>x.Id==item.IdNganHang);
+                    if (nganHang!=null)
+                    {
+                        rdo.bin = nganHang.BIN;
+                        rdo.TenRutGon = nganHang.TenRutGon;
+                    }
+                }
+                result.Add(rdo);
+            }
             return result;
         }
     }
