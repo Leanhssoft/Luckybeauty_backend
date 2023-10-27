@@ -145,9 +145,14 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             result.Items = items;
             return result;
         }
-        public async Task<List<TaiKhoanNganHangDto>> GetAllBankAccount()
+        public async Task<List<TaiKhoanNganHangDto>> GetAllBankAccount(Guid? idChiNhanh = null)
         {
-            return await _repoBankAcc.GetAllBankAccount();
+            return await _repoBankAcc.GetAllBankAccount(idChiNhanh);
+        }
+        public async Task<TaiKhoanNganHangDto> GetDefault_TaiKhoanNganHang(Guid? idChiNhanh = null)
+        {
+            var dataAll = await _repoBankAcc.GetAllBankAccount(idChiNhanh);
+            return dataAll.FirstOrDefault();
         }
     }
 }
