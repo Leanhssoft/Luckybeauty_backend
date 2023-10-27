@@ -39,8 +39,8 @@ namespace BanHangBeautify.Entities
         public double? DiemThanhToan { get; set; } = 0;
         // HinhThucThanhToan
         // 1. Tiền mặt	
-        // 2. Pos	
-        // 3. Chuyển khoản	
+        // 2. Chuyển khoản	
+        // 3. Pos	
         // 4. Thẻ giá trị(khách nạp sẵn tiền vào Thẻ, sau đó dùng thẻ này để thanh toán)
         // 5. Sử dụng điểm
         public byte HinhThucThanhToan { get; set; } = 1; // byte (C#) = tinyint (sql)
