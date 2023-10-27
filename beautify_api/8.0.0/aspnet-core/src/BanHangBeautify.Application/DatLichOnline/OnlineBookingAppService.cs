@@ -426,6 +426,11 @@ namespace BanHangBeautify.DatLichOnline
                     var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
                     var bookingService = CreateBookingService(bk.Id, data.IdDichVu);
                     var bookingNhanVien = CreateBookingNhanVien(bk.Id, data.IdNhanVien);
+                    _bookingNhanVienRepository.Insert(bookingNhanVien);
+                    _bookingServiceRepository.Insert(bookingService);
+                    await CurrentUnitOfWork.SaveChangesAsync();
+                    var listUserRole = await _userRoleRepository.GetListUser_havePermission(tenant.Id, data.IdChiNhanh, "Pages.Notifications.Booking");
+                    var listUser = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
                     string mess = "Khách hàng: " + bk.TenKhachHang + "(" + bk.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + bk.BookingDate.ToString("dd/MM/yyyy") + " " + bk.StartTime.ToString("HH:mm");
                     var notificationData = new LocalizableMessageNotificationData(
                         new LocalizableString(
@@ -433,14 +438,7 @@ namespace BanHangBeautify.DatLichOnline
                             "LuckyBeauty"
                         )
                     );
-
-                    _bookingNhanVienRepository.Insert(bookingNhanVien);
-                    _bookingServiceRepository.Insert(bookingService);
-                    await CurrentUnitOfWork.SaveChangesAsync();
-                    //var listUser = await getUserAdmin(data.IdChiNhanh,tenant.Id);
-                    var listUserRole = await _userRoleRepository.GetListUser_havePermission(tenant.Id, data.IdChiNhanh, "Pages.Notifications.Booking");
-                    var listUser = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
-                    await _notificationAppService.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
+                    await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
                     result.Message = "Đặt lịch thành công!";
                     result.Status = "success";
                 }
