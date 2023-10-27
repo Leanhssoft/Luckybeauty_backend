@@ -25,7 +25,7 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository
                 var data = await (from bank in dbContext.Set<DM_NganHang>()
                                   join acc in dbContext.Set<DM_TaiKhoanNganHang>()
                                   on bank.Id equals acc.IdNganHang
-                                  where (idChiNhanh == null || acc.IdChiNhanh == idChiNhanh)
+                                  where (idChiNhanh == null || idChiNhanh == Guid.Empty || acc.IdChiNhanh == idChiNhanh)
                                   orderby acc.CreationTime descending // ưu tiên lấy tài khoản dc tạo cuối cùng
                                   select new TaiKhoanNganHangDto
                                   {
