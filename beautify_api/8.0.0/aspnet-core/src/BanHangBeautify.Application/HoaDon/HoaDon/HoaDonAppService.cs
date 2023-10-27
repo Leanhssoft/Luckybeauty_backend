@@ -57,6 +57,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             objHD.TenantId = AbpSession.TenantId ?? 1;
             objHD.CreatorUserId = AbpSession.UserId;
             objHD.CreationTime = DateTime.Now;
+            objHD.NgayLapHoaDon = DateTime.Now;// vì khách check in trước, nhưng thời gian làm DV lâu --> lưu ngày lập = ngày tạo
 
             if (string.IsNullOrEmpty(objHD.MaHoaDon))
             {
