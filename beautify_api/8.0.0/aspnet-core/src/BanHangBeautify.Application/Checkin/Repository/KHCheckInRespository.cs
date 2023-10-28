@@ -24,10 +24,10 @@ namespace BanHangBeautify.Checkin.Repository
             using (var command = CreateCommand("spGetListCustomerChecking"))
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
+                command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh??(object)DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@TextSearch", input.keyword ?? ""));
                 command.Parameters.Add(new SqlParameter("@CurrentPage", input.SkipCount));
                 command.Parameters.Add(new SqlParameter("@PageSize", input.MaxResultCount));
-
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
