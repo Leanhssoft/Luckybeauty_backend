@@ -151,9 +151,17 @@ namespace BanHangBeautify.Checkin
         public async Task<bool> Update_IdHoaDon_toCheckInHoaDon(Guid idCheckIn, Guid idHoaDon)
         {
             var listUp = await _checkInHoaDon.GetAll().Where(x => x.IdCheckIn == idCheckIn).ToListAsync();
+            
             if (listUp != null && listUp.Count > 0)
             {
+                
                 var objUp = listUp.FirstOrDefault();
+                var booking = await _bookingRespository.FirstOrDefaultAsync(x => x.Id == objUp.IdBooking);
+                if (booking != null)
+                {
+                    booking.TrangThai = TrangThaiBookingConst.HoanThanh;
+                    await _bookingRespository.UpdateAsync(booking);
+                }
                 objUp.IdHoaDon = idHoaDon;
                 await _checkInHoaDon.UpdateAsync(objUp);
                 return true;
