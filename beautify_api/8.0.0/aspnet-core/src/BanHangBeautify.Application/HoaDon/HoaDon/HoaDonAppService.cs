@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.HoaDon.HoaDon.Exporting;
@@ -30,12 +31,16 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IHoaDonRepository _repoHoaDon;
         private readonly NhanVienThucHienAppService _nvthService;
         private readonly IHoaDonExcelExporter _hoaDonExcelExporter;
+        private readonly IRepository<Booking_CheckIn_HoaDon, Guid> _bookingCheckInHoaDonRepository;
+        private readonly IRepository<Booking,Guid> _bookingRepository;
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
             IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             NhanVienThucHienAppService nvthService,
+            IRepository<Booking_CheckIn_HoaDon, Guid> bookingCheckInHoaDonRepository,
+            IRepository<Booking, Guid> bookingRepository,
             IHoaDonRepository repoHoaDon, IHoaDonExcelExporter hoaDonExcelExporter
         )
         {
@@ -45,6 +50,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _hoaDonAnhRepository = hoaDonAnhRepository;
             _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
+            _bookingCheckInHoaDonRepository = bookingCheckInHoaDonRepository;
+            _bookingRepository = bookingRepository;
             _hoaDonExcelExporter = hoaDonExcelExporter;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
@@ -58,7 +65,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             objHD.CreatorUserId = AbpSession.UserId;
             objHD.CreationTime = DateTime.Now;
             objHD.NgayLapHoaDon = DateTime.Now;// vì khách check in trước, nhưng thời gian làm DV lâu --> lưu ngày lập = ngày tạo
-
+            
             if (string.IsNullOrEmpty(objHD.MaHoaDon))
             {
                 var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, dto.IdChiNhanh, dto.IdLoaiChungTu, dto.NgayLapHoaDon);
@@ -96,6 +103,16 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 if (lstNVTH != null && lstNVTH.Count > 0)
                 {
                     await _nvThucHien.InsertRangeAsync(lstNVTH);
+                }
+                if (objHD.TrangThai == 3|| objHD.TrangThai == 2) //thanh toán
+                {
+                    var checkInHoaDon = _bookingCheckInHoaDonRepository.FirstOrDefault(x => x.IdHoaDon == objHD.Id);
+                    if (checkInHoaDon != null)
+                    {
+                        var booking = _bookingRepository.FirstOrDefault(x => x.Id == checkInHoaDon.IdBooking);
+                        booking.TrangThai = TrangThaiBookingConst.HoanThanh;
+                        _bookingRepository.Update(booking);
+                    }
                 }
             }
 
