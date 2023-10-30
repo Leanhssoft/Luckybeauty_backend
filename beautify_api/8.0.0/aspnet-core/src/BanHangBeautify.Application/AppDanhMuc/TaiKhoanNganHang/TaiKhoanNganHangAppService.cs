@@ -78,6 +78,16 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             data.TrangThai = 1;
             data.TenantId = AbpSession.TenantId ?? 1;
             await _dmTaiKhoanNganHang.InsertAsync(data);
+            if (input.IsDefault == true)
+            {
+                var taiKhoanNganHangs = _dmTaiKhoanNganHang.GetAll().Where(x => x.Id != data.Id).ToList();
+                foreach (var item in taiKhoanNganHangs)
+                {
+                    item.IsDefault = false;
+                    await _dmTaiKhoanNganHang.UpdateAsync(item);
+                }
+
+            }
             return ObjectMapper.Map<TaiKhoanNganHangDto>(data);
         }
         [NonAction]
@@ -90,9 +100,20 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             oldData.TenChuThe = ConvertToUpperCaseWithoutDiacritics(input.TenChuThe);
             oldData.SoTaiKhoan = input.SoTaiKhoan;
             oldData.TrangThai = input.TrangThai;
+            oldData.IsDefault = input.IsDefault;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             await _dmTaiKhoanNganHang.UpdateAsync(oldData);
+            if (input.IsDefault==true)
+            {
+                var taiKhoanNganHangs = _dmTaiKhoanNganHang.GetAll().Where(x => x.Id != oldData.Id).ToList();
+                foreach (var item in taiKhoanNganHangs)
+                {
+                    item.IsDefault = false;
+                    await _dmTaiKhoanNganHang.UpdateAsync(item);
+                }
+                
+            }
             return result;
         }
         [HttpPost]

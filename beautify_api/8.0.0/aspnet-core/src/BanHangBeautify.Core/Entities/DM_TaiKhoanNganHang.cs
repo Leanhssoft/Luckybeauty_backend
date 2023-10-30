@@ -24,6 +24,7 @@ namespace BanHangBeautify.Entities
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
         public DM_ChiNhanh DM_ChiNhanh { get; set; }
+        public bool IsDefault { get; set; }
 
     }
 }

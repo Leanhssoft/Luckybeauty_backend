@@ -17,5 +17,6 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Dto
         public string TenRutGon { set; get; }
         public string LogoNganHang { set; get; } = "";
         public string MaPinNganHang { set; get; } = "";
+        public bool IsDefault { get; set; }
     }
 }
