@@ -12,5 +12,6 @@ namespace BanHangBeautify.Suggests.Dto
         public string TenTaiKhoan { get; set; }
         public string bin { get; set; }
         public string TenRutGon { get; set; }
+        public bool IsDefault { get; set; }
     }
 }

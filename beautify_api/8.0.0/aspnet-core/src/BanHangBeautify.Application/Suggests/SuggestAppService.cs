@@ -444,6 +444,7 @@ namespace BanHangBeautify.Suggests
                 SuggestTaiKhoanNganHangQRDto rdo = new SuggestTaiKhoanNganHangQRDto();
                 rdo.SoTaiKhoan = item.SoTaiKhoan;
                 rdo.TenTaiKhoan = item.TenChuThe;
+                rdo.IsDefault = item.IsDefault;
                 using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
                 {
                     var nganHang =await _nganHangRepository.FirstOrDefaultAsync(x=>x.Id==item.IdNganHang);
