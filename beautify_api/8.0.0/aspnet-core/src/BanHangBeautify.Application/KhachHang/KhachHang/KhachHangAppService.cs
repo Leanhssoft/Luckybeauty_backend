@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
@@ -37,6 +38,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private readonly IRepository<DM_LoaiKhach, int> _loaiKhachHangRepository;
         private readonly IRepository<DM_NguonKhach, Guid> _nguonKhachRepository;
         private readonly IRepository<Booking, Guid> _bookingRepository;
+        private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
         private readonly IKhachHangExcelExporter _khachHangExcelExporter;
         ITempFileCacheManager _tempFileCacheManager;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
@@ -45,6 +47,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
               IRepository<DM_LoaiKhach, int> loaiKhachRepository,
               IRepository<DM_NguonKhach, Guid> nguonKhachRepository,
               IRepository<Booking, Guid> bookingRepository,
+              IRepository<BH_HoaDon, Guid> hoaDonRepository,
               IKhachHangExcelExporter khachHangExcelExporter,
               ITempFileCacheManager tempFileCacheManager
               )
@@ -55,6 +58,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _nguonKhachRepository = nguonKhachRepository;
             _nhomKhachHangRepository = nhomKhachHangRepository;
             _bookingRepository = bookingRepository;
+            _hoaDonRepository = hoaDonRepository;
             _khachHangExcelExporter = khachHangExcelExporter;
             _tempFileCacheManager = tempFileCacheManager;
         }
@@ -140,6 +144,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         }
 
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_CaLamViec_Delete)]
         public async Task<KhachHangDto> Delete(Guid id)
         {
             KhachHangDto result = new KhachHangDto();
@@ -221,6 +226,61 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 result.NguonKhach = nguonKhach != null ? nguonKhach.TenNguon : "";
             }
             return result;
+        }
+        public async Task<KhachHangThongTinTongHopDto> ThongTinKhachHang(Guid id)
+        {
+            KhachHangThongTinTongHopDto result = new KhachHangThongTinTongHopDto();
+            var khachHang =await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (khachHang != null)
+            {
+                var tongSoCuocHen = _bookingRepository.GetAll().Where(x => x.IdKhachHang == id).Count();
+                var tongSoCuocHenHoanThanh = _bookingRepository.GetAll().Where(x => x.IdKhachHang == id && x.TrangThai == TrangThaiBookingConst.HoanThanh).Count();
+                var tongSoCuocHenHuy = _bookingRepository.GetAll().Where(x => x.IdKhachHang == id && x.TrangThai == TrangThaiBookingConst.Huy).Count();
+                var tongChiTieu = _hoaDonRepository.GetAll().Where(x => x.IdKhachHang == id).Sum(x => x.TongTienHDSauVAT);
+                var hoatDongs = new List<HoatDongKhachHang>();
+
+                hoatDongs.Add(new HoatDongKhachHang()
+                {
+                    HoatDong = "Tạo mới khách hàng",
+                    ThoiGian = khachHang.CreationTime
+                });
+                var bookings = _bookingRepository.GetAllList(x=>x.IdKhachHang==id).ToList();
+                foreach (var item in bookings)
+                {
+                    HoatDongKhachHang rdo = new HoatDongKhachHang();
+                    rdo.ThoiGian = item.CreationTime;
+                    rdo.HoatDong = "Đặt lịch làm dịch vụ";
+                    hoatDongs.Add(rdo);
+                }
+                var hoaDons = _hoaDonRepository.GetAllList(x => x.IdKhachHang == id).ToList();
+                foreach (var item in hoaDons)
+                {
+                    HoatDongKhachHang huyHoaDon = new HoatDongKhachHang();
+                    if (item.TrangThai==0)
+                    {
+                        huyHoaDon.ThoiGian = item.DeletionTime ?? item.CreationTime;
+                        huyHoaDon.HoatDong = "Hủy hóa đơn " + item.MaHoaDon;
+                        hoatDongs.Add(huyHoaDon);
+                    }
+                    HoatDongKhachHang thanhToanHoaDon = new HoatDongKhachHang();
+                    if (item.TrangThai == 3 || item.TrangThai == 2)
+                    {
+                        thanhToanHoaDon.ThoiGian = item.LastModificationTime ?? item.CreationTime;
+                        thanhToanHoaDon.HoatDong = "Thanh toán hóa đơn " + item.MaHoaDon;
+                        hoatDongs.Add(thanhToanHoaDon);
+                    }
+                    HoatDongKhachHang taoHoaDon = new HoatDongKhachHang();
+                    taoHoaDon.ThoiGian = item.CreationTime;
+                    taoHoaDon.HoatDong = "Thêm mới hóa đơn " + item.MaHoaDon;
+                    hoatDongs.Add(taoHoaDon);
+                }
+                result.TongCuocHen = tongSoCuocHen;
+                result.CuocHenHuy = tongSoCuocHenHuy;
+                result.CuocHenHoanThanh = tongSoCuocHenHoanThanh;
+                result.TongChiTieu = tongChiTieu ?? 0;
+                result.HoatDongs = hoatDongs.OrderByDescending(x => x.ThoiGian).ToList();
+            }
+            return result; 
         }
         public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, PagedRequestDto input)
         {

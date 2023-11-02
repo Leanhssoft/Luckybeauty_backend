@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Checkin.Repository;
+using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,17 @@ namespace BanHangBeautify.Checkin
         private readonly IRepository<KH_CheckIn, Guid> _khCheckIn;
         private readonly IRepository<Booking_CheckIn_HoaDon, Guid> _checkInHoaDon;
         private readonly IKHCheckInRespository _repository;
-
+        private readonly IRepository<Booking, Guid> _bookingRespository;
         public CheckInAppService(IRepository<KH_CheckIn, Guid> khCheckIn,
             IRepository<Booking_CheckIn_HoaDon, Guid> checkInHoaDon,
+            IRepository<Booking, Guid> bookingRespository,
            IKHCheckInRespository checkInRepo
            )
         {
             _khCheckIn = khCheckIn;
             _checkInHoaDon = checkInHoaDon;
             _repository = checkInRepo;
+            _bookingRespository = bookingRespository;
         }
 
         public async Task<bool> CheckExistCusCheckin(Guid idCus, Guid? idCheckIn = null)
@@ -129,6 +132,12 @@ namespace BanHangBeautify.Checkin
             objNew.CreatorUserId = AbpSession.UserId;
             objNew.CreationTime = DateTime.Now;
             await _checkInHoaDon.InsertAsync(objNew);
+            var booking =await _bookingRespository.FirstOrDefaultAsync(x => x.Id == dto.IdBooking);
+            if (booking!=null)
+            {
+                booking.TrangThai = TrangThaiBookingConst.CheckIn;
+                await _bookingRespository.UpdateAsync(booking);
+            }
             var result = ObjectMapper.Map<CheckInHoaDonDto>(objNew);
             return result;
         }
@@ -142,9 +151,17 @@ namespace BanHangBeautify.Checkin
         public async Task<bool> Update_IdHoaDon_toCheckInHoaDon(Guid idCheckIn, Guid idHoaDon)
         {
             var listUp = await _checkInHoaDon.GetAll().Where(x => x.IdCheckIn == idCheckIn).ToListAsync();
+            
             if (listUp != null && listUp.Count > 0)
             {
+                
                 var objUp = listUp.FirstOrDefault();
+                var booking = await _bookingRespository.FirstOrDefaultAsync(x => x.Id == objUp.IdBooking);
+                if (booking != null)
+                {
+                    booking.TrangThai = TrangThaiBookingConst.HoanThanh;
+                    await _bookingRespository.UpdateAsync(booking);
+                }
                 objUp.IdHoaDon = idHoaDon;
                 await _checkInHoaDon.UpdateAsync(objUp);
                 return true;

@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.HoaDon.HoaDon.Exporting;
@@ -58,7 +59,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             objHD.CreatorUserId = AbpSession.UserId;
             objHD.CreationTime = DateTime.Now;
             objHD.NgayLapHoaDon = DateTime.Now;// vì khách check in trước, nhưng thời gian làm DV lâu --> lưu ngày lập = ngày tạo
-
+            
             if (string.IsNullOrEmpty(objHD.MaHoaDon))
             {
                 var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, dto.IdChiNhanh, dto.IdLoaiChungTu, dto.NgayLapHoaDon);

@@ -34,6 +34,9 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed
 
             //LoaiKhach seed
             new LoaiKhachBuilder(context).Create();
+
+            //Setting tenants
+            new DefaultTenantSettings(context).Create();
         }
 
         private static void WithDbContext<TDbContext>(IIocResolver iocResolver, Action<TDbContext> contextAction)
