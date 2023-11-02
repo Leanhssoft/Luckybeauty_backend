@@ -9,6 +9,7 @@ namespace BanHangBeautify.Configuration.Common
         {
             public int? TenantId { get; set; }
             public List<string> IdChiNhanhs { get; set; }
+            public List<string> TrangThais { get; set; }
             public string TextSearch { get; set; } = string.Empty;
             public int? CurrentPage { get; set; } = 0;
             public int? PageSize { get; set; } = 10;
