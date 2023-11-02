@@ -4,6 +4,8 @@ using BanHangBeautify.KhachHang.KhachHang.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BanHangBeautify.Configuration.Common;
+
 
 namespace BanHangBeautify.KhachHang.KhachHang.Repository
 {
@@ -13,6 +15,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
         Task<List<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId);
         Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input, int tenantId);
         Task<List<KhachHangView>> JqAutoCustomer(PagedKhachHangResultRequestDto input, int? tenantId);
+        Task<List<KhachHangView>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1);
         Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang, int tenantId, PagedRequestDto input);
         Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, int tenantId, PagedRequestDto input);
     }

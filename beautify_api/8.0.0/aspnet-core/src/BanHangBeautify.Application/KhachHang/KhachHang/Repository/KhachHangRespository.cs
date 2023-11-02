@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using static BanHangBeautify.Configuration.Common.CommonClass;
 
 namespace BanHangBeautify.KhachHang.KhachHang.Repository
 {
@@ -159,7 +160,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                     string[] array = { "Data" };
                     var ds = new DataSet();
                     ds.Load(dataReader, LoadOption.OverwriteChanges, array);
-                    var ddd = ds.Tables;
 
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
@@ -168,6 +168,40 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                 }
                 return new List<KhachHangView>();
             }
+        }
+
+        public async Task<List<KhachHangView>> JqAutoCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1)
+        {
+            if (input == null)
+            {
+                return new List<KhachHangView>();
+            }
+            string idChiNhanhs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
+            using var command = CreateCommand("spJqAutoCustomer_byIdLoaiTin");
+            command.Parameters.Add(new SqlParameter("@IdLoaiTin", idLoaiTin));
+            command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
+            command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
+            command.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
+
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    return ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
+                }
+            }
+            return new List<KhachHangView>();
         }
 
         public async Task ImportDanhMucKhachHang(int? tenantId, long? userId, ImportExcelKhachHangDto dataKhachHang)
