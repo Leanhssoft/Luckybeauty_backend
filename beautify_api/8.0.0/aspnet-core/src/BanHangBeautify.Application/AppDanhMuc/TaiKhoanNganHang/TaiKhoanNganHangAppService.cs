@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
 {
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Pages_Administration)]
     public class TaiKhoanNganHangAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_TaiKhoanNganHang, Guid> _dmTaiKhoanNganHang;
@@ -32,7 +32,7 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             _repoBankAcc = repoBankAcc;
             _nganHangRepository = nganHangRepository;
         }
-        public async Task<TaiKhoanNganHangDto> CreateOrEdit(CreateOrEditTaiKhoanNganHangDto input)
+        public async Task<ExecuteResultDto> CreateOrEdit(CreateOrEditTaiKhoanNganHangDto input)
         {
             var checkExist = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist != null)
@@ -67,68 +67,102 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             return stringBuilder.ToString();
         }
         [NonAction]
-        public async Task<TaiKhoanNganHangDto> Create(CreateOrEditTaiKhoanNganHangDto input)
+        public async Task<ExecuteResultDto> Create(CreateOrEditTaiKhoanNganHangDto input)
         {
-            DM_TaiKhoanNganHang data = ObjectMapper.Map<DM_TaiKhoanNganHang>(input);
-            data.Id = Guid.NewGuid();
-            data.TenChuThe = ConvertToUpperCaseWithoutDiacritics(input.TenChuThe);
-            data.CreationTime = DateTime.Now;
-            data.CreatorUserId = AbpSession.UserId;
-            data.IsDeleted = false;
-            data.TrangThai = 1;
-            data.TenantId = AbpSession.TenantId ?? 1;
-            await _dmTaiKhoanNganHang.InsertAsync(data);
-            if (input.IsDefault == true)
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
             {
-                var taiKhoanNganHangs = _dmTaiKhoanNganHang.GetAll().Where(x => x.Id != data.Id).ToList();
-                foreach (var item in taiKhoanNganHangs)
+                DM_TaiKhoanNganHang data = ObjectMapper.Map<DM_TaiKhoanNganHang>(input);
+                data.Id = Guid.NewGuid();
+                data.TenChuThe = ConvertToUpperCaseWithoutDiacritics(input.TenChuThe);
+                data.CreationTime = DateTime.Now;
+                data.CreatorUserId = AbpSession.UserId;
+                data.IsDeleted = false;
+                data.TrangThai = 1;
+                data.TenantId = AbpSession.TenantId ?? 1;
+                await _dmTaiKhoanNganHang.InsertAsync(data);
+                if (input.IsDefault == true)
                 {
-                    item.IsDefault = false;
-                    await _dmTaiKhoanNganHang.UpdateAsync(item);
+                    var taiKhoanNganHangs = _dmTaiKhoanNganHang.GetAll().Where(x => x.Id != data.Id).ToList();
+                    foreach (var item in taiKhoanNganHangs)
+                    {
+                        item.IsDefault = false;
+                        await _dmTaiKhoanNganHang.UpdateAsync(item);
+                    }
                 }
-
+                result.Message = "Thêm liệu thành công !";
+                result.Status = "success";
             }
-            return ObjectMapper.Map<TaiKhoanNganHangDto>(data);
-        }
-        [NonAction]
-        public async Task<TaiKhoanNganHangDto> Update(CreateOrEditTaiKhoanNganHangDto input, DM_TaiKhoanNganHang oldData)
-        {
-            TaiKhoanNganHangDto result = new TaiKhoanNganHangDto();
-            oldData.IdNganHang = input.IdNganHang;
-            oldData.GhiChu = input.GhiChu;
-            oldData.IdChiNhanh = input.IdChiNhanh;
-            oldData.TenChuThe = ConvertToUpperCaseWithoutDiacritics(input.TenChuThe);
-            oldData.SoTaiKhoan = input.SoTaiKhoan;
-            oldData.TrangThai = input.TrangThai;
-            oldData.IsDefault = input.IsDefault;
-            oldData.LastModificationTime = DateTime.Now;
-            oldData.LastModifierUserId = AbpSession.UserId;
-            await _dmTaiKhoanNganHang.UpdateAsync(oldData);
-            if (input.IsDefault==true)
+            catch (Exception ex)
             {
-                var taiKhoanNganHangs = _dmTaiKhoanNganHang.GetAll().Where(x => x.Id != oldData.Id).ToList();
-                foreach (var item in taiKhoanNganHangs)
-                {
-                    item.IsDefault = false;
-                    await _dmTaiKhoanNganHang.UpdateAsync(item);
-                }
-                
+                result.Message = ex.Message;
+                result.Status = "error";
+                result.Detail = ex.Message;
             }
             return result;
         }
-        [HttpPost]
-        public async Task<TaiKhoanNganHangDto> Delete(Guid id)
+        [NonAction]
+        public async Task<ExecuteResultDto> Update(CreateOrEditTaiKhoanNganHangDto input, DM_TaiKhoanNganHang oldData)
         {
-            var data = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x => x.Id == id);
-            if (data != null)
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
             {
-                data.DeletionTime = DateTime.Now;
-                data.DeleterUserId = AbpSession?.UserId;
-                data.IsDeleted = true;
-                await _dmTaiKhoanNganHang.UpdateAsync(data);
-                return ObjectMapper.Map<TaiKhoanNganHangDto>(data);
+                oldData.IdNganHang = input.IdNganHang;
+                oldData.GhiChu = input.GhiChu;
+                oldData.IdChiNhanh = input.IdChiNhanh;
+                oldData.TenChuThe = ConvertToUpperCaseWithoutDiacritics(input.TenChuThe);
+                oldData.SoTaiKhoan = input.SoTaiKhoan;
+                oldData.TrangThai = input.TrangThai;
+                oldData.IsDefault = input.IsDefault;
+                oldData.LastModificationTime = DateTime.Now;
+                oldData.LastModifierUserId = AbpSession.UserId;
+                await _dmTaiKhoanNganHang.UpdateAsync(oldData);
+                if (input.IsDefault == true)
+                {
+                    var taiKhoanNganHangs = _dmTaiKhoanNganHang.GetAll().Where(x => x.Id != oldData.Id).ToList();
+                    foreach (var item in taiKhoanNganHangs)
+                    {
+                        item.IsDefault = false;
+                        await _dmTaiKhoanNganHang.UpdateAsync(item);
+                    }
+
+                }
+                result.Message = "Cập nhật liệu thành công !";
+                result.Status = "success";
             }
-            return new TaiKhoanNganHangDto();
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
+
+            return result;
+        }
+        [HttpPost]
+        public async Task<ExecuteResultDto> Delete(Guid id)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                var data = await _dmTaiKhoanNganHang.FirstOrDefaultAsync(x => x.Id == id);
+                if (data != null)
+                {
+                    data.DeletionTime = DateTime.Now;
+                    data.DeleterUserId = AbpSession?.UserId;
+                    data.IsDeleted = true;
+                    await _dmTaiKhoanNganHang.DeleteAsync(data);
+                    result.Message = "Xóa dữ liệu thành công !";
+                    result.Status = "success";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
+            return result;
         }
         public async Task<CreateOrEditTaiKhoanNganHangDto> GetForEdit(Guid id)
         {
