@@ -22,13 +22,11 @@ namespace BanHangBeautify.SMS.GuiTinNhan
     public class HeThongSMSAppService : SPAAppServiceBase
     {
         private readonly IRepository<HeThong_SMS, Guid> _hethongSMS;
-        public readonly IKhachHangRespository _customerRepo;
         public readonly IHeThongSMSRepository _repoSMS;
 
-        public HeThongSMSAppService(IRepository<HeThong_SMS, Guid> repository, IKhachHangRespository customerRepo, IHeThongSMSRepository repoSMS)
+        public HeThongSMSAppService(IRepository<HeThong_SMS, Guid> repository, IHeThongSMSRepository repoSMS)
         {
             _hethongSMS = repository;
-            _customerRepo = customerRepo;
             _repoSMS = repoSMS;
         }
         [HttpPost]
@@ -75,16 +73,41 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             return await _repoSMS.GetListSMS(input);
         }
         [HttpPost]
-        public async Task<List<KhachHangView>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
+        public async Task<List<CustomerBasicDto>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
         {
             try
             {
-                return await _customerRepo.JqAutoCustomer_byIdLoaiTin(input, idLoaiTin);
+                return await _repoSMS.JqAutoCustomer_byIdLoaiTin(input, idLoaiTin);
             }
             catch (Exception)
             {
-                return new List<KhachHangView>();
+                return new List<CustomerBasicDto>();
             }
         }
+
+        [HttpPost]
+        public async Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
+        {
+            try
+            {
+                return await _repoSMS.GetListCustomer_byIdLoaiTin(input, idLoaiTin);
+            }
+            catch (Exception)
+            {
+                return new PagedResultDto<PageKhachHangSMSDto>();
+            }
+        }
+        //[HttpPost]
+        //public async Task<List<KhachHangView>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
+        //{
+        //    try
+        //    {
+        //        return await _customerRepo.JqAutoCustomer_byIdLoaiTin(input, idLoaiTin);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return new List<KhachHangView>();
+        //    }
+        //}
     }
 }
