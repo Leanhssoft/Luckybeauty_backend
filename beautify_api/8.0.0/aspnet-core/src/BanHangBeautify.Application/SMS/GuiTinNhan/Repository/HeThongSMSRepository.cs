@@ -63,5 +63,75 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             }
             return new PagedResultDto<CreateOrEditHeThongSMSDto>();
         }
+        public async Task<List<CustomerBasicDto>> JqAutoCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1)
+        {
+            if (input == null)
+            {
+                return new List<CustomerBasicDto>();
+            }
+            string idChiNhanhs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
+            using var command = CreateCommand("spJqAutoCustomer_byIdLoaiTin");
+            command.Parameters.Add(new SqlParameter("@IdLoaiTin", idLoaiTin));
+            command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
+            command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
+            command.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
+
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    return ObjectHelper.FillCollection<CustomerBasicDto>(ds.Tables[0]);
+                }
+            }
+            return new List<CustomerBasicDto>();
+        }
+        public async Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1)
+        {
+            if (input == null)
+            {
+                return new PagedResultDto<PageKhachHangSMSDto>();
+            }
+            string idChiNhanhs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
+            using var command = CreateCommand("spGetListCustomer_byIdLoaiTin");
+            command.Parameters.Add(new SqlParameter("@IdLoaiTin", idLoaiTin));
+            command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
+            command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
+            command.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
+
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    return new PagedResultDto<PageKhachHangSMSDto>()
+                    {
+                        TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalRow"].ToString()),
+                        Items = ObjectHelper.FillCollection<PageKhachHangSMSDto>(ds.Tables[0])
+                    };
+                }
+            }
+            return new PagedResultDto<PageKhachHangSMSDto>();
+        }
     }
 }
