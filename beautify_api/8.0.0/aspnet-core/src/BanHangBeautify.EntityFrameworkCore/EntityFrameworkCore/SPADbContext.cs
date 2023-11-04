@@ -57,6 +57,7 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<SMS_Template> SMS_Template { get; set; }
         public DbSet<SMS_CaiDat_NhacNho> SMS_CaiDat_NhacNho { get; set; }
         public DbSet<SMS_LichSuNap_ChuyenTien> SMS_LichSuNap_ChuyenTien { get; set; }
+        public DbSet<SMS_NhatKy_GuiTin> SMS_NhatKy_GuiTin { get; set; }
         #endregion
 
         #region Nhân viên
