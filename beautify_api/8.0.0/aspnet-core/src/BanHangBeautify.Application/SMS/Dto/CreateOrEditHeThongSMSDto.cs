@@ -6,10 +6,10 @@ namespace BanHangBeautify.SMS.Dto
     {
         public Guid Id { set; get; }
         public Guid? IdChiNhanh { set; get; } = null;
-        public Guid? IdNguoiGui { set; get; }
+        public long? IdNguoiGui { set; get; }
         public Guid? IdKhachHang { set; get; }
         public Guid? IdHoaDon { set; get; }
-        public Guid? IdTinNhan { set; get; }
+        public string IdTinNhan { set; get; } // a4e3472e-5ff8-4a03-beb6-38b3393a42b5186 (gần giống Guid nhưng không phải - vì chuỗi cuối cùng gồm 15 kí tự)
         public string SoDienThoai { set; get; }
         public int? SoTinGui { set; get; } = 1;
         public string NoiDungTin { set; get; }
