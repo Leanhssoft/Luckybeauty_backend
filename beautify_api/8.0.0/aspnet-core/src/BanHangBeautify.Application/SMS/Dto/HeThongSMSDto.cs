@@ -5,6 +5,7 @@ namespace BanHangBeautify.SMS.Dto
 {
     public class PageKhachHangSMSDto : CustomerBasicDto
     {
+        public Guid? Id { get; set; }// sinhnhat (id = idkhachhang), lichhen (id = idbooking), hoadon (id= idhoadon) --> avoid error DataGrid MUI
         public DateTime? NgaySinh { set; get; } = null;
         public string MaHoaDon { get; set; }
         public DateTime? NgayLapHoaDon { set; get; } = null;
