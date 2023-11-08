@@ -75,6 +75,91 @@ BEGIN
     
 END");
 
+			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListSMS]
+	@IdChiNhanhs nvarchar(max)='',
+	@FromDate datetime= '2023-11-01',
+	@ToDate datetime = '2023-11-30',
+	@TrangThais varchar(100) ='',
+	@TextSearch nvarchar(max)=N'sinh nhật',
+	@CurrentPage int = 0,
+	@PageSize int = 50
+AS
+BEGIN
+
+	SET NOCOUNT ON;
+	if @CurrentPage > 0 set @CurrentPage = @CurrentPage - 1;
+
+	if(ISNULL(@ToDate,'')!='')
+		set @ToDate = DATEADD(day,1,@ToDate)
+
+	declare @tblChiNhanh table (Id uniqueidentifier)
+	if isnull(@IdChiNhanhs,'') !=''
+		insert into @tblChiNhanh
+		select GiaTri from dbo.fnSplitstring(@IdChiNhanhs)
+
+	if ISNULL(@TextSearch,'')!=''
+		set @TextSearch = CONCAT(N'%', @TextSearch, '%')
+	else set @TextSearch='%%'
+
+
+		;with data_cte
+		as(
+		select *
+		from
+		(
+		select 
+			sms.Id,
+			sms.ThoiGianGui,
+			sms.IdLoaiTin,
+			sms.TrangThai,
+			sms.NoiDungTin,
+			kh.MaKhachHang,
+			kh.TenKhachHang,
+			kh.TenKhachHang_KhongDau,
+			kh.SoDienThoai,
+
+			case sms.IdLoaiTin
+				when 1 then N'Tin thường'
+				when 2 then N'Tin sinh nhật'
+				when 3 then N'Tin lịch hẹn'
+				when 4 then N'Tin giao dịch'
+			end as LoaiTin,
+
+			case sms.TrangThai
+				when 99 then N'Lỗi không xác định'
+				when 100 then N'Thành công'
+				when 103 then N'Không đủ số dư'
+				when 104 then N'Brandname không tồn tại'
+				when 104 then N'Tin nhắn không hợp lệ'			
+			end as sTrangThaiGuiTinNhan
+
+		from HeThong_SMS sms
+		left join DM_KhachHang kh on sms.IdKhachHang = kh.Id
+		where (@IdChiNhanhs ='' or exists (select Id from @tblChiNhanh cn where sms.IdChiNhanh = cn.Id))
+		and (@TrangThais ='' or sms.TrangThai in (select GiaTri from dbo.fnSplitstring(@TrangThais)))
+		and sms.ThoiGianGui between @FromDate and @ToDate
+		) tbl where (@TextSearch =''
+			or tbl.TenKhachHang like @TextSearch
+			or tbl.TenKhachHang_KhongDau like @TextSearch
+			or tbl.SoDienThoai like @TextSearch
+			or tbl.MaKhachHang like @TextSearch
+			or tbl.LoaiTin like @TextSearch)
+	),
+	count_cte
+	as
+	(
+	select count(ID) as TotalRow --,
+		---ceiling(count(ID) /@PageSize) as TotalPage
+		from data_cte
+	)
+	select *
+	from data_cte
+	cross join count_cte
+	order by ThoiGianGui desc
+	OFFSET (@CurrentPage* @PageSize) ROWS
+	FETCH NEXT @PageSize ROWS ONLY
+
+END");
             migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListBandname]
 	@TenantId int = 1,
     @Keyword nvarchar(max) ='2',
@@ -284,7 +369,7 @@ END");
             migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListCustomer_byIdLoaiTin]	
 	@IdLoaiTin int= 2,
 	@IdChiNhanhs nvarchar(max)= 'c4fbe44f-c26e-499f-9033-af9c4e3c6fc3',
-	@TextSearch nvarchar(max)= 'anh',
+	@TextSearch nvarchar(max)= '',
 	@FromDate datetime= '2023-11-01',
 	@ToDate datetime= '2023-11-30',
 	@CurrentPage int=1,
@@ -358,6 +443,7 @@ BEGIN
 						(
 						   select tbl.*,
 							case tbl.TrangThai
+								when 0 then N'Chưa gửi'
 								when 1 then N'Lưu nháp'
 								when 100 then N'Đã gửi'
 							else N'Gửi thất bại' end as STrangThai
@@ -367,8 +453,9 @@ BEGIN
 							select 
 								IdKhachHang,
 								TrangThai,
-								max(ThoiGianTu) over (order by ThoiGianTu desc) as maxfromdate,
-								min(ThoiGianDen) over (order by ThoiGianDen ) as mintodate
+								ROW_NUMBER() over (partition by IdKhachHang order by ThoiGianTu desc) as RN,
+								max(ThoiGianTu) over (partition by IdKhachHang order by ThoiGianTu desc) as maxfromdate,
+								min(ThoiGianDen) over (partition by IdKhachHang order by ThoiGianDen ) as mintodate
 							from
 							(
 							select  sms.IdKhachHang,
@@ -383,13 +470,15 @@ BEGIN
 							union all
 
 							select 
-								'00000000-0000-0000-0000-000000000000' as IdKhachHang,
+								IdKhachHang,
 								0 as TrangThai,
 								@FromDate as fromdate, 
 								@ToDate as todate 
+							from data_cte 
 							)tblUnion
 							) tbl
-							where maxfromdate is not null and mintodate is not null
+							where RN= 1
+							and maxfromdate is not null and mintodate is not null
 							and maxfromdate <= mintodate
 							
 						)nk on dt.IdKhachHang = nk.IdKhachHang
@@ -442,38 +531,42 @@ BEGIN
 						(
 						   select tbl.*,
 							case tbl.TrangThai
+								when 0 then N'Chưa gửi'
 								when 1 then N'Lưu nháp'
 								when 100 then N'Đã gửi'
 							else N'Gửi thất bại' end as STrangThai
 						   from
 						   (
 						------ get khoảng thời gian giao nhau (giữa bộ lọc - và nhật ký sms)			
-								select 
-									IdKhachHang,
-									TrangThai,
-									max(ThoiGianTu) over (order by ThoiGianTu desc) as maxfromdate,
-									min(ThoiGianDen) over (order by ThoiGianDen ) as mintodate
-								from
-								(
-								select  sms.IdKhachHang,
-									sms.TrangThai,
-									nky.ThoiGianTu,
-									nky.ThoiGianDen
-								from HeThong_SMS sms
-								join SMS_NhatKy_GuiTin nky on sms.Id = nky.IdHeThongSMS
-								where sms.IdLoaiTin= 2 
-								and exists (select * from data_cte dt where sms.IdKhachHang = dt.IdKhachHang)
+									select 
+										IdKhachHang,
+										TrangThai,
+										ROW_NUMBER() over (partition by IdKhachHang order by ThoiGianTu desc) as RN,
+										max(ThoiGianTu) over (partition by IdKhachHang order by ThoiGianTu desc) as maxfromdate,
+										min(ThoiGianDen) over (partition by IdKhachHang order by ThoiGianDen ) as mintodate
+									from
+									(
+										select  sms.IdKhachHang,
+											sms.TrangThai,
+											nky.ThoiGianTu,
+											nky.ThoiGianDen
+										from HeThong_SMS sms
+										join SMS_NhatKy_GuiTin nky on sms.Id = nky.IdHeThongSMS
+										where sms.IdLoaiTin= 2 
+										and exists (select * from data_cte dt where sms.IdKhachHang = dt.IdKhachHang)
 
-								union all
+										union all
 
-								select 
-									'00000000-0000-0000-0000-000000000000' as IdKhachHang,
-									0 as TrangThai,
-									@FromDate as fromdate, 
-									@ToDate as todate 
-								)tblUnion
+										select 
+											IdKhachHang,
+											0 as TrangThai,
+											@FromDate as fromdate, 
+											@ToDate as todate 
+										from data_cte 
+									)tblUnion
 								) tbl
-								where maxfromdate is not null and mintodate is not null
+								where RN= 1 
+								and maxfromdate is not null and mintodate is not null
 								and maxfromdate <= mintodate
 							
 							)nk on dt.IdKhachHang = nk.IdKhachHang
