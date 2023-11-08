@@ -32,7 +32,6 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
             {
                 using (_unitOfWorkManager.Current.SetTenantId(tenantId))
                 {
-                    //await CurrentUnitOfWork.SaveChangesAsync();
                     var adminUserIds = await UserManager.Users.Where(us => us.IsAdmin == true).Select(us => us.Id).ToListAsync();
                     SMS_LichSuNap_ChuyenTien objNew = ObjectMapper.Map<SMS_LichSuNap_ChuyenTien>(input);
                     objNew.Id = Guid.NewGuid(); ;
