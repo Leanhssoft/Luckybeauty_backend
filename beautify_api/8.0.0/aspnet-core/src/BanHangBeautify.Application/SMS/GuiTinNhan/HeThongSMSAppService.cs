@@ -38,9 +38,10 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 1;
+            data.IdNguoiGui = AbpSession.UserId;
             data.IsDeleted = false;
             await _hethongSMS.InsertAsync(data);
-            CreateOrEditHeThongSMSDto result = ObjectMapper.Map<CreateOrEditHeThongSMSDto>(input);
+            CreateOrEditHeThongSMSDto result = ObjectMapper.Map<CreateOrEditHeThongSMSDto>(data);
             return result;
         }
         [HttpGet]
@@ -97,17 +98,10 @@ namespace BanHangBeautify.SMS.GuiTinNhan
                 return new PagedResultDto<PageKhachHangSMSDto>();
             }
         }
-        //[HttpPost]
-        //public async Task<List<KhachHangView>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
-        //{
-        //    try
-        //    {
-        //        return await _customerRepo.JqAutoCustomer_byIdLoaiTin(input, idLoaiTin);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return new List<KhachHangView>();
-        //    }
-        //}
+        public async Task<bool> ThemMoi_NhatKyGuiTin(NhatKyGuiTinSMSDto input)
+        {
+            var data = await _repoSMS.InsertNhatKyGuiTinSMS(input, AbpSession.TenantId ?? 1);
+            return data > 0; ;
+        }
     }
 }
