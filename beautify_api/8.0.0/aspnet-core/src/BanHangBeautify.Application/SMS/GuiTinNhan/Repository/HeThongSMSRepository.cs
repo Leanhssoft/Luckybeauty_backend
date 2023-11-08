@@ -133,5 +133,22 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             }
             return new PagedResultDto<PageKhachHangSMSDto>();
         }
+
+        public async Task<int> InsertNhatKyGuiTinSMS(NhatKyGuiTinSMSDto input, int tenantId)
+        {
+            if (input == null)
+            {
+                return 0;
+            }
+            using var command = CreateCommand("spInsertNhatKyGuiTinSMS");
+            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            command.Parameters.Add(new SqlParameter("@IdHeThongSMS", input.IdHeThongSMS));
+            command.Parameters.Add(new SqlParameter("@IdCustomer", input.IdKhachHang));
+            command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
+            command.Parameters.Add(new SqlParameter("@IdLoaiTin", input.IdLoaiTin));
+            command.Parameters.Add(new SqlParameter("@FromDate", input.ThoiGianTu));
+            command.Parameters.Add(new SqlParameter("@ToDate", input.ThoiGianDen));
+            return await command.ExecuteNonQueryAsync();
+        }
     }
 }
