@@ -15,7 +15,7 @@ namespace BanHangBeautify.SMS.Dto
         public string NoiDungTin { set; get; }
         public DateTime? ThoiGianGui { set; get; } = DateTime.Now;
         public byte? IdLoaiTin { set; get; } = 1;
-        public double? GiaTienMoiTinNhan { get; set; } = 1000;
+        public double? GiaTienMoiTinNhan { get; set; } = 950;// hiện tại, đang mặc định giá này cho all nhà mạng (nếu sau cần thì thêm data)
         public int? TrangThai { get; set; } = 100;
 
         public string STrangThaiGuiTinNhan { set; get; }
