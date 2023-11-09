@@ -5,6 +5,7 @@ using BanHangBeautify.SMS.Dto;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,6 +64,41 @@ namespace BanHangBeautify.SMS.MauTinSMS
             var objUp = await _smsMauTin.GetAllListAsync();
             List<MauTinSMSDto> result = ObjectMapper.Map<List<MauTinSMSDto>>(objUp);
             return result;
+        }
+
+        Func<byte?, string> GetLoaiTin2 = value =>
+        {
+            switch (value)
+            {
+                case 2: return "Lời chúc mừng sinh nhật";
+                case 3: return "Nhắc nhở cuộc hẹn";
+                case 4: return "Tin giao dịch";
+                default: return "other";
+            }
+        };
+
+        public string GetLoaiTin(byte? idLoaiTin)
+        {
+
+            return idLoaiTin switch
+            {
+                2 => "Lời chúc mừng sinh nhật",
+                3 => "Nhắc nhở cuộc hẹn",
+                4 => "Tin giao dịch",
+                _ => "other",
+            };
+        }
+        [HttpGet]
+        public async Task<List<GroupMauTinSMSDto>> GetAllMauTinSMS_GroupLoaiTin()
+        {
+            var objUp = await _smsMauTin.GetAllListAsync();
+            List<GroupMauTinSMSDto> data = objUp.GroupBy(x => new { x.IdLoaiTin }).Select(x => new GroupMauTinSMSDto
+            {
+                IdLoaiTin = x.Key.IdLoaiTin,
+                LoaiTin = GetLoaiTin(x.Key.IdLoaiTin),
+                LstDetail = ObjectMapper.Map<List<MauTinSMSDto>>(x)
+            }).ToList();
+            return data;
         }
     }
 }
