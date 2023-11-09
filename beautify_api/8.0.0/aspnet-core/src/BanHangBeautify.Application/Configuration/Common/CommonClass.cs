@@ -32,5 +32,13 @@ namespace BanHangBeautify.Configuration.Common
             public string DienGiai { get; set; }
             public int LoaiErr { get; set; }//  -1. exception, 0. lỗi định dạng file, 1. lỗi dữ liệu, 2.lỗi import không thành công
         }
+
+        // nếu muốn ghi thủ công 1 số thông tin 
+        public class Excel_CellData
+        {
+            public int RowIndex { get; set; }
+            public int ColumnIndex { get; set; }
+            public string CellValue { get; set; }// tiêu đề Data của file xuất ra (mặc định ghi ở dòng Cell[1,1]
+        }
     }
 }
