@@ -15,8 +15,12 @@ namespace BanHangBeautify.SMS.Dto
         public string NoiDungTinMau { get; set; }
         public byte? TrangThai { get; set; } = 1;
         public bool? LaMacDinh { get; set; } = true;
+    }
 
-        public string STrangThai { get; set; }
+    public class GroupMauTinSMSDto
+    {
+        public byte? IdLoaiTin { get; set; }
         public string LoaiTin { get; set; }
+        public List<MauTinSMSDto> LstDetail { get; set; }
     }
 }
