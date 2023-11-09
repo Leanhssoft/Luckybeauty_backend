@@ -31,7 +31,7 @@ namespace BanHangBeautify.Entities
         public string NoiDungTin { set; get; }
         public DateTime ThoiGianGui { set; get; }
         public byte IdLoaiTin { set; get; }// enum DS loaitin (1. Tin giao dịch, 2. Tin sinh nhật, 3. Tin thường, 4. Tin lịch hẹn)
-        public double? GiaTienMoiTinNhan { get; set; } = 0;
+        public double? GiaTienMoiTinNhan { get; set; } = 950;// hiện tại, đang mặc định giá này cho all nhà mạng (nếu sau cần thì thêm data)
         public int? TrangThai { set; get; }// gửi thành công, thất bại,...
     }
 }
