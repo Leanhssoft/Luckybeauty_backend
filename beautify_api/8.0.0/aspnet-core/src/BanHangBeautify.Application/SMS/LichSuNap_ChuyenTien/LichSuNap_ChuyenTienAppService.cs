@@ -102,13 +102,13 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
 
                 // tonggui
                 var lstGuiTien_otherUser = await _lichSuNapTien.GetAllListAsync(x => x.IdNguoiChuyenTien == userId);
-                double? tongGui = lstNapTien.Sum(x => x.SoTienChuyen_Nhan);
+                double? tongGui = lstGuiTien_otherUser.Sum(x => x.SoTienChuyen_Nhan);
 
                 // tonggui SMS thanh cong
                 var lstGuiTinSMS = await _hethongSMS.GetAllListAsync(x => x.IdNguoiGui == userId && x.TrangThai == 100);
                 double? tongGuiSMS = lstGuiTinSMS.Sum(x => x.SoTinGui * x.GiaTienMoiTinNhan);
 
-                double? sodu = tongNap ?? 0 - tongGui ?? 0 - tongGuiSMS ?? 0;
+                double? sodu = tongNap - tongGui - tongGuiSMS;
                 return sodu;
             }
             catch (Exception)
