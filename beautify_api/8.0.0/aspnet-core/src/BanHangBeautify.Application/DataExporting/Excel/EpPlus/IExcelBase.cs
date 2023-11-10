@@ -6,6 +6,6 @@ namespace BanHangBeautify.DataExporting.Excel.EpPlus
 {
     public interface IExcelBase
     {
-        FileDto WriteToExcel<T>(string fileName, string fileTemplate, List<T> listData, int startRow = 5, List<Excel_CellData> param = null);
+        FileDto WriteToExcel<T>(string fileName, string fileTemplate, List<T> listData, int startRow = 4, List<Excel_CellData> param = null);
     }
 }

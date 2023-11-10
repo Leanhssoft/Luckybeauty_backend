@@ -334,7 +334,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
         {
             var data = await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
             var dataExcel = ObjectMapper.Map<List<ExportExcelHangHoaDto>>(data.Items);
-            return _excelBase.WriteToExcel("DanhSachDichVu_", "DichVu_Export_Template.xlsx", dataExcel, 5);
+            return _excelBase.WriteToExcel("DanhSachDichVu_", "DichVu_Export_Template.xlsx", dataExcel, 4);
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]

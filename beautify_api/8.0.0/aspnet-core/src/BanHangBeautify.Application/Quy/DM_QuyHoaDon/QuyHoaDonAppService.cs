@@ -257,7 +257,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             var data = await _repoQuyHD.Search(input);
             List<GetAllQuyHoaDonItemDto> lstQuy = (List<GetAllQuyHoaDonItemDto>)data.Items;
             var dataExcel = ObjectMapper.Map<List<ExcelSoQuyDto>>(lstQuy);
-            var ff = _excelBase.WriteToExcel<ExcelSoQuyDto>("DanhSachThuChi_", "SoQuy_Export_Template.xlsx", dataExcel, 5);
+            var ff = _excelBase.WriteToExcel<ExcelSoQuyDto>("DanhSachThuChi_", "SoQuy_Export_Template.xlsx", dataExcel, 4);
             return ff;
         }
         [HttpGet]

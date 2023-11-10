@@ -150,7 +150,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             {
                 new Excel_CellData { RowIndex = 1, ColumnIndex = 1, CellValue = fileTitle }
             };
-            return _excelBase.WriteToExcel(fileName, @"SMS\SMS_DanhSachTinNhan_Template.xlsx", dataNew, 5, lst);
+            return _excelBase.WriteToExcel(fileName, @"SMS\SMS_DanhSachTinNhan_Template.xlsx", dataNew, 4, lst);
         }
 
         [HttpPost]
@@ -180,7 +180,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
                             x.STrangThaiGuiTinNhan,
                         }).ToList();
                         lst.Add(new Excel_CellData { RowIndex = 2, ColumnIndex = 1, CellValue = dateFromTo });
-                        fileReturn = _excelBase.WriteToExcel(fileName, "SMS_KhachHangSinhNhat_Template.xlsx", dataNew, 5, lst);
+                        fileReturn = _excelBase.WriteToExcel(fileName, @"SMS\SMS_KhachHangSinhNhat_Template.xlsx", dataNew, 4, lst);
                     }
                     break;
                 case 3:
@@ -196,7 +196,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
                             x.STrangThaiGuiTinNhan,
                         }).ToList();
                         lst.Add(new Excel_CellData { RowIndex = 2, ColumnIndex = 1, CellValue = dateFromTo });
-                        fileReturn = _excelBase.WriteToExcel(fileName, "SMS_KhachHangLichHen_Template.xlsx", dataNew, 5, lst);
+                        fileReturn = _excelBase.WriteToExcel(fileName, @"SMS\SMS_KhachHangLichHen_Template.xlsx", dataNew, 4, lst);
                     }
                     break;
                 case 4:
@@ -211,7 +211,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
                             x.STrangThaiGuiTinNhan,
                         }).ToList();
                         lst.Add(new Excel_CellData { RowIndex = 2, ColumnIndex = 1, CellValue = dateFromTo });
-                        fileReturn = _excelBase.WriteToExcel(fileName, "SMS_KhachHangGiaoDich_Template.xlsx", dataNew, 5, lst);
+                        fileReturn = _excelBase.WriteToExcel(fileName, @"SMS\SMS_KhachHangGiaoDich_Template.xlsx", dataNew, 4, lst);
                     }
                     break;
             }
