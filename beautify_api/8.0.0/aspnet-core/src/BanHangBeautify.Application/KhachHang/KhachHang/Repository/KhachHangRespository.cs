@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using static BanHangBeautify.Configuration.Common.CommonClass;
 
 namespace BanHangBeautify.KhachHang.KhachHang.Repository
 {
@@ -159,7 +160,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                     string[] array = { "Data" };
                     var ds = new DataSet();
                     ds.Load(dataReader, LoadOption.OverwriteChanges, array);
-                    var ddd = ds.Tables;
 
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {

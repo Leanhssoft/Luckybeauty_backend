@@ -4,6 +4,8 @@ using BanHangBeautify.KhachHang.KhachHang.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BanHangBeautify.Configuration.Common;
+
 
 namespace BanHangBeautify.KhachHang.KhachHang.Repository
 {

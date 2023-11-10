@@ -1,5 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
@@ -23,13 +24,16 @@ namespace BanHangBeautify.SMS.Brandname
         private readonly IRepository<HT_SMSBrandname, Guid> _dmBrandname;
         private readonly IBrandnameRepository _repository;
         private readonly IExcelBase _excelBase;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public BrandnameAppService(IRepository<HT_SMSBrandname, Guid> dmBrandname, IBrandnameRepository repository,
-            IExcelBase excelBase)
+            IExcelBase excelBase,
+            IUnitOfWorkManager unitOfWorkManager)
         {
             _dmBrandname = dmBrandname;
             _repository = repository;
             _excelBase = excelBase;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         [HttpGet]
@@ -60,12 +64,16 @@ namespace BanHangBeautify.SMS.Brandname
             return data;
         }
         [HttpPost]
-        public async Task<PagedResultDto<PageBrandnameDto>> GetListBandname(PagedRequestDto param)
+        public async Task<PagedResultDto<PageBrandnameDto>> GetListBandname(PagedRequestDto param, int? tenantId = 1)
         {
-            var data = await _repository.GetListBandname(param, AbpSession.TenantId ?? 1);
-            return data;
+            // Get data from default tenant
+            using (_unitOfWorkManager.Current.SetTenantId(1))
+            {
+                var data = await _repository.GetListBandname(param, tenantId);
+                return data;
+            }
         }
-
+         
         [HttpPost]
         public BrandnameDto CreateBrandname(BrandnameDto dto)
         {
