@@ -1,12 +1,14 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using Abp.Configuration;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
 using Abp.Linq.Extensions;
 using Abp.MultiTenancy;
+using Abp.Net.Mail;
 using Abp.Runtime.Security;
 using Abp.UI;
 using BanHangBeautify.Authorization;
@@ -36,6 +38,7 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IAbpZeroDbMigrator _abpZeroDbMigrator;
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
+        private readonly IRepository<Setting, long> _settingRepository;
         public TenantAppService(
             IRepository<Tenant, int> repository,
             TenantManager tenantManager,
@@ -44,7 +47,9 @@ namespace BanHangBeautify.MultiTenancy
             RoleManager roleManager,
             IAbpZeroDbMigrator abpZeroDbMigrator,
             IRepository<HT_CongTy, Guid> congTyRepository,
-            IRepository<DM_ChiNhanh, Guid> chiNhanhRepository)
+            IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
+            IRepository<Setting, long> settingRepository
+            )
             : base(repository)
         {
             _tenantManager = tenantManager;
@@ -55,6 +60,7 @@ namespace BanHangBeautify.MultiTenancy
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
+            _settingRepository = settingRepository;
         }
         [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
@@ -106,7 +112,8 @@ namespace BanHangBeautify.MultiTenancy
 
                 // create chinhanh truoc khi tao user
                 Guid idChiNhanh = await CreateCuaHangWithTenant(input.Name, tenant.Id);
-
+                // create email setting
+                await CreateSettingEmail(tenant.Id,tenant.Name);
                 // Create admin user for the tenant
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
                 await _userManager.InitializeOptionsAsync(tenant.Id);
@@ -143,6 +150,79 @@ namespace BanHangBeautify.MultiTenancy
             chiNhanh.CreatorUserId = AbpSession.UserId;
             await _chiNhanhRepository.InsertAsync(chiNhanh);
             return chiNhanh.Id;
+        }
+        [NonAction]
+        public Task CreateSettingEmail(int tenantId,string tenantName)
+        {
+            List<Setting> settings = new List<Setting>()
+            {
+                new Setting()
+                {
+                    Name = EmailSettingNames.DefaultFromDisplayName,
+                    Value = tenantName,
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                },
+                new Setting()
+                {
+                    Name = EmailSettingNames.DefaultFromAddress,
+                    Value = "admin@mydomain.com",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                }
+                ,new Setting()
+                {
+                    Name = EmailSettingNames.Smtp.UserName,
+                    Value = "admin@mydomain.com",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                }
+                ,
+                new Setting()
+                {
+                    Name = EmailSettingNames.Smtp.Password,
+                    Value = "",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                },
+                new Setting()
+                {
+                    Name = EmailSettingNames.Smtp.Port,
+                    Value = "587",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                },
+                new Setting()
+                {
+                    Name = EmailSettingNames.Smtp.Host,
+                    Value = "smtp.gmail.com",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                },
+                new Setting()
+                {
+                    Name = EmailSettingNames.Smtp.Domain,
+                    Value = "",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                },
+                new Setting()
+                {
+                    Name = EmailSettingNames.Smtp.EnableSsl,
+                    Value = "true",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                },
+                new Setting()
+                {
+                    Name = EmailSettingNames.Smtp.UseDefaultCredentials,
+                    Value = "false",
+                    TenantId = tenantId,
+                    CreationTime = DateTime.Now
+                }
+
+            };
+            return _settingRepository.InsertRangeAsync(settings);
         }
 
         [AbpAuthorize(PermissionNames.Pages_Tenants_Edit)]
