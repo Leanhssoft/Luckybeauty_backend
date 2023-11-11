@@ -3,14 +3,16 @@ using Abp.Configuration.Startup;
 using Abp.MailKit;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
+using Abp.Threading.BackgroundWorkers;
 using Asd.AbpZeroTemplate.DashboardCustomization.Definitions;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.BackgroundWorker;
 
 namespace BanHangBeautify
 {
     [DependsOn(
         typeof(SPACoreModule),
-        typeof(AbpAutoMapperModule),typeof(AbpMailKitModule))]
+        typeof(AbpAutoMapperModule), typeof(AbpMailKitModule))]
 
     public class SPAApplicationModule : AbpModule
     {
@@ -21,7 +23,7 @@ namespace BanHangBeautify
             IocManager.Register<DashboardConfiguration>();
         }
 
-        public override void Initialize()
+        public override async void Initialize()
         {
             var thisAssembly = typeof(SPAApplicationModule).GetAssembly();
 
@@ -31,6 +33,13 @@ namespace BanHangBeautify
                 // Scan the assembly for classes which inherit from AutoMapper.Profile
                 cfg => cfg.AddMaps(thisAssembly)
             );
+
+        }
+
+        public override void PostInitialize()
+        {
+            var workManager = IocManager.Resolve<IBackgroundWorkerManager>();
+            workManager.Add(IocManager.Resolve<SendEmailSMSAutoWorker>());
         }
     }
 }
