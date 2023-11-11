@@ -16,25 +16,30 @@ namespace BanHangBeautify.Configuration.Settings
     [AbpAuthorize]
     public class SettingsAppService: SPAAppServiceBase
     {
+        private SettingManager _settingManager;
+        public SettingsAppService(SettingManager settingManager)
+        {
+            _settingManager = settingManager;
+        }
         public async Task<EmailSettingsEditDto> GetEmailSettingsAsync()
         {
             int tennatId = AbpSession.TenantId ?? 1;
-            if (AbpSession.TenantId!=null)
+            if (AbpSession.TenantId != null)
             {
-                var smtpPassword = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Password, tennatId);
+                var smtpPassword = await _settingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Password, tennatId);
                 return new EmailSettingsEditDto
                 {
-                    DefaultFromAddress = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromAddress, tennatId),
+                    DefaultFromAddress = await _settingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromAddress, tennatId),
                     DefaultFromDisplayName =
-                        await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromDisplayName, tennatId),
-                    SmtpHost = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Host, tennatId),
-                    SmtpPort = await SettingManager.GetSettingValueForTenantAsync<int>(EmailSettingNames.Smtp.Port, tennatId),
-                    SmtpUserName = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.UserName, tennatId),
+                        await _settingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromDisplayName, tennatId),
+                    SmtpHost = await _settingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Host, tennatId),
+                    SmtpPort = await _settingManager.GetSettingValueForTenantAsync<int>(EmailSettingNames.Smtp.Port, tennatId),
+                    SmtpUserName = await _settingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.UserName, tennatId),
                     SmtpPassword = smtpPassword,
-                    SmtpDomain = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Domain, tennatId),
-                    SmtpEnableSsl = await SettingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.EnableSsl, tennatId),
+                    SmtpDomain = await _settingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Domain, tennatId),
+                    SmtpEnableSsl = await _settingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.EnableSsl, tennatId),
                     SmtpUseDefaultCredentials =
-                        await SettingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.UseDefaultCredentials, tennatId)
+                        await _settingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.UseDefaultCredentials, tennatId)
                 };
             }
             else
@@ -43,8 +48,7 @@ namespace BanHangBeautify.Configuration.Settings
                 return new EmailSettingsEditDto
                 {
                     DefaultFromAddress = await SettingManager.GetSettingValueAsync(EmailSettingNames.DefaultFromAddress),
-                    DefaultFromDisplayName =
-                        await SettingManager.GetSettingValueAsync(EmailSettingNames.DefaultFromDisplayName),
+                    DefaultFromDisplayName = await SettingManager.GetSettingValueAsync(EmailSettingNames.DefaultFromDisplayName),
                     SmtpHost = await SettingManager.GetSettingValueAsync(EmailSettingNames.Smtp.Host),
                     SmtpPort = await SettingManager.GetSettingValueAsync<int>(EmailSettingNames.Smtp.Port),
                     SmtpUserName = await SettingManager.GetSettingValueAsync(EmailSettingNames.Smtp.UserName),
@@ -55,7 +59,6 @@ namespace BanHangBeautify.Configuration.Settings
                         await SettingManager.GetSettingValueAsync<bool>(EmailSettingNames.Smtp.UseDefaultCredentials)
                 };
             }
-            
         }
         [HttpPost]
         public async Task<ExecuteResultDto> UpdateEmailSettingsAsync(EmailSettingsEditDto settings)
@@ -63,23 +66,23 @@ namespace BanHangBeautify.Configuration.Settings
             int tenantId = AbpSession.TenantId ?? 1;
             try
             {
-                if(AbpSession.TenantId!=null)
+                if (AbpSession.TenantId != null)
                 {
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.DefaultFromAddress,
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.DefaultFromAddress,
                 settings.DefaultFromAddress);
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.DefaultFromDisplayName,
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.DefaultFromDisplayName,
                         settings.DefaultFromDisplayName);
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Host, settings.SmtpHost);
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Port,
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Host, settings.SmtpHost);
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Port,
                         settings.SmtpPort.ToString(CultureInfo.InvariantCulture));
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.UserName,
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.UserName,
                         settings.SmtpUserName);
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Password,
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Password,
                         settings.SmtpPassword);
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Domain, settings.SmtpDomain);
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.EnableSsl,
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.Domain, settings.SmtpDomain);
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.EnableSsl,
                         settings.SmtpEnableSsl.ToString().ToLowerInvariant());
-                    await SettingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.UseDefaultCredentials,
+                    await _settingManager.ChangeSettingForTenantAsync(tenantId, EmailSettingNames.Smtp.UseDefaultCredentials,
                         settings.SmtpUseDefaultCredentials.ToString().ToLowerInvariant());
                 }
                 else
@@ -117,7 +120,7 @@ namespace BanHangBeautify.Configuration.Settings
                     Status = "error"
                 };
             }
-            
+
         }
 
     }

@@ -49,7 +49,6 @@ namespace BanHangBeautify.Authorization.Users
             _unitOfWorkProvider = unitOfWorkProvider;
             _unitOfWorkManager = unitOfWorkManager;
             _settingManager = settingManager;
-            
         }
 
         /// <summary>
