@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Configuration.Settings
 {
     [AbpAuthorize]
-    public class SettingsAppService: SPAAppServiceBase
+    public class SettingsAppService: SPAAppServiceBase, ISettings
     {
         public async Task<EmailSettingsEditDto> GetEmailSettingsAsync()
         {
