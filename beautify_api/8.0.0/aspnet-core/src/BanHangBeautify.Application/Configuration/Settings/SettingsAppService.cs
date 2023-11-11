@@ -21,6 +21,24 @@ namespace BanHangBeautify.Configuration.Settings
             int tennatId = AbpSession.TenantId ?? 1;
             if (AbpSession.TenantId!=null)
             {
+                var smtpPassword = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Password, tennatId);
+                return new EmailSettingsEditDto
+                {
+                    DefaultFromAddress = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromAddress, tennatId),
+                    DefaultFromDisplayName =
+                        await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromDisplayName, tennatId),
+                    SmtpHost = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Host, tennatId),
+                    SmtpPort = await SettingManager.GetSettingValueForTenantAsync<int>(EmailSettingNames.Smtp.Port, tennatId),
+                    SmtpUserName = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.UserName, tennatId),
+                    SmtpPassword = smtpPassword,
+                    SmtpDomain = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Domain, tennatId),
+                    SmtpEnableSsl = await SettingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.EnableSsl, tennatId),
+                    SmtpUseDefaultCredentials =
+                        await SettingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.UseDefaultCredentials, tennatId)
+                };
+            }
+            else
+            {
                 var smtpPassword = await SettingManager.GetSettingValueAsync(EmailSettingNames.Smtp.Password);
                 return new EmailSettingsEditDto
                 {
@@ -35,24 +53,6 @@ namespace BanHangBeautify.Configuration.Settings
                     SmtpEnableSsl = await SettingManager.GetSettingValueAsync<bool>(EmailSettingNames.Smtp.EnableSsl),
                     SmtpUseDefaultCredentials =
                         await SettingManager.GetSettingValueAsync<bool>(EmailSettingNames.Smtp.UseDefaultCredentials)
-                };
-            }
-            else
-            {
-                var smtpPassword = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Password,tennatId);
-                return new EmailSettingsEditDto
-                {
-                    DefaultFromAddress = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromAddress,tennatId),
-                    DefaultFromDisplayName =
-                        await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.DefaultFromDisplayName,tennatId),
-                    SmtpHost = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Host,tennatId),
-                    SmtpPort = await SettingManager.GetSettingValueForTenantAsync<int>(EmailSettingNames.Smtp.Port,tennatId),
-                    SmtpUserName = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.UserName, tennatId),
-                    SmtpPassword = smtpPassword,
-                    SmtpDomain = await SettingManager.GetSettingValueForTenantAsync(EmailSettingNames.Smtp.Domain, tennatId),
-                    SmtpEnableSsl = await SettingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.EnableSsl, tennatId),
-                    SmtpUseDefaultCredentials =
-                        await SettingManager.GetSettingValueForTenantAsync<bool>(EmailSettingNames.Smtp.UseDefaultCredentials, tennatId)
                 };
             }
             
