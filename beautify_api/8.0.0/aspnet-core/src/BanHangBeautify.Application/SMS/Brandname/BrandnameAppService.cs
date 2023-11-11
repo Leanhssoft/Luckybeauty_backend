@@ -172,7 +172,7 @@ namespace BanHangBeautify.SMS.Brandname
                 x.DaSuDung,
                 x.ConLai
             }).ToList();
-            return _excelBase.WriteToExcel("DanhSachBrandname_", "Brandname_Export_Template.xlsx", dataNew, 5);
+            return _excelBase.WriteToExcel("DanhSachBrandname_", "Brandname_Export_Template.xlsx", dataNew, 4);
         }
     }
 }

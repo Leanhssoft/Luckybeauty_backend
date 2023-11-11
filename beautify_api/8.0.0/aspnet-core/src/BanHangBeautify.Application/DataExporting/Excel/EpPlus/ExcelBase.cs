@@ -38,7 +38,7 @@ namespace BanHangBeautify.DataExporting.Excel.EpPlus
         /// <param name="startRow"></param>
         /// <param name="lstDataCell"></param>
         /// <returns></returns>
-        public FileDto WriteToExcel<T>(string fileName, string fileTemplate, List<T> listData, int startRow = 5,
+        public FileDto WriteToExcel<T>(string fileName, string fileTemplate, List<T> listData, int startRow = 4,
             List<Excel_CellData> lstDataCell = null)
         {
             var path = Path.Combine(_env.WebRootPath, @"ExcelTemplate\", fileTemplate);
@@ -49,20 +49,13 @@ namespace BanHangBeautify.DataExporting.Excel.EpPlus
             using (var excelPack = new ExcelPackage(new FileInfo(path)))
             {
                 var ws = excelPack.Workbook.Worksheets[0];
-              
                 if (lstDataCell != null)
                 {
-                    // todo set value??
                     foreach (var item in lstDataCell)
                     {
                         ws.Cells[item.RowIndex, item.ColumnIndex].Value = item.CellValue;
                     }
-                    //ws.Cells[startRow, 1].LoadFromCollection(listData, c => { c.Members = HeaderParsingTypes.});
                 }
-                //else
-                //{
-                //    ws.Cells[startRow, 1].LoadFromCollection(listData);
-                //}
                 ws.Cells[startRow, 1].LoadFromCollection(listData);
                 Save(excelPack, file);
             }
