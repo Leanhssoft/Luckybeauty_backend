@@ -19,5 +19,6 @@ namespace BanHangBeautify.Entities
         [ForeignKey("IdMauTin")]
         public SMS_Template SMS_Template { get; set; }
         public string NoiDungTin { get; set; } = string.Empty;
+        public byte? TrangThai { get; set; } = 1;
     }
 }
