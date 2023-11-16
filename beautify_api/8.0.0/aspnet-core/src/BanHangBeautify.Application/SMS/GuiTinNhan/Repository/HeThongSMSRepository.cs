@@ -102,14 +102,19 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             {
                 return new PagedResultDto<PageKhachHangSMSDto>();
             }
-            string idChiNhanhs = string.Empty;
+            string idChiNhanhs = string.Empty, trangThais= string.Empty;
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            } 
+            if (input.TrangThais != null && input.TrangThais.Count > 0)
+            {
+                trangThais = string.Join(",", input.TrangThais);
             }
             using var command = CreateCommand("spGetListCustomer_byIdLoaiTin");
             command.Parameters.Add(new SqlParameter("@IdLoaiTin", idLoaiTin));
             command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@TrangThais", trangThais ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
