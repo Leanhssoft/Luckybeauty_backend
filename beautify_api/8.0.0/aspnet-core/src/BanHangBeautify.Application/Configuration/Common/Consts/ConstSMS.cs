@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BanHangBeautify.Configuration.Common.Consts
+﻿namespace BanHangBeautify.Configuration.Common.Consts
 {
     public class ConstSMS
     {
@@ -14,6 +8,12 @@ namespace BanHangBeautify.Configuration.Common.Consts
             public const byte SinhNhat = 2;
             public const byte LichHen = 3;
             public const byte GiaoDich = 4;
+        }
+        public class HinhThucGuiTin
+        {
+            public const byte SMS = 1;
+            public const byte Zalo = 2;
+            public const byte Gmail = 3;
         }
     }
 }
