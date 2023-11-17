@@ -1727,7 +1727,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3670),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7009),
                             IsDeleted = false,
                             MaLoaiHangHoa = "HH",
                             TenLoaiHangHoa = "Hàng Hóa",
@@ -1736,7 +1736,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3688),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7030),
                             IsDeleted = false,
                             MaLoaiHangHoa = "DV",
                             TenLoaiHangHoa = "Dịch Vụ",
@@ -1745,7 +1745,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3690),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7036),
                             IsDeleted = false,
                             MaLoaiHangHoa = "CB",
                             TenLoaiHangHoa = "Combo",
@@ -3125,7 +3125,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3973),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7525),
                             IsDeleted = false,
                             MaLoaiChungTu = "HD",
                             TenLoaiChungTu = "Hóa đơn bán",
@@ -3134,7 +3134,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3975),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7529),
                             IsDeleted = false,
                             MaLoaiChungTu = "GDV",
                             TenLoaiChungTu = "Gói dịch vụ",
@@ -3143,7 +3143,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 3,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3977),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7531),
                             IsDeleted = false,
                             MaLoaiChungTu = "BG",
                             TenLoaiChungTu = "Báo giá",
@@ -3152,7 +3152,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 4,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3979),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7532),
                             IsDeleted = false,
                             MaLoaiChungTu = "PNK",
                             TenLoaiChungTu = "Phiếu nhập kho",
@@ -3161,7 +3161,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 5,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3980),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7534),
                             IsDeleted = false,
                             MaLoaiChungTu = "PXK",
                             TenLoaiChungTu = "Phiếu xuất kho",
@@ -3170,7 +3170,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 6,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3982),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7535),
                             IsDeleted = false,
                             MaLoaiChungTu = "TH",
                             TenLoaiChungTu = "Khách trả hàng",
@@ -3179,7 +3179,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 7,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3988),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7541),
                             IsDeleted = false,
                             MaLoaiChungTu = "THNCC",
                             TenLoaiChungTu = "Trả hàng nhà cung cấp",
@@ -3188,7 +3188,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 8,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3990),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7542),
                             IsDeleted = false,
                             MaLoaiChungTu = "TGT",
                             TenLoaiChungTu = "Thẻ giá trị",
@@ -3197,7 +3197,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 9,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3991),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7544),
                             IsDeleted = false,
                             MaLoaiChungTu = "PKK",
                             TenLoaiChungTu = "Phiếu kiểm kê",
@@ -3206,7 +3206,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 10,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3993),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7545),
                             IsDeleted = false,
                             MaLoaiChungTu = "CH",
                             TenLoaiChungTu = "Chuyển hàng",
@@ -3215,7 +3215,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 11,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3994),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7547),
                             IsDeleted = false,
                             MaLoaiChungTu = "SQPT",
                             TenLoaiChungTu = "Phiếu thu",
@@ -3224,7 +3224,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 12,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3996),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7548),
                             IsDeleted = false,
                             MaLoaiChungTu = "SQPC",
                             TenLoaiChungTu = "Phiếu chi",
@@ -3233,7 +3233,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 13,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3997),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7549),
                             IsDeleted = false,
                             MaLoaiChungTu = "DCGV",
                             TenLoaiChungTu = "Điều chỉnh giá vốn",
@@ -3242,7 +3242,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 14,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3999),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7551),
                             IsDeleted = false,
                             MaLoaiChungTu = "NH",
                             TenLoaiChungTu = "Nhận hàng",
@@ -3307,7 +3307,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 1,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3942),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7465),
                             IsDeleted = false,
                             MaLoaiKhachHang = "KH",
                             TenLoaiKhachHang = "Khách hàng",
@@ -3316,7 +3316,7 @@ namespace BanHangBeautify.Migrations
                         new
                         {
                             Id = 2,
-                            CreationTime = new DateTime(2023, 11, 14, 9, 23, 49, 134, DateTimeKind.Local).AddTicks(3952),
+                            CreationTime = new DateTime(2023, 11, 17, 14, 10, 51, 325, DateTimeKind.Local).AddTicks(7495),
                             IsDeleted = false,
                             MaLoaiKhachHang = "NCC",
                             TenLoaiKhachHang = "Nhà cung cấp",
@@ -4370,6 +4370,9 @@ namespace BanHangBeautify.Migrations
 
                     b.Property<double?>("GiaTienMoiTinNhan")
                         .HasColumnType("float");
+
+                    b.Property<byte?>("HinhThucGui")
+                        .HasColumnType("tinyint");
 
                     b.Property<Guid>("IdChiNhanh")
                         .HasColumnType("uniqueidentifier");
