@@ -111,7 +111,7 @@ namespace BanHangBeautify.BackgroundWorker
                             inforCommon.IdChiNhanhFirst = new Guid(chiNhanh.FirstOrDefault().ToString());
                         }
 
-                        CommonClass.ParamSearch param = new()
+                        ParamSearchSMS param = new()
                         {
                             FromDate = _dtNow,
                             ToDate = _dtNow,
@@ -138,7 +138,7 @@ namespace BanHangBeautify.BackgroundWorker
                         {
                             inforCommon.BrandNameFirst = brandName_ofTenant.FirstOrDefault().Brandname;
 
-                            var turnOnSMS = tblJoin.Where(x => x.HinhThucGui == 1).Select(x => x);
+                            var turnOnSMS = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.SMS).Select(x => x);
                             foreach (var item in turnOnSMS)
                             {
                                 if (!string.IsNullOrEmpty(item.NoiDungTin))
@@ -149,14 +149,17 @@ namespace BanHangBeautify.BackgroundWorker
                             }
                         }
 
-                        var turnOnZalo = tblJoin.Where(x => x.HinhThucGui == 3).Select(x => x);
+                        var turnOnZalo = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Zalo).Select(x => x);
                         foreach (var item in turnOnZalo)
                         {
-                            inforCommon.NoiDungTinNhan = item.NoiDungTin;
-                            await SendSMS(item.IdLoaiTin, param, inforCommon);
+                            if (!string.IsNullOrEmpty(item.NoiDungTin))
+                            {
+                                inforCommon.NoiDungTinNhan = item.NoiDungTin;
+                                //await SendSMS(item.IdLoaiTin, param, inforCommon); // todo
+                            }
                         }
 
-                        var turnOnEmail = tblJoin.Where(x => x.HinhThucGui == 2).Select(x => x);
+                        var turnOnEmail = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Gmail).Select(x => x);
                         foreach (var item in turnOnEmail)
                         {
                             if (!string.IsNullOrEmpty(item.NoiDungTin))
@@ -185,10 +188,11 @@ namespace BanHangBeautify.BackgroundWorker
             return ss;
         }
 
-        protected async Task SendSMS(byte? idLoaiTin, CommonClass.ParamSearch paramSearch, InforAutoWorker inforCommon)
+        protected async Task SendSMS(byte? idLoaiTin, ParamSearchSMS paramSearch, InforAutoWorker inforCommon)
         {
             try
             {
+                paramSearch.HinhThucGuiTins = new List<byte> { ConstSMS.HinhThucGuiTin.SMS };
                 var data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
                 if (data.TotalCount > 0)
                 {
@@ -224,6 +228,7 @@ namespace BanHangBeautify.BackgroundWorker
                             ThoiGianGui = DateTime.Now,
                             CreationTime = DateTime.Now,
                             IsDeleted = false,
+                            HinhThucGui = ConstSMS.HinhThucGuiTin.SMS,
                         };
                         await _hethongSMS.InsertAsync(hethongSMS);
 
@@ -249,10 +254,11 @@ namespace BanHangBeautify.BackgroundWorker
 
             }
         }
-        protected async Task SendEmail(byte? idLoaiTin, CommonClass.ParamSearch paramSearch, InforAutoWorker inforCommon)
+        protected async Task SendEmail(byte? idLoaiTin, ParamSearchSMS paramSearch, InforAutoWorker inforCommon)
         {
             try
             {
+                paramSearch.HinhThucGuiTins = new List<byte> { ConstSMS.HinhThucGuiTin.Gmail };
                 var data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
                 if (data.TotalCount > 0)
                 {
@@ -264,7 +270,7 @@ namespace BanHangBeautify.BackgroundWorker
 
                         try
                         {
-                            await _emailSender.SendAsync(customer.Email, "Test send email", noidung, true);
+                            await _emailSender.SendAsync(customer.Email, "Test send email", noidung, true);// todo TieuDe email
                             sendStatus = 100;
                         }
                         catch (Exception ex)
@@ -290,6 +296,7 @@ namespace BanHangBeautify.BackgroundWorker
                             ThoiGianGui = DateTime.Now,
                             CreationTime = DateTime.Now,
                             IsDeleted = false,
+                            HinhThucGui = ConstSMS.HinhThucGuiTin.Gmail
                         };
                         await _hethongSMS.InsertAsync(hethongSMS);
 
