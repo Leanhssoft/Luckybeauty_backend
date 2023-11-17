@@ -17,6 +17,7 @@ namespace BanHangBeautify.SMS.Dto
         public byte? IdLoaiTin { set; get; } = 1;
         public double? GiaTienMoiTinNhan { get; set; } = 950;// hiện tại, đang mặc định giá này cho all nhà mạng (nếu sau cần thì thêm data)
         public int? TrangThai { get; set; } = 100;
+        public byte? HinhThucGui { get; set; } = 0;// 1.sms, 2.zalo, 3.gmail
 
         public string STrangThaiGuiTinNhan { set; get; }
         public string LoaiTin { set; get; }

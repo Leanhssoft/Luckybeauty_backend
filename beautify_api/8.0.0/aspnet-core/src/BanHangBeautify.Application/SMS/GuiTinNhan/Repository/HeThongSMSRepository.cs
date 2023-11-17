@@ -48,7 +48,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
 
             using (var dataReader = await command.ExecuteReaderAsync())
             {
-                string[] array = { "Data"};
+                string[] array = { "Data" };
                 var ds = new DataSet();
                 ds.Load(dataReader, LoadOption.OverwriteChanges, array);
 
@@ -96,25 +96,30 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             }
             return new List<CustomerBasicDto>();
         }
-        public async Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1)
+        public async Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(ParamSearchSMS input, int? idLoaiTin = 1)
         {
             if (input == null)
             {
                 return new PagedResultDto<PageKhachHangSMSDto>();
             }
-            string idChiNhanhs = string.Empty, trangThais= string.Empty;
+            string idChiNhanhs = string.Empty, trangThais = string.Empty, hinhThucGui= string.Empty;
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
-            } 
+            }
             if (input.TrangThais != null && input.TrangThais.Count > 0)
             {
                 trangThais = string.Join(",", input.TrangThais);
+            } 
+            if (input.HinhThucGuiTins != null && input.HinhThucGuiTins.Count > 0)
+            {
+                hinhThucGui = string.Join(",", input.HinhThucGuiTins);
             }
             using var command = CreateCommand("spGetListCustomer_byIdLoaiTin");
             command.Parameters.Add(new SqlParameter("@IdLoaiTin", idLoaiTin));
             command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
-            command.Parameters.Add(new SqlParameter("@TrangThais", trangThais ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@TrangThais", trangThais));
+            command.Parameters.Add(new SqlParameter("@HinhThucGuiTins", hinhThucGui));
             command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));

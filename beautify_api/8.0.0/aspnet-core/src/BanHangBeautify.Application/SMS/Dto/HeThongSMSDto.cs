@@ -1,5 +1,7 @@
-﻿using BanHangBeautify.KhachHang.KhachHang.Dto;
+﻿using BanHangBeautify.Configuration.Common;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
 using System;
+using System.Collections.Generic;
 
 namespace BanHangBeautify.SMS.Dto
 {
@@ -14,4 +16,10 @@ namespace BanHangBeautify.SMS.Dto
         public string ThoiGianHen { set; get; } // từ HH:mm - HH:mm
         public string STrangThaiGuiTinNhan { get; set; }
     }
+
+    public class ParamSearchSMS : CommonClass.ParamSearch
+    {
+        public List<byte> HinhThucGuiTins { get; set; }
+    }
+
 }

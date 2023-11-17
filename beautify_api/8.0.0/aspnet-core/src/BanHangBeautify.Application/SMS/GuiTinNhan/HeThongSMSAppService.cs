@@ -92,7 +92,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
         }
 
         [HttpPost]
-        public async Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
+        public async Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(ParamSearchSMS input, int? idLoaiTin = 1)
         {
             try
             {
@@ -154,7 +154,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
         }
 
         [HttpPost]
-        public async Task<FileDto> ExportToExcel_DanhSachKhachHang_SMS(ParamSearch input, int? idLoaiTin = 1)
+        public async Task<FileDto> ExportToExcel_DanhSachKhachHang_SMS(ParamSearchSMS input, int? idLoaiTin = 1)
         {
             var data = await _repoSMS.GetListCustomer_byIdLoaiTin(input, idLoaiTin);
             var dataExcel = ObjectMapper.Map<List<PageKhachHangSMSDto>>(data.Items);
