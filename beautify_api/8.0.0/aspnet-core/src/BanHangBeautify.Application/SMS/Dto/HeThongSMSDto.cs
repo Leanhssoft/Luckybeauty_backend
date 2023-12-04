@@ -17,6 +17,11 @@ namespace BanHangBeautify.SMS.Dto
         public string STrangThaiGuiTinNhan { get; set; }
     }
 
+    public class CustomerWithZOA : CustomerBasicDto
+    {
+        public string ZOAUserId { get; set; }
+    }
+
     public class ParamSearchSMS : CommonClass.ParamSearch
     {
         public List<byte> HinhThucGuiTins { get; set; }
