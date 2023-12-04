@@ -5,6 +5,7 @@ using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Threading.BackgroundWorkers;
 using Asd.AbpZeroTemplate.DashboardCustomization.Definitions;
+using BanHangBeautify.AppWebhook;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.BackgroundWorker;
 
@@ -21,6 +22,7 @@ namespace BanHangBeautify
             Configuration.Authorization.Providers.Add<SPAAuthorizationProvider>();
             Configuration.ReplaceService<IMailKitSmtpBuilder, SPAMailKitSmtpBuilder>();
             IocManager.Register<DashboardConfiguration>();
+            Configuration.Webhooks.Providers.Add<ZaloHookProvider>();
         }
 
         public override async void Initialize()
