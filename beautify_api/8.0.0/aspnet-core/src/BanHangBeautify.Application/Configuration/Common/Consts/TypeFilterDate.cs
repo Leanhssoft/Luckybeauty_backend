@@ -24,4 +24,14 @@ namespace BanHangBeautify.Configuration.Common.Consts
         public const string TUY_CHON= "TUY_CHON";
         public const string TAT_CA= "TAT_CA";
     }
+
+    public class LoaiThoiGian
+    {
+        public const byte SECOND = 1;
+        public const byte MiNUTE = 2;
+        public const byte HOUR = 3;
+        public const byte DAY = 4;
+        public const byte MONTH = 5;
+        public const byte YEAR = 6;
+    }
 }
