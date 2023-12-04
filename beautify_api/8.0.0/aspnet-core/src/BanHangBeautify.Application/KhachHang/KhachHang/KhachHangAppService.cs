@@ -76,14 +76,14 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<KhachHangDto> CreateKhachHang(CreateOrEditKhachHangDto dto)
         {
             KhachHangDto result = new KhachHangDto();
-            
-            
+
+
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.Id = Guid.NewGuid();
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
-                if ((checkMa.Count + 1).ToString().Length>=3)
+                if ((checkMa.Count + 1).ToString().Length >= 3)
                 {
                     khachHang.MaKhachHang = "KH" + (checkMa.Count + 1).ToString();
                 }
@@ -95,7 +95,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 {
                     khachHang.MaKhachHang = "KH00" + (checkMa.Count + 1).ToString();
                 }
-                
+
             }
             khachHang.CreationTime = DateTime.Now;
             khachHang.GioiTinhNam = dto.GioiTinh;
@@ -230,7 +230,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         public async Task<KhachHangThongTinTongHopDto> ThongTinKhachHang(Guid id)
         {
             KhachHangThongTinTongHopDto result = new KhachHangThongTinTongHopDto();
-            var khachHang =await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            var khachHang = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (khachHang != null)
             {
                 var tongSoCuocHen = _bookingRepository.GetAll().Where(x => x.IdKhachHang == id).Count();
@@ -244,7 +244,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                     HoatDong = "Tạo mới khách hàng",
                     ThoiGian = khachHang.CreationTime
                 });
-                var bookings = _bookingRepository.GetAllList(x=>x.IdKhachHang==id).ToList();
+                var bookings = _bookingRepository.GetAllList(x => x.IdKhachHang == id).ToList();
                 foreach (var item in bookings)
                 {
                     HoatDongKhachHang rdo = new HoatDongKhachHang();
@@ -256,7 +256,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 foreach (var item in hoaDons)
                 {
                     HoatDongKhachHang huyHoaDon = new HoatDongKhachHang();
-                    if (item.TrangThai==0)
+                    if (item.TrangThai == 0)
                     {
                         huyHoaDon.ThoiGian = item.DeletionTime ?? item.CreationTime;
                         huyHoaDon.HoatDong = "Hủy hóa đơn " + item.MaHoaDon;
@@ -280,19 +280,19 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 result.TongChiTieu = tongChiTieu ?? 0;
                 result.HoatDongs = hoatDongs.OrderByDescending(x => x.ThoiGian).ToList();
             }
-            return result; 
+            return result;
         }
         public async Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, PagedRequestDto input)
         {
             int tenantId = AbpSession.TenantId ?? 1;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            return await _customerRepo.LichSuDatLich(idKhachHang, tenantId,input);
+            return await _customerRepo.LichSuDatLich(idKhachHang, tenantId, input);
         }
-        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang,PagedRequestDto input)
+        public async Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang, PagedRequestDto input)
         {
             int tenantId = AbpSession.TenantId ?? 1;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            return await _customerRepo.LichSuGiaoDich(idKhachHang, tenantId,input);
+            return await _customerRepo.LichSuGiaoDich(idKhachHang, tenantId, input);
         }
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input)
         {
@@ -409,6 +409,22 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
             return false;
         }
+        /// <summary>
+        /// dùng cho đăng ký thành viên ZOA
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns>retuen IdKhachHang</returns>
+        [HttpGet]
+        public async Task<List<Guid>> GetListCustomerId_byPhone(string phone)
+        {
+
+            var lst = await _repository.GetAllListAsync(x => x.SoDienThoai.Trim() == phone.Trim().ToUpper());
+            if (lst.Count > 0)
+            {
+                return lst.Select(x=>x.Id).ToList();
+            }
+            return null;
+        }
         [AbpAuthorize(PermissionNames.Pages_KhachHang_Export)]
         public async Task<FileDto> ExportDanhSach(PagedKhachHangResultRequestDto input)
         {
@@ -428,7 +444,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             input.MaxResultCount = int.MaxValue;
             var data = await Search(input);
             List<KhachHangView> model = new List<KhachHangView>();
-            model = (List<KhachHangView>)data.Items.Where(x=>IdKhachHangs.Contains(x.Id)).ToList();
+            model = (List<KhachHangView>)data.Items.Where(x => IdKhachHangs.Contains(x.Id)).ToList();
             return _khachHangExcelExporter.ExportDanhSachKhachHang(model);
         }
 
