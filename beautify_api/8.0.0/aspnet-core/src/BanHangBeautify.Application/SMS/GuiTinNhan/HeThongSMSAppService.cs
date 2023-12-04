@@ -79,7 +79,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             return await _repoSMS.GetListSMS(input);
         }
         [HttpPost]
-        public async Task<List<CustomerBasicDto>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
+        public async Task<List<CustomerWithZOA>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             }
             catch (Exception)
             {
-                return new List<CustomerBasicDto>();
+                return new List<CustomerWithZOA>();
             }
         }
 

@@ -63,11 +63,11 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             }
             return new PagedResultDto<CreateOrEditHeThongSMSDto>();
         }
-        public async Task<List<CustomerBasicDto>> JqAutoCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1)
+        public async Task<List<CustomerWithZOA>> JqAutoCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1)
         {
             if (input == null)
             {
-                return new List<CustomerBasicDto>();
+                return new List<CustomerWithZOA>();
             }
             string idChiNhanhs = string.Empty;
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
@@ -91,10 +91,10 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
 
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    return ObjectHelper.FillCollection<CustomerBasicDto>(ds.Tables[0]);
+                    return ObjectHelper.FillCollection<CustomerWithZOA>(ds.Tables[0]);
                 }
             }
-            return new List<CustomerBasicDto>();
+            return new List<CustomerWithZOA>();
         }
         public async Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(ParamSearchSMS input, int? idLoaiTin = 1)
         {
