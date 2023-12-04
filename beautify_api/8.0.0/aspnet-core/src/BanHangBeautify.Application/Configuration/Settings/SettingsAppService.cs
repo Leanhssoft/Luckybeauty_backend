@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Configuration.Settings
 {
     [AbpAuthorize]
-    public class SettingsAppService: SPAAppServiceBase, ISettings
+    public class SettingsAppService: SPAAppServiceBase
     {
         private SettingManager _settingManager;
         public SettingsAppService(SettingManager settingManager)
