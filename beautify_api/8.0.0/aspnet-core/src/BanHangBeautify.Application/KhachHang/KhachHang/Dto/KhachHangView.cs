@@ -19,5 +19,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public float? TongTichDiem { get; set; }
         public int? SoLanCheckIn { get; set; }
         public int? TrangThaiCheckIn { get; set; }
+        public string ZOAUserId { get; set; }
     }
 }
