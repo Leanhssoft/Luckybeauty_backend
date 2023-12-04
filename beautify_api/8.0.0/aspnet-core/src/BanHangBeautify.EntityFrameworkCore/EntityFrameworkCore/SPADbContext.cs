@@ -60,6 +60,10 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<SMS_LichSuNap_ChuyenTien> SMS_LichSuNap_ChuyenTien { get; set; }
         public DbSet<SMS_NhatKy_GuiTin> SMS_NhatKy_GuiTin { get; set; }
         #endregion
+        #region Zalo
+        public DbSet<ZaloAuthorization> ZaloAuthorization { get; set; }
+        public DbSet<Zalo_KhachHangThanhVien> Zalo_KhachHangThanhVien { get; set; }
+        #endregion
 
         #region Nhân viên
         public DbSet<NS_NhanVien> NS_NhanVien { set; get; }
