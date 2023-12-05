@@ -21,6 +21,7 @@ using Abp.Net.Mail;
 using BanHangBeautify.Configuration.Dto;
 using Abp.Configuration;
 using NPOI.XWPF.UserModel;
+using Abp.Application.Services.Dto;
 
 namespace BanHangBeautify.BackgroundWorker
 {
@@ -140,8 +141,8 @@ namespace BanHangBeautify.BackgroundWorker
                         {
                             inforCommon.BrandNameFirst = brandName_ofTenant.FirstOrDefault().Brandname;
 
-                            var sevenOclock = DateTime.Now.Hour;
-                            var zeroMinute = DateTime.Now.Minute;
+                            var oclock = DateTime.Now.Hour;
+                            var minutes = DateTime.Now.Minute;
 
                             var turnOnSMS = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.SMS).Select(x => x);
                             foreach (var item in turnOnSMS)
@@ -153,14 +154,14 @@ namespace BanHangBeautify.BackgroundWorker
                                     {
                                         case ConstSMS.LoaiTin.SinhNhat:
                                             {
-                                                if (sevenOclock == 7 && zeroMinute == 0)
+                                                if (oclock > 7)
                                                 {
-                                                    // tin sinhnhat: chi gui luc 7h sang
+                                                    // tin sinhnhat: chi gui từ 7h sáng
                                                     await SendSMS(item.IdLoaiTin, param, inforCommon);
                                                 }
                                             }
                                             break;
-                                        case ConstSMS.LoaiTin.LichHen:// gui truoc ...
+                                        case ConstSMS.LoaiTin.LichHen:// gui truoc ... todo
                                             {
                                                 float? totalTime = 0;
                                                 switch (item.LoaiThoiGian)
@@ -183,7 +184,10 @@ namespace BanHangBeautify.BackgroundWorker
                                                     default:
                                                         break;
                                                 }
-                                                await SendSMS(item.IdLoaiTin, param, inforCommon, totalTime);
+                                                if (oclock > 7)
+                                                {
+                                                    await SendSMS(item.IdLoaiTin, param, inforCommon, totalTime);
+                                                }
                                             }
                                             break;
                                         default:// giaodich: luon gui
@@ -224,12 +228,12 @@ namespace BanHangBeautify.BackgroundWorker
         protected string ReplaceContent(PageKhachHangSMSDto cutomer, string noiDungTin)
         {
             var ss = noiDungTin.Replace("{TenKhachHang}", cutomer.TenKhachHang);
-            _ = noiDungTin.Replace("{NgaySinh}", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
-            _ = noiDungTin.Replace("{BookingDate}", cutomer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
-            _ = noiDungTin.Replace("{ThoiGianHen}", cutomer.ThoiGianHen);
-            _ = noiDungTin.Replace("{TenHangHoa}", cutomer.TenHangHoa);// dichvuhen
-            _ = noiDungTin.Replace("{MaGiaoDich}", cutomer.MaHoaDon);
-            _ = noiDungTin.Replace("{NgayGiaoDich}", cutomer.NgayLapHoaDon?.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
+            ss = ss.Replace("{NgaySinh}", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            ss = ss.Replace("{BookingDate}", cutomer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            ss = ss.Replace("{ThoiGianHen}", cutomer.ThoiGianHen);
+            ss = ss.Replace("{TenHangHoa}", cutomer.TenHangHoa);// dichvuhen
+            ss = ss.Replace("{MaGiaoDich}", cutomer.MaHoaDon);
+            ss = ss.Replace("{NgayGiaoDich}", cutomer.NgayLapHoaDon?.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
             return ss;
         }
 
@@ -238,8 +242,8 @@ namespace BanHangBeautify.BackgroundWorker
             try
             {
                 paramSearch.HinhThucGuiTins = new List<byte> { ConstSMS.HinhThucGuiTin.SMS };
-                paramSearch.FromDate = paramSearch.FromDate?.AddMicroseconds((double)totalTime);
-                var data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
+                PagedResultDto<PageKhachHangSMSDto> data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
+                // Nếu gửi trước: check start time ... todo
                 if (data.TotalCount > 0)
                 {
                     var lstCustomer = data.Items;
