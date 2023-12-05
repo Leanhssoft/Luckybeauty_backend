@@ -13,6 +13,7 @@ namespace BanHangBeautify.SMS.Dto
         public DateTime? NgayLapHoaDon { set; get; } = null;
         public string TenHangHoa { get; set; }
         public DateTime? BookingDate { set; get; } = null;
+        public DateTime? StartTime { set; get; } = null;
         public string ThoiGianHen { set; get; } // từ HH:mm - HH:mm
         public string STrangThaiGuiTinNhan { get; set; }
     }
