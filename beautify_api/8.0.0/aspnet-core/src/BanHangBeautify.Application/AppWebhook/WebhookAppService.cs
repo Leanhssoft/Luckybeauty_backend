@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppWebhook
 {
-    public class WebhookAppServie : SPAAppServiceBase
+    public class WebhookAppService : SPAAppServiceBase
     {
         private readonly IWebhookSubscriptionManager _webHookSubscriptionManager;
 
@@ -22,7 +22,7 @@ namespace BanHangBeautify.AppWebhook
         private readonly string _zaloAppId;
         private readonly string _zaloAppSecret;
 
-        public WebhookAppServie(IWebhookSubscriptionManager webHookSubscriptionManager, HttpContext http, IConfiguration config)
+        public WebhookAppService(IWebhookSubscriptionManager webHookSubscriptionManager, HttpContext http, IConfiguration config)
         {
             _webHookSubscriptionManager = webHookSubscriptionManager;
             _http = http;
@@ -36,16 +36,15 @@ namespace BanHangBeautify.AppWebhook
             var webhookSubscription = new WebhookSubscription()
             {
                 TenantId = AbpSession.TenantId,
-                WebhookUri = "http://localhost:44311/ReciveMessageFromUser",
+                WebhookUri = "http://localhost:44311/api/services/app/Webhook/RecieveMessageFromUser",
                 Webhooks = new List<string>()
          {
-            AppWebHookNames.ZOA_UserSendMessage, // ds các webhook có cùng hông tin nhận, gửi
+            AppWebHookNames.ZOA_UserSendMessage, // ds các webhook có cùng thông tin nhận, gửi
            AppWebHookNames.ZOA_UserRecieveMessage
          },
                 Headers = new Dictionary<string, string>()
          {
-             { "appId", _zaloAppId },
-             { "OAsecretKey", _zaloAppSecret }
+             { "Content-Type", "application/json" },
          }
             };
             await _webHookSubscriptionManager.AddOrUpdateSubscriptionAsync(webhookSubscription);
@@ -53,7 +52,7 @@ namespace BanHangBeautify.AppWebhook
         }
 
         [HttpPost]
-        public async Task ReciveMessageFromUser()
+        public async Task RecieveMessageFromUser()
         {
             var webHookSecret = await ZaloHookSubscription();
             using StreamReader reader = new(_http.Request.Body, Encoding.UTF8);
