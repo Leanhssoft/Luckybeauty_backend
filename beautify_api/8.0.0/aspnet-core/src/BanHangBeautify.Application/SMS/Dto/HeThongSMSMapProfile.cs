@@ -14,6 +14,7 @@ namespace BanHangBeautify.SMS.Dto
             CreateMap<SMS_Template, MauTinSMSDto>().ReverseMap();
             CreateMap<SMS_CaiDat_NhacNho, CaiDatNhacNhoDto>().ReverseMap();
             CreateMap<CaiDat_NhacNho_ChiTiet, CaiDatNhacNhoChiTietDto>().ReverseMap();
+            CreateMap<SMS_NhatKy_GuiTin, NhatKyGuiTinSMSDto>().ReverseMap();
         }
     }
 }
