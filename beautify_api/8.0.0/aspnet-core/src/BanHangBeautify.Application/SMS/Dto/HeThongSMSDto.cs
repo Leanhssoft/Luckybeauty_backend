@@ -16,6 +16,7 @@ namespace BanHangBeautify.SMS.Dto
         public DateTime? StartTime { set; get; } = null;
         public string ThoiGianHen { set; get; } // từ HH:mm - HH:mm
         public string STrangThaiGuiTinNhan { get; set; }
+        public int? TrangThai { get; set; }// used to bind background color
     }
 
     public class CustomerWithZOA : CustomerBasicDto
