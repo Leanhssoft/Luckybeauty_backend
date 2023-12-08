@@ -18,6 +18,7 @@ using static BanHangBeautify.Configuration.Common.CommonClass;
 using BanHangBeautify.Storage;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using System.Globalization;
+using BanHangBeautify.SMS.ESMS;
 
 namespace BanHangBeautify.SMS.GuiTinNhan
 {
@@ -25,14 +26,16 @@ namespace BanHangBeautify.SMS.GuiTinNhan
     public class HeThongSMSAppService : SPAAppServiceBase
     {
         private readonly IRepository<HeThong_SMS, Guid> _hethongSMS;
-        public readonly IHeThongSMSRepository _repoSMS;
+        private readonly IHeThongSMSRepository _repoSMS;
         private readonly IExcelBase _excelBase;
+        private readonly IESMS _eSMS;
 
-        public HeThongSMSAppService(IRepository<HeThong_SMS, Guid> repository, IHeThongSMSRepository repoSMS, IExcelBase excelBase)
+        public HeThongSMSAppService(IRepository<HeThong_SMS, Guid> repository, IHeThongSMSRepository repoSMS, IExcelBase excelBase, IESMS eSMS)
         {
             _hethongSMS = repository;
             _repoSMS = repoSMS;
             _excelBase = excelBase;
+            _eSMS = eSMS;
         }
         [HttpPost]
         public async Task<CreateOrEditHeThongSMSDto> Insert_HeThongSMS(CreateOrEditHeThongSMSDto input)
@@ -48,6 +51,70 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             await _hethongSMS.InsertAsync(data);
             CreateOrEditHeThongSMSDto result = ObjectMapper.Map<CreateOrEditHeThongSMSDto>(data);
             return result;
+        }
+
+        [HttpPost]
+        public async Task<CreateOrEditHeThongSMSDto> Update_HeThongSMS(CreateOrEditHeThongSMSDto input)
+        {
+            HeThong_SMS data = _hethongSMS.FirstOrDefault(input.Id);
+            if (data == null) return null;
+            data.ThoiGianGui = DateTime.Now;
+            data.LastModificationTime = DateTime.Now;
+            data.LastModifierUserId = AbpSession.UserId;
+            data.IdNguoiGui = AbpSession.UserId;
+            data.SoTinGui = input.SoTinGui ?? 0;
+            data.IdKhachHang = input.IdKhachHang;
+            data.IdHoaDon = input.IdHoaDon;
+            data.IdTinNhan = input.IdTinNhan;
+            data.SoDienThoai = input.SoDienThoai;
+            data.NoiDungTin = input.NoiDungTin;
+            data.IdLoaiTin = (byte)input.IdLoaiTin;
+            data.TrangThai = input.TrangThai;
+            data.GiaTienMoiTinNhan = input.GiaTienMoiTinNhan;
+            data.HinhThucGui = input.HinhThucGui;
+            await _hethongSMS.UpdateAsync(data);
+            CreateOrEditHeThongSMSDto result = ObjectMapper.Map<CreateOrEditHeThongSMSDto>(data);
+            return result;
+        }
+        [HttpPost]
+        public async Task<int> GuiLai_TinNhan_ThatBai(List<Guid> listID, string brandname)
+        {
+            try
+            {
+                int countSuccess = 0;
+                if (string.IsNullOrEmpty(brandname))
+                {
+                    return 0;
+                }
+
+                List<HeThong_SMS> lst = _hethongSMS.GetAllList(x => listID.Contains(x.Id));
+                foreach (var item in lst)
+                {
+                    ESMSDto eSMSDto = new()
+                    {
+                        Phone = item.SoDienThoai,
+                        Content = item.NoiDungTin,
+                        Brandname = brandname,
+                    };
+                    ResultSMSDto smsResult = await _eSMS.SendSMS_Json(eSMSDto);
+
+                    HeThong_SMS objUp = _hethongSMS.FirstOrDefault(item.Id);
+                    if (objUp != null)
+                    {
+                        objUp.LastModificationTime = DateTime.Now;
+                        objUp.LastModifierUserId = AbpSession.UserId;
+                        objUp.IdTinNhan = smsResult.MessageId;
+                        objUp.TrangThai = smsResult.MessageStatus;
+                        await _hethongSMS.UpdateAsync(objUp);
+                        countSuccess++;
+                    }
+                }
+                return countSuccess;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
         [HttpGet]
         public async Task<CreateOrEditHeThongSMSDto> HeThongSMS_DeleteById(Guid id)
