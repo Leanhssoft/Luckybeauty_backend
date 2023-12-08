@@ -15,6 +15,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -194,14 +195,17 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
                 if (totalSecond > 9000)
                 {
                     var newToken = await GetNewAccessToken_fromRefreshToken(dataReturn.RefreshToken);
-                    if (newToken != null)
+                    if (newToken != null && newToken.access_token != null)
                     {
-                        ZaloAuthorizationDto zaloToken = new ZaloAuthorizationDto
+                        var codeVerifier = GenerateCodeVerifier();
+                        var codeChallenge = GenerateCodeChallenge(codeVerifier);
+                        ZaloAuthorizationDto zaloToken = new()
                         {
                             AccessToken = newToken.access_token,
                             RefreshToken = newToken.access_token,
                             ExpiresToken = newToken.expires_in,
-                            CodeVerifier = "asdsde"// todo
+                            CodeVerifier = codeVerifier,
+                            CodeChallenge = codeChallenge,
                         };
                         var data = Insert(zaloToken);
                         return data;
@@ -254,6 +258,63 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
             {
                 Console.WriteLine(ex.ToString());
             }
+        }
+
+
+        static string GenerateCodeVerifier()
+        {
+            // Define the characters that can be used in the code verifier
+            const string allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
+
+            // Set the length of the code verifier (should be between 43 and 128 characters)
+            const int codeVerifierLength = 43;
+
+            // Generate a random code verifier using a cryptographic random number generator
+            byte[] randomBytes = new byte[codeVerifierLength];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
+
+            // Convert the random bytes to characters based on the allowed characters
+            char[] codeVerifier = new char[codeVerifierLength];
+            for (int i = 0; i < codeVerifierLength; i++)
+            {
+                int charIndex = randomBytes[i] % allowedCharacters.Length;
+                codeVerifier[i] = allowedCharacters[charIndex];
+            }
+
+            // Return the generated code verifier as a string
+            return new string(codeVerifier);
+        }
+
+        static string GenerateCodeChallenge(string codeVerifier)
+        {
+            // Convert the code verifier to bytes
+            byte[] codeVerifierBytes = Encoding.ASCII.GetBytes(codeVerifier);
+
+            // Compute the SHA-256 hash of the code verifier
+            byte[] hashBytes = SHA256.HashData(codeVerifierBytes);
+
+            // Encode the hash with Base64
+            string codeChallenge = Convert.ToBase64String(hashBytes);
+
+            // URL encode the Base64 string (replace '+' with '-', '/' with '_')
+            codeChallenge = codeChallenge.Replace("+", "-").Replace("/", "_");
+
+            return codeChallenge;
+        }
+        [HttpGet]
+        public async Task<ZaloAuthorizationDto> CreateCodeVerifier_andCodeChallenge()
+        {
+            var codeVerifier = GenerateCodeVerifier();
+            var codeChallenge = GenerateCodeChallenge(codeVerifier);
+            ZaloAuthorizationDto zaloToken = new()
+            {
+                CodeVerifier = codeVerifier,
+                CodeChallenge = codeChallenge,
+            };
+            return Insert(zaloToken);
         }
     }
 }
