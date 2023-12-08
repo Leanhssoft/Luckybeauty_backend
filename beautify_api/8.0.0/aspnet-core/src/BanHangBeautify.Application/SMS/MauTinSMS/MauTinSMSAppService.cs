@@ -26,7 +26,7 @@ namespace BanHangBeautify.SMS.MauTinSMS
             if (dto == null) { return new MauTinSMSDto(); };
             SMS_Template objNew = ObjectMapper.Map<SMS_Template>(dto);
             objNew.Id = Guid.NewGuid();
-            objNew.TenantId = dto.TenantId;
+            objNew.TenantId = AbpSession.TenantId ?? 1;
             objNew.CreatorUserId = AbpSession.UserId;
             objNew.CreationTime = DateTime.Now;
             _smsMauTin.InsertAsync(objNew);
