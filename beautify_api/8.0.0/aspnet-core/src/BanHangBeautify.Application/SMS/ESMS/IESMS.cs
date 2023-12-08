@@ -12,7 +12,5 @@ namespace BanHangBeautify.SMS.ESMS
     public interface IESMS
     {
         Task<ResultSMSDto> SendSMS_Json(ESMSDto obj);
-        //Task<bool> SenEmail_ToListCustomer(ParamSearch input, byte? idLoaiTin, EmailDto objEmail);
-        //Task<bool> SendSMS_ToListCustomer(ParamSearch input, byte? idLoaiTin, EmailDto objEmail);
     }
 }
