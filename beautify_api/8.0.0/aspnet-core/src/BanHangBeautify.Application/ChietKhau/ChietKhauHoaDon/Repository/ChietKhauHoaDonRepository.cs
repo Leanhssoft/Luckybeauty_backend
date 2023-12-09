@@ -9,6 +9,16 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
+using Abp.Domain.Uow;
+using BanHangBeautify.Entities;
+using BanHangBeautify.EntityFrameworkCore;
+using BanHangBeautify.EntityFrameworkCore.Repositories;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
 {
@@ -38,7 +48,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
                     {
 
                         var data = ObjectHelper.FillCollection<ChietKhauHoaDonItemDto>(ds.Tables[0]);
-                      
+
                         return new PagedResultDto<ChietKhauHoaDonItemDto>()
                         {
                             Items = data,
@@ -52,6 +62,25 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
                 Items = null,
                 TotalCount = 0
             };
+        }
+
+        public async Task<List<ChietKhauHoaDonItemDto>> GetHoaHongNV_theoHoaDon(Guid idChiNhanh, Guid idNhanVien, string loaiChungTu = "1")
+        {
+            // todo loaichungtu
+            var dbContext = GetDbContext();
+            var data = await (from ckhd in dbContext.Set<NS_ChietKhauHoaDon>()
+                              join ct in dbContext.Set<NS_ChietKhauHoaDon_ChiTiet>()
+                              on ckhd.Id equals ct.IdChietKhauHD
+                              where ct.IdNhanVien == idNhanVien
+                              && ckhd.IdChiNhanh == idChiNhanh
+                              select new ChietKhauHoaDonItemDto
+                              {
+                                  IdNhanVien = ct.IdNhanVien,
+                                  GiaTriChietKhau = ckhd.GiaTriChietKhau,
+                                  LoaiChietKhau = ckhd.LoaiChietKhau,
+                                  ChungTuApDung = ckhd.ChungTuApDung
+                              }).ToListAsync();
+            return data;
         }
     }
 }
