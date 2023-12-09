@@ -23,7 +23,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
         private readonly IChietKhauHoaDonRepository _chietKhauHoaDonRepository;
         public ChietKhauHoaDonAppService(
             IRepository<NS_ChietKhauHoaDon, Guid> repository,
-            IChietKhauHoaDonRepository chietKhauHoaDonRepository, 
+            IChietKhauHoaDonRepository chietKhauHoaDonRepository,
             IRepository<NS_ChietKhauHoaDon_ChiTiet, Guid> chietKhauHoaDonCTService)
         {
             _repository = repository;
@@ -49,14 +49,14 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                 NS_ChietKhauHoaDon data = new NS_ChietKhauHoaDon();
                 data = ObjectMapper.Map<NS_ChietKhauHoaDon>(input);
                 data.Id = Guid.NewGuid();
-                data.ChungTuApDung =input.ChungTuApDung;
+                data.ChungTuApDung = input.ChungTuApDung;
                 data.CreationTime = DateTime.Now;
                 data.GhiChu = input.GhiChu;
                 data.CreatorUserId = AbpSession.UserId;
                 data.TenantId = AbpSession.TenantId ?? 1;
                 data.IsDeleted = false;
                 await _repository.InsertAsync(data);
-                if (input.IdNhanViens!=null && input.IdNhanViens.Count>0)
+                if (input.IdNhanViens != null && input.IdNhanViens.Count > 0)
                 {
                     foreach (var item in input.IdNhanViens.Distinct())
                     {
@@ -70,7 +70,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                         ckhd_ct.IsDeleted = false;
                         await _chietKhauHoaDonCTService.InsertAsync(ckhd_ct);
                     }
-                   
+
                 }
                 result.Message = "Thêm mới thành công!";
                 result.Status = "success";
@@ -102,10 +102,10 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                 oldData.LastModificationTime = DateTime.Now;
                 oldData.LastModifierUserId = AbpSession.UserId;
                 await _repository.UpdateAsync(oldData);
-                var checkChietkhauHdCt = _chietKhauHoaDonCTService.GetAll().Where(x => x.IdChietKhauHD == oldData.Id && x.IsDeleted==false).ToList();
+                var checkChietkhauHdCt = _chietKhauHoaDonCTService.GetAll().Where(x => x.IdChietKhauHD == oldData.Id && x.IsDeleted == false).ToList();
                 if (checkChietkhauHdCt != null && checkChietkhauHdCt.Count > 0)
                 {
-                    if (input.IdNhanViens.Distinct().Count()>0)
+                    if (input.IdNhanViens.Distinct().Count() > 0)
                     {
                         foreach (var item in input.IdNhanViens.Distinct())
                         {
@@ -151,16 +151,16 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
                         foreach (var item in checkChietkhauHdCt)
                         {
                             item.IsDeleted = true;
-                            item.DeleterUserId= AbpSession.UserId;
+                            item.DeleterUserId = AbpSession.UserId;
                             item.DeletionTime = DateTime.Now;
                             await _chietKhauHoaDonCTService.UpdateAsync(item);
                         }
                     }
-                   
+
                 }
                 else
                 {
-                    if (input.IdNhanViens.Distinct().Count()>0)
+                    if (input.IdNhanViens.Distinct().Count() > 0)
                     {
                         foreach (var item in input.IdNhanViens.Distinct())
                         {
@@ -217,12 +217,12 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             }
         }
         public async Task<CreateOrEditChietKhauHDDto> GetForEdit(Guid id)
-            {
+        {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
                 var result = ObjectMapper.Map<CreateOrEditChietKhauHDDto>(data);
-                var idNhaniens = _chietKhauHoaDonCTService.GetAll().Where(x => x.IdChietKhauHD == data.Id&& x.IsDeleted==false).Select(x => x.IdNhanVien).ToList();
+                var idNhaniens = _chietKhauHoaDonCTService.GetAll().Where(x => x.IdChietKhauHD == data.Id && x.IsDeleted == false).Select(x => x.IdNhanVien).ToList();
                 result.IdNhanViens = idNhaniens;
                 return result;
 
@@ -234,6 +234,11 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             return await _chietKhauHoaDonRepository.GetAll(input, AbpSession.TenantId ?? 1, idChiNhanh);
+        }
+        [HttpGet]
+        public async Task<List<ChietKhauHoaDonItemDto>> GetHoaHongNV_theoLoaiChungTu(Guid idChiNhanh, Guid idNhanVien, string loaiChungTu = "1")
+        {
+            return await _chietKhauHoaDonRepository.GetHoaHongNV_theoHoaDon(idChiNhanh, idNhanVien, loaiChungTu);
         }
     }
 }
