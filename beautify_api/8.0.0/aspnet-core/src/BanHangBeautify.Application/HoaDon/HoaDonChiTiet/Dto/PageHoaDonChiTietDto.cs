@@ -13,5 +13,6 @@ namespace BanHangBeautify.HoaDon.HoaDonChiTiet.Dto
         public float? SoPhutThucHien { get; set; }
         public int IdLoaiHangHoa { get; set; }
         public string TenLoaiHangHoa { get; set; }
+        public string TenNVThucHiens { get; set; }
     }
 }
