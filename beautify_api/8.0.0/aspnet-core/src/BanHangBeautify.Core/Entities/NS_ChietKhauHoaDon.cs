@@ -12,7 +12,7 @@ namespace BanHangBeautify.Entities
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
         public DM_ChiNhanh DM_ChiNhanh { get; set; }
-        public byte? LoaiChietKhau { get; set; } = 1;
+        public byte? LoaiChietKhau { get; set; } = 1; // 1. Theo % thực thu, 2. Theo % doanh thu, 3. Theo VNĐ
         public double? GiaTriChietKhau { get; set; } = 0;
         [MaxLength(50)]
         public string ChungTuApDung { get; set; }
