@@ -127,9 +127,13 @@ namespace BanHangBeautify.Bookings.Bookings
             var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
             booking.EndTime = booking.StartTime.AddMinutes(dichVu.SoPhutThucHien.Value);
             var bookingService = CreateBookingService(booking.Id, dto.IdDonViQuiDoi);
-            var bookingNhanVien = CreateBookingNhanVien(booking.Id, dto.IdNhanVien);
+            if (dto.IdNhanVien != null && dto.IdNhanVien != Guid.Empty)
+            {
+                var bookingNhanVien = CreateBookingNhanVien(booking.Id, dto.IdNhanVien ?? Guid.Empty);
+                _bookingNhanVienRepository.Insert(bookingNhanVien);
+            }
+
             _repository.Insert(booking);
-            _bookingNhanVienRepository.Insert(bookingNhanVien);
             _bookingServiceRepository.Insert(bookingService);
             var listUserRole = await _userRoleRepository.GetListUser_havePermission(booking.TenantId, booking.IdChiNhanh ?? Guid.Empty, "Pages.Notifications.Booking");
             var listUser = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
@@ -195,16 +199,19 @@ namespace BanHangBeautify.Bookings.Bookings
             findBooking.TrangThai = dto.TrangThai;
             findBooking.LastModificationTime = DateTime.Now;
             findBooking.LastModifierUserId = AbpSession.UserId;
-            var dichVu = await _donViQuiDoiRepository.GetAllIncluding(x=>x.DM_HangHoa).Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
+            var dichVu = await _donViQuiDoiRepository.GetAllIncluding(x => x.DM_HangHoa).Where(x => x.Id == dto.IdDonViQuiDoi).FirstOrDefaultAsync();
             string tenDichVu = "";
             if (dichVu != null && dichVu.DM_HangHoa != null)
             {
                 tenDichVu = dichVu.DM_HangHoa.TenHangHoa;
                 findBooking.EndTime = findBooking.StartTime.AddMinutes(dichVu.DM_HangHoa.SoPhutThucHien ?? 0);
             }
-            
+
             await _repository.UpdateAsync(findBooking);
-            await UpdateBookingNhanVien(dto.Id, dto.IdNhanVien);
+            if (dto.IdNhanVien != null && dto.IdNhanVien != Guid.Empty)
+            {
+                await UpdateBookingNhanVien(dto.Id, dto.IdNhanVien ?? Guid.Empty);
+            }
             await UpdateBookingService(dto.Id, dto.IdDonViQuiDoi);
             var listUserRole = await _userRoleRepository.GetListUser_havePermission(findBooking.TenantId, findBooking.IdChiNhanh ?? Guid.Empty, "Pages.Notifications.Booking");
             var listUser = ObjectMapper.Map<List<UserIdentifier>>(listUserRole);
