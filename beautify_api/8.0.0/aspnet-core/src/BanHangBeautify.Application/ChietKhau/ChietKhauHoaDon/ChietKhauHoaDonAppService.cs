@@ -236,9 +236,9 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon
             return await _chietKhauHoaDonRepository.GetAll(input, AbpSession.TenantId ?? 1, idChiNhanh);
         }
         [HttpGet]
-        public async Task<List<ChietKhauHoaDonItemDto>> GetHoaHongNV_theoLoaiChungTu(Guid idChiNhanh, Guid idNhanVien, string loaiChungTu = "1")
+        public async Task<List<ChietKhauHoaDonItemDto>> GetHoaHongNVienSetup_theoLoaiChungTu(Guid idChiNhanh, Guid idNhanVien, string loaiChungTu = "1")
         {
-            return await _chietKhauHoaDonRepository.GetHoaHongNV_theoHoaDon(idChiNhanh, idNhanVien, loaiChungTu);
+            return await _chietKhauHoaDonRepository.GetHoaHongNVienSetup_theoLoaiChungTu(idChiNhanh, idNhanVien, loaiChungTu);
         }
     }
 }

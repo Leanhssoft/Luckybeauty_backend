@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BanHangBeautify.Data.Entities;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
 {
@@ -64,7 +65,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
             };
         }
 
-        public async Task<List<ChietKhauHoaDonItemDto>> GetHoaHongNV_theoHoaDon(Guid idChiNhanh, Guid idNhanVien, string loaiChungTu = "1")
+        public async Task<List<ChietKhauHoaDonItemDto>> GetHoaHongNVienSetup_theoLoaiChungTu(Guid idChiNhanh, Guid idNhanVien, string loaiChungTu = "1")
         {
             // todo loaichungtu
             var dbContext = GetDbContext();
