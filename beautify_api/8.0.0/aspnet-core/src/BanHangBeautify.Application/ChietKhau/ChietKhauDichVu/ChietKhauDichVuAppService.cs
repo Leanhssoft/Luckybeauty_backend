@@ -46,7 +46,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             ExecuteResultDto result = new ExecuteResultDto();
             try
             {
-                if (input.IdNhanViens!=null && input.IdNhanViens.Count>0)
+                if (input.IdNhanViens != null && input.IdNhanViens.Count > 0)
                 {
                     foreach (var item in input.IdNhanViens)
                     {
@@ -68,8 +68,8 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                     result.Message = "Thêm mới thành công !";
                     result.Status = "success";
                 }
-                
-               
+
+
             }
             catch (Exception ex)
             {
@@ -123,9 +123,10 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                     Message = "Xóa dữ liệu thành công!"
                 };
             }
-            return new ExecuteResultDto() { 
+            return new ExecuteResultDto()
+            {
                 Status = "error",
-                Message= "Có lỗi say ra vui lòng thử lại sau!"
+                Message = "Có lỗi say ra vui lòng thử lại sau!"
             };
         }
         [HttpPost]
@@ -172,10 +173,11 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             result.Items = ObjectMapper.Map<List<ChietKhauDichVuDto>>(lstData);
             return result;
         }
-
-        public async Task<List<CreateOrEditChietKhauDichVuDto>> GetHoaHongNV_theoDichVu(Guid idNhanVien, Guid idDonViQuyDoi)
+        [HttpGet]
+        public async Task<List<CreateOrEditChietKhauDichVuDto>> GetHoaHongNV_theoDichVu(Guid idNhanVien, Guid idDonViQuyDoi, Guid? idChiNhanh = null)
         {
-            List<NS_ChietKhauDichVu> data = await _hoahongDichVu.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdNhanVien == idNhanVien && x.IdDonViQuiDoi == idDonViQuyDoi).ToListAsync();
+            List<NS_ChietKhauDichVu> data = await _hoahongDichVu.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)
+            && x.IdNhanVien == idNhanVien && x.IdDonViQuiDoi == idDonViQuyDoi && x.IdChiNhanh == idChiNhanh).ToListAsync();
             if (data != null)
             {
                 return ObjectMapper.Map<List<CreateOrEditChietKhauDichVuDto>>(data);
