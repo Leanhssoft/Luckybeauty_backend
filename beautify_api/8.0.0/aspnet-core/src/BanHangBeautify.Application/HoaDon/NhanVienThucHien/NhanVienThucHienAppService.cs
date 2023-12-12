@@ -3,9 +3,11 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
 using BanHangBeautify.HoaDon.NhanVienThucHien.Dto;
+using BanHangBeautify.HoaDon.NhanVienThucHien.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -20,9 +22,12 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
     public class NhanVienThucHienAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
-        public NhanVienThucHienAppService(IRepository<BH_NhanVienThucHien, Guid> repository)
+        private readonly INhanVienThucHienRepository _nvthRepository;
+
+        public NhanVienThucHienAppService(IRepository<BH_NhanVienThucHien, Guid> repository, INhanVienThucHienRepository nvthRepository)
         {
             _nvThucHien = repository;
+            _nvthRepository = nvthRepository;
         }
         [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien_Create)]
         public async Task<bool> InsertListNVThucHien_DichVu(List<HoaDonChiTietDto> lstCTHD)
@@ -147,6 +152,96 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien
             lstData = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<NhanVienThucHienDto>>(lstData);
             return result;
+        }
+        [HttpGet]
+        public async Task<List<CreateOrEditNhanVienThucHienDto>> GetNhanVienThucHien_byIdHoaDon(Guid idHoaDon, Guid? idQuyHoaDon = null)
+        {
+            return await _nvthRepository.GetNhanVienThucHien_byIdHoaDon(idHoaDon, idQuyHoaDon);
+        }
+        [HttpGet]
+        public async Task<List<CreateOrEditNhanVienThucHienDto>> GetNhanVienThucHien_byIdHoaDonChiTiet(Guid idHoaDonChiTiet)
+        {
+            return await _nvthRepository.GetNhanVienThucHien_byIdHoaDonChiTiet(idHoaDonChiTiet);
+        }
+        /// <summary>
+        /// update all nvth by idHoaDon
+        /// </summary>
+        /// <param name="idHoaDon"></param>
+        /// <param name="lstNV"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<bool> UpdateNhanVienThucHienn_byIdHoaDon(Guid idHoaDon, List<CreateOrEditNhanVienThucHienDto> lstNV = null)
+        {
+            var lstNVTH = await _nvThucHien.GetAllListAsync(x => x.IdHoaDon == idHoaDon);
+            if (_nvThucHien != null && _nvThucHien.Count() > 0)
+            {
+                lstNVTH.ToList().ForEach(x => { x.IsDeleted = true; x.DeletionTime = DateTime.Now; x.DeleterUserId = AbpSession.UserId; });
+            }
+            return await _nvthRepository.UpdateNhanVienThucHien_byIdHoaDon(AbpSession.TenantId, idHoaDon, lstNV);
+        }
+        /// <summary>
+        /// only update nvth by IdQuyHoaDon (theo thucthu)
+        /// </summary>
+        /// <param name="idHoaDon"></param>
+        /// <param name="idQuyHoaDon"></param>
+        /// <param name="lstNV"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<bool> UpdateNVThucHien_byIdQuyHoaDon(Guid idHoaDon, Guid idQuyHoaDon, List<CreateOrEditNhanVienThucHienDto> lstNV = null)
+        {
+            try
+            {
+                var lstNVTH = await _nvThucHien.GetAllListAsync(x => x.IdQuyHoaDon == idQuyHoaDon && x.LoaiChietKhau == 1);
+                if (_nvThucHien != null && _nvThucHien.Count() > 0)
+                {
+                    lstNVTH.ToList().ForEach(x => { x.IsDeleted = true; x.DeletionTime = DateTime.Now; x.DeleterUserId = AbpSession.UserId; });
+                }
+                foreach (var nv in lstNV)
+                {
+                    var objNew = ObjectMapper.Map<BH_NhanVienThucHien>(nv);
+                    objNew.Id = Guid.NewGuid();
+                    objNew.TenantId = AbpSession.TenantId ?? 1;
+                    objNew.CreationTime = DateTime.Now;
+                    objNew.IdHoaDon = idHoaDon;
+                    objNew.IdQuyHoaDon = idQuyHoaDon;
+                    objNew.CreatorUserId = AbpSession.UserId;
+                    objNew.IsDeleted = false;
+                    await _nvThucHien.InsertAsync(objNew);
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        [HttpPost]
+        public async Task<bool> UpdateNVThucHien_byIdHoaDonChiTiet(Guid idHoaDonChiTiet, List<CreateOrEditNhanVienThucHienDto> lstNV = null)
+        {
+            try
+            {
+                var lstNVTH = await _nvThucHien.GetAllListAsync(x => x.IdHoaDonChiTiet == idHoaDonChiTiet);
+                if (_nvThucHien != null && _nvThucHien.Count() > 0)
+                {
+                    lstNVTH.ToList().ForEach(x => { x.IsDeleted = true; x.DeletionTime = DateTime.Now; x.DeleterUserId = AbpSession.UserId; });
+                }
+                foreach (var nv in lstNV)
+                {
+                    var objNew = ObjectMapper.Map<BH_NhanVienThucHien>(nv);
+                    objNew.Id = Guid.NewGuid();
+                    objNew.TenantId = AbpSession.TenantId ?? 1;
+                    objNew.CreationTime = DateTime.Now;
+                    objNew.IdHoaDonChiTiet = idHoaDonChiTiet;
+                    objNew.CreatorUserId = AbpSession.UserId;
+                    objNew.IsDeleted = false;
+                    await _nvThucHien.InsertAsync(objNew);
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
