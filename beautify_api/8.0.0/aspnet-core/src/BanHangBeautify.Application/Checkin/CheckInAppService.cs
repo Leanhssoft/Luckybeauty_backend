@@ -36,7 +36,8 @@ namespace BanHangBeautify.Checkin
         {
             if (idCheckIn != null && idCheckIn != Guid.Empty)
             {
-                var lst = await _khCheckIn.GetAllListAsync(x => x.Id != idCheckIn && x.IdKhachHang == idCus && x.TrangThai == 1);
+                var lst = await _khCheckIn.GetAllListAsync(x => x.Id != idCheckIn && x.IdKhachHang == idCus
+                && (x.TrangThai == TrangThaiCheckin.WAITING || x.TrangThai == TrangThaiCheckin.DOING));
                 if (lst.Count > 0)
                 {
                     return true;
@@ -44,7 +45,8 @@ namespace BanHangBeautify.Checkin
             }
             else
             {
-                var lst = await _khCheckIn.GetAllListAsync(x => x.IdKhachHang == idCus && x.TrangThai == 1);
+                var lst = await _khCheckIn.GetAllListAsync(x => x.IdKhachHang == idCus 
+                && (x.TrangThai == TrangThaiCheckin.WAITING || x.TrangThai == TrangThaiCheckin.DOING));
                 if (lst.Count > 0)
                 {
                     return true;
@@ -132,8 +134,8 @@ namespace BanHangBeautify.Checkin
             objNew.CreatorUserId = AbpSession.UserId;
             objNew.CreationTime = DateTime.Now;
             await _checkInHoaDon.InsertAsync(objNew);
-            var booking =await _bookingRespository.FirstOrDefaultAsync(x => x.Id == dto.IdBooking);
-            if (booking!=null)
+            var booking = await _bookingRespository.FirstOrDefaultAsync(x => x.Id == dto.IdBooking);
+            if (booking != null)
             {
                 booking.TrangThai = TrangThaiBookingConst.CheckIn;
                 await _bookingRespository.UpdateAsync(booking);
@@ -151,10 +153,10 @@ namespace BanHangBeautify.Checkin
         public async Task<bool> Update_IdHoaDon_toCheckInHoaDon(Guid idCheckIn, Guid idHoaDon)
         {
             var listUp = await _checkInHoaDon.GetAll().Where(x => x.IdCheckIn == idCheckIn).ToListAsync();
-            
+
             if (listUp != null && listUp.Count > 0)
             {
-                
+
                 var objUp = listUp.FirstOrDefault();
                 var booking = await _bookingRespository.FirstOrDefaultAsync(x => x.Id == objUp.IdBooking);
                 if (booking != null)
