@@ -1,12 +1,17 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
+using BanHangBeautify.SMS.ESMS;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,15 +25,17 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
     public class ChietKhauDichVuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_ChietKhauDichVu, Guid> _hoahongDichVu;
-        private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
         private readonly IChietKhauDichVuRepository _chietKhauDichVuRepository;
-        public ChietKhauDichVuAppService(IRepository<NS_ChietKhauDichVu, Guid> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository,
-             IChietKhauDichVuRepository chietKhauDichVuRepository
+        private readonly IExcelBase _excelBase;
+
+        public ChietKhauDichVuAppService(IRepository<NS_ChietKhauDichVu, Guid> repository,
+             IChietKhauDichVuRepository chietKhauDichVuRepository,
+             IExcelBase excelBase
         )
         {
             _hoahongDichVu = repository;
-            _hangHoaRepository = hangHoaRepository;
             _chietKhauDichVuRepository = chietKhauDichVuRepository;
+            _excelBase = excelBase;
         }
         [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Create, PermissionNames.Pages_ChietKhauDichVu_Edit)]
         public async Task<ExecuteResultDto> CreateOrEdit(CreateOrEditChietKhauDichVuDto input)
@@ -106,6 +113,41 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             }
             return result;
         }
+
+        [HttpPost]
+        public async Task<bool> UpdateSetup_HoaHongDichVu_ofNhanVien(CreateOrEditChietKhauDichVuDto input)
+        {
+            // delete & add again
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var lstDelete = await _hoahongDichVu.GetAllListAsync(x => input.IdNhanViens.Contains(x.IdNhanVien)
+                  && x.IdDonViQuiDoi == input.IdDonViQuiDoi && x.LoaiChietKhau == input.LoaiChietKhau);
+                if (lstDelete != null)
+                {
+                    _hoahongDichVu.RemoveRange(lstDelete);
+                }
+            }
+            await Create(input);
+            return true;
+        }
+
+
+        [HttpPost]
+        public async Task<int> AddMultiple_ChietKhauDichVu_toMultipleNhanVien(ChietKhauDichVuDto_AddMultiple param)
+        {
+            try
+            {
+                if (param != null)
+                {
+                    return await _chietKhauDichVuRepository.AddMultiple_ChietKhauDichVu_toMultipleNhanVien(param, AbpSession.TenantId ?? 1);
+                }
+                return 0;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Delete)]
         public async Task<ExecuteResultDto> Delete(Guid id)
@@ -128,6 +170,21 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                 Status = "error",
                 Message = "Có lỗi say ra vui lòng thử lại sau!"
             };
+        }
+
+        [HttpGet]
+        public async Task<bool> DeleteSetup_DichVu_ofNhanVien(List<Guid> arrIdNhanVien, List<Guid> arrIdDonViQuyDoi)
+        {
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                // không xóa vĩnh viễn dc?? vì GetAllListAsync luôn enable xóa mềm
+                var lstDelete = await _hoahongDichVu.GetAllListAsync(x => arrIdNhanVien.Contains(x.IdNhanVien) && arrIdDonViQuyDoi.Contains(x.IdDonViQuiDoi));
+                if (lstDelete != null)
+                {
+                    _hoahongDichVu.RemoveRange(lstDelete);
+                }
+            }
+            return true;
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_ChietKhauDichVu_Delete)]
@@ -202,11 +259,45 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             }
             return new List<CreateOrEditChietKhauDichVuDto>();
         }
-        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAccordingByNhanVien(PagedRequestDto input, Guid idNhanVien, Guid idChiNhanh)
+        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAccordingByNhanVien(PagedRequestDto input, Guid? idNhanVien = null, Guid? idChiNhanh = null)
         {
+            if (idNhanVien == null || idNhanVien == Guid.Empty)
+            {
+                idNhanVien = null;
+            }
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             return await _chietKhauDichVuRepository.GetAll(input, AbpSession.TenantId ?? 1, idNhanVien, idChiNhanh);
+        }
+
+        [HttpGet]
+        public async Task<PagedResultDto<ChietKhauDichVuItemDto_TachRiengCot>> GetAllSetup_HoaHongDichVu(PagedRequestDto input, Guid? idNhanVien = null, Guid? idChiNhanh = null)
+        {
+            if (idNhanVien == null || idNhanVien == Guid.Empty)
+            {
+                idNhanVien = null;
+            }
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
+            return await _chietKhauDichVuRepository.GetAllSetup_HoaHongDichVu(input, AbpSession.TenantId ?? 1, idNhanVien, idChiNhanh);
+        }
+
+        [HttpGet]
+        public async Task<FileDto> ExportToExcel_CaiDat_HoaHongDV(PagedRequestDto input, Guid? idNhanVien = null, Guid? idChiNhanh = null)
+        {
+            var data = await GetAllSetup_HoaHongDichVu(input, idNhanVien, idChiNhanh);
+            var dataExcel = ObjectMapper.Map<List<ChietKhauDichVuItemDto_TachRiengCot>>(data.Items);
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.TenNhanVien,
+                x.TenDichVu,
+                x.TenNhomDichVu,
+                x.GiaDichVu,
+                HoaHongThucHien = string.Concat(x.HoaHongThucHien, " ", x.LaPhanTram_HoaHongThucHien == true ? "%" : "đ"),
+                HoaHongTuVan = string.Concat(x.HoaHongTuVan, " ", x.LaPhanTram_HoaHongTuVan == true ? "%" : "đ"),
+            }).ToList();
+
+            return _excelBase.WriteToExcel("CaiDat_HoaHongDichVu", @"CaiDat\CaiDat_HoaHongDV_Template.xlsx", dataNew, 4);
         }
     }
 }
