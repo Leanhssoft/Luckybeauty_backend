@@ -164,7 +164,7 @@ BEGIN
 					SELECT COUNT(*) AS TotalCount FROM #temp;
 
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[AddMultiple_ChietKhauDichVu_toMultipleNhanVien]
+			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[AddMultiple_ChietKhauDichVu_toMultipleNhanVien]
 	@TenantId int = 1,
 	@IdChiNhanh uniqueidentifier = 'C4FBE44F-C26E-499F-9033-AF9C4E3C6FC3',
 	@IdNhanViens varchar(max) ='64A16837-26C6-42FF-B52B-B0FD1F6CB228',
@@ -865,8 +865,7 @@ END");
 				FETCH NEXT @MaxResultCount ROWS ONLY
 				
 END
-");
-			migrationBuilder.Sql(@"");
+");	
         }
 
         /// <inheritdoc />
