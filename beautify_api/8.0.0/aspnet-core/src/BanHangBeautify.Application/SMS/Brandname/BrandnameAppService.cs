@@ -166,6 +166,7 @@ namespace BanHangBeautify.SMS.Brandname
             var dataNew = dataExcel.Select(x => new
             {
                 x.Brandname,
+                x.DisplayTenantName, // ten cua hang dk brandname
                 x.SDTCuaHang,
                 x.NgayKichHoat,
                 x.TongTienNap,

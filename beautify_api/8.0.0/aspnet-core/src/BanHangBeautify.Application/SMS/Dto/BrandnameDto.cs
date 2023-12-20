@@ -18,6 +18,8 @@ namespace BanHangBeautify.SMS.Dto
 
     public class PageBrandnameDto : BrandnameDto
     {
+        public string TenantName { get; set; }
+        public string DisplayTenantName { get; set; }
         public double? TongTienNap { get; set; } = 0;
         public double? DaSuDung { get; set; } = 0;
         public double? ConLai { get; set; } = 0;
