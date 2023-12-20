@@ -21,31 +21,14 @@ namespace BanHangBeautify.AppWebhook
         /// </summary>
         /// <param name="tenantId"></param>
         /// <returns></returns>
-        public async Task NewUserRegisteredAsync(int tenantId, object data)
+        public async Task RecieveMessageFromUser(int tenantId)
         {
-            await _webHookPublisher.PublishAsync(AppWebHookNames.ZOA_UserRecieveMessage,
-                new
-                {
-                    TenantId = tenantId
-                }
-            );
-
-            await _webHookPublisher.PublishAsync(AppWebHookNames.ZOA_UserRecieveMessage, data,
-              headers: new WebhookHeader()
-              {
-                  UseOnlyGivenHeaders = false,
-                  Headers = new Dictionary<string, string>()
-                  {
-                      {"Key1", "Value1"},
-                      {"Key3", "Value3"}
-                  }
-              }
-            );
+            await _webHookPublisher.PublishAsync(ConstAppWebHookNames.ZOA_UserRecieveMessage, tenantId);
         }
 
-        public async Task OnMyDataChanged(int tenantId)
+        public async Task KhachHangGuiTinNhan(int tenantId)
         {
-            await _webHookPublisher.PublishAsync(AppWebHookNames.ZOA_UserSendMessage, tenantId);
+            await _webHookPublisher.PublishAsync(ConstAppWebHookNames.ZOA_UserSendMessage, tenantId);
         }
     }
 }

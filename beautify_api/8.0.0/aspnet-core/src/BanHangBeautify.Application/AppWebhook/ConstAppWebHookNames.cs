@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppWebhook
 {
-    public class AppWebHookNames
+    public class ConstAppWebHookNames
     {
         public const string ZOA_UserSendMessage = "ZOA_UserSendMessage";
         public const string ZOA_UserRecieveMessage = "ZOA_UserReceiveMessage";

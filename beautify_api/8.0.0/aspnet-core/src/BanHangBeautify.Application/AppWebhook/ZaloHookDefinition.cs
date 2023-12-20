@@ -14,12 +14,12 @@ namespace BanHangBeautify.AppWebhook
         public override void SetWebhooks(IWebhookDefinitionContext context)
         {
             context.Manager.Add(new WebhookDefinition(
-                name: AppWebHookNames.ZOA_UserSendMessage,
-                displayName: L(AppWebHookNames.ZOA_UserSendMessage)
+                name: ConstAppWebHookNames.ZOA_UserSendMessage,
+                displayName: L(ConstAppWebHookNames.ZOA_UserSendMessage)
             )); 
             context.Manager.Add(new WebhookDefinition(
-                name: AppWebHookNames.ZOA_UserRecieveMessage,
-                displayName: L(AppWebHookNames.ZOA_UserRecieveMessage)
+                name: ConstAppWebHookNames.ZOA_UserRecieveMessage,
+                displayName: L(ConstAppWebHookNames.ZOA_UserRecieveMessage)
             ));
         }
 
