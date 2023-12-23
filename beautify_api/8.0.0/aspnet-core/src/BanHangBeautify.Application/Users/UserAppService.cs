@@ -16,10 +16,9 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
-using BanHangBeautify.Entities;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
+using BanHangBeautify.Users.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static BanHangBeautify.Configuration.Common.CommonClass;
 
 namespace BanHangBeautify.Users
 {
@@ -41,6 +41,7 @@ namespace BanHangBeautify.Users
         private readonly IAbpSession _abpSession;
         private readonly LogInManager _logInManager;
         private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
+        private readonly IUserRepository _userRepository;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -51,7 +52,9 @@ namespace BanHangBeautify.Users
             IAbpSession abpSession,
             LogInManager logInManager,
             IRepository<UserRole, long> userRoleRepository,
-            IRepository<NS_NhanVien, Guid> nhanVienRepository)
+            IRepository<NS_NhanVien, Guid> nhanVienRepository,
+            IUserRepository userRepository
+            )
             : base(repository)
         {
             _userManager = userManager;
@@ -62,6 +65,7 @@ namespace BanHangBeautify.Users
             _logInManager = logInManager;
             _nhanVienRepository = nhanVienRepository;
             _userRoleRepository = userRoleRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
@@ -391,6 +395,10 @@ namespace BanHangBeautify.Users
             return Repository.GetAllIncluding(x => x.Roles)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.UserName.Contains(input.Keyword) || x.Name.Contains(input.Keyword) || x.EmailAddress.Contains(input.Keyword))
                 .WhereIf(input.IsActive.HasValue, x => x.IsActive == input.IsActive);
+        }
+        public async Task<PagedResultDto<UserProfileDto>> GetAllUser(ParamSearch input)
+        {
+            return await _userRepository.GetAllUser(input);
         }
 
         protected override async Task<User> GetEntityByIdAsync(long id)
