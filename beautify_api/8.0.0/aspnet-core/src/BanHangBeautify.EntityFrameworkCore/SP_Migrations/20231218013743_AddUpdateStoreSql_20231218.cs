@@ -866,6 +866,7 @@ END");
 				
 END
 ");
+			migrationBuilder.Sql(@"");
         }
 
         /// <inheritdoc />
