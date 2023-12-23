@@ -1,10 +1,12 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.SMS.Dto;
+using BanHangBeautify.SMS.LichSuNap_ChuyenTien.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BanHangBeautify.Configuration.Common.CommonClass;
 
 namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
 {
@@ -21,12 +24,25 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<SMS_LichSuNap_ChuyenTien, Guid> _lichSuNapTien;
         private readonly IRepository<HeThong_SMS, Guid> _hethongSMS;
+        private readonly ILichSuNap_ChuyenTienRepository _lichSuNapTienRepository;
 
-        public LichSuNap_ChuyenTienAppService(IUnitOfWorkManager unitOfWorkManager, IRepository<SMS_LichSuNap_ChuyenTien, Guid> lichSuNapTien, IRepository<HeThong_SMS, Guid> hethongSMS)
+        public LichSuNap_ChuyenTienAppService(IUnitOfWorkManager unitOfWorkManager, IRepository<SMS_LichSuNap_ChuyenTien, Guid> lichSuNapTien, IRepository<HeThong_SMS, Guid> hethongSMS,
+           ILichSuNap_ChuyenTienRepository lichSuNapTienRepository)
         {
             _unitOfWorkManager = unitOfWorkManager;
             _lichSuNapTien = lichSuNapTien;
             _hethongSMS = hethongSMS;
+            _lichSuNapTienRepository = lichSuNapTienRepository;
+        }
+        [HttpGet]
+        public async Task<LichSuNap_ChuyenTienDto> GetNhatKyChuyenTien_byId(Guid id)
+        {
+            SMS_LichSuNap_ChuyenTien data = await _lichSuNapTien.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
+            {
+                return ObjectMapper.Map<LichSuNap_ChuyenTienDto>(data);
+            }
+            return null;
         }
 
         [HttpPost]
@@ -53,6 +69,36 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
             {
                 return null;
             }
+        }
+        [HttpPost]
+        public async Task<LichSuNap_ChuyenTienDto> ThemMoiPhieuChuyenTien(LichSuNap_ChuyenTienDto input)
+        {
+            SMS_LichSuNap_ChuyenTien objNew = ObjectMapper.Map<SMS_LichSuNap_ChuyenTien>(input);
+            objNew.Id = Guid.NewGuid(); ;
+            objNew.TenantId = AbpSession.TenantId ?? 1;
+            objNew.CreatorUserId = AbpSession.UserId;
+            objNew.CreationTime = DateTime.Now;
+            await _lichSuNapTien.InsertAsync(objNew);
+            var result = ObjectMapper.Map<LichSuNap_ChuyenTienDto>(objNew);
+            return result;
+
+        }
+        [HttpPost]
+        public async Task<bool> CapNhatPhieuChuyenTien(LichSuNap_ChuyenTienDto input)
+        {
+            SMS_LichSuNap_ChuyenTien objUpdate = await _lichSuNapTien.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (objUpdate != null)
+            {
+                objUpdate.IdNguoiChuyenTien = input.IdNguoiChuyenTien;
+                objUpdate.IdNguoiNhanTien = input.IdNguoiNhanTien;
+                objUpdate.SoTienChuyen_Nhan = input.SoTienChuyen_Nhan;
+                objUpdate.NoiDungChuyen_Nhan = input.NoiDungChuyen_Nhan;
+                objUpdate.LastModifierUserId = AbpSession.UserId;
+                objUpdate.LastModificationTime = DateTime.Now;
+                await _lichSuNapTien.UpdateAsync(objUpdate);
+                return false;
+            }
+            return true;
         }
 
         [HttpPost]
@@ -90,6 +136,27 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
                 return null;
             }
         }
+
+        [HttpGet]
+        public async Task<bool> XoaLichSuNapTien_byId(Guid id)
+        {
+            var data = await _lichSuNapTien.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
+            {
+                data.IsDeleted = true;
+                data.DeleterUserId = AbpSession.UserId;
+                data.DeletionTime = DateTime.Now;
+                await _lichSuNapTien.UpdateAsync(data);
+                return true;
+            }
+            return true;
+        }
+        [HttpGet]
+        public async Task<PagedResultDto<PageNhatKyChuyenTienDto>> GetAllNhatKyChuyenTien(ParamSearch param)
+        {
+            return await _lichSuNapTienRepository.GetAllNhatKyChuyenTien(param);
+        }
+
 
         [HttpGet]
         public async Task<double?> GetBrandnameBalance_byUserLogin(long userId)
