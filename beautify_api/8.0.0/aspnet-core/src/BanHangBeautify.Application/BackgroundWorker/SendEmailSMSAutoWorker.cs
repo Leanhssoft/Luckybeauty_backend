@@ -13,7 +13,6 @@ using BanHangBeautify.SMS.Dto;
 using BanHangBeautify.SMS.GuiTinNhan.Repository;
 using BanHangBeautify.SMS.ESMS;
 using BanHangBeautify.Configuration.Common;
-using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.SMS.Brandname.Repository;
@@ -22,6 +21,7 @@ using BanHangBeautify.Configuration.Dto;
 using Abp.Configuration;
 using NPOI.XWPF.UserModel;
 using Abp.Application.Services.Dto;
+using BanHangBeautify.Consts;
 
 namespace BanHangBeautify.BackgroundWorker
 {

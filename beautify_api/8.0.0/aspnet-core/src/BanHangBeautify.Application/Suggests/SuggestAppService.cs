@@ -1,6 +1,6 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
-using BanHangBeautify.Configuration.Common.Consts;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Suggests.Dto;

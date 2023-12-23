@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.Configuration.Common.Consts
+namespace BanHangBeautify.Consts
 {
     public class HinhThucThanhToanConst
     {

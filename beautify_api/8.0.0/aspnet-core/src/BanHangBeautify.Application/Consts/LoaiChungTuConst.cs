@@ -1,4 +1,4 @@
-﻿namespace BanHangBeautify.Configuration.Common.Consts
+﻿namespace BanHangBeautify.Consts
 {
     public class LoaiChungTuConst
     {

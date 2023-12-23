@@ -5,24 +5,6 @@ using BanHangBeautify.SMS.Dto;
 using System.Net.Http;
 using System.Net;
 using System;
-using MimeKit;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
-using MailKit.Net.Smtp;
-using BanHangBeautify.Configuration.Dto;
-using Asd.AbpZeroTemplate.Configuration;
-using BanHangBeautify.Configuration.Settings;
-using System.Collections.Generic;
-using Abp.Net.Mail;
-using BanHangBeautify.Configuration.Common.Consts;
-using System.Globalization;
-using BanHangBeautify.SMS.GuiTinNhan.Repository;
-using static BanHangBeautify.Configuration.Common.Consts.ConstSMS;
-using static BanHangBeautify.Configuration.Common.CommonClass;
-using Twilio.TwiML.Voice;
-using System.Runtime.CompilerServices;
-using BanHangBeautify.SMS.GuiTinNhan;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace BanHangBeautify.SMS.ESMS
 {

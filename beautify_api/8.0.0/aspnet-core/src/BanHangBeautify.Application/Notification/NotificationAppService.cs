@@ -7,7 +7,7 @@ using Abp.Json;
 using Abp.Notifications;
 using Abp.Runtime.Session;
 using Abp.UI;
-using BanHangBeautify.Configuration.Common.Consts;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Notifications;
 using BanHangBeautify.Notifications.Dto;
 using Microsoft.AspNetCore.Authorization;

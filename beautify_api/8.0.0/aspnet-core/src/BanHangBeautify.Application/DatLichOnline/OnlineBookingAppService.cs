@@ -6,7 +6,7 @@ using Abp.Localization;
 using Abp.Notifications;
 using Abp.Runtime.Security;
 using BanHangBeautify.Configuration.Common;
-using BanHangBeautify.Configuration.Common.Consts;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.Entities;

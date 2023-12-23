@@ -14,8 +14,8 @@ using BanHangBeautify.Net.MimeTypes;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
-using BanHangBeautify.Configuration.Common.Consts;
 using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
+using BanHangBeautify.Consts;
 
 namespace BanHangBeautify.BaoCao.Exporting
 {

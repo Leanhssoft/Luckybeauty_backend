@@ -1,7 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Checkin.Repository;
-using BanHangBeautify.Configuration.Common.Consts;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.AspNetCore.Mvc;
