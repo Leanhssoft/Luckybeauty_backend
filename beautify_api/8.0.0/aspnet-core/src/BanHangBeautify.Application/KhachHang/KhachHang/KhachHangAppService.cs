@@ -23,8 +23,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
-using static BanHangBeautify.Configuration.Common.CommonClass;
-using static BanHangBeautify.Configuration.Common.ObjectHelper;
+using static BanHangBeautify.AppCommon.CommonClass;
+using static BanHangBeautify.AppCommon.ObjectHelper;
 
 
 namespace BanHangBeautify.KhachHang.KhachHang

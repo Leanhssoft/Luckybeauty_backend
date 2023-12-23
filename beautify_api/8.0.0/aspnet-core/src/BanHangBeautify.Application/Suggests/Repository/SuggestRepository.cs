@@ -1,5 +1,5 @@
 ﻿using Abp.EntityFrameworkCore;
-using BanHangBeautify.Configuration.Common;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;

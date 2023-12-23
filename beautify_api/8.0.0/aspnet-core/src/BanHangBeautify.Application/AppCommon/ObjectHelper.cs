@@ -10,9 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using static BanHangBeautify.Configuration.Common.CommonClass;
 
-namespace BanHangBeautify.Configuration.Common
+namespace BanHangBeautify.AppCommon
 {
     public static class ObjectHelper
     {
@@ -40,10 +39,10 @@ namespace BanHangBeautify.Configuration.Common
         /// <param name="indexColumn">Vị trí của cột (1,2,3...)</param>
         /// <param name="fromRow">Đọc từ dòng</param>
         /// <param name="toRow">Đọc đến dòng</param>
-        /// <returns>trả về danh sách bị trùng lặp ExcelErrorDto[] </returns>
-        public static List<ExcelErrorDto> Excel_CheckDuplicateData(ExcelWorksheet worksheet, string colName, int indexColumn, int fromRow, int toRow)
+        /// <returns>trả về danh sách bị trùng lặp CommonClass.ExcelErrorDto[] </returns>
+        public static List<CommonClass.ExcelErrorDto> Excel_CheckDuplicateData(ExcelWorksheet worksheet, string colName, int indexColumn, int fromRow, int toRow)
         {
-            List<ExcelErrorDto> lstErr = new List<ExcelErrorDto>();
+            List<CommonClass.ExcelErrorDto> lstErr = new List<CommonClass.ExcelErrorDto>();
             try
             {
                 var listData = worksheet.Cells[$"{colName}{fromRow}:{colName}{toRow}"]
@@ -58,14 +57,14 @@ namespace BanHangBeautify.Configuration.Common
                         var duplicate = listData.Where(x => x == valCell).Count() > 1;
                         if (duplicate)
                         {
-                            lstErr.Add(new ExcelErrorDto { RowNumber = row, GiaTriDuLieu = valCell });
+                            lstErr.Add(new CommonClass.ExcelErrorDto { RowNumber = row, GiaTriDuLieu = valCell });
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                lstErr.Add(new ExcelErrorDto { RowNumber = 0, GiaTriDuLieu = ex.Message.ToString() });
+                lstErr.Add(new CommonClass.ExcelErrorDto { RowNumber = 0, GiaTriDuLieu = ex.Message.ToString() });
             }
             return lstErr;
         }

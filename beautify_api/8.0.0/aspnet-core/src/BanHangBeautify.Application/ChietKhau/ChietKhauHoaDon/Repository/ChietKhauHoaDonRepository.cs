@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
-using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
@@ -20,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.AppCommon;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
 {

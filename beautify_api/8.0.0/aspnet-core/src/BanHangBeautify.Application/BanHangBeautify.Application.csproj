@@ -26,6 +26,7 @@
   <ItemGroup>
     <Folder Include="Bookings\BookingService\" />
     <Folder Include="Bookings\BookingNhanVien\" />
+    <Folder Include="Configuration\Common\" />
     <Folder Include="DashboardCustomization\Dto\" />
   </ItemGroup>
   <ItemGroup>

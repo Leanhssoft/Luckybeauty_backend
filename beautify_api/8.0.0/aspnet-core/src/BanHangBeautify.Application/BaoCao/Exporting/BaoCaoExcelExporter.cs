@@ -1,5 +1,4 @@
 ﻿using BanHangBeautify.BaoCao.BaoCaoBanHang.Dto;
-using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Storage;
@@ -16,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
 using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
 using BanHangBeautify.Consts;
+using BanHangBeautify.AppCommon;
 
 namespace BanHangBeautify.BaoCao.Exporting
 {

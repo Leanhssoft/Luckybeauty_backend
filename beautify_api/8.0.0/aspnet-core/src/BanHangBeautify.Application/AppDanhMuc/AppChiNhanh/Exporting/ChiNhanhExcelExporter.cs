@@ -1,5 +1,5 @@
-﻿using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
-using BanHangBeautify.Configuration.Common;
+﻿using BanHangBeautify.AppCommon;
+using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Storage;

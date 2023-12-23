@@ -1,7 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
-using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;

@@ -1,4 +1,4 @@
-﻿using BanHangBeautify.Configuration.Common;
+﻿using BanHangBeautify.AppCommon;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using System;
 using System.Collections.Generic;

@@ -26,7 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.Users
 {

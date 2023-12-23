@@ -8,7 +8,7 @@ using OfficeOpenXml.LoadFunctions.Params;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.DataExporting.Excel.EpPlus
 {

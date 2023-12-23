@@ -1,5 +1,5 @@
 ﻿using System;
-using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.Bookings.Bookings.Dto
 {

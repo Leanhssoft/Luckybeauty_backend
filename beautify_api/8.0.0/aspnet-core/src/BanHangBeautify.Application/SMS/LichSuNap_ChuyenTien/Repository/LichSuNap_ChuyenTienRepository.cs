@@ -1,8 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository;
-using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
@@ -14,7 +14,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien.Repository
 {

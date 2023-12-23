@@ -1,7 +1,7 @@
 ﻿using Abp;
 using Abp.Authorization.Users;
 using Abp.EntityFrameworkCore;
-using BanHangBeautify.Configuration.Common;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Users.Dto;

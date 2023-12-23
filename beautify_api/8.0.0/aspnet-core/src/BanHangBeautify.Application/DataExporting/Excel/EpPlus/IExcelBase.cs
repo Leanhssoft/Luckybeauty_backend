@@ -1,6 +1,6 @@
 ﻿using BanHangBeautify.Storage;
 using System.Collections.Generic;
-using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.DataExporting.Excel.EpPlus
 {

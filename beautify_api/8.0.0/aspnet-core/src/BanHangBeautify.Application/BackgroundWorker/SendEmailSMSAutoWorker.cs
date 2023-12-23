@@ -12,7 +12,6 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.SMS.Dto;
 using BanHangBeautify.SMS.GuiTinNhan.Repository;
 using BanHangBeautify.SMS.ESMS;
-using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.SMS.Brandname.Repository;

@@ -5,7 +5,6 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
-using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.SMS.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +13,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BanHangBeautify.SMS.GuiTinNhan.Repository;
-using static BanHangBeautify.Configuration.Common.CommonClass;
+using static BanHangBeautify.AppCommon.CommonClass;
 using BanHangBeautify.Storage;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using System.Globalization;
 using BanHangBeautify.SMS.ESMS;
+using BanHangBeautify.AppCommon;
 
 namespace BanHangBeautify.SMS.GuiTinNhan
 {

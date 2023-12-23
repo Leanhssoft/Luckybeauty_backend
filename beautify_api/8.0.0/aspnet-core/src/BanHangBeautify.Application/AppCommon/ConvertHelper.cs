@@ -5,7 +5,7 @@ using System.Data;
 using System.Globalization;
 using System.Xml;
 
-namespace BanHangBeautify.Configuration.Common
+namespace BanHangBeautify.AppCommon
 {
     public class ConvertHelper
     {

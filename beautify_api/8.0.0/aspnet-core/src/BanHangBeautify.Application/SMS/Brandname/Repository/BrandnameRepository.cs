@@ -13,7 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BanHangBeautify.Configuration.Common;
+using BanHangBeautify.AppCommon;
 
 namespace BanHangBeautify.SMS.Brandname.Repository
 {

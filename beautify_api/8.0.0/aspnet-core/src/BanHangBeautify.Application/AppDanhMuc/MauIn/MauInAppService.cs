@@ -1,7 +1,7 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.AppDanhMuc.MauIn.Dto;
-using BanHangBeautify.Configuration.Common;
 using BanHangBeautify.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
