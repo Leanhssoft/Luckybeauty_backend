@@ -24,13 +24,19 @@ namespace BanHangBeautify.SMS.Brandname.Repository
         {
         }
 
-        public async Task<PagedResultDto<PageBrandnameDto>> GetListBandname(PagedRequestDto input, int? tenantId)
+        public async Task<PagedResultDto<PageBrandnameDto>> GetListBandname(ParamSearchBrandname input, int? tenantId)
         {
             try
             {
+                string trangThais = string.Empty;
+                if (input.TrangThais != null && input.TrangThais.Count > 0)
+                {
+                    trangThais = String.Join(",", input.TrangThais);
+                }
                 using var command = CreateCommand("spGetListBandname");
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
                 command.Parameters.Add(new SqlParameter("@Keyword", input.Keyword ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@TrangThais", trangThais));
                 command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
                 command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
                 command.Parameters.Add(new SqlParameter("@SortBy", input.SortBy));

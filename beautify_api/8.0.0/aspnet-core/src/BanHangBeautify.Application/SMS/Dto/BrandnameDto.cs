@@ -25,4 +25,12 @@ namespace BanHangBeautify.SMS.Dto
         public double? ConLai { get; set; } = 0;
         public string TxtTrangThai { get; set; }
     }
+
+    public class ParamSearchBrandname : PagedRequestDto
+    {
+        /// <summary>
+        /// 0. chua kichhoat, 1.kichhoat
+        /// </summary>
+        public List<byte?> TrangThais { get; set; }
+    }
 }

@@ -64,7 +64,7 @@ namespace BanHangBeautify.SMS.Brandname
             return data;
         }
         [HttpPost]
-        public async Task<PagedResultDto<PageBrandnameDto>> GetListBandname(PagedRequestDto param, int? tenantId = 1)
+        public async Task<PagedResultDto<PageBrandnameDto>> GetListBandname(ParamSearchBrandname param, int? tenantId = 1)
         {
             // Get data from default tenant
             using (_unitOfWorkManager.Current.SetTenantId(1))
@@ -159,7 +159,7 @@ namespace BanHangBeautify.SMS.Brandname
         }
 
         [HttpPost]
-        public async Task<FileDto> ExportToExcel_ListBrandname(PagedRequestDto input)
+        public async Task<FileDto> ExportToExcel_ListBrandname(ParamSearchBrandname input)
         {
             var data = await _repository.GetListBandname(input, AbpSession.TenantId ?? 1);
             var dataExcel = ObjectMapper.Map<List<PageBrandnameDto>>(data.Items);

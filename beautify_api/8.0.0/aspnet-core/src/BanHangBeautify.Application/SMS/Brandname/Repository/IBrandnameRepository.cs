@@ -11,7 +11,7 @@ namespace BanHangBeautify.SMS.Brandname.Repository
 {
     public interface IBrandnameRepository
     {
-        Task<PagedResultDto<PageBrandnameDto>> GetListBandname(PagedRequestDto param, int? tenantId);
+        Task<PagedResultDto<PageBrandnameDto>> GetListBandname(ParamSearchBrandname param, int? tenantId);
         Task<PageBrandnameDto> GetInforBrandname_byId(Guid idBrandname);
     }
 }
