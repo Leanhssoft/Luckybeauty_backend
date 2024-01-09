@@ -50,6 +50,12 @@ namespace BanHangBeautify.SMS.MauTinSMS
                 objUp.TrangThai = dto.TrangThai;
                 objUp.LastModifierUserId = AbpSession.UserId;
                 objUp.LastModificationTime = DateTime.Now;
+                // find all mautin (same idLoaiTin) && reset IsDefault
+                bool isDefaut = objUp.LaMacDinh ?? false;
+                if (isDefaut)
+                {
+                    _smsMauTin.GetAllList(x => x.IdLoaiTin == dto.IdLoaiTin && (x.LaMacDinh ?? false)).ForEach(x => x.LaMacDinh = false);
+                }
                 await _smsMauTin.UpdateAsync(objUp);
                 return string.Empty;
             }
