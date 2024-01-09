@@ -94,7 +94,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
             }
             return new PagedResultDto<ChietKhauDichVuItemDto_TachRiengCot>();
         }
-        public async Task<int> AddMultiple_ChietKhauDichVu_toMultipleNhanVien(ChietKhauDichVuDto_AddMultiple param, int tenantId)
+        public async Task<int> AddMultiple_ChietKhauDichVu_toMultipleNhanVien(ChietKhauDichVuDto_AddMultiple param, int tenantId, long? userId = 1)
         {
             string idNhanViens = string.Empty, idQuyDois = string.Empty;
             if (param.IdNhanViens != null && param.IdNhanViens.Count > 0)
@@ -117,9 +117,42 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
             cmd.Parameters.Add(new SqlParameter("@LoaiChietKhau", param.LoaiChietKhau ?? 1));
             cmd.Parameters.Add(new SqlParameter("@GiaTriChietKhau", param.GiaTri ?? 0));
             cmd.Parameters.Add(new SqlParameter("@LaPhanTram", param.LaPhanTram ?? true));
+            cmd.Parameters.Add(new SqlParameter("@CreatorUserId", userId));
 
             var countOK = await cmd.ExecuteNonQueryAsync();
             return countOK;
+        }
+        public async Task<int> ApplyAll_SetupHoaHongDV(ChietKhauDichVuDto_AddMultiple param, Guid? idNhanVienChosed,
+            byte? loaiApDung = 0, long? userId = 1)
+        {
+            try
+            {
+                string idNhanViens = string.Empty, idQuyDois = string.Empty;
+                if (param.IdNhanViens != null && param.IdNhanViens.Count > 0)
+                {
+                    idNhanViens = string.Join(",", param.IdNhanViens);
+                }
+                if (param.IdDonViQuyDois != null && param.IdDonViQuyDois.Count > 0)
+                {
+                    idQuyDois = string.Join(",", param.IdDonViQuyDois);
+                }
+                using var cmd = CreateCommand("ApplyAll_SetupHoaHongDV");
+                cmd.Parameters.Add(new SqlParameter("@IdNhanVienChosed", idNhanVienChosed ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanViens ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@IdDonViQuyDoi", idQuyDois == string.Empty ? (object)DBNull.Value : idQuyDois));
+                cmd.Parameters.Add(new SqlParameter("@IdNhomHang", param.IdNhomHang ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@LoaiApDung", loaiApDung));
+                cmd.Parameters.Add(new SqlParameter("@LoaiChietKhau", param.LoaiChietKhau ?? 1));
+                cmd.Parameters.Add(new SqlParameter("@GiaTriChietKhau", param.GiaTri ?? 0));
+                cmd.Parameters.Add(new SqlParameter("@LaPhanTram", param.LaPhanTram ?? true));
+                cmd.Parameters.Add(new SqlParameter("@UpdateUserId", userId));
+                var countOK = await cmd.ExecuteNonQueryAsync();
+                return countOK;
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
     }
 }

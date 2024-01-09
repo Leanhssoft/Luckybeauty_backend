@@ -139,11 +139,28 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
             {
                 if (param != null)
                 {
-                    return await _chietKhauDichVuRepository.AddMultiple_ChietKhauDichVu_toMultipleNhanVien(param, AbpSession.TenantId ?? 1);
+                    return await _chietKhauDichVuRepository.AddMultiple_ChietKhauDichVu_toMultipleNhanVien(param, AbpSession.TenantId ?? 1, AbpSession.UserId);
                 }
                 return 0;
             }
             catch (Exception)
+            {
+                return 0;
+            }
+        }
+        [HttpGet]
+        public async Task<int> ApplyAll_SetupHoaHongDV(ChietKhauDichVuDto_AddMultiple param, Guid? idNhanVienChosed,
+            byte? loaiApDung = 0)
+        {
+            try
+            {
+                if (param != null)
+                {
+                    return await _chietKhauDichVuRepository.ApplyAll_SetupHoaHongDV(param, idNhanVienChosed, loaiApDung, AbpSession.UserId);
+                }
+                return 0;
+            }
+            catch (Exception e)
             {
                 return 0;
             }

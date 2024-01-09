@@ -10,6 +10,8 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
         public Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAll(PagedRequestDto input, int tenantId, Guid? idNhanVien= null, Guid? idChiNhanh = null);
         Task<PagedResultDto<ChietKhauDichVuItemDto_TachRiengCot>> GetAllSetup_HoaHongDichVu(PagedRequestDto input, int tenantId,
             Guid? idNhanVien = null, Guid? idChiNhanh = null);
-        Task<int> AddMultiple_ChietKhauDichVu_toMultipleNhanVien(ChietKhauDichVuDto_AddMultiple param, int tenantId);
+        Task<int> AddMultiple_ChietKhauDichVu_toMultipleNhanVien(ChietKhauDichVuDto_AddMultiple param, int tenantId, long? userId);
+        Task<int> ApplyAll_SetupHoaHongDV(ChietKhauDichVuDto_AddMultiple param, Guid? idNhanVienChosed,
+            byte? loaiApDung = 0, long? userId = 1);
     }
 }
