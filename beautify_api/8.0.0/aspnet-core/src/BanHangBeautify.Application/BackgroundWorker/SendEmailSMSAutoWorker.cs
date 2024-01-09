@@ -77,7 +77,7 @@ namespace BanHangBeautify.BackgroundWorker
         {
             using var unitOfWork = _unitOfWorkManager.Begin();
             var tenants = _tenantRepository.GetAllList(t => t.ConnectionString != null && t.ConnectionString != "");
-            var lstBrandname = await _repoBrandname.GetListBandname(new PagedRequestDto { Keyword = string.Empty, SkipCount = 0 }, 1);  // get all brand name at host
+            var lstBrandname = await _repoBrandname.GetListBandname(new ParamSearchBrandname { Keyword = string.Empty, SkipCount = 0 }, 1);  // get all brand name at host
 
             for (int i = 0; i < tenants.Count; i++)
             {
