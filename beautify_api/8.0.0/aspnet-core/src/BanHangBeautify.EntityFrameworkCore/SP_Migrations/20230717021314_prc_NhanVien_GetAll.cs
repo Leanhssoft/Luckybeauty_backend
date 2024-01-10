@@ -1,13 +1,14 @@
-﻿using BanHangBeautify.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BanHangBeautify.SP_Migrations
+#nullable disable
+
+namespace BanHangBeautify.SPMigrations
 {
-    [DbContext(typeof(SPADbContext))]
-    [Migration("prc_NhanVien_GetAll")]
-    public partial class prc_NhanVien_GetAll : Migration
+    /// <inheritdoc />
+    public partial class prcNhanVienGetAll : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"CREATE PROCEDURE prc_nhanVien_getAll

@@ -20,6 +20,7 @@ using BanHangBeautify.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         private readonly IRepository<Setting, long> _settingRepository;
+        private readonly IConfiguration _configuration;
         public TenantAppService(
             IRepository<Tenant, int> repository,
             TenantManager tenantManager,
@@ -48,7 +50,8 @@ namespace BanHangBeautify.MultiTenancy
             IAbpZeroDbMigrator abpZeroDbMigrator,
             IRepository<HT_CongTy, Guid> congTyRepository,
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
-            IRepository<Setting, long> settingRepository
+            IRepository<Setting, long> settingRepository,
+            IConfiguration configuration
             )
             : base(repository)
         {
@@ -61,14 +64,15 @@ namespace BanHangBeautify.MultiTenancy
             _chiNhanhRepository = chiNhanhRepository;
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
             _settingRepository = settingRepository;
+            _configuration = configuration;
         }
         [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
         {
             string dbName = input.TenancyName;
-            string dataSource = "DESKTOP-8D36GBJ";
-            string userId = "sa";
-            string password = "123";
+            string dataSource = _configuration["SqlServer:DataSource"];
+            string userId = _configuration["SqlServer:UserId"];
+            string password = _configuration["SqlServer:Password"];
             string connecStringInServer = $"data source={dataSource};initial catalog={dbName};persist security info=True;user id={userId};password={password};multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
             if (string.IsNullOrEmpty(input.ConnectionString))
             {

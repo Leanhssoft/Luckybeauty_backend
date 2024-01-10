@@ -1,12 +1,12 @@
-﻿using BanHangBeautify.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BanHangBeautify.SP_Migrations
+#nullable disable
+
+namespace BanHangBeautify.SPMigrations
 {
-    [DbContext(typeof(SPADbContext))]
-    [Migration("prc_SuggesNhanVienLamDichVu")]
-    partial class prc_SuggesNhanVienLamDichVu : Migration
+    /// <inheritdoc />
+    public partial class prcSuggesNhanVienLamDichVu : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,6 +36,4 @@ END;");
             migrationBuilder.Sql("DROP PROCEDURE prc_SuggestNhanVienDichVu");
         }
     }
-
-
 }
