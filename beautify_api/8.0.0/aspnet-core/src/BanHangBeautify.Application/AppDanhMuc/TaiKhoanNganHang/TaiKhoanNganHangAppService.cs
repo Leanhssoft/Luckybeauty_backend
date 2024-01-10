@@ -60,7 +60,7 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
                         stringBuilder.Append('D');
                     }
                     else { stringBuilder.Append(c); }
-                    
+
                 }
             }
 
@@ -178,13 +178,13 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<TaiKhoanNganHangDto> result = new PagedResultDto<TaiKhoanNganHangDto>();
-            var lstData = await _dmTaiKhoanNganHang.GetAll().Where(x=>x.IdChiNhanh==input.IdChiNhanh).ToListAsync();
+            var lstData = await _dmTaiKhoanNganHang.GetAll().Where(x => x.IdChiNhanh == input.IdChiNhanh).ToListAsync();
             result.TotalCount = lstData.Count;
             var data = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             List<TaiKhoanNganHangDto> items = new List<TaiKhoanNganHangDto>();
             foreach (var item in data)
             {
-                var tknh =  ObjectMapper.Map<TaiKhoanNganHangDto>(item);
+                var tknh = ObjectMapper.Map<TaiKhoanNganHangDto>(item);
                 using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
                 {
                     var nganHang = _nganHangRepository.FirstOrDefault(x => x.Id == tknh.IdNganHang);
@@ -207,6 +207,11 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
         public async Task<TaiKhoanNganHangDto> GetDefault_TaiKhoanNganHang(Guid? idChiNhanh = null)
         {
             var dataAll = await _repoBankAcc.GetAllBankAccount(idChiNhanh);
+            var accDefault = dataAll.Where(x => x.IsDefault).ToList();
+            if (accDefault.Any())
+            {
+                return accDefault.FirstOrDefault();
+            }
             return dataAll.FirstOrDefault();
         }
     }
