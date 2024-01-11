@@ -175,29 +175,20 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
         }
         public async Task<PagedResultDto<TaiKhoanNganHangDto>> GetAll(PagedRequestTaiKhoanNganHang input)
         {
-            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
+            var txt = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword.Trim().ToLower();
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            PagedResultDto<TaiKhoanNganHangDto> result = new PagedResultDto<TaiKhoanNganHangDto>();
-            var lstData = await _dmTaiKhoanNganHang.GetAll().Where(x => x.IdChiNhanh == input.IdChiNhanh).ToListAsync();
-            result.TotalCount = lstData.Count;
-            var data = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-            List<TaiKhoanNganHangDto> items = new List<TaiKhoanNganHangDto>();
-            foreach (var item in data)
+
+            List<TaiKhoanNganHangDto> lstAll = await _repoBankAcc.GetAllBankAccount(input.IdChiNhanh);
+            List<TaiKhoanNganHangDto> lstData = lstAll.Where(x => x.SoTaiKhoan.ToLower().Contains(txt)
+            || x.TenChuThe.ToLower().Contains(txt)
+            || x.TenNganHang.ToLower().Contains(txt)
+            || x.MaNganHang.ToLower().Contains(txt)).ToList();
+
+            PagedResultDto<TaiKhoanNganHangDto> result = new()
             {
-                var tknh = ObjectMapper.Map<TaiKhoanNganHangDto>(item);
-                using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
-                {
-                    var nganHang = _nganHangRepository.FirstOrDefault(x => x.Id == tknh.IdNganHang);
-                    if (nganHang != null)
-                    {
-                        tknh.TenNganHang = nganHang.TenNganHang;
-                        tknh.MaNganHang = nganHang.MaNganHang;
-                        tknh.LogoNganHang = nganHang.Logo;
-                    }
-                }
-                items.Add(tknh);
-            }
-            result.Items = items;
+                Items = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList(),
+                TotalCount = lstData.Count
+            };
             return result;
         }
         public async Task<List<TaiKhoanNganHangDto>> GetAllBankAccount(Guid? idChiNhanh = null)
