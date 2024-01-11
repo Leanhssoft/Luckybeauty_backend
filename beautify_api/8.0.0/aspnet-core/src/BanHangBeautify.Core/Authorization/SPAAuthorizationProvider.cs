@@ -21,6 +21,7 @@ namespace BanHangBeautify.Authorization
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Create, L("CreateBranch"));
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Edit, L("EditBranch"));
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Delete, L("DeleteBranch"));
+            chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Export, L("ExportBranch"));
 
             //Loại Hàng Hóa
             var loaiHangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa, L("LoaiHangHoa"));

@@ -16,6 +16,7 @@
         public const string Pages_ChiNhanh_Create = "Pages.ChiNhanh.Create";
         public const string Pages_ChiNhanh_Edit = "Pages.ChiNhanh.Edit";
         public const string Pages_ChiNhanh_Delete = "Pages.ChiNhanh.Delete";
+        public const string Pages_ChiNhanh_Export = "Pages.ChiNhanh.Export";
         #region Dịch Vụ
         public const string Pages_DM_HangHoa = "Pages.DM_HangHoa";
         public const string Pages_DM_HangHoa_Create = "Pages.DM_HangHoa.Create";
