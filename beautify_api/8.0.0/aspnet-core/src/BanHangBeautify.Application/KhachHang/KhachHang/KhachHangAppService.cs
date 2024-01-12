@@ -132,14 +132,21 @@ namespace BanHangBeautify.KhachHang.KhachHang
         }
         public async Task<CreateOrEditKhachHangDto> GetKhachHang(Guid id)
         {
-            var KhachHang = await _repository.GetAsync(id);
-            if (KhachHang != null)
+            try
             {
-                var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
-                result.GioiTinh = KhachHang.GioiTinhNam;
-                return result;
+                // GetAsync: exception nếu không tìm thấy
+                var KhachHang = await _repository.GetAsync(id);
+                if (KhachHang != null)
+                {
+                    var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
+                    result.GioiTinh = KhachHang.GioiTinhNam;
+                    return result;
+                }
             }
-
+            catch (Exception ex)
+            {
+                
+            }
             return new CreateOrEditKhachHangDto();
         }
 
