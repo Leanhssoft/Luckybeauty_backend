@@ -32,13 +32,19 @@ namespace BanHangBeautify.Users.Repository
         {
             using (var cmd = CreateCommand("GetAllUser"))
             {
-                cmd.Parameters.Add(new SqlParameter("@TextSearch", param.TextSearch ?? (object)DBNull.Value)); ;
+                string trangThais = string.Empty;
+                if (param.TrangThais != null && param.TrangThais.Count > 0)
+                {
+                    trangThais = string.Join(",", param.TrangThais);
+                }
+                cmd.Parameters.Add(new SqlParameter("@TextSearch", param.TextSearch ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@IsActive", trangThais));// chỉ truyền 1 trạng thái/ hoặc truyền rỗng
                 cmd.Parameters.Add(new SqlParameter("@CurrentPage", param.CurrentPage ?? 0));
                 cmd.Parameters.Add(new SqlParameter("@PageSize", param.PageSize ?? 10));
                 cmd.Parameters.Add(new SqlParameter("@ColumnSort", param.ColumnSort ?? "createTime"));
                 cmd.Parameters.Add(new SqlParameter("@TypeSort", param.TypeSort ?? "desc"));
                 using var dataReadder = await cmd.ExecuteReaderAsync();
-                string[] array = {"TotalCount", "Data" };
+                string[] array = { "TotalCount", "Data" };
                 var ds = new DataSet();
                 ds.Load(dataReadder, LoadOption.OverwriteChanges, array);
                 if (ds.Tables.Count > 0 && ds.Tables[1].Rows.Count > 0)
