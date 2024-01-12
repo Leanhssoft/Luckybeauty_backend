@@ -19,7 +19,7 @@ using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
 {
-    public class LichSuNap_ChuyenTienAppService : SPAAppServiceBase
+    public class LichSuNap_ChuyenTienAppService : SPAAppServiceBase, ILichSuNap_ChuyenTienAppService
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<SMS_LichSuNap_ChuyenTien, Guid> _lichSuNapTien;
@@ -177,6 +177,23 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
 
                 double? sodu = tongNap - tongGui - tongGuiSMS;
                 return sodu;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+        public async Task<double?> GetTongSuDung_ofBrandname(int tenantId)
+        {
+            try
+            {
+                using (_unitOfWorkManager.Current.SetTenantId(tenantId))
+                {
+                    // tonggui SMS thanh cong
+                    var lstGuiTinSMS = await _hethongSMS.GetAllListAsync(x => x.TrangThai == 100);
+                    double? tongGuiSMS = lstGuiTinSMS.Sum(x => x.SoTinGui * x.GiaTienMoiTinNhan);
+                    return tongGuiSMS;
+                }
             }
             catch (Exception)
             {

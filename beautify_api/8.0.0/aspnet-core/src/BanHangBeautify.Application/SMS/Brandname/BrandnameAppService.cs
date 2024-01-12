@@ -9,6 +9,7 @@ using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.SMS.Brandname.Repository;
 using BanHangBeautify.SMS.Dto;
+using BanHangBeautify.SMS.LichSuNap_ChuyenTien;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,15 +26,18 @@ namespace BanHangBeautify.SMS.Brandname
         private readonly IBrandnameRepository _repository;
         private readonly IExcelBase _excelBase;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly ILichSuNap_ChuyenTienAppService _lichSuNapTien;
 
         public BrandnameAppService(IRepository<HT_SMSBrandname, Guid> dmBrandname, IBrandnameRepository repository,
             IExcelBase excelBase,
-            IUnitOfWorkManager unitOfWorkManager)
+            IUnitOfWorkManager unitOfWorkManager,
+            ILichSuNap_ChuyenTienAppService lichSuNapTien)
         {
             _dmBrandname = dmBrandname;
             _repository = repository;
             _excelBase = excelBase;
             _unitOfWorkManager = unitOfWorkManager;
+            _lichSuNapTien = lichSuNapTien;
         }
 
         [HttpGet]
@@ -73,7 +77,27 @@ namespace BanHangBeautify.SMS.Brandname
                 return data;
             }
         }
-         
+
+        [HttpPost]
+        public async Task<PagedResultDto<PageBrandnameDto>> SMS_GetTongSuDung_AllBrandname(ParamSearchBrandname param)
+        {
+            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
+            {
+                var pageData = await _repository.GetListBandname(param, 1);
+                foreach (var item in pageData.Items)
+                {
+                    var sudung = await _lichSuNapTien.GetTongSuDung_ofBrandname(item.TenantId);
+                    item.DaSuDung = sudung;
+                    item.ConLai = item.TongTienNap - sudung;
+                }
+                return new PagedResultDto<PageBrandnameDto>()
+                {
+                    TotalCount = pageData.TotalCount,
+                    Items = pageData.Items
+                };
+            }
+        }
+
         [HttpPost]
         public BrandnameDto CreateBrandname(BrandnameDto dto)
         {
