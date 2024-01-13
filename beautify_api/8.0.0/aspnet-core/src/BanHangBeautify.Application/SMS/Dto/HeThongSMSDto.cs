@@ -14,6 +14,7 @@ namespace BanHangBeautify.SMS.Dto
         public string TenHangHoa { get; set; }
         public DateTime? BookingDate { set; get; } = null;
         public DateTime? StartTime { set; get; } = null;
+        public int? ChenhLech { get; set; } // check gưi trước ? tiếng/phút/giây
         public string ThoiGianHen { set; get; } // từ HH:mm - HH:mm
         public string STrangThaiGuiTinNhan { get; set; }
         public int? TrangThai { get; set; }// used to bind background color
