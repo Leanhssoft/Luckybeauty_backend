@@ -99,13 +99,13 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillCollection<LichSuDatLichDto>(ds.Tables[0]);
-                        for (int i = 0; i < data.Count; i++)
-                        {
-                            var gia = ds.Tables[0].Rows[i]["Gia"].ToString();
-                            var thoiGianThucHien = ds.Tables[0].Rows[i]["ThoiGianThucHien"].ToString();
-                            data[i].DonGia = decimal.Parse(string.IsNullOrEmpty(gia) ? "0" : gia);
-                            data[i].ThoiGianThucHien = float.Parse(string.IsNullOrEmpty(thoiGianThucHien) ? "0" : thoiGianThucHien);
-                        }
+                        //for (int i = 0; i < data.Count; i++)
+                        //{
+                        //    var gia = ds.Tables[0].Rows[i]["Gia"].ToString();
+                        //    var thoiGianThucHien = ds.Tables[0].Rows[i]["ThoiGianThucHien"].ToString();
+                        //    data[i].DonGia = decimal.Parse(string.IsNullOrEmpty(gia) ? "0" : gia);
+                        //    data[i].ThoiGianThucHien = float.Parse(string.IsNullOrEmpty(thoiGianThucHien) ? "0" : thoiGianThucHien);
+                        //}
                         return new PagedResultDto<LichSuDatLichDto>()
                         {
                             TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
