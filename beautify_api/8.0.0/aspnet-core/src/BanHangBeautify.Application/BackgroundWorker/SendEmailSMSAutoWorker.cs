@@ -76,7 +76,7 @@ namespace BanHangBeautify.BackgroundWorker
         protected async override void DoWork()
         {
             using var unitOfWork = _unitOfWorkManager.Begin();
-            var tenants = _tenantRepository.GetAllList(t => t.ConnectionString != null && t.ConnectionString != "");
+            var tenants = _tenantRepository.GetAllList();
             var lstBrandname = await _repoBrandname.GetListBandname(new ParamSearchBrandname { Keyword = string.Empty, SkipCount = 0 }, 1);  // get all brand name at host
 
             for (int i = 0; i < tenants.Count; i++)
@@ -162,7 +162,7 @@ namespace BanHangBeautify.BackgroundWorker
                                                     }
                                                 }
                                                 break;
-                                            case ConstSMS.LoaiTin.LichHen:// gui truoc ... todo
+                                            case ConstSMS.LoaiTin.LichHen:
                                                 {
                                                     float? totalTime = 0;
                                                     switch (item.LoaiThoiGian)
@@ -223,7 +223,7 @@ namespace BanHangBeautify.BackgroundWorker
                     }
                     catch (Exception ex)
                     {
-                       
+
                     }
                 });
                 }
@@ -249,10 +249,22 @@ namespace BanHangBeautify.BackgroundWorker
             {
                 paramSearch.HinhThucGuiTins = new List<byte> { ConstSMS.HinhThucGuiTin.SMS };
                 PagedResultDto<PageKhachHangSMSDto> data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
-                // Nếu gửi trước: check start time ... todo
+               
                 if (data.TotalCount > 0)
                 {
-                    var lstCustomer = data.Items;
+                    IReadOnlyCollection<PageKhachHangSMSDto> lstCustomer = null;
+                    if(totalTime > 0)
+                    {
+                        // Nếu gửi trước: check start time ...: có thể có sai số (chênh lệch xx)
+                        float? saisoTruoc = totalTime - 10;
+                        float? saisoSau = totalTime + 10;
+                        lstCustomer = data.Items.Where(x => x.ChenhLech > saisoTruoc && x.ChenhLech < saisoSau).ToList();
+                    }
+                    else
+                    {
+                        lstCustomer = data.Items;
+                    }
+
                     foreach (var customer in lstCustomer)
                     {
                         var noidung = ReplaceContent(customer, inforCommon.NoiDungTinNhan);
