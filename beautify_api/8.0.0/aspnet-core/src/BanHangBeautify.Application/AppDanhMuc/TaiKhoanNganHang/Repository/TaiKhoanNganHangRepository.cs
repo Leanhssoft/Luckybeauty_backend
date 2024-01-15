@@ -40,7 +40,8 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository
                                       MaPinNganHang = bank.BIN,
                                       TrangThai = acc.TrangThai,
                                       GhiChu = acc.GhiChu,
-                                      LogoNganHang = bank.Logo
+                                      LogoNganHang = bank.Logo,
+                                      IsDefault = acc.IsDefault
                                   }).ToListAsync();
                 return data;
             }

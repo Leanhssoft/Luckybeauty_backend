@@ -45,7 +45,7 @@ namespace BanHangBeautify.Checkin
             }
             else
             {
-                var lst = await _khCheckIn.GetAllListAsync(x => x.IdKhachHang == idCus 
+                var lst = await _khCheckIn.GetAllListAsync(x => x.IdKhachHang == idCus
                 && (x.TrangThai == TrangThaiCheckin.WAITING || x.TrangThai == TrangThaiCheckin.DOING));
                 if (lst.Count > 0)
                 {
@@ -121,6 +121,22 @@ namespace BanHangBeautify.Checkin
             catch (Exception ex)
             {
                 return ex.Message + ex.InnerException;
+            }
+        }
+        [HttpGet]
+        public async Task<IEnumerable<Guid>> GetArrIdChecking_fromIdBooking(Guid idBooking)
+        {
+            try
+            {
+                var arrIdCheckin = _checkInHoaDon.GetAllList().Where(x => x.IdBooking == idBooking).Select(x => x.IdCheckIn);
+                // only get if khachhang is checking
+                var lstCheckin = _khCheckIn.GetAllList(x => arrIdCheckin.Contains(x.Id)
+                  && (x.TrangThai == TrangThaiCheckin.DOING || x.TrangThai == TrangThaiCheckin.WAITING)).Select(x=>x.Id);
+                return lstCheckin;
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
 

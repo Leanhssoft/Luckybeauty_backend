@@ -212,6 +212,7 @@
     <text name="CreateLoaiHangHoa">Tạo loại hàng hóa</text>
     <text name="LoaiHangHoa">Lọai hàng hóa</text>
     <text name="DeleteBranch">Xóa chi nhánh</text>
+    <text name="ExportBranch">Xuất file</text>
     <text name="EditBranch">Sửa chi nhánh</text>
     <text name="CreateBranch">Tạo chi nhánh</text>
     <text name="Branch">Chi nhánh</text>

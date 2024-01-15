@@ -37,38 +37,40 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
             }
             return file;
         }
-        private void BuildExcel(ExcelPackage excelpackage, List<ChiNhanhDto> input, int startRow = 5)
+        private void BuildExcel(ExcelPackage excelpackage, List<ChiNhanhDto> input, int startRow = 4)
         {
             int firstRow = startRow;
-            int stt = 1;
+            //int stt = 1;
             try
             {
+                // chỉ xuất các cột có ở giao diện
                 ExcelWorksheet ws = excelpackage.Workbook.Worksheets[0];
                 foreach (var item in input)
                 {
-                    ws.Cells[startRow, 1].Value = stt.ToString();
-                    ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.MaChiNhanh);
-                    ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.TenChiNhanh);
+                    ws.Cells[startRow, 1].Value = ConvertHelper.ToString(item.MaChiNhanh);
+                    ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.TenChiNhanh);
+                    ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.SoDienThoai);
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.DiaChi);
-                    ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.SoDienThoai);
-                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.MaSoThue);
+
+                    //ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.MaSoThue);
                     if (!string.IsNullOrWhiteSpace(item.NgayApDung.ToString()))
                     {
-                        ws.Cells[startRow, 7].Value = ConvertHelper.ToDateTime(item.NgayApDung).ToString("dd/MM/yyyy");
+                        ws.Cells[startRow, 5].Value = ConvertHelper.ToDateTime(item.NgayApDung).ToString("dd/MM/yyyy");
                     }
                     if (!string.IsNullOrWhiteSpace(item.NgayApDung.ToString()))
                     {
-                        ws.Cells[startRow, 8].Value = ConvertHelper.ToDateTime(item.NgayHetHan).ToString("dd/MM/yyyy");
+                        ws.Cells[startRow, 6].Value = ConvertHelper.ToDateTime(item.NgayHetHan).ToString("dd/MM/yyyy");
                     }
+                    ws.Cells[startRow, 7].Value = item.TrangThai == 1 ? "Đang hoạt động" : "Ngừng hoạt động";
                     startRow++;
-                    stt++;
+                    //stt++;
                 }
                 if (input.Count > 0)
                 {
-                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 }
             }
             catch (Exception ex)

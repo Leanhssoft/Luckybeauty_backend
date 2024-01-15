@@ -67,7 +67,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
                 
             }
             chucVu.TenChucVu = dto.TenChucVu;
-            chucVu.TrangThai = 0;
+            chucVu.TrangThai = 1;
             chucVu.MoTa = dto.MoTa;
             chucVu.TenantId = AbpSession.TenantId ?? 1;
             chucVu.CreatorUserId = AbpSession.UserId;
@@ -85,10 +85,10 @@ namespace BanHangBeautify.NhanSu.ChucVu
             chucVu.LastModifierUserId = AbpSession.UserId;
             chucVu.LastModificationTime = DateTime.Now;
             var result = ObjectMapper.Map<ChucVuDto>(chucVu);
-            await _repository.InsertAsync(chucVu);
+            await _repository.UpdateAsync(chucVu);
             return result;
         }
-        [HttpPost]
+        [HttpGet]
         [AbpAuthorize(PermissionNames.Pages_ChucVu_Delete)]
         public async Task<ChucVuDto> Delete(Guid Id)
         {
@@ -98,7 +98,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
                 find.IsDeleted = true;
                 find.DeleterUserId = AbpSession.UserId;
                 find.DeletionTime = DateTime.Now;
-                find.TrangThai = 1;
+                find.TrangThai = 0;
                 var result = ObjectMapper.Map<ChucVuDto>(find);
                 await _repository.UpdateAsync(find);
                 return result;
