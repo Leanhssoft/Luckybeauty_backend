@@ -1,13 +1,14 @@
-﻿using BanHangBeautify.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BanHangBeautify.SP_Migrations
+#nullable disable
+
+namespace BanHangBeautify.SPMigrations
 {
-    [DbContext(typeof(SPADbContext))]
-    [Migration("prc_getAllBooking")]
-    public class prc_getAllBooking : Migration
+    /// <inheritdoc />
+    public partial class prcgetAllBooking : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[prc_booking_getAll]");
