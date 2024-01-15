@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.NhanSu.NhanVien_DichVu
 {
     [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu)]
-    public class NhanVienDichVuAppService : SPAAppServiceBase
+    public class NhanVienDichVuAppService : SPAAppServiceBase, INhanVienDichVuAppService
     {
         IRepository<DichVu_NhanVien, Guid> _repository;
         IRepository<NS_NhanVien, Guid> _nhanSuRepository;

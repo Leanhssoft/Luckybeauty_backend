@@ -12,7 +12,11 @@ using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Exporting;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
+using BanHangBeautify.NhanSu.NhanVien_DichVu;
+using BanHangBeautify.NhanSu.NhanVien_DichVu.Dto;
 using BanHangBeautify.Storage;
+using BanHangBeautify.Suggests;
+using BanHangBeautify.Suggests.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +42,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhService;
         private readonly INhanVienExcelExporter _nhanVienExcelExporter;
         private readonly IRepository<User, long> _userService;
+        private readonly INhanVienDichVuAppService _nhanVienDichVuService;
+        private readonly ISuggestAppService _suggestService;
 
         public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository,
             IRepository<NS_ChucVu, Guid> chucVuRepository,
@@ -45,7 +51,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
             INhanSuRepository nhanSuRepository, IHostingEnvironment env,
             IRepository<DM_ChiNhanh, Guid> chiNhanhService,
             INhanVienExcelExporter nhanVienExcelExporter,
-            IRepository<User, long> userService
+            IRepository<User, long> userService,
+            INhanVienDichVuAppService nhanVienDichVuService,
+            ISuggestAppService suggestService
          )
         {
             _repository = repository;
@@ -56,6 +64,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
             _chiNhanhService = chiNhanhService;
             _nhanVienExcelExporter = nhanVienExcelExporter;
             _userService = userService;
+            _nhanVienDichVuService = nhanVienDichVuService;
+            _suggestService = suggestService;
         }
         [AbpAuthorize(PermissionNames.Pages_NhanSu_Create, PermissionNames.Pages_NhanSu_Edit)]
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
@@ -124,6 +134,13 @@ namespace BanHangBeautify.NhanSu.NhanVien
             result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty) != null ? _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty).TenChucVu : string.Empty;
             await _repository.InsertAsync(nhanSu);
             var qtct = CreateFirstQuaTrinhCongTac(nhanSu.Id, dto.IdChiNhanh);
+            if (dto.Services!=null&&dto.Services.Count>0)
+            {
+                CreateServiceManyDto services = new CreateServiceManyDto();
+                services.IdNhanVien = nhanSu.Id;
+                services.IdDonViQuiDois = dto.Services;
+                await _nhanVienDichVuService.CreateOrUpdateServicesByEmployee(services);
+            }
             await _quaTrinhCongTac.InsertAsync(qtct);
             return result;
         }
@@ -167,6 +184,13 @@ namespace BanHangBeautify.NhanSu.NhanVien
             result.NgayVaoLam = nhanSu.CreationTime;
             result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty) != null ? _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty).TenChucVu : string.Empty;
             await _repository.UpdateAsync(nhanSu);
+            if (dto.Services != null && dto.Services.Count > 0)
+            {
+                CreateServiceManyDto services = new CreateServiceManyDto();
+                services.IdNhanVien = nhanSu.Id;
+                services.IdDonViQuiDois = dto.Services;
+                await _nhanVienDichVuService.CreateOrUpdateServicesByEmployee(services);
+            }
             return result;
         }
         [HttpPost]
@@ -229,6 +253,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
             if (nhanSu != null)
             {
                 var result = ObjectMapper.Map<CreateOrEditNhanSuDto>(nhanSu);
+                var services =await _suggestService.SuggestDichVu(nhanSu.Id);
+                result.Services = services.Select(x=>x.Id).ToList();
                 return result;
             }
 

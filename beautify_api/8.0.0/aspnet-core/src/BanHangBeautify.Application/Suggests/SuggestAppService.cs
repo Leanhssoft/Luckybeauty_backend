@@ -1,4 +1,5 @@
-﻿using Abp.Domain.Repositories;
+﻿using Abp.Dependency;
+using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Suggests
 {
     [Authorize]
-    public class SuggestAppService : SPAAppServiceBase
+    public class SuggestAppService : SPAAppServiceBase,ISuggestAppService
     {
         private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;//
         private readonly IRepository<DichVu_NhanVien, Guid> _dichVuNhanVienRespository;

@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using BanHangBeautify.NewFolder;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.NhanSu.NhanVien.Dto
@@ -36,6 +37,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public Guid? IdChiNhanh { set; get; }
         public Guid? IdChucVu { set; get; }
         public string GhiChu { get; set; }
+        public List<Guid>? Services { get; set; }
 
     }
 }

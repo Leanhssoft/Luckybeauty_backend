@@ -19,6 +19,8 @@ namespace BanHangBeautify.Suggests.Repository
         {
         }
 
+        
+
         public async Task<List<SuggestLoaiChungTu>> SuggestLoaiChungTu()
         {
             string query = "SELECT Id,TenLoaiChungTu FROM DM_LoaiChungTu where IsDeleted = 0;";
