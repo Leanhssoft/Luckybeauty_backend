@@ -141,6 +141,8 @@
 		<text name ="TaiKhoanNganHang">Tài khoản ngân hàng</text>
 		<text name ="Phong">Phòng</text>
 		<text name ="HeThongSMS">Hệ thống SMS</text>
+		<text name ="SMS_Template">Mẫu tin SMS</text>
+		<text name ="Resend">Gửi lại</text>
 		<text name ="BookingColor">Màu booking</text>
 		<text name ="CauHinhChungTu">Cấu hình chứng từ</text>
 		<text name ="CauHinhTichDiem">Cấu hình tích điểm</text>
@@ -152,8 +154,8 @@
 		<text name ="LoaiChungTu">Loại chứng từ</text>
 		<text name ="NhanVienThucHien">Nhân viên thực hiện</text>
 		<text name ="NangNhomKhach">Nâng nhóm khách</text>
-		<text name ="KhuyenMaiApDung">Khuyễn mãi áp dụng</text>
-		<text name ="KhuyenMai">Khuyễn mại</text>
+		<text name ="KhuyenMaiApDung">Khuyến mãi áp dụng</text>
+		<text name ="KhuyenMai">Khuyến mãi</text>
 		<text name ="LichLamViec">Lịch làm việc</text>
 		<text name ="LichLamViecCa">Lịch làm việc ca</text>
 		<text name ="NgayNghiLe">Ngày nghỉ lễ</text>
@@ -223,6 +225,13 @@
 		<text name="Company">Công ty</text>
 		<text name="Import">Nhập dữ liệu</text>
 		<text name="Export">Xuất dữ liệu</text>
+		<text name="Print">In</text>
+		<text name="Restore">Khôi phục</text>
+		<text name="Brandname">Brandname</text>
+		<text name="BrandnameSMS">Quản lý chuyển tiền SMS</text>
+		<text name="NopTienBrandname">Nộp tiền brandname</text>
+		<text name="NopTien">Nộp tiền</text>
+		<text name="ChuyenTien">Chuyển tiền</text>
 		<text name="NhomHangHoa">Nhóm hàng hóa</text>
 		<text name="CreateNhomHangHoa">Thêm hàng hóa</text>
 		<text name="EditNhomHangHoa">Sửa hàng hóa</text>

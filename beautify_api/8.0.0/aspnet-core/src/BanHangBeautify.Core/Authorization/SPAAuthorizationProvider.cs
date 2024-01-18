@@ -21,7 +21,19 @@ namespace BanHangBeautify.Authorization
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Create, L("CreateBranch"));
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Edit, L("EditBranch"));
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Delete, L("DeleteBranch"));
-            chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Export, L("ExportBranch"));
+            chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Export, L("ExportBranch"));  
+            
+            var brandname = pages.CreateChildPermission(PermissionNames.Pages_Brandname, L("Brandname"));
+            brandname.CreateChildPermission(PermissionNames.Pages_Brandname_Create, L("Create"));
+            brandname.CreateChildPermission(PermissionNames.Pages_Brandname_Edit, L("Edit"));
+            brandname.CreateChildPermission(PermissionNames.Pages_Brandname_Delete, L("Delete"));
+            brandname.CreateChildPermission(PermissionNames.Pages_Brandname_Export, L("Export"));
+            brandname.CreateChildPermission(PermissionNames.Pages_Brandname_NopTien, L("NopTienBrandname"));
+
+            var brandnameSMS = pages.CreateChildPermission(PermissionNames.Pages_Brandname_ChuyenTien, L("BrandnameSMS"));
+            brandnameSMS.CreateChildPermission(PermissionNames.Pages_Brandname_ChuyenTien_Create, L("Create"));
+            brandnameSMS.CreateChildPermission(PermissionNames.Pages_Brandname_ChuyenTien_Edit, L("Edit"));
+            brandnameSMS.CreateChildPermission(PermissionNames.Pages_Brandname_ChuyenTien_Delete, L("Delete"));
 
             //Loại Hàng Hóa
             var loaiHangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_LoaiHangHoa, L("LoaiHangHoa"));
@@ -36,6 +48,7 @@ namespace BanHangBeautify.Authorization
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Delete, L("DeleteHangHoa"));
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Export, L("ExportHangHoa"));
             hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Import, L("ImportHangHoa"));
+            hangHoa.CreateChildPermission(PermissionNames.Pages_DM_HangHoa_Restore, L("Restore"));
 
             //Nhóm hàng hóa
             var nhomhangHoa = pages.CreateChildPermission(PermissionNames.Pages_DM_NhomHangHoa, L("NhomHangHoa"));
@@ -139,6 +152,12 @@ namespace BanHangBeautify.Authorization
             heThongSMS.CreateChildPermission(PermissionNames.Pages_HeThongSMS_Create, L("Create"));
             heThongSMS.CreateChildPermission(PermissionNames.Pages_HeThongSMS_Edit, L("Edit"));
             heThongSMS.CreateChildPermission(PermissionNames.Pages_HeThongSMS_Delete, L("Delete"));
+            heThongSMS.CreateChildPermission(PermissionNames.Pages_HeThongSMS_Resend, L("Resend"));
+
+            var smsMauTin = pages.CreateChildPermission(PermissionNames.Pages_SMS_Template, L("SMS_Template"));
+            smsMauTin.CreateChildPermission(PermissionNames.Pages_SMS_Template_Create, L("Create"));
+            smsMauTin.CreateChildPermission(PermissionNames.Pages_SMS_Template_Edit, L("Edit"));
+            smsMauTin.CreateChildPermission(PermissionNames.Pages_SMS_Template_Delete, L("Delete"));
 
             //var bookingColor = 
             pages.CreateChildPermission(PermissionNames.Pages_Booking_Color, L("BookingColor"));
@@ -163,6 +182,7 @@ namespace BanHangBeautify.Authorization
             chietKhauDichVu.CreateChildPermission(PermissionNames.Pages_ChietKhauDichVu_Create, L("Create"));
             chietKhauDichVu.CreateChildPermission(PermissionNames.Pages_ChietKhauDichVu_Edit, L("Edit"));
             chietKhauDichVu.CreateChildPermission(PermissionNames.Pages_ChietKhauDichVu_Delete, L("Delete"));
+            chietKhauDichVu.CreateChildPermission(PermissionNames.Pages_ChietKhauDichVu_Export, L("Export"));
 
             var chietKhauHoaDon = pages.CreateChildPermission(PermissionNames.Pages_ChietKhauHoaDon, L("ChietKhauHoaDon"));
             chietKhauHoaDon.CreateChildPermission(PermissionNames.Pages_ChietKhauHoaDon_Create, L("Create"));
@@ -176,6 +196,7 @@ namespace BanHangBeautify.Authorization
             hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Delete, L("DeleteHoaDon"));
             hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Import, L("Import"));
             hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Export, L("Export"));
+            hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Print, L("Print"));
 
             var hoaDonAnh = pages.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh, L("AnhHoaDon"));
             hoaDonAnh.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh_Create, L("Create"));
@@ -246,6 +267,7 @@ namespace BanHangBeautify.Authorization
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Edit, L("Edit"));
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Delete, L("Delete"));
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Export, L("Export"));
+            quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Print, L("Print"));
 
             var khoanThuChi = pages.CreateChildPermission(PermissionNames.Pages_KhoanThuChi, L("ThuChi"));
             khoanThuChi.CreateChildPermission(PermissionNames.Pages_KhoanThuChi_Create, L("Create"));
