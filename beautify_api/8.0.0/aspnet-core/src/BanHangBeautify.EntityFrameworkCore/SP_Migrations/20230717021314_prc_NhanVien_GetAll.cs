@@ -11,6 +11,7 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[prc_nhanVien_getAll]");
             migrationBuilder.Sql(@"CREATE PROCEDURE prc_nhanVien_getAll
 				@TenantId INT,
 				@IdChiNhanh UNIQUEIDENTIFIER = NULL,
@@ -100,7 +101,7 @@ namespace BanHangBeautify.SPMigrations
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE prc_nhanVien_getAll");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[prc_nhanVien_getAll]");
         }
     }
 }
