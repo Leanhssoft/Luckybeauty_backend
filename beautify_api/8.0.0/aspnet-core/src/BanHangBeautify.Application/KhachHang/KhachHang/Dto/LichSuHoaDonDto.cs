@@ -6,14 +6,12 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
     {
         public string MaHoaDon { get; set; }
         public DateTime NgayLapHoaDon { get; set; }
-        public decimal TongTienHang { get; set; }
-        public decimal TongGiamGia { get; set; }
-
-        public decimal TongPhaiTra { get; set; }
-
-        public decimal KhachDaTra { get; set; }
-
-        public decimal ConNo { get; set; }
+        public double? TongTienHang { get; set; }
+        public double? TongGiamGia { get; set; }
+        public double? TongPhaiTra { get; set; }
+        public double? KhachDaTra { get; set; }
+        public double? ConNo { get; set; }
+        public string TxtTrangThai { get; set; }
         public string TrangThai { get; set; }
     }
 }
