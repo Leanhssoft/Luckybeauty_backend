@@ -10,6 +10,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using static BanHangBeautify.AppCommon.CommonClass;
 
@@ -46,38 +47,71 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
         }
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input, int tenantId)
         {
-            using (var command = CreateCommand("prc_KhachHang_GetAll"))
-            {
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                command.Parameters.Add(new SqlParameter("@Filter", input.keyword ?? ""));
-                command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                command.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
-                command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
-                command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
-                command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
-                command.Parameters.Add(new SqlParameter("@IdNhomKHach", input.IdNhomKhach));
+            using var command = CreateCommand("prc_KhachHang_GetAll");
+            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            command.Parameters.Add(new SqlParameter("@Filter", input.keyword ?? ""));
+            command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
+            command.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
+            command.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
+            command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
+            command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
+            command.Parameters.Add(new SqlParameter("@IdNhomKHach", input.IdNhomKhach));
 
-                using (var dataReader = await command.ExecuteReaderAsync())
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data", "TotalCount" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
-                    string[] array = { "Data", "TotalCount" };
-                    var ds = new DataSet();
-                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
-                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    var data = ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
+                    for (int i = 0; i < data.Count; i++)
                     {
-                        var data = ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
-                        for (int i = 0; i < data.Count; i++)
-                        {
-                            var tongChiTieu = ds.Tables[0].Rows[i]["TongChiTieu"].ToString();
-                            data[i].TongChiTieu = float.Parse(string.IsNullOrEmpty(tongChiTieu) ? "0" : tongChiTieu);
-                        }
-                        return new PagedResultDto<KhachHangView>()
-                        {
-                            TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
-                            Items = data
-                        };
+                        var tongChiTieu = ds.Tables[0].Rows[i]["TongChiTieu"].ToString();
+                        data[i].TongChiTieu = float.Parse(string.IsNullOrEmpty(tongChiTieu) ? "0" : tongChiTieu);
                     }
+                    return new PagedResultDto<KhachHangView>()
+                    {
+                        TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
+                        Items = data
+                    };
                 }
-                return new PagedResultDto<KhachHangView>();
+            }
+            return new PagedResultDto<KhachHangView>();
+        }
+
+        public async Task<CustomerDetail_FullInfor> GetCustomerDetail_FullInfor(Guid idKhachHang)
+        {
+            using var command = CreateCommand("GetCustomerDetail_FullInfor");
+            command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var data = ObjectHelper.FillCollection<CustomerDetail_FullInfor>(ds.Tables[0]);
+                    return data.FirstOrDefault();
+                }
+                return new CustomerDetail_FullInfor();
+            }
+        }
+        public async Task<List<HoatDongKhachHang>> GetNhatKyHoatDong_ofKhachHang(Guid idKhachHang)
+        {
+            using var command = CreateCommand("GetNhatKyHoatDong_ofKhachHang");
+            command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var data = ObjectHelper.FillCollection<HoatDongKhachHang>(ds.Tables[0]);
+                    return data;
+                }
+                return new List<HoatDongKhachHang>();
             }
         }
 
@@ -99,13 +133,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillCollection<LichSuDatLichDto>(ds.Tables[0]);
-                        //for (int i = 0; i < data.Count; i++)
-                        //{
-                        //    var gia = ds.Tables[0].Rows[i]["Gia"].ToString();
-                        //    var thoiGianThucHien = ds.Tables[0].Rows[i]["ThoiGianThucHien"].ToString();
-                        //    data[i].DonGia = decimal.Parse(string.IsNullOrEmpty(gia) ? "0" : gia);
-                        //    data[i].ThoiGianThucHien = float.Parse(string.IsNullOrEmpty(thoiGianThucHien) ? "0" : thoiGianThucHien);
-                        //}
                         return new PagedResultDto<LichSuDatLichDto>()
                         {
                             TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),

@@ -17,5 +17,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
         Task<List<KhachHangView>> JqAutoCustomer(PagedKhachHangResultRequestDto input, int? tenantId);
         Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang, int tenantId, PagedRequestDto input);
         Task<PagedResultDto<LichSuDatLichDto>> LichSuDatLich(Guid idKhachHang, int tenantId, PagedRequestDto input);
+        Task<CustomerDetail_FullInfor> GetCustomerDetail_FullInfor(Guid idKhachHang);
+        Task<List<HoatDongKhachHang>> GetNhatKyHoatDong_ofKhachHang(Guid idKhachHang);
     }
 }
