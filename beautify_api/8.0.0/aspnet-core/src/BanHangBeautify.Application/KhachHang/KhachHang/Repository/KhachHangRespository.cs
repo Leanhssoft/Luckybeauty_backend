@@ -65,11 +65,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     var data = ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
-                    for (int i = 0; i < data.Count; i++)
-                    {
-                        var tongChiTieu = ds.Tables[0].Rows[i]["TongChiTieu"].ToString();
-                        data[i].TongChiTieu = float.Parse(string.IsNullOrEmpty(tongChiTieu) ? "0" : tongChiTieu);
-                    }
                     return new PagedResultDto<KhachHangView>()
                     {
                         TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),
