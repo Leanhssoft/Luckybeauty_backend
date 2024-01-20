@@ -14,7 +14,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public string SoDienThoai { get; set; }
         [MaxLength(2000)]
         public string DiaChi { get; set; }
-        public bool? GioiTinh { get; set; }
+        public bool? GioiTinhNam { get; set; }
         [MaxLength(2000)]
         public string Email { get; set; }
         [MaxLength(2000)]
