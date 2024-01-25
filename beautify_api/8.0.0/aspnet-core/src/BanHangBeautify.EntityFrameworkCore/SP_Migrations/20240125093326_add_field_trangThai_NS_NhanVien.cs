@@ -59,7 +59,7 @@ BEGIN
 			ISNULL(@TenNhanVien, '') = ''
 			OR LOWER(ns.TenNhanVien) LIKE N'%' + LOWER(@TenNhanVien) + '%' COLLATE SQL_Latin1_General_CP1_CI_AI
 		)
-	GROUP BY ns.Id,ns.Avatar,ns.TenNhanVien,ns.SoDienThoai,qtct.IdChiNhanh
+	GROUP BY ns.Id,ns.Avatar,ns.TenNhanVien,ns.SoDienThoai,qtct.IdChiNhanh,ns.TrangThai
 END;");
         }
 
