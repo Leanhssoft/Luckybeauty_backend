@@ -536,49 +536,84 @@ namespace BanHangBeautify.DatLichOnline
                 var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IsDeleted == false).ToList();
                 var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date == input.DateBooking.Date && x.IsDeleted == false).ToList();
                 var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id) && x.IsDeleted == false).ToList();
-                foreach (var x in caLamViec)
+                if (caLamViec != null && caLamViec.Count > 0)
                 {
-                    var gioVaoStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioVao.ToString("HH:mm");
-                    var startTime = DateTime.Parse(gioVaoStr);
-                    var gioRaStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioRa.ToString("HH:mm");
-                    var endTime = DateTime.Parse(gioRaStr);
-                    var currentTime = startTime;
+                    foreach (var x in caLamViec)
+                    {
+                        var gioVaoStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioVao.ToString("HH:mm");
+                        var startTime = DateTime.Parse(gioVaoStr);
+                        var gioRaStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioRa.ToString("HH:mm");
+                        var endTime = DateTime.Parse(gioRaStr);
+                        var currentTime = startTime;
+                        while (currentTime.AddMinutes(input.ServiceTime) <= endTime)
+                        {
+                            AvailableTime time = new AvailableTime();
+                            bool isAvailableTime = true;
+                            time.Time = currentTime.ToString("HH:mm");
+                            if (x.LaNghiGiuaCa == true)
+                            {
+                                var nghiTuStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiTu.Value.ToString("HH:mm");
+                                var nghiTu = DateTime.Parse(nghiTuStr);
+                                var nghiDenStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiDen.Value.ToString("HH:mm");
+                                var nghiDen = DateTime.Parse(nghiDenStr);
+                                if (currentTime < DateTime.Now)
+                                {
+                                    isAvailableTime = false;
+                                }
+                                else if (currentTime >= nghiTu && currentTime <= nghiDen)
+                                {
+                                    isAvailableTime = false;
+                                }
+                                else
+                                {
+                                    foreach (var appointment in appointments)
+                                    {
+                                        if ((currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime))
+                                        {
+                                            isAvailableTime = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                time.IsAvailableTime = isAvailableTime;
+                                times.Add(time);
+                                currentTime = currentTime.AddMinutes(input.ServiceTime);
+                            }
+                            else
+                            {
+                                if (currentTime < DateTime.Now)
+                                {
+                                    isAvailableTime = false;
+                                }
+                                else
+                                {
+                                    foreach (var appointment in appointments)
+                                    {
+                                        if ((currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime))
+                                        {
+                                            isAvailableTime = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                time.IsAvailableTime = isAvailableTime;
+                                times.Add(time);
+                                currentTime = currentTime.AddMinutes(input.ServiceTime);
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    var currentTime = new DateTime(input.DateBooking.Year, input.DateBooking.Month, input.DateBooking.Day,07,00,00);
+                    var endTime = new DateTime(input.DateBooking.Year, input.DateBooking.Month, input.DateBooking.Day, 20, 00, 00);
                     while (currentTime.AddMinutes(input.ServiceTime) <= endTime)
                     {
                         AvailableTime time = new AvailableTime();
                         bool isAvailableTime = true;
                         time.Time = currentTime.ToString("HH:mm");
-                        if (x.LaNghiGiuaCa == true)
-                        {
-                            var nghiTuStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiTu.Value.ToString("HH:mm");
-                            var nghiTu = DateTime.Parse(nghiTuStr);
-                            var nghiDenStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiDen.Value.ToString("HH:mm");
-                            var nghiDen = DateTime.Parse(nghiDenStr);
-                            if (currentTime < DateTime.Now)
-                            {
-                                isAvailableTime = false;
-                            }
-                            else if (currentTime >= nghiTu && currentTime <= nghiDen)
-                            {
-                                isAvailableTime = false;
-                            }
-                            else
-                            {
-                                foreach (var appointment in appointments)
-                                {
-                                    if ((currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime))
-                                    {
-                                        isAvailableTime = false;
-                                        break;
-                                    }
-                                }
-                            }
-                            time.IsAvailableTime = isAvailableTime;
-                            times.Add(time);
-                            currentTime = currentTime.AddMinutes(input.ServiceTime);
-                        }
-                        else
-                        {
+                        
                             if (currentTime < DateTime.Now)
                             {
                                 isAvailableTime = false;
@@ -597,10 +632,9 @@ namespace BanHangBeautify.DatLichOnline
                             time.IsAvailableTime = isAvailableTime;
                             times.Add(time);
                             currentTime = currentTime.AddMinutes(input.ServiceTime);
-                        }
                     }
-
                 }
+                
             }
             return times.OrderByDescending(x => x.Time).Reverse().ToList();
         }
