@@ -14,7 +14,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public DateTime? NgaySinh { get; set; }
         public string TenNhomKhach { get; set; }
         public string GioiTinh { get; set; }
-        public float? TongChiTieu { get; set; } = 0;
+        public double? TongChiTieu { get; set; } = 0;
         public DateTime? CuocHenGanNhat { get; set; }
         public float? TongTichDiem { get; set; }
         public int? SoLanCheckIn { get; set; }
