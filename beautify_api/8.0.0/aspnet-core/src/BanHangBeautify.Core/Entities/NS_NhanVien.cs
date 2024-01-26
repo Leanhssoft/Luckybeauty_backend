@@ -42,6 +42,7 @@ namespace BanHangBeautify.Data.Entities
 
         public int TenantId { get; set; }
 
+        public int TrangThai { get; set; }
         public static implicit operator string(NS_NhanVien v)
         {
             throw new NotImplementedException();

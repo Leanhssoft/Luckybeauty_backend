@@ -6,6 +6,7 @@ using Abp.EntityFrameworkCore.EFPlus;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NewFolder;
@@ -122,6 +123,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.NgayCap = dto.NgayCap;
             nhanSu.NoiCap = dto.NoiCap;
             nhanSu.KieuNgaySinh = dto.KieuNgaySinh;
+            nhanSu.TrangThai = TrangThaiNhanVienConst.Ranh;
             nhanSu.Avatar = dto.Avatar;
             nhanSu.TenantId = AbpSession.TenantId ?? 1;
             nhanSu.CreationTime = DateTime.Now;
@@ -178,6 +180,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.NoiCap = dto.NoiCap;
             nhanSu.KieuNgaySinh = dto.KieuNgaySinh;
             nhanSu.Avatar = dto.Avatar;
+            nhanSu.TrangThai = dto.TrangThai;
             nhanSu.LastModificationTime = DateTime.Now;
             nhanSu.LastModifierUserId = AbpSession.UserId;
             var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);

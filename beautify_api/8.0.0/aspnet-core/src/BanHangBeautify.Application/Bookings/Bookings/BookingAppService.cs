@@ -131,8 +131,10 @@ namespace BanHangBeautify.Bookings.Bookings
             {
                 var bookingNhanVien = CreateBookingNhanVien(booking.Id, dto.IdNhanVien ?? Guid.Empty);
                 _bookingNhanVienRepository.Insert(bookingNhanVien);
+                var nhanVien = _nhanVienService.FirstOrDefault(x => x.Id == dto.IdNhanVien && x.IsDeleted == false&&x.TrangThai==TrangThaiNhanVienConst.Ranh);
+                nhanVien.TrangThai = TrangThaiNhanVienConst.Ban;
+                _nhanVienService.Update(nhanVien);
             }
-
             _repository.Insert(booking);
             _bookingServiceRepository.Insert(bookingService);
             var listUserRole = await _userRoleRepository.GetListUser_havePermission(booking.TenantId, booking.IdChiNhanh ?? Guid.Empty, "Pages.Notifications.Booking");
