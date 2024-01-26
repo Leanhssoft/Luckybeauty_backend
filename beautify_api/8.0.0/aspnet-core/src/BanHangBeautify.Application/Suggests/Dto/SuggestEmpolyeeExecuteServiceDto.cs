@@ -9,6 +9,6 @@ namespace BanHangBeautify.Suggests.Dto
         public string TenNhanVien { get; set; }
         public string ChucVu { get; set; }
         public string SoDienThoai { get; set; }
-        public string TrangThai { get; set; }
+        public int TrangThai { get; set; }
     }
 }

@@ -54,6 +54,7 @@ BEGIN
 		) AS qtct ON qtct.IdNhanVien = ns.Id
 	WHERE qtct.IdChiNhanh = @IdChiNhanh 
 	AND ns.TenantId = @TenantId
+	AND ns.IsDeleted = false
 	AND dvnv.IdDonViQuyDoi = @IdDichVu
 	AND (
 			ISNULL(@TenNhanVien, '') = ''

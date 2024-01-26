@@ -43,6 +43,7 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
         IRepository<HT_CongTy, Guid> _congTyRepository;
         IRepository<DM_KhachHang, Guid> _dmKhachHangRepository;
+        IRepository<NS_NhanVien, Guid> _nhanVienResponsitory;
         INhanSuRepository _nhanSuService;
         private readonly IAppNotifier _appNotifier;
         INotificationAppService _notificationAppService;
@@ -64,6 +65,7 @@ namespace BanHangBeautify.DatLichOnline
             INotificationAppService notificationAppService,
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             INhanSuRepository nhanSuService,
+            IRepository<NS_NhanVien, Guid> nhanVienResponsitory,
               IUserRoleRepository userRoleRepository
             )
         {
@@ -82,6 +84,7 @@ namespace BanHangBeautify.DatLichOnline
             _notificationAppService = notificationAppService;
             _dmKhachHangRepository = khachHangRepository;
             _nhanSuService= nhanSuService;
+            _nhanVienResponsitory = nhanVienResponsitory;
             _userRoleRepository = userRoleRepository;
         }
         public List<string> GetAllTenant()
@@ -403,6 +406,7 @@ namespace BanHangBeautify.DatLichOnline
                         kh.IsDeleted = false;
                         kh.CreationTime = DateTime.Now;
                         await _dmKhachHangRepository.InsertAsync(kh);
+                        
                     }
                     Booking bk = new Booking();
                     bk.Id = Guid.NewGuid();
@@ -426,6 +430,15 @@ namespace BanHangBeautify.DatLichOnline
                     var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
                     var bookingService = CreateBookingService(bk.Id, data.IdDichVu);
                     var bookingNhanVien = CreateBookingNhanVien(bk.Id, data.IdNhanVien);
+                    if (data.IdNhanVien != null && data.IdNhanVien != Guid.Empty)
+                    {
+                        var nhanVien = _nhanVienResponsitory.FirstOrDefault(x => x.Id == data.IdNhanVien && x.IsDeleted == false && x.TrangThai == TrangThaiNhanVienConst.Ranh);
+                        if (nhanVien != null)
+                        {
+                                nhanVien.TrangThai = TrangThaiNhanVienConst.Ban;
+                                _nhanVienResponsitory.Update(nhanVien);
+                        }
+                    }
                     _bookingNhanVienRepository.Insert(bookingNhanVien);
                     _bookingServiceRepository.Insert(bookingService);
                     await CurrentUnitOfWork.SaveChangesAsync();
