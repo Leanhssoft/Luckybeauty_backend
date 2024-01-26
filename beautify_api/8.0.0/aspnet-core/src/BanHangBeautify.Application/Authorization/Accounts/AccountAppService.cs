@@ -1,11 +1,14 @@
 ﻿using Abp.Configuration;
+using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using BanHangBeautify.Authorization.Accounts.Dto;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.SeedData;
 using BanHangBeautify.Url;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +22,7 @@ using static Asd.AbpZeroTemplate.Configuration.AppSettings.ExternalLoginProvider
 
 namespace BanHangBeautify.Authorization.Accounts
 {
-    public class AccountAppService : SPAAppServiceBase, IAccountAppService
+    public class AccountAppService : SPAAppServiceBase, IAccountAppService, ITransientDependency
     {
         // from: http://regexlib.com/REDetails.aspx?regexp_id=1923
         public const string PasswordRegex = "(?=^.{8,}$)(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\\s)[0-9a-zA-Z!@#$%^&*()]*$";
@@ -30,12 +33,17 @@ namespace BanHangBeautify.Authorization.Accounts
         private readonly IUserEmailer _userEmailer;
         public IAppUrlService AppUrlService { get; set; }
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly AbpZeroDbMigrator _migrator;
+        private readonly ISeedDataAppService _seedDataEntities;
+
         public AccountAppService(
             UserRegistrationManager userRegistrationManager, 
             IAbpSession session, 
             IUserEmailer userEmailer,
             IAppUrlService appUrlService,
-            IUnitOfWorkManager unitOfWorkManager
+            IUnitOfWorkManager unitOfWorkManager,
+            AbpZeroDbMigrator migrator,
+            ISeedDataAppService seedDataEntities
             )
         {
             _userRegistrationManager = userRegistrationManager;
@@ -43,6 +51,8 @@ namespace BanHangBeautify.Authorization.Accounts
             _userEmailer = userEmailer;
             AppUrlService = appUrlService;
             _unitOfWorkManager = unitOfWorkManager;
+            _migrator = migrator;
+            _seedDataEntities = seedDataEntities;
         }
 
         public async Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input)
@@ -57,6 +67,10 @@ namespace BanHangBeautify.Authorization.Accounts
             {
                 return new IsTenantAvailableOutput(TenantAvailabilityState.InActive);
             }
+
+            // migration
+            _migrator.CreateOrMigrateForTenant(tenant);
+            _seedDataEntities.InnitData(tenant.Id);
 
             return new IsTenantAvailableOutput(TenantAvailabilityState.Available, tenant.Id);
         }
