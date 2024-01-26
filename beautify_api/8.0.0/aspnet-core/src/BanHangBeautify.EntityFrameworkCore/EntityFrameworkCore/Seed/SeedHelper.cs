@@ -2,7 +2,6 @@
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Uow;
 using Abp.MultiTenancy;
-using BanHangBeautify.EntityFrameworkCore.Seed.Custom;
 using BanHangBeautify.EntityFrameworkCore.Seed.Host;
 using BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa;
 using BanHangBeautify.EntityFrameworkCore.Seed.Tenants;
@@ -38,21 +37,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed
 
             //Setting tenants
             new DefaultTenantSettings(context).Create();
-
-            new DM_NganHangBuilder(context).Create();
         }
-
-        public static void SeedTenant(IIocResolver iocResolver)
-        {
-            WithDbContext<SPADbContext>(iocResolver, SeedTenant);
-        }
-
-        public static void SeedTenant(SPADbContext context)
-        {
-            context.SuppressAutoSetTenantId = true;
-            new DM_NganHangBuilder(context).Create();
-        }
-
         private static void WithDbContext<TDbContext>(IIocResolver iocResolver, Action<TDbContext> contextAction)
             where TDbContext : DbContext
         {
