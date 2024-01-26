@@ -17,6 +17,7 @@ using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Editions;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy.Dto;
+using BanHangBeautify.SeedData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,8 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.MultiTenancy
 {
     [AbpAuthorize(PermissionNames.Pages_Tenants)]
-    public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, PagedTenantResultRequestDto, CreateTenantDto, TenantDto>, ITenantAppService
+    public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, 
+        PagedTenantResultRequestDto, CreateTenantDto, TenantDto>, ITenantAppService
     {
         private readonly TenantManager _tenantManager;
         private readonly EditionManager _editionManager;
@@ -41,6 +43,7 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         private readonly IRepository<Setting, long> _settingRepository;
         private readonly IConfiguration _configuration;
+        private readonly ISeedDataAppService _seedDataEntities;
         public TenantAppService(
             IRepository<Tenant, int> repository,
             TenantManager tenantManager,
@@ -51,7 +54,8 @@ namespace BanHangBeautify.MultiTenancy
             IRepository<HT_CongTy, Guid> congTyRepository,
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<Setting, long> settingRepository,
-            IConfiguration configuration
+            IConfiguration configuration,
+            ISeedDataAppService seedDataEntities
             )
             : base(repository)
         {
@@ -65,6 +69,7 @@ namespace BanHangBeautify.MultiTenancy
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
             _settingRepository = settingRepository;
             _configuration = configuration;
+            _seedDataEntities = seedDataEntities;
         }
         [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
@@ -129,6 +134,9 @@ namespace BanHangBeautify.MultiTenancy
                 // Assign admin user to role!
                 CheckErrors(await _userManager.AddToRoleAsync(adminUser, adminRole.Name));
                 await CurrentUnitOfWork.SaveChangesAsync();
+
+                // init Data
+                _seedDataEntities.InnitData(tenant.Id);
             }
 
             return MapToEntityDto(tenant);
