@@ -114,6 +114,9 @@ namespace BanHangBeautify.Checkin
                     objUp.DeleterUserId = AbpSession.UserId;
                     objUp.DeletionTime = DateTime.Now;
                     objUp.IsDeleted = true;
+
+                    // xóa checkin --> xóa luon trong bảng _checkInHoaDon
+                    _checkInHoaDon.GetAll().Where(x => x.IdCheckIn == idCheckIn).ToList().ForEach(x => x.IsDeleted = true);
                 }
                 await _khCheckIn.UpdateAsync(objUp);
                 return string.Empty;
@@ -131,7 +134,7 @@ namespace BanHangBeautify.Checkin
                 var arrIdCheckin = _checkInHoaDon.GetAllList().Where(x => x.IdBooking == idBooking).Select(x => x.IdCheckIn);
                 // only get if khachhang is checking
                 var lstCheckin = _khCheckIn.GetAllList(x => arrIdCheckin.Contains(x.Id)
-                  && (x.TrangThai == TrangThaiCheckin.DOING || x.TrangThai == TrangThaiCheckin.WAITING)).Select(x=>x.Id);
+                  && (x.TrangThai == TrangThaiCheckin.DOING || x.TrangThai == TrangThaiCheckin.WAITING)).Select(x => x.Id);
                 return lstCheckin;
             }
             catch (Exception ex)
