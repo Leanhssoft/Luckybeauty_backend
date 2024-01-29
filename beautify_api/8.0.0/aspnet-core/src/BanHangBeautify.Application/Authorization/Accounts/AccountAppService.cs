@@ -37,8 +37,8 @@ namespace BanHangBeautify.Authorization.Accounts
         private readonly ISeedDataAppService _seedDataEntities;
 
         public AccountAppService(
-            UserRegistrationManager userRegistrationManager, 
-            IAbpSession session, 
+            UserRegistrationManager userRegistrationManager,
+            IAbpSession session,
             IUserEmailer userEmailer,
             IAppUrlService appUrlService,
             IUnitOfWorkManager unitOfWorkManager,
@@ -69,7 +69,15 @@ namespace BanHangBeautify.Authorization.Accounts
             }
 
             // migration
-            _migrator.CreateOrMigrateForTenant(tenant);
+            if (tenant.Id == 1)
+            {
+                _migrator.CreateOrMigrateForHost();
+            }
+            else
+            {
+                _migrator.CreateOrMigrateForTenant(tenant);
+            }
+
             _seedDataEntities.InnitData(tenant.Id);
 
             return new IsTenantAvailableOutput(TenantAvailabilityState.Available, tenant.Id);
@@ -114,7 +122,6 @@ namespace BanHangBeautify.Authorization.Accounts
             {
                 result = false;
             }
-            
             return result;
         }
 
@@ -161,7 +168,6 @@ namespace BanHangBeautify.Authorization.Accounts
                     Message = "Có lỗi xảy ra vui lòng thử lại sau!"
                 };
             }
-            
         }
 
         public async Task SendEmailActivationLink(SendEmailActivationLinkInput input)
