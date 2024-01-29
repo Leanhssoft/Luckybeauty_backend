@@ -21,6 +21,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed
         public static void SeedHostDb(SPADbContext context)
         {
             context.SuppressAutoSetTenantId = true;
+            context.Database.Migrate();
 
             // Host seed
             new InitialHostDbBuilder(context).Create();
@@ -38,6 +39,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed
             //Setting tenants
             new DefaultTenantSettings(context).Create();
         }
+
         private static void WithDbContext<TDbContext>(IIocResolver iocResolver, Action<TDbContext> contextAction)
             where TDbContext : DbContext
         {
@@ -45,11 +47,9 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed
             {
                 using (var uow = uowManager.Object.Begin(TransactionScopeOption.Suppress))
                 {
-
                     var context = uowManager.Object.Current.GetDbContext<TDbContext>(MultiTenancySides.Host);
-
+                    //context.Database.Migrate();
                     contextAction(context);
-
                     uow.Complete();
                 }
             }
