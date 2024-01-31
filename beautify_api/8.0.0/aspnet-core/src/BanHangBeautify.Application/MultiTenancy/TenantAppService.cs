@@ -281,7 +281,7 @@ namespace BanHangBeautify.MultiTenancy
             await _tenantManager.DeleteAsync(tenant);
         }
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
+        [AbpAuthorize(PermissionNames.Pages_Tenants_UpdateMigration)]
         public async Task UpdateMigrations()
         {
                 var hostConnStr = _configuration.GetConnectionString(SPAConsts.ConnectionStringName);
