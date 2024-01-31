@@ -3,6 +3,7 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Configuration;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
@@ -16,6 +17,8 @@ using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Editions;
 using BanHangBeautify.Entities;
+using BanHangBeautify.EntityFrameworkCore;
+using BanHangBeautify.EntityFrameworkCore.Seed;
 using BanHangBeautify.MultiTenancy.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -40,7 +43,9 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         private readonly IRepository<Setting, long> _settingRepository;
+        private readonly AbpZeroDbMigrator _migrator;
         private readonly IConfiguration _configuration;
+
         public TenantAppService(
             IRepository<Tenant, int> repository,
             TenantManager tenantManager,
@@ -51,6 +56,7 @@ namespace BanHangBeautify.MultiTenancy
             IRepository<HT_CongTy, Guid> congTyRepository,
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<Setting, long> settingRepository,
+            AbpZeroDbMigrator migration,
             IConfiguration configuration
             )
             : base(repository)
@@ -64,6 +70,7 @@ namespace BanHangBeautify.MultiTenancy
             _chiNhanhRepository = chiNhanhRepository;
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
             _settingRepository = settingRepository;
+            _migrator = migration;
             _configuration = configuration;
         }
         [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
@@ -264,6 +271,24 @@ namespace BanHangBeautify.MultiTenancy
             CheckDeletePermission();
             var tenant = await _tenantManager.GetByIdAsync(id);
             await _tenantManager.DeleteAsync(tenant);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
+        public async Task UpdateMigrations()
+        {
+                var hostConnStr = _configuration.GetConnectionString(SPAConsts.ConnectionStringName);
+                _migrator.CreateOrMigrateForHost(SeedHelper.SeedHostDb);
+                var migratedDatabases = new HashSet<string>();
+                var tenants = Repository.GetAllList(t => t.ConnectionString != null && t.ConnectionString != "");
+                for (var i = 0; i < tenants.Count; i++)
+                {
+                    var tenant = tenants[i];
+                    if (!migratedDatabases.Contains(tenant.ConnectionString))
+                    {
+                        _migrator.CreateOrMigrateForTenant(tenant);
+                        migratedDatabases.Add(tenant.ConnectionString);
+                    }
+                }
         }
 
         [HttpPost]

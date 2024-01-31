@@ -285,13 +285,15 @@
         public const string Pages = "Pages";
         public const string Pages_Users_Activation = "Pages.Users.Activation";
 
-
-
+        //COMMON PERMISSIONS (FOR HOST)
         public const string Pages_Tenants = "Pages.Tenants";
         public const string Pages_Tenants_Create = "Pages.Tenants.Create";
         public const string Pages_Tenants_Edit = "Pages.Tenants.Edit";
         public const string Pages_Tenants_ChangeFeatures = "Pages.Tenants.ChangeFeatures";
+        public const string Pages_Tenants_UpdateMigration = "Pages.Tenants.UpdateMigration";
         public const string Pages_Tenants_Delete = "Pages.Tenants.Delete";
+        //END COMMON PERMISSIONS (FOR HOST)
+
         public const string Pages_Administration = "Pages.Administration";
         public const string Pages_Administration_Roles = "Pages.Administration.Roles";
         public const string Pages_Administration_Roles_Create = "Pages.Administration.Roles.Create";
