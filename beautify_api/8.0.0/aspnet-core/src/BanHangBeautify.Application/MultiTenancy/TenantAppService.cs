@@ -59,7 +59,7 @@ namespace BanHangBeautify.MultiTenancy
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<Setting, long> settingRepository,
             IConfiguration configuration,
-            ISeedDataAppService seedDataEntities
+            ISeedDataAppService seedDataEntities,
             AbpZeroDbMigrator migration,
             IConfiguration configuration
             )
