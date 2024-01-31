@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using static Google.Apis.Drive.v3.FilesResource;
 
@@ -19,10 +21,13 @@ namespace BanHangBeautify.UploadFile
     {
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly DriveService _service;
-        private const string _folderId = "1m1VSdF9sP435_wCStZyhLSoqCGhlzu7J";// Id của thư mục được chia sẻ trên google drive
-        public GoogleAPIAppService(IWebHostEnvironment hostEnvironment)
+        private readonly IConfiguration _config;
+        private readonly string _folderId;// Id của thư mục được chia sẻ trên google drive
+        public GoogleAPIAppService(IWebHostEnvironment hostEnvironment, IConfiguration config)
         {
             _hostEnvironment = hostEnvironment;
+            _config = config;
+            _folderId= _config["GoogleApi:FolderShareId"];
             // cấp quyền truy cập vào drive
             var pathFile = Path.Combine(_hostEnvironment.WebRootPath, @"GoogleAPI\credentials.json");
             var credential = GoogleCredential.FromFile(pathFile).CreateScoped(DriveService.ScopeConstants.Drive);
@@ -69,6 +74,41 @@ namespace BanHangBeautify.UploadFile
                 return string.Empty;
             }
         }
+        private async Task<string> SaveFileToServer_toTemp([FromForm] IFormFile file)
+        {
+            try
+            {
+                string path = Path.GetTempPath();
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                path = Path.Combine(path, file.FileName);
+
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+                //using (MemoryStream memoryStream = new MemoryStream())
+                //{
+                //    // Đọc dữ liệu từ IFormFile và ghi vào bộ nhớ đệm
+                //    await file.CopyToAsync(memoryStream);
+
+                //    // Chuyển đổi dữ liệu từ MemoryStream thành mảng byte
+                //    byte[] imageData = memoryStream.ToArray();
+
+                //    //return imageData;
+                //}
+
+                return path;
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
+        
         [HttpGet]
         public async Task<IList<Google.Apis.Drive.v3.Data.File>> GoogleApi_GetAllFile()
         {
@@ -285,7 +325,7 @@ namespace BanHangBeautify.UploadFile
                         MimeType = mimeType
                     };
 
-                    string path = await SaveFileToServer(file);
+                    string path = await SaveFileToServer_toTemp(file);
 
                     FilesResource.CreateMediaUpload request;
                     // Create a new file, with metadata and stream.

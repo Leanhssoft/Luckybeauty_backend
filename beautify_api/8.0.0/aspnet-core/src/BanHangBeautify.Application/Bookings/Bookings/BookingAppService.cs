@@ -322,7 +322,7 @@ namespace BanHangBeautify.Bookings.Bookings
                         await _bookingNhanVienRepository.UpdateAsync(item);
                     }
                 }
-                findBooking.TrangThai = TrangThaiBookingConst.Huy;
+                //findBooking.TrangThai = TrangThaiBookingConst.Huy;// khônmg cập nhật trạng thái = Hủy: chỉ dùng khi khách Hủy lịch
                 findBooking.DeletionTime = DateTime.Now;
                 findBooking.DeleterUserId = AbpSession.UserId;
                 await _repository.DeleteAsync(findBooking);
