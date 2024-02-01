@@ -133,8 +133,15 @@ namespace BanHangBeautify.MultiTenancy
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
                 await _userManager.InitializeOptionsAsync(tenant.Id);
 
-                //CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword));
-                CheckErrors(await _userManager.CreateAsync(adminUser, "123qwe"));
+                if (input.IsDefaultPassword == true || string.IsNullOrEmpty(input.Password))
+                {
+                    CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword));
+                }
+                else
+                {
+                    CheckErrors(await _userManager.CreateAsync(adminUser, input.Password));
+                }
+                
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get admin user's id
 
                 // Assign admin user to role!
