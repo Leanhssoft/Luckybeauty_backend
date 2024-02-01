@@ -60,8 +60,7 @@ namespace BanHangBeautify.MultiTenancy
             IRepository<Setting, long> settingRepository,
             IConfiguration configuration,
             ISeedDataAppService seedDataEntities,
-            AbpZeroDbMigrator migration,
-            IConfiguration configuration
+            AbpZeroDbMigrator migration
             )
             : base(repository)
         {
