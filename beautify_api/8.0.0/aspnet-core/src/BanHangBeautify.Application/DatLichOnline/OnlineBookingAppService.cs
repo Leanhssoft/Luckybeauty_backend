@@ -41,6 +41,7 @@ namespace BanHangBeautify.DatLichOnline
         IRepository<NS_LichLamViec, Guid> _lichLamViecRepository;
         IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaRepository;
         IRepository<NS_CaLamViec, Guid> _caLamViecRepository;
+        IRepository<DM_NgayNghiLe, Guid> _nghiLeRepository;
         IRepository<HT_CongTy, Guid> _congTyRepository;
         IRepository<DM_KhachHang, Guid> _dmKhachHangRepository;
         IRepository<NS_NhanVien, Guid> _nhanVienResponsitory;
@@ -60,7 +61,8 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<NS_LichLamViec, Guid> lichLamViecRepository,
             IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaRepository,
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
-            IRepository<HT_CongTy, Guid> congTyRepository,
+            IRepository<DM_NgayNghiLe, Guid> nghiLeRepository,
+        IRepository<HT_CongTy, Guid> congTyRepository,
             IAppNotifier appNotifier,
             INotificationAppService notificationAppService,
             IRepository<DM_KhachHang, Guid> khachHangRepository,
@@ -79,6 +81,7 @@ namespace BanHangBeautify.DatLichOnline
             _lichLamViecCaRepository = lichLamViecCaRepository;
             _lichLamViecRepository = lichLamViecRepository;
             _caLamViecRepository = caLamViecRepository;
+            _nghiLeRepository = nghiLeRepository;
             _congTyRepository = congTyRepository;
             _appNotifier = appNotifier;
             _notificationAppService = notificationAppService;
@@ -512,7 +515,7 @@ namespace BanHangBeautify.DatLichOnline
             {
                 bookingService = new BookingService();
             }
-            return bookingService;
+             return bookingService;
         }
         [NonAction]
         public BookingNhanVien CreateBookingNhanVien(Guid idBooking, Guid idNhanVien)
@@ -549,6 +552,11 @@ namespace BanHangBeautify.DatLichOnline
                 var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IsDeleted == false).ToList();
                 var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date == input.DateBooking.Date && x.IsDeleted == false).ToList();
                 var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id) && x.IsDeleted == false).ToList();
+                var nghiLe = _nghiLeRepository.GetAll().Where(x => x.DenNgay>= input.DateBooking && x.TuNgay <= input.DateBooking).ToList();
+                if (nghiLe != null && nghiLe.Count > 0)
+                {
+                   return new List<AvailableTime>();
+                }
                 if (caLamViec != null && caLamViec.Count > 0)
                 {
                     foreach (var x in caLamViec)
@@ -563,6 +571,7 @@ namespace BanHangBeautify.DatLichOnline
                             AvailableTime time = new AvailableTime();
                             bool isAvailableTime = true;
                             time.Time = currentTime.ToString("HH:mm");
+                            
                             if (x.LaNghiGiuaCa == true)
                             {
                                 var nghiTuStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiTu.Value.ToString("HH:mm");
