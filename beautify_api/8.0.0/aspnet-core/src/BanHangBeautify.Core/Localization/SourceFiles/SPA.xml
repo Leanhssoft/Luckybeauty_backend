@@ -266,5 +266,6 @@
 		<text name="InvalidPasswordResetCode">Mã đặt lại mật khẩu không chính xác</text>
 		<text name="InvalidPasswordResetCode_Detail">Mã đặt lại mật khẩu không chính xác (Chi tiết)</text>
 		<text name="Reset">Đặt lại</text>
+    <text name="UpdateMigration">Cập nhật migration</text>
 	</texts>
 </localizationDictionary>

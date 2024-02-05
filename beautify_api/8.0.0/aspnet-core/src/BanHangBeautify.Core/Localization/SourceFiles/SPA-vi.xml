@@ -254,5 +254,6 @@
 		<text name="DeleteHoaDon">Xóa hóa đơn</text>
 		<text name="Notifications">Thông báo</text>
 		<text name="Birthday">Sinh nhật</text>
+    <text name="UpdateMigration">Cập nhật migration</text>
 	</texts>
 </localizationDictionary>

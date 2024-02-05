@@ -56,6 +56,11 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
             command.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
             command.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
             command.Parameters.Add(new SqlParameter("@IdNhomKHach", input.IdNhomKhach));
+            command.Parameters.Add(new SqlParameter("@TongChiTieuTu", input.TongChiTieuTu));
+            command.Parameters.Add(new SqlParameter("@TongChiTieuDen", input.TongChiTieuDen));
+            command.Parameters.Add(new SqlParameter("@TimeFrom", input.TimeFrom));
+            command.Parameters.Add(new SqlParameter("@TimeTo", input.TimeTo));
+            command.Parameters.Add(new SqlParameter("@GioiTinh",input.GioiTinh));
 
             using (var dataReader = await command.ExecuteReaderAsync())
             {

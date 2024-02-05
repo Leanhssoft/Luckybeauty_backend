@@ -22,9 +22,9 @@ namespace BanHangBeautify.MultiTenancy.Dto
 
         [StringLength(AbpTenantBase.MaxConnectionStringLength)]
         public string ConnectionString { get; set; }
-        //[Required(ErrorMessage = "Please enter your Password")]
-        //[StringLength(50, MinimumLength = 6, ErrorMessage = "Password length between 6 than 50 characters.")]
-        //public string Password { get; set; }
+        public string Password { get; set; }
+
+        public bool IsDefaultPassword { set; get; }
         public bool IsActive { get; set; }
     }
 }

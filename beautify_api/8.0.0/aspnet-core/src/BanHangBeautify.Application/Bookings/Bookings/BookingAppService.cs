@@ -267,12 +267,16 @@ namespace BanHangBeautify.Bookings.Bookings
                 objUp.TrangThai = trangThai;
                 objUp.LastModificationTime = DateTime.Now;
                 objUp.LastModifierUserId = AbpSession.UserId;
-                //if (trangThai == 0)
-                //{
-                //    objUp.DeleterUserId = AbpSession.UserId;
-                //    objUp.DeletionTime = DateTime.Now;
-                //    objUp.IsDeleted = true;
-                //}
+                if (trangThai == TrangThaiBookingConst.Huy||trangThai==TrangThaiBookingConst.HoanThanh)
+                {
+                    var bookingNhanVien = _bookingNhanVienRepository.FirstOrDefault(x => x.IdBooking == objUp.Id);
+                    if (bookingNhanVien != null)
+                    {
+                        var nhanVien = _nhanVienService.FirstOrDefault(x => x.Id == bookingNhanVien.IdNhanVien);
+                        nhanVien.TrangThai = TrangThaiNhanVienConst.Ranh;
+                        _nhanVienService.Update(nhanVien);
+                    }
+                }
                 await _repository.UpdateAsync(objUp);
                 result.Status = "success";
                 result.Message = "Cập nhật trạng thái lịch hẹn thành công";
@@ -468,6 +472,14 @@ namespace BanHangBeautify.Bookings.Bookings
                 findBooking.LastModifierUserId = AbpSession.UserId;
                 findBooking.TrangThai = TrangThaiBookingConst.Huy;
                 await _repository.UpdateAsync(findBooking);
+                var bookingNhanVien = _bookingNhanVienRepository.FirstOrDefault(x => x.IdBooking == findBooking.Id);
+                if(bookingNhanVien != null)
+                {
+                    var nhanVien = _nhanVienService.FirstOrDefault(x => x.Id == bookingNhanVien.IdNhanVien);
+                    nhanVien.TrangThai = TrangThaiNhanVienConst.Ranh;
+                    _nhanVienService.Update(nhanVien);
+                }
+                
                 result = true;
             }
             return result;

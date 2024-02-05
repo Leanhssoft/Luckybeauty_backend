@@ -124,6 +124,8 @@ namespace BanHangBeautify.Suggests
                 {
                     continue;
                 }
+                var trangThaiNhanVien = _nhanVienRepository.FirstOrDefault(x=>x.Id== item.Id).TrangThai;
+                item.TrangThai = trangThaiNhanVien;
                 result.Add(item);
             }
             return result;

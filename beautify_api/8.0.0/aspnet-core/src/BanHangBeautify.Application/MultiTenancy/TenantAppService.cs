@@ -3,6 +3,7 @@ using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Configuration;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
@@ -16,6 +17,8 @@ using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Editions;
 using BanHangBeautify.Entities;
+using BanHangBeautify.EntityFrameworkCore;
+using BanHangBeautify.EntityFrameworkCore.Seed;
 using BanHangBeautify.MultiTenancy.Dto;
 using BanHangBeautify.SeedData;
 using Microsoft.AspNetCore.Identity;
@@ -42,6 +45,7 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         private readonly IRepository<Setting, long> _settingRepository;
+        private readonly AbpZeroDbMigrator _migrator;
         private readonly IConfiguration _configuration;
         private readonly ISeedDataAppService _seedDataEntities;
         public TenantAppService(
@@ -55,7 +59,8 @@ namespace BanHangBeautify.MultiTenancy
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<Setting, long> settingRepository,
             IConfiguration configuration,
-            ISeedDataAppService seedDataEntities
+            ISeedDataAppService seedDataEntities,
+            AbpZeroDbMigrator migration
             )
             : base(repository)
         {
@@ -68,6 +73,7 @@ namespace BanHangBeautify.MultiTenancy
             _chiNhanhRepository = chiNhanhRepository;
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
             _settingRepository = settingRepository;
+            _migrator = migration;
             _configuration = configuration;
             _seedDataEntities = seedDataEntities;
         }
@@ -127,8 +133,15 @@ namespace BanHangBeautify.MultiTenancy
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
                 await _userManager.InitializeOptionsAsync(tenant.Id);
 
-                //CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword));
-                CheckErrors(await _userManager.CreateAsync(adminUser, "123qwe"));
+                if (input.IsDefaultPassword == true || string.IsNullOrEmpty(input.Password))
+                {
+                    CheckErrors(await _userManager.CreateAsync(adminUser, User.DefaultPassword));
+                }
+                else
+                {
+                    CheckErrors(await _userManager.CreateAsync(adminUser, input.Password));
+                }
+                
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get admin user's id
 
                 // Assign admin user to role!
@@ -272,6 +285,24 @@ namespace BanHangBeautify.MultiTenancy
             CheckDeletePermission();
             var tenant = await _tenantManager.GetByIdAsync(id);
             await _tenantManager.DeleteAsync(tenant);
+        }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_Tenants_UpdateMigration)]
+        public async Task UpdateMigrations()
+        {
+                var hostConnStr = _configuration.GetConnectionString(SPAConsts.ConnectionStringName);
+                _migrator.CreateOrMigrateForHost(SeedHelper.SeedHostDb);
+                var migratedDatabases = new HashSet<string>();
+                var tenants = Repository.GetAllList(t => t.ConnectionString != null && t.ConnectionString != "");
+                for (var i = 0; i < tenants.Count; i++)
+                {
+                    var tenant = tenants[i];
+                    if (!migratedDatabases.Contains(tenant.ConnectionString))
+                    {
+                        _migrator.CreateOrMigrateForTenant(tenant);
+                        migratedDatabases.Add(tenant.ConnectionString);
+                    }
+                }
         }
 
         [HttpPost]
