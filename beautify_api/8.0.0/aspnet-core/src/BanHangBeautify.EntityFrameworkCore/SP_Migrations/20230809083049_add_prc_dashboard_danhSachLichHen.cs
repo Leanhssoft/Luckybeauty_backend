@@ -46,6 +46,7 @@ BEGIN
 	RIGHT JOIN DM_HangHoa hh on hh.id = dvqd.IdHangHoa
 	JOIN DM_KhachHang kh on kh.Id = b.IdKhachHang
 	WHERE b.IdChiNhanh = @IdChiNhanh AND b.IsDeleted = 0 AND b.TenantId = @TenantId
+	AND b.BookingDate between @ThoiGianTu AND @ThoiGianDen
 	ORDER BY b.CreationTime DESC;
 
 	Select * FROM @Appointment;
