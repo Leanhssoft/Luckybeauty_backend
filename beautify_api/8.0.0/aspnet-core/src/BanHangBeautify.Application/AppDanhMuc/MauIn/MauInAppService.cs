@@ -37,6 +37,7 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         {
             DM_MauIn data = ObjectMapper.Map<DM_MauIn>(input);
             data.Id = Guid.NewGuid();
+            data.TenantId = AbpSession.TenantId ?? 1;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.IsDeleted = false;
