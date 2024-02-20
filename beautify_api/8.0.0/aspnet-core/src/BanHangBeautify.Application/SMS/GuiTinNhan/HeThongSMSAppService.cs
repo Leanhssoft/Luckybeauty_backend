@@ -19,6 +19,8 @@ using BanHangBeautify.DataExporting.Excel.EpPlus;
 using System.Globalization;
 using BanHangBeautify.SMS.ESMS;
 using BanHangBeautify.AppCommon;
+using Newtonsoft.Json;
+using BanHangBeautify.Consts;
 
 namespace BanHangBeautify.SMS.GuiTinNhan
 {
@@ -42,6 +44,10 @@ namespace BanHangBeautify.SMS.GuiTinNhan
         {
             HeThong_SMS data = ObjectMapper.Map<HeThong_SMS>(input);
             data.Id = Guid.NewGuid();
+            if (input.IdKhachHang == Guid.Empty)
+            {
+                data.IdKhachHang = null;
+            }
             data.ThoiGianGui = DateTime.Now;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
@@ -63,7 +69,14 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             data.LastModifierUserId = AbpSession.UserId;
             data.IdNguoiGui = AbpSession.UserId;
             data.SoTinGui = input.SoTinGui ?? 0;
-            data.IdKhachHang = input.IdKhachHang;
+            if (input.IdKhachHang == Guid.Empty)
+            {
+                data.IdKhachHang = null;
+            }
+            else
+            {
+                data.IdKhachHang = input.IdKhachHang;
+            }
             data.IdHoaDon = input.IdHoaDon;
             data.IdTinNhan = input.IdTinNhan;
             data.SoDienThoai = input.SoDienThoai;
@@ -77,14 +90,14 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             return result;
         }
         [HttpPost]
-        public async Task<int> GuiLai_TinNhan_ThatBai(List<Guid> listID, string brandname)
+        public async Task<IActionResult> GuiLai_TinNhan_ThatBai(List<Guid> listID, string brandname)
         {
             try
             {
-                int countSuccess = 0;
+                int countSuccess = 0, status = 0;
                 if (string.IsNullOrEmpty(brandname))
                 {
-                    return 0;
+                    return new JsonResult(new { Success = 0, Err = listID.Count, MessageStatus = ConstSMS.ESMS_TrangThaiTin.BRANDNAME_NOTEXIST });
                 }
 
                 List<HeThong_SMS> lst = _hethongSMS.GetAllList(x => listID.Contains(x.Id));
@@ -106,14 +119,23 @@ namespace BanHangBeautify.SMS.GuiTinNhan
                         objUp.IdTinNhan = smsResult.MessageId;
                         objUp.TrangThai = smsResult.MessageStatus;
                         await _hethongSMS.UpdateAsync(objUp);
-                        countSuccess++;
+
+                        if (smsResult.MessageStatus == 100)
+                        {
+                            countSuccess++;
+                        }
+                        else
+                        {
+                            status = smsResult.MessageStatus;
+                        }
                     }
                 }
-                return countSuccess;
+                var data = new { Success = countSuccess, Err = lst.Count - countSuccess, MessageStatus = status };
+                return new JsonResult(data);
             }
             catch (Exception)
             {
-                return 0;
+                return new JsonResult(new { Success = 0, Err = listID.Count, MessageStatus = ConstSMS.ESMS_TrangThaiTin.ERROR_UNDEFINED });
             }
         }
         [HttpGet]
