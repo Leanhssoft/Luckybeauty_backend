@@ -13,14 +13,14 @@ namespace BanHangBeautify.Entities
     public class Zalo_KhachHangThanhVien: FullAuditedEntity<Guid>, IMustHaveTenant
     {
         public int TenantId { get; set; }
-        public Guid IdKhachHang { get;set; }
-        [ForeignKey(nameof(IdKhachHang))]
         public DM_KhachHang DM_KhachHang { get; set; }
         [MaxLength(500)]
         public string TenDangKy { get; set; }
         [MaxLength(100)]
         public string SoDienThoaiDK { get; set; } 
+        public string DiaChi { get; set; } 
+        public string TenTinhThanh { get; set; } 
+        public string TenQuanHuyen { get; set; } 
         public string ZOAUserId { get; set; }
-
     }
 }

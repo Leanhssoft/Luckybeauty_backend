@@ -2,6 +2,7 @@
 using Abp.Domain.Entities.Auditing;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
 {
@@ -31,18 +32,22 @@ namespace BanHangBeautify.Entities
         public DateTime? NgaySinh { get; set; }
         public int? KieuNgaySinh { get; set; } = 0;
         public int? IdLoaiKhach { get; set; } = 1;
-        //[ForeignKey("IdLoaiKhach")]
-        //public DM_LoaiKhach LoaiKhach { get; set; }
+        [ForeignKey("IdLoaiKhach")]
+        public DM_LoaiKhach DM_LoaiKhach { get; set; }
         public Guid? IdNhomKhach { get; set; }
-        //[ForeignKey("IdNhomKhach")]
-        //public DM_NhomKhachHang NhomKhach { get; set; }
+        [ForeignKey("IdNhomKhach")]
+        public DM_NhomKhachHang DM_NhomKhachHang { get; set; }
         public Guid? IdNguonKhach { get; set; }
-        //[ForeignKey("IdNguonKhach")]
-        //public DM_NguonKhach NguonKhach { get; set; }
+        [ForeignKey("IdNguonKhach")]
+        public DM_NguonKhach DM_NguonKhach { get; set; }
         public Guid? IdTinhThanh { get; set; }
+        [ForeignKey("IdTinhThanh")]
+        public DM_TinhThanh DM_TinhThanh { get; set; }
         public Guid? IdQuanHuyen { get; set; }
-        public Guid? NguoiTao { get; set; }
-        public Guid? NguoiSua { get; set; }
-        public Guid? NguoiXoa { get; set; }
+        [ForeignKey("IdQuanHuyen")]
+        public DM_QuanHuyen DM_QuanHuyen { get; set; }
+        public Guid? IdKhachHangZOA { get; set; }
+        [ForeignKey("IdKhachHangZOA")]
+        public Zalo_KhachHangThanhVien Zalo_KhachHangThanhVien { get; set; }
     }
 }
