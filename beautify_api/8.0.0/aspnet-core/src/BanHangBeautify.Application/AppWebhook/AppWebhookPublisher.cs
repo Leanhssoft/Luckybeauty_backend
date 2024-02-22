@@ -60,9 +60,10 @@ namespace BanHangBeautify.AppWebhook
                 CreateOrEditKhachHangDto customer = new()
                 {
                     IdKhachHangZOA = dataUser.Id,
-                    TenKhachHang = userInfor.Phone,
-                    SoDienThoai = userInfor.Address,
-                    DiaChi = userInfor.City,
+                    TenKhachHang = userInfor.Name,
+                    TenKhachHang_KhongDau = BanHangBeautify.AppCommon.ConvertHelper.ConvertToUnSign(userInfor.Name),
+                    SoDienThoai = userInfor.Phone,
+                    DiaChi = userInfor.Address,
                     GioiTinhNam = false,
                     TrangThai = 1,
                     IdLoaiKhach = LoaiKhachHang.KHACH_HANG,
