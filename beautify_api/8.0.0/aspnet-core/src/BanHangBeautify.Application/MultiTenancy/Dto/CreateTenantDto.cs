@@ -27,6 +27,6 @@ namespace BanHangBeautify.MultiTenancy.Dto
         public bool IsDefaultPassword { set; get; }
         public bool IsActive { get; set; }
         [Required]
-        public long EditionId { get; set; }
+        public int EditionId { get; set; }
     }
 }

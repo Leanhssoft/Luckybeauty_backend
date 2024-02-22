@@ -18,7 +18,7 @@ namespace BanHangBeautify.MultiTenancy.Dto
         public string Name { get; set; }
         public string ConnectionString { set; get; }
         [Required]
-        public long EditionId { get; set; }
+        public int? EditionId { get; set; }
         public bool IsActive { get; set; }
     }
 }

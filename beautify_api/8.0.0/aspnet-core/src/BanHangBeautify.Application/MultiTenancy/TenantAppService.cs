@@ -271,6 +271,7 @@ namespace BanHangBeautify.MultiTenancy
             tenant.IsActive = input.IsActive;
             tenant.Name = input.Name;
             tenant.TenancyName = input.TenancyName;
+            tenant.EditionId = input.EditionId;
             if (!string.IsNullOrEmpty(input.ConnectionString))
             {
                 tenant.ConnectionString = SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
