@@ -1,6 +1,7 @@
 using Abp.Application.Editions;
 using Abp.Application.Features;
 using BanHangBeautify.Editions;
+using BanHangBeautify.Entities;
 using BanHangBeautify.Features;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -23,11 +24,11 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
 
         private void CreateEditions()
         {
-            var defaultEdition = _context.Editions.IgnoreQueryFilters().FirstOrDefault(e => e.Name == EditionManager.DefaultEditionName);
+            var defaultEdition = _context.SubscribableEditions.IgnoreQueryFilters().FirstOrDefault(e => e.Name == EditionManager.DefaultEditionName);
             if (defaultEdition == null)
             {
-                defaultEdition = new Edition { Name = EditionManager.DefaultEditionName, DisplayName = EditionManager.DefaultEditionName };
-                _context.Editions.Add(defaultEdition);
+                defaultEdition = new SubscribableEdition { Name = EditionManager.DefaultEditionName, DisplayName = EditionManager.DefaultEditionName };
+                _context.SubscribableEditions.Add(defaultEdition);
                 
                 _context.SaveChanges();
 

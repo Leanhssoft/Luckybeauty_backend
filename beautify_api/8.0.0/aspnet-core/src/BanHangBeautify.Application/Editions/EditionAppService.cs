@@ -8,7 +8,9 @@ using Abp.Domain.Repositories;
 using Abp.UI;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Editions.Dto;
+using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,11 +23,11 @@ namespace BanHangBeautify.Editions
     public class EditionAppService:SPAAppServiceBase
     {
         private readonly EditionManager _editionManager;
-        private readonly IRepository<Edition> _editionRepository;
+        private readonly IRepository<SubscribableEdition> _editionRepository;
         private readonly IRepository<Tenant> _tenantRepository;
         private readonly IBackgroundJobManager _backgroundJobManager;
         public EditionAppService(EditionManager editionManager,
-            IRepository<Edition> editionRepository,
+            IRepository<SubscribableEdition> editionRepository,
             IRepository<Tenant> tenantRepository,
             IBackgroundJobManager backgroundJobManager)
         {
@@ -66,15 +68,17 @@ namespace BanHangBeautify.Editions
         }
 
         [AbpAuthorize(PermissionNames.Pages_Editions_Create)]
+        [HttpPost]
         public async Task CreateEdition(CreateEditionDto input)
         {
-            var edition = ObjectMapper.Map<Edition>(input.Edition);
+            var edition = ObjectMapper.Map<SubscribableEdition>(input.Edition);
             await _editionManager.CreateAsync(edition);
             await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the edition.
 
             await SetFeatureValues(edition, input.FeatureValues);
         }
         [AbpAuthorize(PermissionNames.Pages_Editions_Edit)]
+        [HttpPost]
         public async Task UpdateEdition(UpdateEditionDto input)
         {
             if (input.Edition.Id != null)
@@ -87,6 +91,7 @@ namespace BanHangBeautify.Editions
             }
         }
         [AbpAuthorize(PermissionNames.Pages_Editions_Delete)]
+        [HttpPost]
         public async Task DeleteEdition(EntityDto input)
         {
             var tenantCount = await _tenantRepository.CountAsync(t => t.EditionId == input.Id);

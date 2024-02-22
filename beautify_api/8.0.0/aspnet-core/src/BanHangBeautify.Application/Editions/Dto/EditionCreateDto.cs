@@ -13,6 +13,8 @@ namespace BanHangBeautify.Editions.Dto
 
         [Required]
         public string DisplayName { get; set; }
+        [Required]
+        public string Name { get; set; }
         public decimal? Price { get; set; }
     }
 }

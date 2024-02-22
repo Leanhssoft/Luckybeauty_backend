@@ -103,11 +103,11 @@ namespace BanHangBeautify.MultiTenancy
                 ? null
                 : SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
 
-            var defaultEdition = await _editionManager.FindByNameAsync(EditionManager.DefaultEditionName);
-            if (defaultEdition != null)
-            {
-                tenant.EditionId = defaultEdition.Id;
-            }
+            //var defaultEdition = await _editionManager.FindByNameAsync(EditionManager.DefaultEditionName);
+            //if (defaultEdition != null)
+            //{
+            //    tenant.EditionId = defaultEdition.Id;
+            //}
             var checkExist = await _tenantManager.FindByTenancyNameAsync(tenant.TenancyName);
             if (checkExist!=null)
             {
