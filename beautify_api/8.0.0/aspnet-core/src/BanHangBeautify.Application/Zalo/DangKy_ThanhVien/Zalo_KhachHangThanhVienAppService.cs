@@ -19,7 +19,7 @@ using static System.Net.WebRequestMethods;
 
 namespace BanHangBeautify.Zalo.DangKy_ThanhVien
 {
-    public class Zalo_KhachHangThanhVienAppService : SPAAppServiceBase
+    public class Zalo_KhachHangThanhVienAppService : SPAAppServiceBase, IZalo_KhachHangThanhVienAppService
     {
         private readonly IRepository<Zalo_KhachHangThanhVien, Guid> _zaloKhachHangThanhVien;
         private readonly IConfiguration _config;
@@ -30,7 +30,7 @@ namespace BanHangBeautify.Zalo.DangKy_ThanhVien
             _config = config;
         }
         [HttpPost]
-        public Zalo_KhachHangThanhVienDto DangKyThanhVienZOA(Zalo_KhachHangThanhVienDto dto)
+        public async Task<Zalo_KhachHangThanhVienDto> DangKyThanhVienZOA(Zalo_KhachHangThanhVienDto dto)
         {
             if (dto == null) { return new Zalo_KhachHangThanhVienDto(); };
             Zalo_KhachHangThanhVien objNew = ObjectMapper.Map<Zalo_KhachHangThanhVien>(dto);
@@ -39,7 +39,7 @@ namespace BanHangBeautify.Zalo.DangKy_ThanhVien
             objNew.CreationTime = DateTime.Now;
             objNew.CreatorUserId = AbpSession.UserId;
             objNew.IsDeleted = false;
-            _zaloKhachHangThanhVien.InsertAsync(objNew);
+            await _zaloKhachHangThanhVien.InsertAsync(objNew);
             var result = ObjectMapper.Map<Zalo_KhachHangThanhVienDto>(objNew);
             return result;
         }

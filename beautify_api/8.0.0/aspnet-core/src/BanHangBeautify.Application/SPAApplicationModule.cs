@@ -23,6 +23,10 @@ namespace BanHangBeautify
             Configuration.ReplaceService<IMailKitSmtpBuilder, SPAMailKitSmtpBuilder>();
             IocManager.Register<DashboardConfiguration>();
             Configuration.Webhooks.Providers.Add<ZaloHookProvider>();
+
+            // tự động hủy kích hoạt đăng ký. Sau nhiều lần đăng ký webhook không thành công
+            //Configuration.Webhooks.IsAutomaticSubscriptionDeactivationEnabled = true;//default false
+            //Configuration.Webhooks.MaxConsecutiveFailCountBeforeDeactivateSubscription = 15;
         }
 
         public override async void Initialize()

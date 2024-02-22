@@ -30,7 +30,7 @@ using static BanHangBeautify.AppCommon.ObjectHelper;
 namespace BanHangBeautify.KhachHang.KhachHang
 {
     [AbpAuthorize(PermissionNames.Pages_KhachHang)]
-    public class KhachHangAppService : SPAAppServiceBase
+    public class KhachHangAppService : SPAAppServiceBase, IKhachHangAppService
     {
         private IRepository<DM_KhachHang, Guid> _repository;
         private readonly IKhachHangRespository _customerRepo;
@@ -77,7 +77,6 @@ namespace BanHangBeautify.KhachHang.KhachHang
         {
             KhachHangDto result = new KhachHangDto();
 
-
             var khachHang = ObjectMapper.Map<DM_KhachHang>(dto);
             khachHang.Id = Guid.NewGuid();
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
@@ -113,6 +112,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         {
             KhachHangDto result = new KhachHangDto();
             khachHang.TenKhachHang = dto.TenKhachHang;
+            khachHang.TenKhachHang_KhongDau = dto.TenKhachHang_KhongDau;
             khachHang.DiaChi = dto.DiaChi;
             khachHang.IdLoaiKhach = dto.IdLoaiKhach;
             khachHang.IdNhomKhach = dto.IdNhomKhach;
@@ -124,12 +124,16 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.GioiTinhNam = dto.GioiTinhNam;
             khachHang.Avatar = dto.Avatar;
             khachHang.MoTa = dto.MoTa;
+            khachHang.IdKhachHangZOA = dto.IdKhachHangZOA;
+            khachHang.IdTinhThanh = dto.IdTinhThanh;
+            khachHang.IdQuanHuyen = dto.IdQuanHuyen;
             khachHang.LastModificationTime = DateTime.Now;
             khachHang.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(khachHang);
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
             return result;
         }
+
         public async Task<CreateOrEditKhachHangDto> GetKhachHang(Guid id)
         {
             try
@@ -144,7 +148,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
             catch (Exception ex)
             {
-                
+
             }
             return new CreateOrEditKhachHangDto();
         }
@@ -362,9 +366,22 @@ namespace BanHangBeautify.KhachHang.KhachHang
             var lst = await _repository.GetAllListAsync(x => x.SoDienThoai.Trim() == phone.Trim().ToUpper());
             if (lst.Count > 0)
             {
-                return lst.Select(x=>x.Id).ToList();
+                return lst.Select(x => x.Id).ToList();
             }
             return null;
+        }
+        [HttpGet]
+        public async Task<bool> Update_IdKhachHangZOA(Guid idCustomer, Guid? idKhachHangZOA)
+        {
+
+            var objUpdate = await _repository.FirstOrDefaultAsync(x => x.Id == idCustomer);
+            if (objUpdate != null)
+            {
+                objUpdate.IdKhachHangZOA = idKhachHangZOA;
+                await _repository.UpdateAsync(objUpdate);
+                return true;
+            }
+            return false;
         }
         [AbpAuthorize(PermissionNames.Pages_KhachHang_Export)]
         public async Task<FileDto> ExportDanhSach(PagedKhachHangResultRequestDto input)
