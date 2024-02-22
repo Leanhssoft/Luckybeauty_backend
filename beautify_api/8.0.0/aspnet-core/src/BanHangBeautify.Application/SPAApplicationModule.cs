@@ -23,6 +23,8 @@ namespace BanHangBeautify
             Configuration.ReplaceService<IMailKitSmtpBuilder, SPAMailKitSmtpBuilder>();
             IocManager.Register<DashboardConfiguration>();
             Configuration.Webhooks.Providers.Add<ZaloHookProvider>();
+            //Adding custom AutoMapper configuration
+            Configuration.Modules.AbpAutoMapper().Configurators.Add(CustomDtoMapper.CreateMappings);
         }
 
         public override async void Initialize()
@@ -35,7 +37,6 @@ namespace BanHangBeautify
                 // Scan the assembly for classes which inherit from AutoMapper.Profile
                 cfg => cfg.AddMaps(thisAssembly)
             );
-
         }
 
         public override void PostInitialize()

@@ -292,6 +292,13 @@
         public const string Pages_Tenants_ChangeFeatures = "Pages.Tenants.ChangeFeatures";
         public const string Pages_Tenants_UpdateMigration = "Pages.Tenants.UpdateMigration";
         public const string Pages_Tenants_Delete = "Pages.Tenants.Delete";
+
+
+        public const string Pages_Editions = "Pages.Editions";
+        public const string Pages_Editions_Create = "Pages.Editions.Create";
+        public const string Pages_Editions_Edit = "Pages.Editions.Edit";
+        public const string Pages_Editions_Delete = "Pages.Editions.Delete";
+
         //END COMMON PERMISSIONS (FOR HOST)
 
         public const string Pages_Administration = "Pages.Administration";

@@ -1,9 +1,11 @@
-﻿using Abp.Application.Services;
+﻿using Abp.Application.Features;
+using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
@@ -16,6 +18,7 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.Features;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
 using BanHangBeautify.Users.Repository;
@@ -42,6 +45,7 @@ namespace BanHangBeautify.Users
         private readonly LogInManager _logInManager;
         private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IFeatureManager _featureManager;
 
         public UserAppService(
             IRepository<User, long> repository,
@@ -53,7 +57,8 @@ namespace BanHangBeautify.Users
             LogInManager logInManager,
             IRepository<UserRole, long> userRoleRepository,
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            IFeatureManager featureManager
             )
             : base(repository)
         {
@@ -66,6 +71,7 @@ namespace BanHangBeautify.Users
             _nhanVienRepository = nhanVienRepository;
             _userRoleRepository = userRoleRepository;
             _userRepository = userRepository;
+            _featureManager = featureManager;
         }
 
         [HttpGet]
@@ -109,26 +115,40 @@ namespace BanHangBeautify.Users
         [HttpPost]
         public async Task<UserDto> CreateUser(UpdateUserDto input)
         {
-            CheckCreatePermission();
-
             var user = ObjectMapper.Map<User>(input);
-            user.TenantId = AbpSession.TenantId;
-            user.NhanSuId = input.NhanSuId == Guid.Empty ? null : input.NhanSuId;
-            user.IdChiNhanhMacDinh = input.IdChiNhanhMacDinh == Guid.Empty ? null : input.IdChiNhanhMacDinh;
-            if (!string.IsNullOrEmpty(input.EmailAddress))
+            int maxUserCount = 0;
+            using (UnitOfWorkManager.Current.SetTenantId(null))
             {
-                user.IsEmailConfirmed = true;
+                var maxUser = _featureManager.Get(AppFeatureConst.MaxUserCount);
+                if (maxUser!=null&&!string.IsNullOrEmpty(maxUser.DefaultValue))
+                {
+                    maxUserCount = int.Parse(maxUser.DefaultValue);
+                }
             }
-            else
+            
+            var countUser = _userManager.Users.Count();
+            if(maxUserCount > countUser)
             {
-                user.IsEmailConfirmed = false;
+                CheckCreatePermission();
+                user.TenantId = AbpSession.TenantId;
+                user.NhanSuId = input.NhanSuId == Guid.Empty ? null : input.NhanSuId;
+                user.IdChiNhanhMacDinh = input.IdChiNhanhMacDinh == Guid.Empty ? null : input.IdChiNhanhMacDinh;
+                if (!string.IsNullOrEmpty(input.EmailAddress))
+                {
+                    user.IsEmailConfirmed = true;
+                }
+                else
+                {
+                    user.IsEmailConfirmed = false;
+                }
+
+                await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+
+                CheckErrors(await _userManager.CreateAsync(user, input.Password));
+                CurrentUnitOfWork.SaveChanges();
+                return ObjectMapper.Map<UserDto>(user);
             }
-
-            await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
-
-            CheckErrors(await _userManager.CreateAsync(user, input.Password));
-            CurrentUnitOfWork.SaveChanges();
-            return ObjectMapper.Map<UserDto>(user);
+            return null;
         }
         [HttpPost]
         public async Task<UserDto> UpdateUser_notRole(UpdateUserDto input)

@@ -301,6 +301,11 @@ namespace BanHangBeautify.Authorization
             administration.CreateChildPermission(PermissionNames.Pages_Administration_AuditLogs, L("AuditLogs"));
 
             //HOST-SPECIFIC PERMISSIONS
+            var edition = pages.CreateChildPermission(PermissionNames.Pages_Editions, L("Edition"), multiTenancySides: MultiTenancySides.Host);
+            edition.CreateChildPermission(PermissionNames.Pages_Editions_Create, L("CreatingNewEdition"), multiTenancySides: MultiTenancySides.Host);
+            edition.CreateChildPermission(PermissionNames.Pages_Editions_Edit, L("EditingEdition"), multiTenancySides: MultiTenancySides.Host);
+            edition.CreateChildPermission(PermissionNames.Pages_Editions_Delete, L("DeleteEdition"), multiTenancySides: MultiTenancySides.Host);
+            
 
             var tenants = pages.CreateChildPermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
             tenants.CreateChildPermission(PermissionNames.Pages_Tenants_Create, L("CreatingNewTenant"), multiTenancySides: MultiTenancySides.Host);

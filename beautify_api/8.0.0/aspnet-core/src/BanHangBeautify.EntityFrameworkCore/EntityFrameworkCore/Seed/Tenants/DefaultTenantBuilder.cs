@@ -2,6 +2,7 @@
 using BanHangBeautify.Editions;
 using BanHangBeautify.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace BanHangBeautify.EntityFrameworkCore.Seed.Tenants
@@ -34,7 +35,6 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Tenants
                 {
                     defaultTenant.EditionId = defaultEdition.Id;
                 }
-
                 _context.Tenants.Add(defaultTenant);
                 _context.SaveChanges();
             }
