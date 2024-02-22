@@ -1,4 +1,5 @@
-﻿using Abp.Application.Services;
+﻿using Abp.Application.Features;
+using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Configuration;
@@ -19,6 +20,7 @@ using BanHangBeautify.Editions;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Seed;
+using BanHangBeautify.Features;
 using BanHangBeautify.MultiTenancy.Dto;
 using BanHangBeautify.SeedData;
 using Microsoft.AspNetCore.Identity;
@@ -45,6 +47,7 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         private readonly IRepository<Setting, long> _settingRepository;
+        private readonly IRepository<FeatureSetting,long> _featureSettingRepository;
         private readonly AbpZeroDbMigrator _migrator;
         private readonly IConfiguration _configuration;
         private readonly ISeedDataAppService _seedDataEntities;
@@ -58,6 +61,7 @@ namespace BanHangBeautify.MultiTenancy
             IRepository<HT_CongTy, Guid> congTyRepository,
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<Setting, long> settingRepository,
+            IRepository<FeatureSetting, long> featureSettingRepository,
             IConfiguration configuration,
             ISeedDataAppService seedDataEntities,
             AbpZeroDbMigrator migration
@@ -73,6 +77,7 @@ namespace BanHangBeautify.MultiTenancy
             _chiNhanhRepository = chiNhanhRepository;
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
             _settingRepository = settingRepository;
+            _featureSettingRepository = featureSettingRepository;
             _migrator = migration;
             _configuration = configuration;
             _seedDataEntities = seedDataEntities;
@@ -98,19 +103,19 @@ namespace BanHangBeautify.MultiTenancy
                 ? null
                 : SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
 
-            var defaultEdition = await _editionManager.FindByNameAsync(EditionManager.DefaultEditionName);
-            if (defaultEdition != null)
-            {
-                tenant.EditionId = defaultEdition.Id;
-            }
+            //var defaultEdition = await _editionManager.FindByNameAsync(EditionManager.DefaultEditionName);
+            //if (defaultEdition != null)
+            //{
+            //    tenant.EditionId = defaultEdition.Id;
+            //}
             var checkExist = await _tenantManager.FindByTenancyNameAsync(tenant.TenancyName);
             if (checkExist!=null)
             {
                 throw new UserFriendlyException(string.Format(L("TenancyNameIsAlreadyTaken{0}"), tenant.TenancyName));
             }
+           
             await _tenantManager.CreateAsync(tenant);
             await CurrentUnitOfWork.SaveChangesAsync(); // To get new tenant's id.
-
             // We are working entities of new tenant, so changing tenant filter
             using (CurrentUnitOfWork.SetTenantId(tenant.Id))
             {
@@ -120,7 +125,7 @@ namespace BanHangBeautify.MultiTenancy
                 CheckErrors(await _roleManager.CreateStaticRoles(tenant.Id));
 
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get static role ids
-
+                
                 // Grant all permissions to admin role
                 var adminRole = _roleManager.Roles.Single(r => r.Name == StaticRoleNames.Tenants.Admin);
                 await _roleManager.GrantAllPermissionsAsync(adminRole);
@@ -266,6 +271,7 @@ namespace BanHangBeautify.MultiTenancy
             tenant.IsActive = input.IsActive;
             tenant.Name = input.Name;
             tenant.TenancyName = input.TenancyName;
+            tenant.EditionId = input.EditionId;
             if (!string.IsNullOrEmpty(input.ConnectionString))
             {
                 tenant.ConnectionString = SimpleStringCipher.Instance.Encrypt(input.ConnectionString);

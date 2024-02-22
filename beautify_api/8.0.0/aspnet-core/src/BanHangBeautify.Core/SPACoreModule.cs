@@ -10,6 +10,7 @@ using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Configuration;
 using BanHangBeautify.EmailSmtp;
+using BanHangBeautify.Features;
 using BanHangBeautify.Localization;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Notifications;
@@ -41,7 +42,8 @@ namespace BanHangBeautify
             Configuration.Settings.Providers.Add<AppSettingProvider>();
             Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
             Configuration.Localization.Languages.Add(new LanguageInfo("vn", "Việt Nam", "famfamfam-flags vi"));
-
+            //Adding feature providers
+            Configuration.Features.Providers.Add<AppFeatureProvider>();
             // Configure email
             Configuration.Settings.Providers.Add<EmailSettingProvider>();
 

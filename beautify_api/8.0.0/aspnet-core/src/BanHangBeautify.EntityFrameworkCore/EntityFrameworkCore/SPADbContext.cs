@@ -96,6 +96,7 @@ namespace BanHangBeautify.EntityFrameworkCore
         #endregion
 
         /* Define a DbSet for each entity of the application */
+        public virtual DbSet<SubscribableEdition> SubscribableEditions { get; set; }
 
         public SPADbContext(DbContextOptions<SPADbContext> options)
             : base(options)
