@@ -20,6 +20,10 @@ namespace BanHangBeautify.AppWebhook
             context.Manager.Add(new WebhookDefinition(
                 name: ConstAppWebHookNames.ZOA_UserRecieveMessage,
                 displayName: L(ConstAppWebHookNames.ZOA_UserRecieveMessage)
+            )); 
+            context.Manager.Add(new WebhookDefinition(
+                name: ConstAppWebHookNames.ZOA_UserSubmitInfo,
+                displayName: L("UserSubmitInfor")
             ));
         }
 
