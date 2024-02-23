@@ -14,5 +14,6 @@ namespace BanHangBeautify.Editions.Dto
 
         public string DisplayName { get; set; }
         public  decimal? Price { get; set; }
+        public DateTime CreationTime { get; set; }
     }
 }

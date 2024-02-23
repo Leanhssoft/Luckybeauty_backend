@@ -271,5 +271,7 @@
     <text name="CreatingNewEdition">Tạo phiên bản mới</text>
     <text name="EditingEdition">Chỉnh sửa phiên bản</text>
     <text name="DeleteEdition">Xóa phiên bản</text>
+    <text name="MaximumUserCount">Tối đa người dùng</text>
+    <text name="MaximumBranchCount">Tối đa chi nhánh</text>
 	</texts>
 </localizationDictionary>

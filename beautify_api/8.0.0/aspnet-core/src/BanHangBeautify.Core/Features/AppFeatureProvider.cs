@@ -24,10 +24,17 @@ namespace BanHangBeautify.Features
             context.Create(
                 AppFeatureConst.MaxBranchCount,
                 defaultValue: "1", //0 = unlimited
-                displayName: L("MaximumUserCount"),
-                description: L("MaximumUserCount_Description"),
+                displayName: L("MaximumBranchCount"),
+                description: L("MaximumBranchCount_Description"),
                 inputType: new SingleLineStringInputType(new NumericValueValidator(0, int.MaxValue))
             );
+            //context.Create(
+            //    "App.ConnectZalo",
+            //    defaultValue: "false", //0 = unlimited
+            //    displayName: L("Kết nối với Zalo OA"),
+            //    description: L("Kết nối với Zalo OA"),
+            //    inputType: new CheckboxInputType()
+            //);
         }
         private static ILocalizableString L(string name)
         {

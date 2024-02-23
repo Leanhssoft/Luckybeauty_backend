@@ -9,7 +9,7 @@ namespace BanHangBeautify.Editions.Dto
 {
     public class GetEditionEditOutput
     {
-        public EditionEditDto Edition { get; set; }
+        public EditionDto Edition { get; set; }
 
         public List<NameValueDto> FeatureValues { get; set; }
 

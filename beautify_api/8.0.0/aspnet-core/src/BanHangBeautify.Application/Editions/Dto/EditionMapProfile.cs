@@ -15,11 +15,12 @@ namespace BanHangBeautify.Editions.Dto
     {
         public EditionMapProfile()
         {
-            CreateMap<EditionEditDto, SubscribableEdition>().ReverseMap();
-            CreateMap<EditionCreateDto, SubscribableEdition>().ReverseMap();
+            CreateMap<EditionDto, SubscribableEdition>().ReverseMap();
+            CreateMap<CreateOrEditEditionDto, SubscribableEdition>().ReverseMap();
             CreateMap<SubscribableEdition, EditionListDto>().ReverseMap();
-            CreateMap<Edition, EditionEditDto>().ReverseMap();
+            CreateMap<Edition, CreateOrEditEditionDto>().ReverseMap();
             CreateMap<Edition, SubscribableEdition>().ReverseMap();
+            CreateMap<EditionDto, Edition>().ReverseMap();
         }
     }
 }

@@ -127,7 +127,7 @@ namespace BanHangBeautify.Users
             }
             
             var countUser = _userManager.Users.Count();
-            if(maxUserCount > countUser)
+            if(maxUserCount > countUser || maxUserCount==0)
             {
                 CheckCreatePermission();
                 user.TenantId = AbpSession.TenantId;

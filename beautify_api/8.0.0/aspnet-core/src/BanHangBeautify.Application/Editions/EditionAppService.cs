@@ -42,18 +42,18 @@ namespace BanHangBeautify.Editions
             var features = FeatureManager.GetAll()
                 .Where(f => f.Scope.HasFlag(FeatureScopes.Edition));
 
-            EditionEditDto editionEditDto;
+            EditionDto editionEditDto;
             List<NameValue> featureValues;
 
-            if (input.Id.HasValue) //Editing existing edition?
+            if (input.Id.HasValue && input.Id.Value>0) //Editing existing edition?
             {
-                var edition = await _editionManager.FindByIdAsync(input.Id.Value);
+                var edition = (SubscribableEdition)await _editionManager.FindByIdAsync(input.Id.Value);
                 featureValues = (await _editionManager.GetFeatureValuesAsync(input.Id.Value)).ToList();
-                editionEditDto = ObjectMapper.Map<EditionEditDto>(edition);
+                editionEditDto = ObjectMapper.Map<EditionDto>(edition);
             }
             else
             {
-                editionEditDto = new EditionEditDto();
+                editionEditDto = new EditionDto();
                 featureValues = features.Select(f => new NameValue(f.Name, f.DefaultValue)).ToList();
             }
 
@@ -67,9 +67,23 @@ namespace BanHangBeautify.Editions
             };
         }
 
-        [AbpAuthorize(PermissionNames.Pages_Editions_Create)]
+
+        [AbpAuthorize(PermissionNames.Pages_Editions_Create, PermissionNames.Pages_Editions_Edit)]
         [HttpPost]
-        public async Task CreateEdition(CreateEditionDto input)
+        public async Task CreateOrEditEdition(CreateOrEditEditionDto input)
+        {
+            if(input.Edition.Id.HasValue==false|| input.Edition.Id.Value<=0)
+            {
+               await CreateEditionAsync(input);
+            }
+            else
+            {
+                await UpdateEditionAsync(input);
+            }
+        }
+
+        [NonAction]
+        public async Task CreateEditionAsync(CreateOrEditEditionDto input)
         {
             var edition = ObjectMapper.Map<SubscribableEdition>(input.Edition);
             await _editionManager.CreateAsync(edition);
@@ -77,17 +91,17 @@ namespace BanHangBeautify.Editions
 
             await SetFeatureValues(edition, input.FeatureValues);
         }
-        [AbpAuthorize(PermissionNames.Pages_Editions_Edit)]
-        [HttpPost]
-        public async Task UpdateEdition(UpdateEditionDto input)
+        [NonAction]
+        public async Task UpdateEditionAsync(CreateOrEditEditionDto input)
         {
             if (input.Edition.Id != null)
             {
                 var edition = await _editionManager.GetByIdAsync(input.Edition.Id.Value);
-
-                edition.DisplayName = input.Edition.DisplayName;
-
-                await SetFeatureValues(edition, input.FeatureValues);
+                var editionUpdate = ObjectMapper.Map<SubscribableEdition>(edition);
+                editionUpdate.Name = input.Edition.Name;
+                editionUpdate.DisplayName = input.Edition.DisplayName;
+                editionUpdate.Price = input.Edition.Price;
+                await SetFeatureValues(editionUpdate, input.FeatureValues);
             }
         }
         [AbpAuthorize(PermissionNames.Pages_Editions_Delete)]
@@ -118,10 +132,24 @@ namespace BanHangBeautify.Editions
 
             return new ListResultDto<EditionListDto>(result);
         }
-        private Task SetFeatureValues(Edition edition, List<NameValueDto> featureValues)
+        private Task SetFeatureValues(SubscribableEdition edition, List<NameValueDto> featureValues)
         {
             return _editionManager.SetFeatureValuesAsync(edition.Id,
                 featureValues.Select(fv => new NameValue(fv.Name, fv.Value)).ToArray());
+        }
+        [AbpAuthorize]
+        public async Task<GetFeatureOutput> GetAllFeature()
+        {
+            var features = FeatureManager.GetAll()
+                .Where(f => f.Scope.HasFlag(FeatureScopes.Edition));
+            List<NameValue> featureValues;
+            featureValues = features.Select(f => new NameValue(f.Name, f.DefaultValue)).ToList();
+            var featureDtos = ObjectMapper.Map<List<FlatFeatureDto>>(features).OrderBy(f => f.DisplayName).ToList();
+            return new GetFeatureOutput
+            {
+                Features = featureDtos,
+                FeatureValues = featureValues.Select(fv => new NameValueDto(fv)).ToList()
+            };
         }
     }
 }

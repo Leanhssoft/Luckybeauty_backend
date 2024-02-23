@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Editions.Dto
 {
-    public class UpdateEditionDto
+    public class CreateOrEditEditionDto
     {
+
         [Required]
-        public EditionEditDto Edition { get; set; }
+        public EditionDto Edition { get; set; }
 
         [Required]
         public List<NameValueDto> FeatureValues { get; set; }

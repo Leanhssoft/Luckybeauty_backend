@@ -79,7 +79,7 @@ namespace BanHangBeautify.BackgroundWorker
             var tenants = _tenantRepository.GetAllList();
             var lstBrandname = await _repoBrandname.GetListBandname(new ParamSearchBrandname { Keyword = string.Empty, SkipCount = 0 }, 1);  // get all brand name at host
 
-            for (int i = 0; i < tenants.Count; i++)
+             for (int i = 0; i < tenants.Count; i++)
             {
                 var tenantId = tenants[i].Id;
 
