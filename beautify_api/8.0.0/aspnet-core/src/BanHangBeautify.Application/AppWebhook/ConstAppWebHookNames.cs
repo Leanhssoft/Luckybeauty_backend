@@ -10,5 +10,6 @@ namespace BanHangBeautify.AppWebhook
     {
         public const string ZOA_UserSendMessage = "ZOA_UserSendMessage";
         public const string ZOA_UserRecieveMessage = "ZOA_UserReceiveMessage";
+        public const string ZOA_UserSubmitInfo = "ZOA_UserSubmitInfo";
     }
 }
