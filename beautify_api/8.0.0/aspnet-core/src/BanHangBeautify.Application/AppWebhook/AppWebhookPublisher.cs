@@ -39,7 +39,7 @@ namespace BanHangBeautify.AppWebhook
                 TenDangKy = userInfor.Name,
                 SoDienThoaiDK = userInfor.Phone,
                 DiaChi = userInfor.Address,
-                TenTinhThanh = userInfor.City, // todo get IdQuanHuyen + IdTinhThanh
+                TenTinhThanh = userInfor.City, // todo get IdQuanHuyen + IdTinhThanh 
                 TenQuanHuyen = userInfor.District,
                 ZOAUserId = zaloUserId
             };
