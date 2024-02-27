@@ -1,4 +1,5 @@
-﻿using Abp.Application.Services.Dto;
+﻿using Abp.Application.Features;
+using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
@@ -10,10 +11,12 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
+using BanHangBeautify.Features;
 using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests.Dto;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -37,15 +40,15 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         private readonly IChiNhanhExcelExporter _chiNhanhExcelExporter;
         private readonly IRepository<HT_CongTy, Guid> _congTyRpository;
         private readonly IRepository<UserRoleChiNhanh, long> _userRole;
-
+        IFeatureManager _featureManager;
         public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService, IRepository<User, long> userRepository,
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository,
             IChiNhanhRepository chiNhanhRepository,
             IChiNhanhExcelExporter chiNhanhExcelExporter,
             IRepository<HT_CongTy, Guid> congTyRpository,
-             IRepository<UserRoleChiNhanh, long> userRole
-
+             IRepository<UserRoleChiNhanh, long> userRole,
+             IFeatureManager featureManager
             )
         {
             _chiNhanhService = chiNhanhService;
@@ -56,6 +59,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             _chiNhanhExcelExporter = chiNhanhExcelExporter;
             _congTyRpository = congTyRpository;
             _userRole = userRole;
+            _featureManager = featureManager;
         }
         [HttpGet]
         public async Task<PagedResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedRequestDto input)
@@ -126,44 +130,60 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             {
                 DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
                 var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh == dto.TenChiNhanh);
-                if (checkTenChiNhanh == null)
+                int maxBranchCount = 0;
+                var maxBranch = FeatureChecker.GetValue(AbpSession.TenantId ?? 0, AppFeatureConst.MaxBranchCount);
+                if (maxBranch != null && !string.IsNullOrEmpty(maxBranch))
                 {
-                    chiNhanh.Id = Guid.NewGuid();
-                    using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                    maxBranchCount = int.Parse(maxBranch);
+                }
+                var totalBranch = _chiNhanhService.Count();
+                if (maxBranchCount > totalBranch || maxBranchCount == 0)
+                {
+                    if (checkTenChiNhanh == null)
                     {
-                        var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
-                        chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
-                    }
-                    chiNhanh.SoDienThoai = dto.SoDienThoai;
-                    chiNhanh.TenChiNhanh = dto.TenChiNhanh;
-                    chiNhanh.MaSoThue = dto.MaSoThue;
-                    chiNhanh.DiaChi = dto.DiaChi;
-                    chiNhanh.GhiChu = dto.GhiChu;
-                    chiNhanh.Logo = dto.Logo;
-                    chiNhanh.NgayApDung = dto.NgayApDung;
-                    chiNhanh.NgayHetHan = dto.NgayHetHan;
-                    chiNhanh.TenantId = AbpSession.TenantId ?? 1;
-                    chiNhanh.CreatorUserId = AbpSession.UserId;
-                    var congTy = await _congTyRpository.GetAll().FirstOrDefaultAsync();
-                    if (congTy == null)
-                    {
-                        chiNhanh.IdCongTy = dto.IdCongTy;
+                        chiNhanh.Id = Guid.NewGuid();
+                        using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                        {
+                            var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
+                            chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
+                        }
+                        chiNhanh.SoDienThoai = dto.SoDienThoai;
+                        chiNhanh.TenChiNhanh = dto.TenChiNhanh;
+                        chiNhanh.MaSoThue = dto.MaSoThue;
+                        chiNhanh.DiaChi = dto.DiaChi;
+                        chiNhanh.GhiChu = dto.GhiChu;
+                        chiNhanh.Logo = dto.Logo;
+                        chiNhanh.NgayApDung = dto.NgayApDung;
+                        chiNhanh.NgayHetHan = dto.NgayHetHan;
+                        chiNhanh.TenantId = AbpSession.TenantId ?? 1;
+                        chiNhanh.CreatorUserId = AbpSession.UserId;
+                        var congTy = await _congTyRpository.GetAll().FirstOrDefaultAsync();
+                        if (congTy == null)
+                        {
+                            chiNhanh.IdCongTy = dto.IdCongTy;
+                        }
+                        else
+                        {
+                            chiNhanh.IdCongTy = congTy.Id;
+                        }
+                        chiNhanh.TrangThai = dto.TrangThai;
+                        chiNhanh.CreationTime = DateTime.Now;
+                        await _chiNhanhService.InsertAsync(chiNhanh);
+                        result.Message = "Thêm mới chi nhánh thành công!";
+                        result.Status = "success";
                     }
                     else
                     {
-                        chiNhanh.IdCongTy = congTy.Id;
+                        result.Message = "Tên chi nhánh đã tồn tại!";
+                        result.Status = "error";
                     }
-                    chiNhanh.TrangThai = dto.TrangThai;
-                    chiNhanh.CreationTime = DateTime.Now;
-                    await _chiNhanhService.InsertAsync(chiNhanh);
-                    result.Message = "Thêm mới chi nhánh thành công!";
-                    result.Status = "success";
                 }
                 else
                 {
-                    result.Message = "Tên chi nhánh đã tồn tại!";
+                    result.Message = "Số lượng chi nhánh đã bị giới hạn!";
                     result.Status = "error";
                 }
+
             }
             catch (Exception ex)
             {

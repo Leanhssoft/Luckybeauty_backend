@@ -29,7 +29,8 @@ namespace BanHangBeautify
             Configuration.Modules.Zero().EntityTypes.Tenant = typeof(Tenant);
             Configuration.Modules.Zero().EntityTypes.Role = typeof(Role);
             Configuration.Modules.Zero().EntityTypes.User = typeof(User);
-
+            Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
+            Configuration.Localization.Languages.Add(new LanguageInfo("vn", "Việt Nam", "famfamfam-flags vi"));
             SPALocalizationConfigurer.Configure(Configuration.Localization);
 
             // Enable this line to create a multi-tenant application.
@@ -40,8 +41,7 @@ namespace BanHangBeautify
             // Configure roles
             AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
             Configuration.Settings.Providers.Add<AppSettingProvider>();
-            Configuration.Localization.Languages.Add(new LanguageInfo("fa", "فارسی", "famfamfam-flags ir"));
-            Configuration.Localization.Languages.Add(new LanguageInfo("vn", "Việt Nam", "famfamfam-flags vi"));
+           
             //Adding feature providers
             Configuration.Features.Providers.Add<AppFeatureProvider>();
             // Configure email

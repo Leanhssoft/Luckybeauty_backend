@@ -18,7 +18,11 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.Editions;
+using BanHangBeautify.Entities;
 using BanHangBeautify.Features;
+using BanHangBeautify.KhachHang.KhachHang.Repository;
+using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
 using BanHangBeautify.Users.Repository;
@@ -45,20 +49,17 @@ namespace BanHangBeautify.Users
         private readonly LogInManager _logInManager;
         private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IFeatureManager _featureManager;
-
         public UserAppService(
             IRepository<User, long> repository,
             UserManager userManager,
             RoleManager roleManager,
-            IRepository<Role> roleRepository,
+        IRepository<Role> roleRepository,
             IPasswordHasher<User> passwordHasher,
             IAbpSession abpSession,
             LogInManager logInManager,
             IRepository<UserRole, long> userRoleRepository,
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
-            IUserRepository userRepository,
-            IFeatureManager featureManager
+            IUserRepository userRepository
             )
             : base(repository)
         {
@@ -71,7 +72,6 @@ namespace BanHangBeautify.Users
             _nhanVienRepository = nhanVienRepository;
             _userRoleRepository = userRoleRepository;
             _userRepository = userRepository;
-            _featureManager = featureManager;
         }
 
         [HttpGet]
@@ -117,15 +117,11 @@ namespace BanHangBeautify.Users
         {
             var user = ObjectMapper.Map<User>(input);
             int maxUserCount = 0;
-            using (UnitOfWorkManager.Current.SetTenantId(null))
+            var maxUser = FeatureChecker.GetValue(AbpSession.TenantId??0, AppFeatureConst.MaxUserCount);
+            if (maxUser != null && !string.IsNullOrEmpty(maxUser))
             {
-                var maxUser = _featureManager.Get(AppFeatureConst.MaxUserCount);
-                if (maxUser!=null&&!string.IsNullOrEmpty(maxUser.DefaultValue))
-                {
-                    maxUserCount = int.Parse(maxUser.DefaultValue);
-                }
+                maxUserCount = int.Parse(maxUser);
             }
-            
             var countUser = _userManager.Users.Count();
             if(maxUserCount > countUser || maxUserCount==0)
             {
@@ -141,7 +137,17 @@ namespace BanHangBeautify.Users
                 {
                     user.IsEmailConfirmed = false;
                 }
-
+                var nhanSu = _nhanVienRepository.FirstOrDefault(x => x.Id == input.NhanSuId);
+                if (nhanSu != null)
+                {
+                    string[] tachChuoiTenNhanVien = nhanSu.TenNhanVien.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (tachChuoiTenNhanVien.Length >= 2)
+                    {
+                        user.Name = string.Join(" ", tachChuoiTenNhanVien, 0, tachChuoiTenNhanVien.Length - 1);
+                        user.Surname = tachChuoiTenNhanVien[tachChuoiTenNhanVien.Length - 1];
+                    }
+                    user.PhoneNumber = nhanSu.SoDienThoai;
+                }
                 await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
 
                 CheckErrors(await _userManager.CreateAsync(user, input.Password));
