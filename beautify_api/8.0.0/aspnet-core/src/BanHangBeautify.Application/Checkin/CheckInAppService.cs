@@ -126,6 +126,20 @@ namespace BanHangBeautify.Checkin
                 return ex.Message + ex.InnerException;
             }
         }
+
+        [HttpGet]
+        public async Task<KHCheckInDto> GetInforCheckIn_byId(Guid idCheckIn)
+        {
+            try
+            {
+                KH_CheckIn obj = await _khCheckIn.FirstOrDefaultAsync(idCheckIn);
+                return ObjectMapper.Map<KHCheckInDto>(obj);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
         [HttpGet]
         public async Task<IEnumerable<Guid>> GetArrIdChecking_fromIdBooking(Guid idBooking)
         {
