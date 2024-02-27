@@ -1,13 +1,18 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
+using Abp.Domain.Repositories;
 using BanHangBeautify.BaoCao.BaoCaoBanHang.Dto;
 using BanHangBeautify.BaoCao.BaoCaoBanHang.Repository;
+using BanHangBeautify.BaoCao.BaoCaoHoaHong;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Respository;
 using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
 using BanHangBeautify.BaoCao.BaoCaoSoQuy.Repository;
 using BanHangBeautify.BaoCao.Exporting;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
+using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
+using BanHangBeautify.SMS.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,23 +24,29 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.BaoCao
 {
     [AbpAuthorize]
-    public class BaoCaoAppService: SPAAppServiceBase
+    public class BaoCaoAppService : SPAAppServiceBase
     {
         IBaoCaoBanHangRepository _baoCaoBanHangRepository;
         IBaoCaoLichHenRepository _baoCaoLichHenRepository;
         IBaoCaoSoQuyRepository _baoCaoSoQuyRepository;
+        IBaoCaoHoaHongRepository _baoCaoHoaHongRepository;
         IBaoCaoExcelExporter _baoCaoExcelExporter;
+        private readonly IExcelBase _excelBase;
         public BaoCaoAppService(
             IBaoCaoBanHangRepository baoCaoBanHangRepository,
             IBaoCaoExcelExporter baoCaoExcelExporter,
             IBaoCaoLichHenRepository baoCaoLichHenRepository,
-            IBaoCaoSoQuyRepository baoCaoSoQuyRepository
+            IBaoCaoSoQuyRepository baoCaoSoQuyRepository,
+            IBaoCaoHoaHongRepository baoCaoHoaHongRepository,
+            IExcelBase excelBase
         )
         {
             _baoCaoBanHangRepository = baoCaoBanHangRepository;
             _baoCaoExcelExporter = baoCaoExcelExporter;
             _baoCaoLichHenRepository = baoCaoLichHenRepository;
             _baoCaoSoQuyRepository = baoCaoSoQuyRepository;
+            _baoCaoHoaHongRepository = baoCaoHoaHongRepository;
+            _excelBase = excelBase;
         }
         #region Báo cáo bán hàng
         [HttpPost]
@@ -185,6 +196,105 @@ namespace BanHangBeautify.BaoCao
             List<BaoCaoSoQuyDto> model = new List<BaoCaoSoQuyDto>();
             model = (List<BaoCaoSoQuyDto>)data.Items;
             return _baoCaoExcelExporter.ExportBaoCaoSoQuy_NganHang(model);
+        }
+        #endregion
+        #region bao cao hoa hong
+        [HttpPost]
+        public async Task<PagedResultDto<PageBaoCaoHoaHongTongHopDto>> BaoCaoHoaHongTongHop(ParamSearchBaoCaoHoaHong input)
+        {
+            try
+            {
+                return await _baoCaoHoaHongRepository.BaoCaoHoaHongTongHop(input);
+            }
+            catch (Exception)
+            {
+                return new PagedResultDto<PageBaoCaoHoaHongTongHopDto>()
+                {
+                    Items = new List<PageBaoCaoHoaHongTongHopDto>(),
+                    TotalCount = 0,
+                };
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> BaoCaoHoaHongChiTiet(ParamSearchBaoCaoHoaHong input)
+        {
+            try
+            {
+                var lst = await _baoCaoHoaHongRepository.BaoCaoHoaHongChiTiet(input);
+                var lstGr = lst.Items.GroupBy(x => new
+                {
+                    x.MaHoaDon,
+                    x.NgayLapHoaDon,
+                    x.MaKhachHang,
+                    x.TenKhachHang,
+                    x.IdHoaDonChiTiet,
+                    x.MaHangHoa,
+                    x.TenHangHoa,
+                    x.TenNhomHang,
+                    x.SoLuong,
+                    x.ThanhTienSauCK
+                }).Select(x => new
+                {
+                    x.Key.MaHoaDon,
+                    x.Key.NgayLapHoaDon,
+                    x.Key.MaKhachHang,
+                    x.Key.TenKhachHang,
+                    x.Key.IdHoaDonChiTiet,
+                    x.Key.MaHangHoa,
+                    x.Key.TenHangHoa,
+                    x.Key.TenNhomHang,
+                    x.Key.SoLuong,
+                    x.Key.ThanhTienSauCK,
+                    RowSpan = x.Count(),
+                    lstDetail = x,
+                }).OrderByDescending(x => x.NgayLapHoaDon);
+
+                return new JsonResult(new { res = true, items = lstGr, totalCount = lst.TotalCount });
+            }
+            catch (Exception)
+            {
+                return new JsonResult(new { res = false, totalCount = 0 });
+            }
+        } 
+        [HttpPost]
+        public async Task<FileDto> ExportToExcel_BaoCaoHoaHongTongHop(ParamSearchBaoCaoHoaHong input)
+        {
+            var data = await _baoCaoHoaHongRepository.BaoCaoHoaHongTongHop(input);
+            var dataExcel = ObjectMapper.Map<List<PageBaoCaoHoaHongTongHopDto>>(data.Items);
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.MaNhanVien,
+                x.TenNhanVien,
+                x.HoaHongThucHien_TienChietKhau,
+                x.HoaHongTuVan_TienChietKhau,
+                x.TongHoaHong
+            }).ToList();
+            return _excelBase.WriteToExcel("BaoCaoHoaHongTongHop_", @"BaoCao\BaoCaoHoaHongTongHop_Template.xlsx", dataNew, 5);
+        }
+        [HttpPost]
+        public async Task<FileDto> ExportToExcel_BaoCaoHoaHongChiTiet(ParamSearchBaoCaoHoaHong input)
+        {
+            var data = await _baoCaoHoaHongRepository.BaoCaoHoaHongChiTiet(input);
+            var dataExcel = ObjectMapper.Map<List<PageBaoCaoHoaHongChiTietDto>>(data.Items);
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.MaKhachHang,
+                x.TenKhachHang,
+                x.MaHangHoa,
+                x.TenHangHoa,
+                x.MaNhanVien,
+                x.TenNhanVien,
+                x.SoLuong,
+                x.ThanhTienSauCK,
+                x.HoaHongThucHien_PTChietKhau,
+                x.HoaHongThucHien_TienChietKhau,
+                x.HoaHongTuVan_PTChietKhau,
+                x.HoaHongTuVan_TienChietKhau,
+                x.TongHoaHong
+            }).ToList();
+            return _excelBase.WriteToExcel("BaoCaoHoaHongChiTiet", @"BaoCao\BaoCaoHoaHongChiTiet_Template.xlsx", dataNew, 6);
         }
         #endregion
     }
