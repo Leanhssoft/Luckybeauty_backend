@@ -202,6 +202,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         /// </summary>
         /// <param name="objUp"></param>
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
+        [HttpPost]
         public async Task<CreateHoaDonDto> Update_InforHoaDon(CreateHoaDonDto objUp)
         {
             BH_HoaDon objOld = await _hoaDonRepository.FirstOrDefaultAsync(objUp.Id);
@@ -255,6 +256,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         /// <param name="idHoadon"></param>
         /// <returns></returns>
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
+        [HttpPost]
         public async Task<List<HoaDonChiTietDto>> Update_ChiTietHoaDon(List<HoaDonChiTietDto> lstCT, Guid idHoadon)
         {
             var userID = AbpSession.UserId;
