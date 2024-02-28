@@ -20,6 +20,9 @@ namespace BanHangBeautify.BaoCao.BaoCaoHoaHong
         public double? HoaHongThucHien_TienChietKhau { get; set; }
         public double? HoaHongTuVan_TienChietKhau { get; set; }
         public double? TongHoaHong { get; set; }
+        public double? SumHoaHongThucHien { get; set; }
+        public double? SumHoaHongTuVan { get; set; }
+        public double? SumTongHoaHong { get; set; }
     }
     public class PageBaoCaoHoaHongChiTietDto : PageBaoCaoHoaHongTongHopDto
     {
@@ -36,5 +39,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoHoaHong
         public double? ThanhTienSauCK { get; set; }
         public double? HoaHongThucHien_PTChietKhau { get; set; }
         public double? HoaHongTuVan_PTChietKhau { get; set; }
+        public double? SumSoLuong { get; set; }
+        public double? SumThanhTienSauCK { get; set; }
     }
 }

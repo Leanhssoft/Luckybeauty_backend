@@ -232,7 +232,12 @@ namespace BanHangBeautify.BaoCao
                     x.TenHangHoa,
                     x.TenNhomHang,
                     x.SoLuong,
-                    x.ThanhTienSauCK
+                    x.ThanhTienSauCK,
+                    x.SumSoLuong,
+                    x.SumThanhTienSauCK,
+                    x.SumHoaHongTuVan,
+                    x.SumHoaHongThucHien,
+                    x.SumTongHoaHong
                 }).Select(x => new
                 {
                     x.Key.MaHoaDon,
@@ -245,6 +250,11 @@ namespace BanHangBeautify.BaoCao
                     x.Key.TenNhomHang,
                     x.Key.SoLuong,
                     x.Key.ThanhTienSauCK,
+                    x.Key.SumSoLuong,
+                    x.Key.SumThanhTienSauCK,
+                    x.Key.SumHoaHongTuVan,
+                    x.Key.SumHoaHongThucHien,
+                    x.Key.SumTongHoaHong,
                     RowSpan = x.Count(),
                     lstDetail = x,
                 }).OrderByDescending(x => x.NgayLapHoaDon);

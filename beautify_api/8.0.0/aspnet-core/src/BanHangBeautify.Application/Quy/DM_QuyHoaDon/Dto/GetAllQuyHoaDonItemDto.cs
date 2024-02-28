@@ -22,5 +22,8 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
         public string NoiDungThu { get; set; }// mat, pos, ck
         public string TxtTrangThai { get; set; }
         public int? TrangThai { get; set; }
+
+        public double? SumTongTienThu { get; set; }
+        public double? SumTongTienChi { get; set; }
     }
 }
