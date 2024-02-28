@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Checkin.Repository;
 using BanHangBeautify.Consts;
@@ -78,7 +79,8 @@ namespace BanHangBeautify.Checkin
             }
             objUp.IdChiNhanh = dto.IdChiNhanh;
             objUp.IdKhachHang = dto.IdKhachHang;
-            objUp.DateTimeCheckIn = dto.DateTimeCheckIn;
+            objUp.DateTimeCheckIn = ObjectHelper.AddTimeNow_forDate(dto.DateTimeCheckIn);
+            objUp.TrangThai = dto.TrangThai;
             objUp.GhiChu = dto.GhiChu;
             objUp.LastModifierUserId = AbpSession.UserId;
             objUp.LastModificationTime = DateTime.Now;

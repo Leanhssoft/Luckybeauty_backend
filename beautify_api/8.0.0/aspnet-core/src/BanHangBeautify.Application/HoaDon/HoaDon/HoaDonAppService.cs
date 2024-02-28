@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BanHangBeautify.AppCommon;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -57,8 +58,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
             objHD.TenantId = AbpSession.TenantId ?? 1;
             objHD.CreatorUserId = AbpSession.UserId;
             objHD.CreationTime = DateTime.Now;
-            objHD.NgayLapHoaDon = DateTime.Now;// vì khách check in trước, nhưng thời gian làm DV lâu --> lưu ngày lập = ngày tạo
-            
+            objHD.NgayLapHoaDon = ObjectHelper.AddTimeNow_forDate(objHD.NgayLapHoaDon);
+
             if (string.IsNullOrEmpty(objHD.MaHoaDon))
             {
                 var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, dto.IdChiNhanh, dto.IdLoaiChungTu, dto.NgayLapHoaDon);
@@ -216,7 +217,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 {
                     objOld.MaHoaDon = objUp.MaHoaDon;
                 }
-                objOld.NgayLapHoaDon = objUp.NgayLapHoaDon;
+                objOld.NgayLapHoaDon = ObjectHelper.AddTimeNow_forDate(objUp.NgayLapHoaDon);
                 objOld.NgayApDung = objUp.NgayApDung;
                 objOld.NgayHetHan = objUp.NgayHetHan;
                 objOld.IdChiNhanh = objUp.IdChiNhanh;
