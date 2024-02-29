@@ -57,6 +57,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                             LaNhomHangHoa = x.LaNhomHangHoa,
                             MoTa = x.MoTa,
                             Color = x.Color,
+                            ThuTuHienThi = x.ThuTuHienThi,
                             IsDeleted = x.IsDeleted
                         }).ToList();
             var lst = data.Where(x => x.IdParent == null)
@@ -69,8 +70,9 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                     LaNhomHangHoa = o.LaNhomHangHoa,
                     MoTa = o.MoTa,
                     Color = o.Color,
+                    ThuTuHienThi = o.ThuTuHienThi,
                     children = GetChildren(data, o.Id)
-                });
+                }).OrderBy(x => x.ThuTuHienThi);
 
             result.Items = ObjectMapper.Map<List<NhomHangHoaDto>>(lst);
             return result;
@@ -135,6 +137,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 objUp.LaNhomHangHoa = dto.LaNhomHangHoa;
                 objUp.Color = dto.Color;
                 objUp.MoTa = dto.MoTa;
+                objUp.ThuTuHienThi = dto.ThuTuHienThi;
                 objUp.LastModifierUserId = AbpSession.UserId;
                 objUp.LastModificationTime = DateTime.Now;
 

@@ -15,21 +15,42 @@ namespace BanHangBeautify.AppCommon
 {
     public static class ObjectHelper
     {
-        //public static List<T> ConvertListObjects<T, U>(List<U> uItems)
-        //{
-        //    List<T> tItems = null;
-        //    T t1 = default(T);
-        //    if ((uItems != null) && (uItems.Count > 0))
-        //    {
-        //        tItems = new List<T>();
-        //        foreach (U u in uItems)
-        //        {
-        //            T t = ConvertHelper.ConvertObject<T>(u, t1);
-        //            tItems.Add(t);
-        //        }
-        //    }
-        //    return tItems;
-        //}
+        /// <summary>
+        /// Cộng thêm thời gian (giờ/phút/giây) cho đúng với thời gian hiện tại
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public static DateTime AddTimeNow_forDate(DateTime? dt)
+        {
+            if (dt != null)
+            {
+                string dateParam = dt?.ToString("yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
+                string dtNow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
+
+                string [] dtNow_split = dtNow.Split(':'); // 3 elemnt: [2024-01-01 HH, mm, ss.fff]
+                string [] dtParam_split = dateParam.Split(':');
+
+                var dtNow_hours = Convert.ToDouble(dtNow_split[0].Split(" ")[1]); // 2024-01-01 HH = [2024-01-01,HH]
+                var dtNow_minutes = Convert.ToDouble(dtNow_split[1]);// mm
+                // dấu ^1: đại diện cho phần tử cuối cùng trong mảng
+                var dtNow_senconds = Convert.ToDouble(dtNow_split[^1].Split('.')[0]); // ss.fff = [ss, fff]
+                var dtNow_milisenconds = Convert.ToDouble(dtNow_split[^1].Split('.')[1]);
+
+                var dtParam_hours = Convert.ToDouble(dtParam_split[0].Split(" ")[1]);
+                var dtParam_minutes = Convert.ToDouble(dtParam_split[1]);
+
+                if (dtParam_hours == 0 && dtParam_minutes ==0)
+                {
+                    dt = dt?.AddHours(dtNow_hours).AddMinutes(dtNow_minutes);
+                }
+                dt = dt?.AddSeconds(dtNow_senconds).AddMilliseconds(dtNow_milisenconds);
+                return (DateTime)dt;
+            }
+            else
+            {
+                return DateTime.Now;
+            }
+        }
 
         /// <summary>
         /// kiểm tra trùng dữ liệu ở cột colName (vị trí thứ indexColumn), từ dòng fromRow -->  toRow

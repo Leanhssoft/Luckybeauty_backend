@@ -18,5 +18,6 @@ namespace BanHangBeautify.Entities
         public Guid? IdParent { get; set; }
         public string Color { get; set; }
         public string MoTa { get; set; }
+        public byte? ThuTuHienThi { get; set; }
     }
 }
