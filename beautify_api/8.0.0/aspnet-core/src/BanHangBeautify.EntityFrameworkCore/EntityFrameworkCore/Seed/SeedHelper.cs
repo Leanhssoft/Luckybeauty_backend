@@ -6,6 +6,7 @@ using BanHangBeautify.EntityFrameworkCore.Seed.Host;
 using BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa;
 using BanHangBeautify.EntityFrameworkCore.Seed.Tenants;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Transactions;
 

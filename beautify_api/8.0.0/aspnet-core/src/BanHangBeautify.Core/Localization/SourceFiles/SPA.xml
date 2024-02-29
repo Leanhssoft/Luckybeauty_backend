@@ -261,7 +261,7 @@
 		<text name="Notifications">Thông báo</text>
 		<text name="Birthday">Sinh nhật</text>
 		<text name="ResetCode">Mã khôi phục</text>
-		<text name="PasswordResetEmail_ClickTheLinkBelowToResetYourPassword">Nhấn vào đường dẫn sau để thay đổi mật khẩu</text>
+		<text name="PasswordResetEmail_ClickTheLinkBelowToResetYourPassword">Hoặc nhấn vào đường dẫn sau để thay đổi mật khẩu</text>
 		<text name="EmailMessage_CopyTheLinkBelowToYourBrowser">Nếu nút không hoạt động hay sao chép đường dẫn dưới đây và dán vào trình duyệt</text>
 		<text name="InvalidPasswordResetCode">Mã đặt lại mật khẩu không chính xác</text>
 		<text name="InvalidPasswordResetCode_Detail">Mã đặt lại mật khẩu không chính xác (Chi tiết)</text>
@@ -273,5 +273,6 @@
     <text name="DeleteEdition">Xóa phiên bản</text>
     <text name="MaximumUserCount">Tối đa người dùng</text>
     <text name="MaximumBranchCount">Tối đa chi nhánh</text>
+    <text name="PasswordResetEmail_Subject">Mã xác nhận đặt lại mật khẩu</text>
 	</texts>
 </localizationDictionary>
