@@ -23,5 +23,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
         public string TenLoaiHangHoa { get; set; }
         public string TxtTrangThaiHang { get; set; }
         public List<DonViQuiDoiDto> DonViTinhs { get; set; }
+        public byte? ThuTuHienThi { get; set; }// hiển thị theo mức đọ ưu tiên của nhóm hàng
+
     }
 }

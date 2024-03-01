@@ -66,24 +66,6 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillCollection<HangHoaDto>(ds.Tables[0]);
-                        //if (data != null && data.Count > 0)
-                        //{
-                        //    for (int i = 0; i < data.Count; i++)
-                        //    {
-                        //        var soPhutString = ds.Tables[0].Rows[i]["SoPhutThucHien"].ToString() ?? "";
-                        //        float? soPhut;
-                        //        if (!string.IsNullOrEmpty(soPhutString))
-                        //        {
-                        //            soPhut = float.Parse(soPhutString);
-                        //            if (soPhut > 0)
-                        //            {
-                        //                data[i].SoPhutThucHien = soPhut;
-                        //            }
-                        //        }
-
-
-                        //    }
-                        //}
                         return new PagedResultDto<HangHoaDto>()
                         {
                             TotalCount = Int32.Parse(ds.Tables[0].Rows[0]["TotalRow"].ToString()),

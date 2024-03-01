@@ -226,14 +226,15 @@ namespace BanHangBeautify.HangHoa.HangHoa
         public async Task<List<HangHoaGroupTheoNhomDto>> GetDMHangHoa_groupByNhom(HangHoaRequestDto input)
         {
             var data = await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
-            var dataGroup = data.Items.GroupBy(x => new { x.IdNhomHangHoa, x.TenNhomHang, x.Color })
+            var dataGroup = data.Items.GroupBy(x => new { x.IdNhomHangHoa, x.TenNhomHang, x.Color, x.ThuTuHienThi })
                 .Select(x => new HangHoaGroupTheoNhomDto
                 {
                     IdNhomHangHoa = x.Key.IdNhomHangHoa,
                     TenNhomHang = x.Key.TenNhomHang,
                     Color = x.Key.Color,
+                    ThuTuHienThi = x.Key.ThuTuHienThi,
                     HangHoas = x.ToList()
-                }).ToList();
+                }).OrderBy(x=>x.ThuTuHienThi).ToList();
             return dataGroup;
         }
         [HttpPost]

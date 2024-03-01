@@ -57,7 +57,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                             LaNhomHangHoa = x.LaNhomHangHoa,
                             MoTa = x.MoTa,
                             Color = x.Color,
-                            ThuTuHienThi = x.ThuTuHienThi,
+                            ThuTuHienThi = x.ThuTuHienThi ?? 10,
                             IsDeleted = x.IsDeleted
                         }).ToList();
             var lst = data.Where(x => x.IdParent == null)
