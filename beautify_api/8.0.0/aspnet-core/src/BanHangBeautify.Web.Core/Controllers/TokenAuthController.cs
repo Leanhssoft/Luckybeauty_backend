@@ -57,6 +57,7 @@ namespace BanHangBeautify.Controllers
             _externalAuthManager = externalAuthManager;
             _userRegistrationManager = userRegistrationManager;
             _nhanSuRepository = nhanSuRepository;
+            _audiLogService = audiLogService;
         }
 
         [HttpPost]
@@ -71,7 +72,7 @@ namespace BanHangBeautify.Controllers
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Login;
             nhatKyThaoTacDto.ChucNang = "Hệ thống";
             nhatKyThaoTacDto.NoiDung = "Đăng nhập hệ thống";
-            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+            var nhatKy = await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
             var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x=>x.Id==loginResult.User.NhanSuId);
             return new AuthenticateResultModel

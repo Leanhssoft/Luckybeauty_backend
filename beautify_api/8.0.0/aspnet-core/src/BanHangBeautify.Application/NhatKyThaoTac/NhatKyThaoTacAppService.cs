@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhatKyHoatDong
 {
-    [AbpAuthorize]
     public class NhatKyThaoTacAppService : SPAAppServiceBase, INhatKyThaoTacAppService
     {
         private readonly IRepository<HT_NhatKyThaoTac, Guid> _repository;
@@ -34,6 +33,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             NhatKyThaoTacDto result = new NhatKyThaoTacDto();
             data = ObjectMapper.Map<HT_NhatKyThaoTac>(input);
             data.Id = Guid.NewGuid();
+            data.TenantId = AbpSession.TenantId??0;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
             data.IsDeleted = false;
