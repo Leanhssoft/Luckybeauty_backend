@@ -266,12 +266,20 @@
 		<text name="InvalidPasswordResetCode">Mã đặt lại mật khẩu không chính xác</text>
 		<text name="InvalidPasswordResetCode_Detail">Mã đặt lại mật khẩu không chính xác (Chi tiết)</text>
 		<text name="Reset">Đặt lại</text>
-    <text name="UpdateMigration">Cập nhật migration</text>
-    <text name="Edition">Phiên bản</text>
-    <text name="CreatingNewEdition">Tạo phiên bản mới</text>
-    <text name="EditingEdition">Chỉnh sửa phiên bản</text>
-    <text name="DeleteEdition">Xóa phiên bản</text>
-    <text name="MaximumUserCount">Tối đa người dùng</text>
-    <text name="MaximumBranchCount">Tối đa chi nhánh</text>
+		<text name="UpdateMigration">Cập nhật migration</text>
+		<text name="Edition">Phiên bản</text>
+		<text name="CreatingNewEdition">Tạo phiên bản mới</text>
+		<text name="EditingEdition">Chỉnh sửa phiên bản</text>
+		<text name="DeleteEdition">Xóa phiên bản</text>
+		<text name="MaximumUserCount">Tối đa người dùng</text>
+		<text name="MaximumBranchCount">Tối đa chi nhánh</text>
+		<text name="Report">Báo cáo</text>
+		<text name="BaoCaoBanHang">Báo cáo bán hàng</text>
+		<text name="BaoCaoHoaHong">Báo cáo hoa hồng</text>
+		<text name="BaoCaoTaiChinh">Báo cáo tài chính</text>
+		<text name="TongHop">Tổng hợp</text>
+		<text name="ChiTiet">Chi tiết</text>
+		<text name="ChiTietSoQuy">Chi tiết sổ quỹ</text>
+		<text name="ChiTietCongNo">Chi tiết công nợ</text>
 	</texts>
 </localizationDictionary>

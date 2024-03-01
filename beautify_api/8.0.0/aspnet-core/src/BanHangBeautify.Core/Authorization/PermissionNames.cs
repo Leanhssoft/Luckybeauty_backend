@@ -31,6 +31,25 @@
         public const string Pages_Brandname_ChuyenTien_Create = "Pages.Brandname.ChuyenTien.Create";
         public const string Pages_Brandname_ChuyenTien_Edit = "Pages.Brandname.ChuyenTien.Edit";
         public const string Pages_Brandname_ChuyenTien_Delete = "Pages.Brandname.ChuyenTien.Delete";
+
+        #region BaoCao
+        public const string Pages_BaoCao = "Pages.BaoCao";
+        #region BanHang
+        public const string Pages_BaoCao_BanHang = "Pages.BaoCao.BanHang";
+        public const string Pages_BaoCao_BanHang_ChiTiet = "Pages.BaoCao.BanHang.ChiTiet";
+        public const string Pages_BaoCao_BanHang_TongHop = "Pages.BaoCao.BanHang.TongHop";
+        #endregion 
+        #region TaiChinh
+        public const string Pages_BaoCao_TaiChinh = "Pages.BaoCao.TaiChinh";
+        public const string Pages_BaoCao_TaiChinh_ChiTietSoQuy = "Pages.BaoCao.TaiChinh.ChiTietSoQuy";
+        public const string Pages_BaoCao_TaiChinh_ChiTietCongNo = "Pages.BaoCao.TaiChinh.ChiTietCongNo";
+        #endregion
+        #region HoaHong
+        public const string Pages_BaoCao_HoaHong = "Pages.BaoCao.HoaHong";
+        public const string Pages_BaoCao_HoaHong_TongHop = "Pages.BaoCao.HoaHong.TongHop";
+        public const string Pages_BaoCao_HoaHong_ChiTiet = "Pages.BaoCao.HoaHong.ChiTiet";
+        #endregion
+        #endregion
         #region Dịch Vụ
         public const string Pages_DM_HangHoa = "Pages.DM_HangHoa";
         public const string Pages_DM_HangHoa_Create = "Pages.DM_HangHoa.Create";

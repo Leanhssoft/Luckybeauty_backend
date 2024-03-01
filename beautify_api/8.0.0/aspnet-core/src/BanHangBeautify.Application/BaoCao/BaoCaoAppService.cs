@@ -197,6 +197,43 @@ namespace BanHangBeautify.BaoCao
             model = (List<BaoCaoSoQuyDto>)data.Items;
             return _baoCaoExcelExporter.ExportBaoCaoSoQuy_NganHang(model);
         }
+
+        [HttpPost]
+        public async Task<PagedResultDto<BaoCaoTaiChinh_ChiTietSoQuyDto>> GetBaoCaoTaichinh_ChiTietSoQuy(ParamSearchBaoCaoTaiChinh input)
+        {
+            return await _baoCaoSoQuyRepository.GetBaoCaoTaichinh_ChiTietSoQuy(input);
+        }
+
+        [HttpPost]
+        public async Task<FileDto> ExportToExcel_BaoCaoTaichinh_ChiTietSoQuy(ParamSearchBaoCaoTaiChinh input)
+        {
+            var data = await _baoCaoSoQuyRepository.GetBaoCaoTaichinh_ChiTietSoQuy(input);
+            var dataExcel = ObjectMapper.Map<List<BaoCaoTaiChinh_ChiTietSoQuyDto>>(data.Items);
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.MaPhieuThuChi,
+                x.NgayLapPhieu,
+                x.TenNguoiNopTien,
+                x.MaHoaDonLienQuans,
+                x.Thu_TienMat,
+                x.Thu_TienChuyenKhoan,
+                x.Thu_TienQuyetThe,
+                x.Chi_TienMat,
+                x.Chi_TienChuyenKhoan,
+                x.Chi_TienQuyetThe,
+                x.TienThu,
+                x.TienChi,
+                x.TongThuChi,
+                x.NoiDungThu,
+            }).ToList();
+            return _excelBase.WriteToExcel("BaoCaoTaiChinh_ChiTietSoQuy", @"BaoCao\BaoCaoTaiChinh_ChiTietSoQuy_Template.xlsx", dataNew, 5);
+        }
+
+        [HttpPost]
+        public async Task<PagedResultDto<BaoCaoChiTietCongNoDto>> GetBaoCaoChiTietCongNo(ParamSearchBaoCaoTaiChinh input)
+        {
+            return await _baoCaoSoQuyRepository.GetBaoCaoChiTietCongNo(input);
+        }
         #endregion
         #region bao cao hoa hong
         [HttpPost]
@@ -265,7 +302,7 @@ namespace BanHangBeautify.BaoCao
             {
                 return new JsonResult(new { res = false, totalCount = 0 });
             }
-        } 
+        }
         [HttpPost]
         public async Task<FileDto> ExportToExcel_BaoCaoHoaHongTongHop(ParamSearchBaoCaoHoaHong input)
         {

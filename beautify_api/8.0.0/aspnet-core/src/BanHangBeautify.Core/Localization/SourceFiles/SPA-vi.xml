@@ -254,6 +254,15 @@
 		<text name="DeleteHoaDon">Xóa hóa đơn</text>
 		<text name="Notifications">Thông báo</text>
 		<text name="Birthday">Sinh nhật</text>
-    <text name="UpdateMigration">Cập nhật migration</text>
+		<text name="UpdateMigration">Cập nhật migration</text>
+
+		<text name="Report">Báo cáo</text>
+		<text name="BaoCaoBanHang">Báo cáo bán hàng</text>
+		<text name="BaoCaoHoaHong">Báo cáo hoa hồng</text>
+		<text name="BaoCaoTaiChinh">Báo cáo tài chính</text>
+		<text name="TongHop">Tổng hợp</text>
+		<text name="ChiTiet">Chi tiết</text>
+		<text name="ChiTietSoQuy">Chi tiết sổ quỹ</text>
+		<text name="ChiTietCongNo">Chi tiết công nợ</text>
 	</texts>
 </localizationDictionary>
