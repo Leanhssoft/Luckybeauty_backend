@@ -219,9 +219,10 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                     quyHD.DeleterUserId = AbpSession.UserId;
                     quyHD.DeletionTime = DateTime.Now;
                     quyHD.TrangThai = 0;
+                    quyHD.IsDeleted = true;
                     await _quyHoaDon.UpdateAsync(quyHD);
                 }
-                lstQCT.ForEach(x => { x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; });
+                lstQCT.ForEach(x => { x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; x.IsDeleted = true; });
             }
         }
 
