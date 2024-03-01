@@ -8,9 +8,12 @@ using BanHangBeautify.Authentication.External;
 using BanHangBeautify.Authentication.JwtBearer;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Models.TokenAuth;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -33,6 +36,7 @@ namespace BanHangBeautify.Controllers
         private readonly IExternalAuthManager _externalAuthManager;
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
+        private readonly INhatKyThaoTacAppService _audiLogService;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -42,6 +46,7 @@ namespace BanHangBeautify.Controllers
             IExternalAuthConfiguration externalAuthConfiguration,
             IExternalAuthManager externalAuthManager,
             UserRegistrationManager userRegistrationManager,
+            INhatKyThaoTacAppService audiLogService,
             IRepository<NS_NhanVien, Guid> nhanSuRepository)
         {
             _logInManager = logInManager;
@@ -62,7 +67,11 @@ namespace BanHangBeautify.Controllers
                 model.Password,
                 GetTenancyNameOrNull()
             );
-
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Login;
+            nhatKyThaoTacDto.ChucNang = "Hệ thống";
+            nhatKyThaoTacDto.NoiDung = "Đăng nhập hệ thống";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
             var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x=>x.Id==loginResult.User.NhanSuId);
             return new AuthenticateResultModel

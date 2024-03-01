@@ -10,13 +10,13 @@ namespace BanHangBeautify.Entities
     {
         public int TenantId { get; set; }
 
-        public Guid IdChiNhanh { get; set; }
+        public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
         public DM_ChiNhanh DM_ChiNhanh { get; set; }
         [MaxLength(2000)]
         public string ChucNang { get; set; }
         public int LoaiNhatKy { get; set; }
         public string NoiDung { get; set; }
-        public string NoiDungChiTiet { get; set; }
+        public string? NoiDungChiTiet { get; set; }   
     }
 }

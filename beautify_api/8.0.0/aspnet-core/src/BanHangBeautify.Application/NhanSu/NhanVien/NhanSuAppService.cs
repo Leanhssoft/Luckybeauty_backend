@@ -15,6 +15,8 @@ using BanHangBeautify.NhanSu.NhanVien.Exporting;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
 using BanHangBeautify.NhanSu.NhanVien_DichVu;
 using BanHangBeautify.NhanSu.NhanVien_DichVu.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests;
 using BanHangBeautify.Suggests.Repository;
@@ -45,6 +47,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
         private readonly IRepository<User, long> _userService;
         private readonly INhanVienDichVuAppService _nhanVienDichVuService;
         private readonly ISuggestAppService _suggestService;
+        private readonly INhatKyThaoTacAppService _audiLogService;
 
         public NhanSuAppService(IRepository<NS_NhanVien, Guid> repository,
             IRepository<NS_ChucVu, Guid> chucVuRepository,
@@ -54,7 +57,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
             INhanVienExcelExporter nhanVienExcelExporter,
             IRepository<User, long> userService,
             INhanVienDichVuAppService nhanVienDichVuService,
-            ISuggestAppService suggestService
+            ISuggestAppService suggestService,
+            INhatKyThaoTacAppService audiLogService
          )
         {
             _repository = repository;
@@ -67,6 +71,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             _userService = userService;
             _nhanVienDichVuService = nhanVienDichVuService;
             _suggestService = suggestService;
+            _audiLogService = audiLogService;
         }
         [AbpAuthorize(PermissionNames.Pages_NhanSu_Create, PermissionNames.Pages_NhanSu_Edit)]
         public async Task<NhanSuItemDto> CreateOrEdit(CreateOrEditNhanSuDto dto)
@@ -92,6 +97,10 @@ namespace BanHangBeautify.NhanSu.NhanVien
         [NonAction]
         public async Task<NhanSuItemDto> Create(CreateOrEditNhanSuDto dto)
         {
+            var result = new NhanSuItemDto();
+            var nhatKyThaoTacDto =new  CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Nhân viên";
             NS_NhanVien nhanSu = new NS_NhanVien();
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
@@ -99,10 +108,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 var countNhanVien = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList().Count() + 1;
-                if(countNhanVien.ToString().Length>=3) {
+                if (countNhanVien.ToString().Length >= 3)
+                {
                     nhanSu.MaNhanVien = "NS" + countNhanVien;
                 }
-                else if (countNhanVien.ToString().Length==2)
+                else if (countNhanVien.ToString().Length == 2)
                 {
                     nhanSu.MaNhanVien = "NS0" + countNhanVien;
                 }
@@ -110,8 +120,10 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 {
                     nhanSu.MaNhanVien = "NS00" + countNhanVien;
                 }
-                
+            
             }
+
+            nhatKyThaoTacDto.NoiDung = "Thêm mới nhân viên: " + dto.TenNhanVien + ";Mã nhân viên: "+ nhanSu.MaNhanVien;
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
             nhanSu.TenNhanVien = dto.TenNhanVien;
@@ -131,12 +143,12 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhanSu.LastModificationTime = DateTime.Now;
             nhanSu.LastModifierUserId = AbpSession.UserId;
             nhanSu.IsDeleted = false;
-            var result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
+            result = ObjectMapper.Map<NhanSuItemDto>(nhanSu);
             result.NgayVaoLam = nhanSu.CreationTime;
             result.TenChucVu = _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty) != null ? _chucVuRepository.FirstOrDefault(nhanSu.IdChucVu ?? Guid.Empty).TenChucVu : string.Empty;
             await _repository.InsertAsync(nhanSu);
             var qtct = CreateFirstQuaTrinhCongTac(nhanSu.Id, dto.IdChiNhanh);
-            if (dto.Services!=null&&dto.Services.Count>0)
+            if (dto.Services != null && dto.Services.Count > 0)
             {
                 CreateServiceManyDto services = new CreateServiceManyDto();
                 services.IdNhanVien = nhanSu.Id;
@@ -144,6 +156,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 await _nhanVienDichVuService.CreateOrUpdateServicesByEmployee(services);
             }
             await _quaTrinhCongTac.InsertAsync(qtct);
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+            
             return result;
         }
         [NonAction]
@@ -194,6 +208,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 services.IdDonViQuiDois = dto.Services;
                 await _nhanVienDichVuService.CreateOrUpdateServicesByEmployee(services);
             }
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Nhân viên";
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin nhân viên: " + nhanSu.TenNhanVien;
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [HttpPost]
@@ -215,6 +234,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 find.DeleterUserId = AbpSession.UserId;
                 find.DeletionTime = DateTime.Now;
                 _repository.Delete(find);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Nhân viên";
+                nhatKyThaoTacDto.NoiDung = "Xóa nhân viên: " +find.TenNhanVien + "("+find.MaNhanVien+")";
+                await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<NhanSuItemDto>(find);
             }
             return new NhanSuItemDto();
@@ -239,6 +263,10 @@ namespace BanHangBeautify.NhanSu.NhanVien
                     item.LastModifierUserId= AbpSession.UserId;
                     await _userService.UpdateAsync(item);
                 }
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Nhân viên";
+                nhatKyThaoTacDto.NoiDung = "Xóa nhiều nhân viên: " + string.Format(",",findNhanViens.SelectMany(x=>x.TenNhanVien).ToList());
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
             }
@@ -279,6 +307,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
             var data = await GetAll(input);
             List<NhanSuItemDto> model = new List<NhanSuItemDto>();
             model = (List<NhanSuItemDto>)data.Items;
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Nhân viên";
+            nhatKyThaoTacDto.NoiDung = "Xuất file Excel danh sách nhân viên";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _nhanVienExcelExporter.ExportDanhSachNhanVien(model);
         }
         public async Task<FileDto> ExportSelectedNhanVien(List<Guid> IdNhanViens)
@@ -290,6 +323,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
             var data = await GetAll(input);
             List<NhanSuItemDto> model = new List<NhanSuItemDto>();
             model = (List<NhanSuItemDto>)data.Items.Where(x => IdNhanViens.Contains(x.Id)).ToList();
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Nhân viên";
+            nhatKyThaoTacDto.NoiDung = "Xuất file Excel danh sách nhân viên";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _nhanVienExcelExporter.ExportDanhSachNhanVien(model);
         }
         [HttpPost]
@@ -361,6 +399,11 @@ namespace BanHangBeautify.NhanSu.NhanVien
                         result.Message = "Không có dữ liệu được nhập";
                         result.Status = "info";
                     }
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
+                    nhatKyThaoTacDto.ChucNang = "Nhân viên";
+                    nhatKyThaoTacDto.NoiDung = "Nhập danh sách nhân viên từ file Excel";
+                    await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
             }
             catch (Exception ex)
