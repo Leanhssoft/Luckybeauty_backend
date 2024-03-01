@@ -4,6 +4,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Extensions;
 using Abp.Net.Mail;
+using Abp.Notifications;
 using Abp.Runtime.Security;
 using Abp.Runtime.Session;
 using Abp.UI;
@@ -130,17 +131,15 @@ namespace BanHangBeautify.Authorization.Users
             var emailTemplate = new StringBuilder();
 
             var mailMessage = new StringBuilder();
-
-            mailMessage.AppendLine("<b>" + L("NameSurname") + "</b>: " + user.Name + " " + user.Surname + "<br />");
-
             if (!tenancyName.IsNullOrEmpty())
             {
-                mailMessage.AppendLine("<b>" + L("TenancyName") + "</b>: " + tenancyName + "<br />");
+                tenancyName = "HOST";
             }
-
-            mailMessage.AppendLine("<b>" + L("UserName") + "</b>: " + user.UserName + "<br />");
-            mailMessage.AppendLine("<b>" + L("ResetCode") + "</b>: " + user.PasswordResetCode + "<br />");
-
+            mailMessage.AppendLine("<div><h1>" +"Xin chào " + user.Name + " " + user.Surname + ","+ "</h1></div>");
+            mailMessage.AppendLine("<span>" + "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản: " + user.UserName + " " + "của Tenancy: " + tenancyName + "." + "</span> <br/>");
+            mailMessage.AppendLine("<span>" +"Sau đây là mã xác nhận đặt lại mật khẩu của bạn: " + user.PasswordResetCode +"</span> <br/>");
+            mailMessage.AppendLine("<span>" + "Vui lòng không chia sẽ mã này cho bất kỳ ai." + "</span> <br/>");
+            
             if (!link.IsNullOrEmpty())
             {
                 link = link.Replace("{userId}", user.Id.ToString());
@@ -150,9 +149,6 @@ namespace BanHangBeautify.Authorization.Users
                 {
                     link = link.Replace("{tenantId}", user.TenantId.ToString());
                 }
-
-                //link = EncryptQueryParameters(link);
-
                 mailMessage.AppendLine("<br />");
                 mailMessage.AppendLine(L("PasswordResetEmail_ClickTheLinkBelowToResetYourPassword") + "<br /><br />");
                 mailMessage.AppendLine("<a style=\"" + _emailButtonStyle + "\" bg-color=\"" + _emailButtonColor + "\" href=\"" + link + "\">" + L("ResetPassword") + "</a>");
@@ -161,6 +157,8 @@ namespace BanHangBeautify.Authorization.Users
                 mailMessage.AppendLine("<br />");
                 mailMessage.AppendLine("<span style=\"font-size: 9pt;\">" + L("EmailMessage_CopyTheLinkBelowToYourBrowser") + "</span><br />");
                 mailMessage.AppendLine("<span style=\"font-size: 8pt;\">" + link + "</span>");
+
+                //link = EncryptQueryParameters(link);
             }
 
             await ReplaceBodyAndSend(user.EmailAddress, L("PasswordResetEmail_Subject"), emailTemplate, mailMessage);

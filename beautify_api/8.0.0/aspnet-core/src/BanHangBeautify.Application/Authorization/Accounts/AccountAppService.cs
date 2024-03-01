@@ -1,6 +1,7 @@
 ﻿using Abp.Configuration;
 using Abp.Dependency;
 using Abp.Domain.Uow;
+using Abp.Net.Mail;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Zero.Configuration;

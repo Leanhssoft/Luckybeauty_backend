@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhatKyHoatDong
 {
-    [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac)]
     public class NhatKyThaoTacAppService : SPAAppServiceBase, INhatKyThaoTacAppService
     {
         private readonly IRepository<HT_NhatKyThaoTac, Guid> _repository;
@@ -27,13 +26,15 @@ namespace BanHangBeautify.NhatKyHoatDong
             _repository = repository;
             _userRepository = userRepository;
         }
-        [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac_Create)]
+       
         public async Task<NhatKyThaoTacDto> CreateNhatKyHoatDong(CreateNhatKyThaoTacDto input)
         {
             HT_NhatKyThaoTac data = new HT_NhatKyThaoTac();
             NhatKyThaoTacDto result = new NhatKyThaoTacDto();
             data = ObjectMapper.Map<HT_NhatKyThaoTac>(input);
             data.Id = Guid.NewGuid();
+            data.IdChiNhanh = input.IdChiNhanh==Guid.Empty?null:input.IdChiNhanh;
+            data.TenantId = AbpSession.TenantId??1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
             data.IsDeleted = false;
@@ -51,7 +52,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             await _repository.UpdateAsync(data);
             return ObjectMapper.Map<NhatKyThaoTacDto>(data);
         }
-
+        [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac)]
         public async Task<PagedResultDto<NhatKyThaoTacItemDto>> GetAll(PagedRequestDto input)
         {
             PagedResultDto<NhatKyThaoTacItemDto> result = new PagedResultDto<NhatKyThaoTacItemDto>();
@@ -68,7 +69,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             }
             return result;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac)]
         public async Task<NhatKyThaoTacItemDto> GetDetail(Guid id)
         {
             NhatKyThaoTacItemDto result = new NhatKyThaoTacItemDto();
