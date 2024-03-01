@@ -254,11 +254,10 @@
 		<text name="DeleteHoaDon">Xóa hóa đơn</text>
 		<text name="Notifications">Thông báo</text>
 		<text name="Birthday">Sinh nhật</text>
-    <text name="UpdateMigration">Cập nhật migration</text>
-    <text name="MaximumUserCount">Tối đa người dùng</text>
-    <text name="MaximumBranchCount">Tối đa chi nhánh</text>
-    <text name="PasswordResetEmail_Subject">Mã xác nhận đặt lại mật khẩu</text>
 		<text name="UpdateMigration">Cập nhật migration</text>
+		<text name="MaximumUserCount">Tối đa người dùng</text>
+		<text name="MaximumBranchCount">Tối đa chi nhánh</text>
+		<text name="PasswordResetEmail_Subject">Mã xác nhận đặt lại mật khẩu</text>
 
 		<text name="Report">Báo cáo</text>
 		<text name="BaoCaoBanHang">Báo cáo bán hàng</text>
