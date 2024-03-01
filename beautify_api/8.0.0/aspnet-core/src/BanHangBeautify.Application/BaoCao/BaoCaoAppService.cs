@@ -234,6 +234,28 @@ namespace BanHangBeautify.BaoCao
         {
             return await _baoCaoSoQuyRepository.GetBaoCaoChiTietCongNo(input);
         }
+        [HttpPost]
+        public async Task<FileDto> ExportToExcel_BaoCaoChiTietCongNo(ParamSearchBaoCaoTaiChinh input)
+        {
+            var data = await _baoCaoSoQuyRepository.GetBaoCaoChiTietCongNo(input);
+            var dataExcel = ObjectMapper.Map<List<BaoCaoChiTietCongNoDto>>(data.Items);
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.MaKhachHang,
+                x.TenKhachHang,
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.TenHangHoa,
+                x.SoLuong,
+                x.DonGiaSauVAT,
+                x.ThanhTienSauVAT,
+                x.TongThanhToan,
+                x.KhachDaTra,
+                x.ConNo,
+                x.GhiChuHD
+            }).ToList();
+            return _excelBase.WriteToExcel("BaoCaoChiTietCongNo", @"BaoCao\BaoCaoTaiChinh_ChiTietCongNo_Template.xlsx", dataNew, 5);
+        }
         #endregion
         #region bao cao hoa hong
         [HttpPost]
