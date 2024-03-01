@@ -36,7 +36,6 @@ namespace BanHangBeautify.Controllers
         private readonly IExternalAuthManager _externalAuthManager;
         private readonly UserRegistrationManager _userRegistrationManager;
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
-        private readonly INhatKyThaoTacAppService _audiLogService;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -57,7 +56,6 @@ namespace BanHangBeautify.Controllers
             _externalAuthManager = externalAuthManager;
             _userRegistrationManager = userRegistrationManager;
             _nhanSuRepository = nhanSuRepository;
-            _audiLogService = audiLogService;
         }
 
         [HttpPost]
@@ -68,11 +66,6 @@ namespace BanHangBeautify.Controllers
                 model.Password,
                 GetTenancyNameOrNull()
             );
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Login;
-            nhatKyThaoTacDto.ChucNang = "Hệ thống";
-            nhatKyThaoTacDto.NoiDung = "Đăng nhập hệ thống";
-            var nhatKy = await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             var accessToken = CreateAccessToken(CreateJwtClaims(loginResult.Identity));
             var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x=>x.Id==loginResult.User.NhanSuId);
             return new AuthenticateResultModel

@@ -33,7 +33,8 @@ namespace BanHangBeautify.NhatKyHoatDong
             NhatKyThaoTacDto result = new NhatKyThaoTacDto();
             data = ObjectMapper.Map<HT_NhatKyThaoTac>(input);
             data.Id = Guid.NewGuid();
-            data.TenantId = AbpSession.TenantId??0;
+            data.IdChiNhanh = input.IdChiNhanh==Guid.Empty?null:input.IdChiNhanh;
+            data.TenantId = AbpSession.TenantId??1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
             data.IsDeleted = false;
