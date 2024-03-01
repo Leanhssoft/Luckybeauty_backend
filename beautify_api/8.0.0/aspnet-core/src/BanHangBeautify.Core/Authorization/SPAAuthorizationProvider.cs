@@ -122,6 +122,22 @@ namespace BanHangBeautify.Authorization
 
             #endregion
 
+            #region Báo cáo
+            var baoCao = pages.CreateChildPermission(PermissionNames.Pages_BaoCao, L("Report"));
+            var baocaoBanHang = baoCao.CreateChildPermission(PermissionNames.Pages_BaoCao_BanHang, L("BaoCaoBanHang"));
+            baocaoBanHang.CreateChildPermission(PermissionNames.Pages_BaoCao_BanHang_TongHop, L("TongHop"));
+            baocaoBanHang.CreateChildPermission(PermissionNames.Pages_BaoCao_BanHang_ChiTiet, L("ChiTiet"));
+
+            var baocaoHoaHong = baoCao.CreateChildPermission(PermissionNames.Pages_BaoCao_HoaHong, L("BaoCaoHoaHong"));
+            baocaoHoaHong.CreateChildPermission(PermissionNames.Pages_BaoCao_HoaHong_TongHop, L("TongHop"));
+            baocaoHoaHong.CreateChildPermission(PermissionNames.Pages_BaoCao_HoaHong_ChiTiet, L("ChiTiet"));
+
+            var baoCaoTaiChinh = baoCao.CreateChildPermission(PermissionNames.Pages_BaoCao_TaiChinh, L("BaoCaoTaiChinh"));
+            baoCaoTaiChinh.CreateChildPermission(PermissionNames.Pages_BaoCao_TaiChinh_ChiTietCongNo, L("ChiTietCongNo"));
+            baoCaoTaiChinh.CreateChildPermission(PermissionNames.Pages_BaoCao_TaiChinh_ChiTietSoQuy, L("ChiTietSoQuy"));
+
+            #endregion
+
             #region other
             var cauHinhPhanMem = pages.CreateChildPermission(PermissionNames.Pages_CauHinhPhanMem, L("CauHinhPhanMem"));
             cauHinhPhanMem.CreateChildPermission(PermissionNames.Pages_CauHinhPhanMem_Create, L("Create"));
