@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
-using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
@@ -8,6 +7,8 @@ using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien_DichVu.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,18 +26,21 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
         IRepository<NS_ChucVu, Guid> _chucVuRepository;
         IRepository<DM_DonViQuiDoi, Guid> _donViQuyDoiRepository;
         IRepository<DM_HangHoa, Guid> _hangHoaRepository;
+        INhatKyThaoTacAppService _audilogService;
         public NhanVienDichVuAppService(
             IRepository<DichVu_NhanVien, Guid> repository,
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             IRepository<NS_ChucVu, Guid> chucVuRepository,
             IRepository<DM_DonViQuiDoi, Guid> donViQuyDoiRepository,
-            IRepository<DM_HangHoa, Guid> hangHoaRepository)
+            IRepository<DM_HangHoa, Guid> hangHoaRepository,
+            INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
             _nhanSuRepository = nhanSuRepository;
             _chucVuRepository = chucVuRepository;
             _donViQuyDoiRepository = donViQuyDoiRepository;
             _hangHoaRepository = hangHoaRepository;
+            _audilogService = audilogService;
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_NhanVien_DichVu_Create)]
@@ -58,6 +62,11 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                 await _repository.InsertAsync(rdo);
                 result.Message = "Thêm mới thành công!";
                 result.Status = "success";
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+                nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
+                nhatKyThaoTacDto.NoiDung = "Phân công dịch vụ cho nhân viên";
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)
             {
@@ -108,6 +117,11 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     }
 
                     result.Message = "Cập nhật thành công!";
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                    nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
+                    nhatKyThaoTacDto.NoiDung = "Cập nhật phân công dịch vụ cho nhiều nhân viên";
+                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
                 else
                 {
@@ -136,6 +150,11 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     }
                     await _repository.InsertRangeAsync(lstDichVuNhanVien);
                     result.Message = "Thêm mới thành công!";
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                    nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
+                    nhatKyThaoTacDto.NoiDung = "Phân công dịch vụ cho nhiều nhân viên";
+                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
 
                 result.Status = "success";
@@ -188,6 +207,11 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                         
                     }
                     result.Message = "Cập nhật thành công!";
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                    nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
+                    nhatKyThaoTacDto.NoiDung = "Cập nhật phân công dịch vụ cho nhân viên";
+                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
                 else
                 {
@@ -215,6 +239,10 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     }
                     await _repository.InsertRangeAsync(lstDichVuNhanVien);
                     result.Message = "Thêm mới thành công!";
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                    nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
+                    nhatKyThaoTacDto.NoiDung = "Thêm mới phân công dịch vụ cho nhân viên";
                 }
 
                 result.Status = "success";
@@ -305,6 +333,10 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                 await _repository.DeleteAsync(input.Id);
                 result.Message = "Xóa dữ liệu thành công!";
                 result.Status = "success";
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
+                nhatKyThaoTacDto.NoiDung = "Xóa phân công dịch vụ nhân viên";
             }
             catch (Exception ex)
             {
@@ -341,6 +373,10 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                 await _repository.UpdateAsync(find);
                 result.Message = "Cập nhật dữ liệu thành công!";
                 result.Status = "success";
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật phân công dịch vụ nhân viên";
             }
             catch (Exception ex)
             {

@@ -3,9 +3,13 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.LichLamViec.Dto;
 using BanHangBeautify.NhanSu.LichLamViec.Repository;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,11 +26,15 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         private readonly IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCaService;
         private readonly ILichLamViecRespository _lichLamViecRespository;
         private readonly IRepository<DM_NgayNghiLe, Guid> _dmNgayNghiLeService;
+        private readonly INhatKyThaoTacAppService _audiLogService;
+        private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;
         public LichLamViecAppService(
             IRepository<NS_LichLamViec, Guid> lichLamViecService,
             ILichLamViecRespository lichLamViecRespository,
              IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCaService,
-             IRepository<DM_NgayNghiLe, Guid> dmNgayNghiLeService
+             IRepository<DM_NgayNghiLe, Guid> dmNgayNghiLeService,
+              IRepository<NS_NhanVien, Guid> nhanVienRepository,
+             INhatKyThaoTacAppService audiLogService
 
          )
         {
@@ -34,6 +42,8 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             _lichLamViecRespository = lichLamViecRespository;
             _lichLamViecCaService = lichLamViecCaService;
             _dmNgayNghiLeService = dmNgayNghiLeService;
+            _nhanVienRepository = nhanVienRepository;
+            _audiLogService = audiLogService;
 
         }
         [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Create, PermissionNames.Pages_NhanSu_Edit)]
@@ -91,7 +101,12 @@ namespace BanHangBeautify.NhanSu.LichLamViec
                     await _lichLamViecCaService.InsertAsync(rdo);
                 }
             }
-
+            var nhanVien = _nhanVienRepository.FirstOrDefault(x => x.Id == data.IdNhanVien);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Lịch làm việc";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới lịch làm việc cho nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
@@ -149,6 +164,12 @@ namespace BanHangBeautify.NhanSu.LichLamViec
                 }
             }
             result = ObjectMapper.Map<LichLamViecDto>(input);
+            var nhanVien = _nhanVienRepository.FirstOrDefault(x => x.Id == input.IdNhanVien);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Lịch làm việc";
+            nhatKyThaoTacDto.NoiDung = "Sửa lịch làm việc cho nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
 
         }
@@ -166,6 +187,12 @@ namespace BanHangBeautify.NhanSu.LichLamViec
                 checkExist.DeleterUserId = AbpSession.UserId;
                 checkExist.DeletionTime = DateTime.Now;
                 await _lichLamViecService.DeleteAsync(checkExist);
+                var nhanVien = _nhanVienRepository.FirstOrDefault(x => x.Id == checkExist.IdNhanVien);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Lịch làm việc";
+                nhatKyThaoTacDto.NoiDung = "Xóa lịch làm việc nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
+                await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return new ExecuteResultDto()
                 {
                     Status = "success",

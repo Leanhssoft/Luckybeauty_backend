@@ -123,7 +123,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             
             }
 
-            nhatKyThaoTacDto.NoiDung = "Thêm mới nhân viên: " + dto.TenNhanVien + ";Mã nhân viên: "+ nhanSu.MaNhanVien;
+            nhatKyThaoTacDto.NoiDung = "Thêm mới nhân viên: " + dto.TenNhanVien + " ("+ nhanSu.MaNhanVien +")";
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
             nhanSu.TenNhanVien = dto.TenNhanVien;
@@ -209,9 +209,9 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 await _nhanVienDichVuService.CreateOrUpdateServicesByEmployee(services);
             }
             var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Nhân viên";
-            nhatKyThaoTacDto.NoiDung = "Sửa thông tin nhân viên: " + nhanSu.TenNhanVien;
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin nhân viên: " + nhanSu.TenNhanVien +"("+nhanSu.MaNhanVien+")";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }

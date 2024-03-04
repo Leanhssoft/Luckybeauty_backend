@@ -4,11 +4,14 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.CaLamViec.Dto;
 using BanHangBeautify.NhanSu.CaLamViec.Exporting;
 using BanHangBeautify.NhanSu.CaLamViec.Repository;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using static NPOI.HSSF.UserModel.HeaderFooter;
 
 namespace BanHangBeautify.NhanSu.CaLamViec
 {
@@ -28,11 +32,16 @@ namespace BanHangBeautify.NhanSu.CaLamViec
         private readonly IRepository<NS_CaLamViec, Guid> _repository;
         private readonly ICaLamViecRepository _caLamViecRepository;
         private readonly ICaLamViecExcelExporter _caLamViecExcelExporter;
-        public CaLamViecAppService(IRepository<NS_CaLamViec, Guid> repository, ICaLamViecRepository caLamViecRepository, ICaLamViecExcelExporter caLamViecExcelExporter)
+        private readonly INhatKyThaoTacAppService _audiLogService;
+        public CaLamViecAppService(IRepository<NS_CaLamViec, Guid> repository,
+            ICaLamViecRepository caLamViecRepository, 
+            ICaLamViecExcelExporter caLamViecExcelExporter,
+            INhatKyThaoTacAppService audiLogService)
         {
             _repository = repository;
             _caLamViecRepository = caLamViecRepository;
             _caLamViecExcelExporter = caLamViecExcelExporter;
+            _audiLogService = audiLogService;
         }
         [AbpAuthorize(PermissionNames.Pages_CaLamViec_Create, PermissionNames.Pages_CaLamViec_Edit)]
         public async Task<CaLamViecDto> CreateOrEdit(CreateOrEditCaLamViecDto dto)
@@ -92,6 +101,11 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             data.CreationTime = DateTime.Now;
             var result = ObjectMapper.Map<CaLamViecDto>(data);
             await _repository.InsertAsync(data);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Ca làm việc";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới ca làm việc: " + data.TenCa + "(" + data.MaCa + ")";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
@@ -122,6 +136,11 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             data.LastModificationTime = DateTime.Now;
             var result = ObjectMapper.Map<CaLamViecDto>(data);
             await _repository.UpdateAsync(data);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Ca làm việc";
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin ca làm việc: " + data.TenCa + "(" + data.MaCa + ")";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [HttpPost]
@@ -136,6 +155,11 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                 caLamViec.DeletionTime = DateTime.Now;
                 caLamViec.DeleterUserId = AbpSession.UserId;
                 await _repository.UpdateAsync(caLamViec);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Ca làm việc";
+                nhatKyThaoTacDto.NoiDung = "Xóa ca làm việc: " + caLamViec.TenCa + "(" + caLamViec.MaCa + ")";
+                await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<CaLamViecDto>(caLamViec);
             }
             return new CaLamViecDto();
@@ -156,6 +180,12 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                     _repository.RemoveRange(finds);
                     result.Status = "success";
                     result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                    nhatKyThaoTacDto.ChucNang = "Ca làm việc";
+                    nhatKyThaoTacDto.NoiDung = "Xóa nhiều ca làm việc: " + string.Format(",", finds.SelectMany(x => x.TenCa).ToList());
+                    await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+
                 }
                 return result;
             }
@@ -195,6 +225,12 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.MaxResultCount = int.MaxValue;
             var data = await _caLamViecRepository.GetAll(input, AbpSession.TenantId ?? 1);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Ca làm việc";
+            nhatKyThaoTacDto.NoiDung = "Xuất danh sách ca làm việc ra file Excel";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xuất danh sách ca làm việc ra file Excel";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _caLamViecExcelExporter.ExportDanhSachCaLamViec(data.Items.ToList());
         }
         public async Task<FileDto> ExportSelectedCaLamViec(List<Guid> IdCaLamViecs)
@@ -248,6 +284,12 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                         result.Message = "Không có dữ liệu được nhập";
                         result.Status = "info";
                     }
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
+                    nhatKyThaoTacDto.ChucNang = "Ca làm việc";
+                    nhatKyThaoTacDto.NoiDung = "Nhập danh sách ca làm việc từ file Excel";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Nhập danh sách ca làm việc từ file Excel";
+                    await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
             }
             catch (Exception ex)

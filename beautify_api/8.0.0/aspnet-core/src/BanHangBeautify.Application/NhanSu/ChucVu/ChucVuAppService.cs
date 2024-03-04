@@ -4,8 +4,11 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.ChucVu.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,9 +22,11 @@ namespace BanHangBeautify.NhanSu.ChucVu
     public class ChucVuAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_ChucVu, Guid> _repository;
-        public ChucVuAppService(IRepository<NS_ChucVu, Guid> repository)
+        private readonly INhatKyThaoTacAppService _audiLogService;
+        public ChucVuAppService(IRepository<NS_ChucVu, Guid> repository,INhatKyThaoTacAppService audiLogService)
         {
             _repository = repository;
+            _audiLogService = audiLogService;
         }
         [AbpAuthorize(PermissionNames.Pages_ChucVu_Create, PermissionNames.Pages_ChucVu_Edit)]
         public async Task<ChucVuDto> CreateOrEdit(CreateOrEditChucVuDto dto)
@@ -73,6 +78,11 @@ namespace BanHangBeautify.NhanSu.ChucVu
             chucVu.CreatorUserId = AbpSession.UserId;
             var result = ObjectMapper.Map<ChucVuDto>(chucVu);
             await _repository.InsertAsync(chucVu);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Chức vụ";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới chức vụ: " + chucVu.TenChucVu + "(" + chucVu.MaChucVu + ")";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
@@ -86,6 +96,11 @@ namespace BanHangBeautify.NhanSu.ChucVu
             chucVu.LastModificationTime = DateTime.Now;
             var result = ObjectMapper.Map<ChucVuDto>(chucVu);
             await _repository.UpdateAsync(chucVu);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Chức vụ";
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin chức vụ: " + chucVu.TenChucVu + "(" + chucVu.MaChucVu + ")";
+            await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [HttpGet]
@@ -101,6 +116,11 @@ namespace BanHangBeautify.NhanSu.ChucVu
                 find.TrangThai = 0;
                 var result = ObjectMapper.Map<ChucVuDto>(find);
                 await _repository.UpdateAsync(find);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Chức vụ";
+                nhatKyThaoTacDto.NoiDung = "Xóa chức vụ: " + find.TenChucVu + "(" + find.MaChucVu + ")";
+                await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return result;
             }
             return new ChucVuDto();
@@ -121,6 +141,10 @@ namespace BanHangBeautify.NhanSu.ChucVu
                     _repository.RemoveRange(finds);
                     result.Status = "success";
                     result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                    nhatKyThaoTacDto.ChucNang = "Chức vụ";
+                    nhatKyThaoTacDto.NoiDung = "Xóa nhiều chức vụ: " + string.Format(",", finds.SelectMany(x => x.TenChucVu).ToList());
                 }
                 return result;
             }
