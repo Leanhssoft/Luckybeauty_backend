@@ -144,7 +144,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
                     var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                     nhatKyThaoTacDto.ChucNang = "Chức vụ";
-                    nhatKyThaoTacDto.NoiDung = "Xóa nhiều chức vụ: " + string.Format(",", finds.SelectMany(x => x.TenChucVu).ToList());
+                    nhatKyThaoTacDto.NoiDung = "Xóa nhiều chức vụ: " + string.Join(",", finds.SelectMany(x => x.TenChucVu).ToList());
                 }
                 return result;
             }

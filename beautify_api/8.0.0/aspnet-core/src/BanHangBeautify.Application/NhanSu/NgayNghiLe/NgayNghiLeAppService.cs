@@ -153,7 +153,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
                 nhatKyThaoTacDto.ChucNang = "Ngày lễ";
-                nhatKyThaoTacDto.NoiDung = "Xóa các ngày lễ: " + string.Format(", ", checkExists.Select(x=>x.TenNgayLe).ToList());
+                nhatKyThaoTacDto.NoiDung = "Xóa các ngày lễ: " + string.Join(", ", checkExists.Select(x=>x.TenNgayLe).ToList());
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             return result;

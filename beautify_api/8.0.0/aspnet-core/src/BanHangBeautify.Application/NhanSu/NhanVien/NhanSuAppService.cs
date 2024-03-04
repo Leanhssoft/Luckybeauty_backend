@@ -266,7 +266,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Nhân viên";
-                nhatKyThaoTacDto.NoiDung = "Xóa nhiều nhân viên: " + string.Format(",",findNhanViens.SelectMany(x=>x.TenNhanVien).ToList());
+                nhatKyThaoTacDto.NoiDung = "Xóa nhiều nhân viên: " + string.Join(", ",findNhanViens.SelectMany(x=>x.TenNhanVien).ToList());
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
             }

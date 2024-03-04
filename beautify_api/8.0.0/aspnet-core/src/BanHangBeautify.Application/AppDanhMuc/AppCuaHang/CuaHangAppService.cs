@@ -3,7 +3,10 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.AppCuaHang.Dto;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,10 +20,12 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
     {
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
-        public CuaHangAppService(IRepository<HT_CongTy, Guid> congTyRepository, IRepository<DM_ChiNhanh, Guid> chiNhanhRepository)
+        INhatKyThaoTacAppService _audilogService;
+        public CuaHangAppService(IRepository<HT_CongTy, Guid> congTyRepository, IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,INhatKyThaoTacAppService audilogervice)
         {
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;
+            _audilogService = audilogervice;
         }
 
         [AbpAuthorize(PermissionNames.Pages_CongTy_Create)]
@@ -85,6 +90,12 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
                 item.LastModificationTime = DateTime.Now;
                 store = ObjectMapper.Map<CuaHangDto>(item);
                 await _congTyRepository.UpdateAsync(item);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Cửa hàng";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật thông tin chi nhánh";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật thông tin chi nhánh";
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             return store;
         }
@@ -99,6 +110,11 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
             {
                 congTy.IsDeleted = true;
                 await _congTyRepository.UpdateAsync(congTy);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Cửa hàng";
+                nhatKyThaoTacDto.NoiDung = "Xóa của hàng;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa cửa hàng";
                 result = true;
             }
             return result;

@@ -5,7 +5,10 @@ using Abp.Domain.Uow;
 using BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Dto;
 using BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NPOI.SS.Formula.Functions;
@@ -24,13 +27,16 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
         private readonly IRepository<DM_TaiKhoanNganHang, Guid> _dmTaiKhoanNganHang;
         private readonly IRepository<DM_NganHang, Guid> _nganHangRepository;
         private readonly TaiKhoanNganHangRepository _repoBankAcc;
+        INhatKyThaoTacAppService _audilogService;
 
         public TaiKhoanNganHangAppService(IRepository<DM_TaiKhoanNganHang, Guid> repository,
-            TaiKhoanNganHangRepository repoBankAcc, IRepository<DM_NganHang, Guid> nganHangRepository)
+            TaiKhoanNganHangRepository repoBankAcc, IRepository<DM_NganHang, Guid> nganHangRepository,
+            INhatKyThaoTacAppService audilogService)
         {
             _dmTaiKhoanNganHang = repository;
             _repoBankAcc = repoBankAcc;
             _nganHangRepository = nganHangRepository;
+            _audilogService = audilogService;
         }
         public async Task<ExecuteResultDto> CreateOrEdit(CreateOrEditTaiKhoanNganHangDto input)
         {
@@ -92,6 +98,14 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
                 }
                 result.Message = "Thêm liệu thành công !";
                 result.Status = "success";
+
+                var nganHang = _nganHangRepository.FirstOrDefault(x => x.Id == input.IdNganHang);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Tài khoản ngân hàng";
+                nhatKyThaoTacDto.NoiDung = "Thêm mới tài khoản ngân hàng";
+                nhatKyThaoTacDto.NoiDung = string.Format("<div><p>Thêm mới tài khoản ngân hàng</p><br/><p>STK :</p><br/><p>Ngân hàng :</p><br/><p>Người hưởng thụ :</p></div>", input.SoTaiKhoan, nganHang.TenNganHang, input.TenChuThe);
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)
             {
@@ -129,6 +143,13 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
                 }
                 result.Message = "Cập nhật liệu thành công !";
                 result.Status = "success";
+                var nganHang = _nganHangRepository.FirstOrDefault(x => x.Id == input.IdNganHang);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Tài khoản ngân hàng";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật tài khoản ngân hàng";
+                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div><p>Cập nhật tài khoản ngân hàng</p><br/><p>STK :</p><br/><p>Ngân hàng :</p><br/><p>Người hưởng thụ :</p></div>", input.SoTaiKhoan, nganHang.TenNganHang, input.TenChuThe);
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)
             {
@@ -154,6 +175,12 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
                     await _dmTaiKhoanNganHang.DeleteAsync(data);
                     result.Message = "Xóa dữ liệu thành công !";
                     result.Status = "success";
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                    nhatKyThaoTacDto.ChucNang = "Tài khoản ngân hàng";
+                    nhatKyThaoTacDto.NoiDung = "Xóa tài khoản ngân hàng";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Xóa tài khoản ngân hàng số: " + data.SoTaiKhoan;
+                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
             }
             catch (Exception ex)

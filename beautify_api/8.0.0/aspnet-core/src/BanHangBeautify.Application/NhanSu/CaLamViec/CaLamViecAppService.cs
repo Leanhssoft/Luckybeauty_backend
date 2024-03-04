@@ -183,7 +183,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                     var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                     nhatKyThaoTacDto.ChucNang = "Ca làm việc";
-                    nhatKyThaoTacDto.NoiDung = "Xóa nhiều ca làm việc: " + string.Format(",", finds.SelectMany(x => x.TenCa).ToList());
+                    nhatKyThaoTacDto.NoiDung = "Xóa nhiều ca làm việc: " + string.Join(",", finds.SelectMany(x => x.TenCa).ToList());
                     await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
 
                 }

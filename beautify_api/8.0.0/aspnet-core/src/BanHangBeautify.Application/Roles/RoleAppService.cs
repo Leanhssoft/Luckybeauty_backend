@@ -12,6 +12,9 @@ using Abp.UI;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Consts;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Roles.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,13 +32,15 @@ namespace BanHangBeautify.Roles
     {
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
+        INhatKyThaoTacAppService _audilogService;
         
-        public RoleAppService(IRepository<Role> repository, RoleManager roleManager, UserManager userManager)
+        public RoleAppService(IRepository<Role> repository, RoleManager roleManager, UserManager userManager,INhatKyThaoTacAppService audilogService)
             : base(repository)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
+            _audilogService = audilogService;
         }
         [NonAction]
         public override async Task<RoleDto> CreateAsync(CreateRoleDto input)
@@ -54,7 +59,11 @@ namespace BanHangBeautify.Roles
                 .ToList();
 
             await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
-
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Vai trò";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới vai trò: " + role.DisplayName;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return MapToEntityDto(role);
         }
 
@@ -87,7 +96,11 @@ namespace BanHangBeautify.Roles
                 .ToList();
 
             await _roleManager.SetGrantedPermissionsAsync(role, grantedPermissions);
-
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Vai trò";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật vai trò: " + role.DisplayName;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return MapToEntityDto(role);
         }
         [AbpAuthorize(PermissionNames.Pages_Administration_Roles_Create, PermissionNames.Pages_Administration_Roles_Edit)]
@@ -119,6 +132,11 @@ namespace BanHangBeautify.Roles
                 await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
                 await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
                 checkError.Message = "Thêm mới thành công!";
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Vai trò";
+                nhatKyThaoTacDto.NoiDung = "Thêm mới vai trò: " + role.DisplayName;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return checkError;
             }
         }
@@ -172,6 +190,11 @@ namespace BanHangBeautify.Roles
                 await CurrentUnitOfWork.SaveChangesAsync(); //It's done to get Id of the role.
                 await UpdateGrantedPermissionsAsync(role, input.GrantedPermissions);
                 checkError.Message = "Cập nhật thành công!";
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Vai trò";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật vai trò: " + role.DisplayName;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return checkError;
             }
         }
@@ -195,7 +218,11 @@ namespace BanHangBeautify.Roles
             {
                 CheckErrors(await _userManager.RemoveFromRoleAsync(user, role.NormalizedName));
             }
-
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+            nhatKyThaoTacDto.ChucNang = "Vai trò";
+            nhatKyThaoTacDto.NoiDung = "Xóa vai trò: " + role.DisplayName;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             CheckErrors(await _roleManager.DeleteAsync(role));
         }
         [HttpPost]
@@ -215,6 +242,11 @@ namespace BanHangBeautify.Roles
                 role.DeletionTime = DateTime.Now;
                 role.DeleterUserId = AbpSession.UserId;
                 await _roleManager.UpdateAsync(role);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Vai trò";
+                nhatKyThaoTacDto.NoiDung = "Xóa vai trò: " + role.DisplayName;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = true;
             }
             catch (System.Exception)
@@ -239,6 +271,11 @@ namespace BanHangBeautify.Roles
                 Repository.RemoveRange(checkExists);
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Vai trò";
+                nhatKyThaoTacDto.NoiDung = "Xóa các vai trò: " + string.Format(", "+ checkExists.Select(x=>x.DisplayName).ToList());
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             return result;
         }
