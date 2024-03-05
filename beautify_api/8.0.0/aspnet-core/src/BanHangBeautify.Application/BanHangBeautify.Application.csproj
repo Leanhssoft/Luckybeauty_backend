@@ -12,10 +12,16 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Bookings\BookingNhanVien\**" />
+    <Compile Remove="Bookings\BookingService\**" />
     <Compile Remove="HoaDon\Dto\**" />
     <Compile Remove="HoaDon\Repository\**" />
+    <EmbeddedResource Remove="Bookings\BookingNhanVien\**" />
+    <EmbeddedResource Remove="Bookings\BookingService\**" />
     <EmbeddedResource Remove="HoaDon\Dto\**" />
     <EmbeddedResource Remove="HoaDon\Repository\**" />
+    <None Remove="Bookings\BookingNhanVien\**" />
+    <None Remove="Bookings\BookingService\**" />
     <None Remove="HoaDon\Dto\**" />
     <None Remove="HoaDon\Repository\**" />
   </ItemGroup>
@@ -24,8 +30,6 @@
     <ProjectReference Include="..\BanHangBeautify.EntityFrameworkCore\BanHangBeautify.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Bookings\BookingService\" />
-    <Folder Include="Bookings\BookingNhanVien\" />
     <Folder Include="Configuration\Common\" />
     <Folder Include="DashboardCustomization\Dto\" />
   </ItemGroup>

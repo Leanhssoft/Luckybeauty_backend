@@ -3,8 +3,11 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.NguonKhach.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,9 +20,11 @@ namespace BanHangBeautify.KhachHang.NguonKhach
     public class NguonKhachAppService : SPAAppServiceBase
     {
         private IRepository<DM_NguonKhach, Guid> _repository;
-        public NguonKhachAppService(IRepository<DM_NguonKhach, Guid> repository)
+        INhatKyThaoTacAppService _audilogService;
+        public NguonKhachAppService(IRepository<DM_NguonKhach, Guid> repository,INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
+            _audilogService = audilogService;
         }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_NguonKhach_Create)]
@@ -37,6 +42,12 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             nguonKhach.CreatorUserId = AbpSession.UserId;
             nguonKhach.TenantId = AbpSession.TenantId ?? 1;
             nguonKhach.IsDeleted = false;
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Nguồn khách";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới nguồn khách hàng";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới nguông khách hàng: " + nguonKhach.TenNguon;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             await _repository.InsertAsync(nguonKhach);
             result = ObjectMapper.Map<NguonKhachDto>(nguonKhach);
             return result;
@@ -49,6 +60,12 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             nguonKhach.LastModificationTime = DateTime.Now;
             nguonKhach.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(nguonKhach);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Nguồn khách";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật nguồn khách hàng";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật nguồn khách hàng: " + nguonKhach.TenNguon;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             result = ObjectMapper.Map<NguonKhachDto>(nguonKhach);
 
             return result;
@@ -66,6 +83,12 @@ namespace BanHangBeautify.KhachHang.NguonKhach
                 delete.DeleterUserId = AbpSession.UserId;
                 delete.TrangThai = 1;
                 _repository.Update(delete);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+                nhatKyThaoTacDto.ChucNang = "Nguồn khách";
+                nhatKyThaoTacDto.NoiDung = "Xóa nguồn khách";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới nguồn khách hàng: " + delete.TenNguon;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = ObjectMapper.Map<NguonKhachDto>(delete);
             }
             return result;

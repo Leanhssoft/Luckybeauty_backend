@@ -6,6 +6,7 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
@@ -13,6 +14,8 @@ using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.HangHoa.HangHoa.Repository;
 using BanHangBeautify.NewFolder;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,16 +41,19 @@ namespace BanHangBeautify.HangHoa.HangHoa
         private readonly IRepository<DM_DonViQuiDoi, Guid> _dmDonViQuiDoi;
         private readonly IHangHoaRepository _repository;
         private readonly IExcelBase _excelBase;
+        INhatKyThaoTacAppService _audilogService;
         public HangHoaAppService(IRepository<DM_HangHoa, Guid> repository,
             IHangHoaRepository productRepo,
             IRepository<DM_DonViQuiDoi, Guid> dvqd,
-            IExcelBase excelBase
+            IExcelBase excelBase,
+            INhatKyThaoTacAppService audilogService
             )
         {
             _dmHangHoa = repository;
             _dmDonViQuiDoi = dvqd;
             _repository = productRepo;
             _excelBase = excelBase;
+            _audilogService = audilogService;
         }
 
         public string FormatMaHangHoa(string firstChar, float? maxVal = 0)
@@ -123,8 +129,13 @@ namespace BanHangBeautify.HangHoa.HangHoa
             }
             await _dmHangHoa.InsertAsync(hangHoa);
             await _dmDonViQuiDoi.InsertRangeAsync(lstDVT);
-
             hangHoa.DonViQuiDois = lstDVT;
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới Hàng hóa - Dịch vụ" + hangHoa.TenHangHoa;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
         }
@@ -192,7 +203,12 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     hangHoa.DonViQuiDois.Add(dvtNew);// used to return
                 }
             }
-
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Sửa thông tin Hàng hóa - Dịch vụ" + hangHoa.TenHangHoa;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             // only return dvt not delete (todo)
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
@@ -252,7 +268,12 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 _dmHangHoa.Update(findHangHoa);
 
                 _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == id).ForEach(x => x.IsDeleted = true);
-
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
+                nhatKyThaoTacDto.NoiDung = "Xóa Hàng hóa - Dịch vụ";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa Hàng hóa - Dịch vụ" + findHangHoa.TenHangHoa;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
@@ -275,6 +296,12 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 x.DeleterUserId = AbpSession.UserId;
                 x.DeletionTime = DateTime.Now;
             });
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+            nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDung = "Xóa Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhiều Hàng hóa - Dịch vụ";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             // todo remove image in google api
         }
         [HttpPost]
@@ -335,6 +362,12 @@ namespace BanHangBeautify.HangHoa.HangHoa
         {
             var data = await _repository.GetDMHangHoa(input, AbpSession.TenantId ?? 1);
             var dataExcel = ObjectMapper.Map<List<ExportExcelHangHoaDto>>(data.Items);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDung = "Xuất danh sách Hàng hóa - Dịch vụ";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xuất danh sách Hàng hóa - Dịch vụ";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _excelBase.WriteToExcel("DanhSachDichVu_", "DichVu_Export_Template.xlsx", dataExcel, 4);
         }
         [HttpPost]
@@ -416,6 +449,12 @@ namespace BanHangBeautify.HangHoa.HangHoa
                             result.Message = "Không có dữ liệu được nhập";
                             result.Status = "info";
                         }
+                        var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                        nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
+                        nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
+                        nhatKyThaoTacDto.NoiDung = "Nhập danh sách Hàng hóa - Dịch vụ";
+                        nhatKyThaoTacDto.NoiDungChiTiet = "Nhập danh sách Hàng hóa - Dịch vụ";
+                        await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                     }
                 }
             }
@@ -587,6 +626,13 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 }
 
                 #endregion
+
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
+                nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
+                nhatKyThaoTacDto.NoiDung = "Nhập danh sách danh mục Hàng hóa - Dịch vụ";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Nhập danh sách danh mục Hàng hóa - Dịch vụ";
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)
             {

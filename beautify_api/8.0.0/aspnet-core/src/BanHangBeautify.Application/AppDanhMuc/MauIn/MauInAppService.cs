@@ -2,7 +2,10 @@
 using Abp.Domain.Uow;
 using BanHangBeautify.AppCommon;
 using BanHangBeautify.AppDanhMuc.MauIn.Dto;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,16 +24,23 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         private readonly IRepository<DM_LoaiChungTu> _dmLoaiChungTu;
         private readonly IWebHostEnvironment _hostEnvironment;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        INhatKyThaoTacAppService _audilogService;
         //public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         //public static readonly string Templates = Path.Combine(App, "Template");
         //private readonly IHostingEnvironment _env;
-        public MauInAppService(IWebHostEnvironment hostEnvironment, IRepository<DM_MauIn, Guid> dmMauInRepository, IRepository<DM_LoaiChungTu> dmLoaiChungTu,
-            IUnitOfWorkManager unitOfWorkManager)
+        public MauInAppService(IWebHostEnvironment hostEnvironment, 
+            IRepository<DM_MauIn, 
+            Guid> dmMauInRepository, 
+            IRepository<DM_LoaiChungTu> dmLoaiChungTu,
+            IUnitOfWorkManager unitOfWorkManager,
+            INhatKyThaoTacAppService audilogService
+            )
         {
             _dmMauInRepository = dmMauInRepository;
             _hostEnvironment = hostEnvironment;
             _dmLoaiChungTu = dmLoaiChungTu;
             _unitOfWorkManager = unitOfWorkManager;
+            _audilogService = audilogService;
         }
         [HttpPost]
         public async Task<CreateOrEditMauInDto> InsertMauIn(CreateOrEditMauInDto input)
@@ -43,6 +53,12 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             data.IsDeleted = false;
             data.TrangThai = 1;
             await _dmMauInRepository.InsertAsync(data);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Mẫu in";
+            nhatKyThaoTacDto.NoiDung = "Tạo mới mẫu in";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Tạo mới mẫu in " + data.TenMauIn;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return ObjectMapper.Map<CreateOrEditMauInDto>(data);
         }
         [HttpPost]
@@ -64,6 +80,12 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                     _dmMauInRepository.GetAll().Where(x => x.Id != input.Id && x.IdChiNhanh == input.IdChiNhanh && x.LaMacDinh).ToList().ForEach(x => x.LaMacDinh = false);
                 }
                 await _dmMauInRepository.UpdateAsync(objUpdate);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Mẫu in";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật mẫu in";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật mẫu in " + objUpdate.TenMauIn;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             return ObjectMapper.Map<CreateOrEditMauInDto>(objUpdate);
         }
@@ -79,6 +101,12 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                 data.LaMacDinh = false;
                 data.TrangThai = 0;
                 _dmMauInRepository.Update(data);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Mẫu in";
+                nhatKyThaoTacDto.NoiDung = "Xóa mẫu in";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa mẫu in " + data.TenMauIn;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<CreateOrEditMauInDto>(data);
             }
             return new CreateOrEditMauInDto();

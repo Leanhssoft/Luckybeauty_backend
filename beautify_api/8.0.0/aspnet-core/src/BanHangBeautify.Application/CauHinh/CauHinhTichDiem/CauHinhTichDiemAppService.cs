@@ -3,7 +3,10 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.CauHinh.CauHinhTichDiem.Dto;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,9 +20,11 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
     public class CauHinhTichDiemAppService : SPAAppServiceBase
     {
         private readonly IRepository<HT_CauHinh_TichDiem, Guid> _repository;
-        public CauHinhTichDiemAppService(IRepository<HT_CauHinh_TichDiem, Guid> repository)
+        INhatKyThaoTacAppService _audilogService;
+        public CauHinhTichDiemAppService(IRepository<HT_CauHinh_TichDiem, Guid> repository,INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
+            _audilogService = audilogService;
         }
         [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem_Create, PermissionNames.Pages_CauHinhTichDiem_Edit)]
 
@@ -44,6 +49,11 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
             data.TenantId = AbpSession.TenantId ?? 1;
             data.IsDeleted = false;
             await _repository.InsertAsync(data);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Cấu hình tích điêm";
+            nhatKyThaoTacDto.NoiDung = "Tạo mới cấu hình";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Tạo mới cấu hình";
             result = ObjectMapper.Map<CauHinhTichDiemDto>(input);
             return result;
         }
@@ -63,6 +73,12 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(oldData);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Cấu hình tích điểm";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật cấu hình tích điểm";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật cấu hình tích điểm";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             result = ObjectMapper.Map<CauHinhTichDiemDto>(oldData);
             return result;
         }
@@ -77,6 +93,12 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
                 data.DeletionTime = DateTime.Now;
                 data.DeleterUserId = AbpSession.UserId;
                 await _repository.UpdateAsync(data);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Cấu hình tích điểm";
+                nhatKyThaoTacDto.NoiDung = "Xóa cấu hình tích điểm";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa cấu hình tích điểm";
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<CauHinhTichDiemDto>(data);
             }
             return new CauHinhTichDiemDto();

@@ -2,8 +2,11 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.HangHoa.LoaiHangHoa.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,10 +21,14 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
     {
         private readonly IRepository<DM_LoaiHangHoa, int> _repository;
         private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
-        public LoaiHangHoaAppService(IRepository<DM_LoaiHangHoa, int> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository)
+        INhatKyThaoTacAppService _audilogService;
+        public LoaiHangHoaAppService(IRepository<DM_LoaiHangHoa, int> repository, 
+            IRepository<DM_HangHoa, Guid> hangHoaRepository,
+            INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
             _hangHoaRepository = hangHoaRepository;
+            _audilogService = audilogService;
         }
         public async Task<PagedResultDto<LoaiHangHoaDto>> GetAll(LoaiHangHoaPagedResultRequestDto input)
         {
@@ -72,6 +79,12 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             data.IsDeleted = false;
             var result = ObjectMapper.Map<LoaiHangHoaDto>(data);
             await _repository.InsertAsync(data);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Loại hàng hóa";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới loại hàng hóa";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới loại hàng hóa: " + data.TenLoaiHangHoa;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
@@ -85,6 +98,12 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
             data.IsDeleted = false;
             var result = ObjectMapper.Map<LoaiHangHoaDto>(data);
             await _repository.UpdateAsync(data);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Loại hàng hóa";
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin loại hàng hóa";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới loại hàng hóa: " + data.TenLoaiHangHoa;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [HttpPost]
@@ -100,6 +119,12 @@ namespace BanHangBeautify.HangHoa.LoaiHangHoa
                 checkExist.TrangThai = 1;
                 checkExist.DeletionTime = DateTime.Now;
                 await _repository.UpdateAsync(checkExist);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Loại hàng hóa";
+                nhatKyThaoTacDto.NoiDung = "Xóa loại hàng hóa";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa loại hàng hóa: " + checkExist.TenLoaiHangHoa;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = ObjectMapper.Map<LoaiHangHoaDto>(checkExist);
 
             }

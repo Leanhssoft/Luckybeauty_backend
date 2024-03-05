@@ -2,9 +2,12 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.NhomHangHoa.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,11 +22,14 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
     {
         private readonly IRepository<DM_NhomHangHoa, Guid> _dmNhomHangHoa;
         private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
-
-        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa, IRepository<DM_HangHoa, Guid> dmHangHoa)
+        INhatKyThaoTacAppService _audilogService;
+        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa, 
+            IRepository<DM_HangHoa, Guid> dmHangHoa,
+            INhatKyThaoTacAppService audilogService)
         {
             _dmNhomHangHoa = dmNhomHangHoa;
             _dmHangHoa = dmHangHoa;
+            _audilogService = audilogService;
         }
         public async Task<NhomHangHoaDto> GetNhomHangHoa_byID(Guid id)
         {
@@ -100,7 +106,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
         /// <param name="dto"></param>
         /// <returns></returns>
         [AbpAuthorize(PermissionNames.Pages_DM_NhomHangHoa_Create)]
-        public NhomHangHoaDto CreateNhomHangHoa(NhomHangHoaDto dto)
+        public async Task<NhomHangHoaDto> CreateNhomHangHoa(NhomHangHoaDto dto)
         {
             if (dto == null) { return new NhomHangHoaDto(); };
             DM_NhomHangHoa objNew = ObjectMapper.Map<DM_NhomHangHoa>(dto);
@@ -108,8 +114,14 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
             objNew.TenantId = AbpSession.TenantId ?? 1;
             objNew.CreatorUserId = AbpSession.UserId;
             objNew.CreationTime = DateTime.Now;
-            _dmNhomHangHoa.InsertAsync(objNew);
+            await _dmNhomHangHoa.InsertAsync(objNew);
             var result = ObjectMapper.Map<NhomHangHoaDto>(objNew);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Nhóm hàng hóa";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới nhóm hàng hóa";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới loại hàng hóa: " + objNew.TenNhomHang;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         /// <summary>
@@ -147,6 +159,12 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                     _dmHangHoa.GetAllList(x => x.IdNhomHangHoa == dto.Id).ForEach(x => x.IdLoaiHangHoa = (dto.LaNhomHangHoa ?? false) ? 1 : 2);
                 }
                 await _dmNhomHangHoa.UpdateAsync(objUp);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Nhóm hàng hóa";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật nhóm hàng hóa";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật loại hàng hóa: " + objUp.TenNhomHang;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return string.Empty;
             }
             catch (Exception ex)
@@ -168,6 +186,12 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 objUp.DeletionTime = DateTime.Now;
                 objUp.DeleterUserId = AbpSession.UserId;
                 await _dmNhomHangHoa.UpdateAsync(objUp);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Nhóm hàng hóa";
+                nhatKyThaoTacDto.NoiDung = "Xóa nhóm hàng hóa";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa loại hàng hóa: " + objUp.TenNhomHang;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return string.Empty;
             }
             catch (Exception ex)

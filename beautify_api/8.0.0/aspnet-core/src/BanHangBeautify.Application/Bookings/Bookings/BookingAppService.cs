@@ -12,6 +12,8 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Notifications;
 using BanHangBeautify.Roles.Repository;
 using BanHangBeautify.SignalR.Notification;
@@ -40,6 +42,7 @@ namespace BanHangBeautify.Bookings.Bookings
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
         private readonly IAppNotifier _appNotifier;
         IUserRoleRepository _userRoleRepository;
+        INhatKyThaoTacAppService _audilogService;
         public BookingAppService(
             IRepository<Booking, Guid> repository,
             IBookingRepository bookingRepository,
@@ -51,8 +54,8 @@ namespace BanHangBeautify.Bookings.Bookings
              IRepository<NS_NhanVien, Guid> nhanVienService,
              INhanSuRepository nhanSuRepository,
             IAppNotifier appNotifier,
-              IUserRoleRepository userRoleRepository
-
+              IUserRoleRepository userRoleRepository,
+            INhatKyThaoTacAppService audilogService
             )
         {
             _repository = repository;
@@ -66,6 +69,7 @@ namespace BanHangBeautify.Bookings.Bookings
             _nhanSuRepository = nhanSuRepository;
             _appNotifier = appNotifier;
             _userRoleRepository = userRoleRepository;
+            _audilogService = audilogService;
         }
 
         private async Task<List<UserIdentifier>> GetUserAdmin(Guid idChiNhanh)
@@ -142,6 +146,14 @@ namespace BanHangBeautify.Bookings.Bookings
             string mess = "Khách hàng: " + booking.TenKhachHang + "(" + booking.SoDienThoai + ")" + " đã đặt lịch hẹn làm dịch vụ : " + dichVu.TenHangHoa + " vào " + booking.BookingDate.ToString("dd/MM/yyyy") + " " + booking.StartTime.ToString("HH:mm");
             var notificationData = NewMessageNotification(mess);
             await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
+
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Lịch hẹn";
+            nhatKyThaoTacDto.NoiDung = "Tạo mới lịch hẹn";
+            nhatKyThaoTacDto.NoiDungChiTiet = "<div>Tạo mới lịch hẹn: " + mess + "</div>";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+
             return booking;
         }
         [NonAction]
@@ -220,6 +232,12 @@ namespace BanHangBeautify.Bookings.Bookings
             string mess = "Khách hàng: " + findBooking.TenKhachHang + "(" + findBooking.SoDienThoai + ")" + " đã thay đổi thông tin lịch hẹn thành làm dịch vụ : " + tenDichVu + " vào " + findBooking.BookingDate.ToString("dd/MM/yyyy") + " " + findBooking.StartTime.ToString("HH:mm");
             var notificationData = NewMessageNotification(mess);
             await _appNotifier.SendMessageAsync(TrangThaiBookingConst.AddNewBooking, notificationData, listUser, severity: NotificationSeverity.Info);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Lịch hẹn";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật lịch hẹn";
+            nhatKyThaoTacDto.NoiDungChiTiet ="<div> Cập nhật lịch hẹn: "+mess+"</div>";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return findBooking;
 
         }
@@ -280,6 +298,12 @@ namespace BanHangBeautify.Bookings.Bookings
                 await _repository.UpdateAsync(objUp);
                 result.Status = "success";
                 result.Message = "Cập nhật trạng thái lịch hẹn thành công";
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Đặt lịch";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật trạng thái lịch hẹn";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật trạng thái lịch hẹn " + objUp.TenKhachHang + " - " + objUp.SoDienThoai + " Ngày: " + objUp.BookingDate.ToString("dd/MM/yyyy HH:mm"); ;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)
             {
@@ -326,7 +350,11 @@ namespace BanHangBeautify.Bookings.Bookings
                 findBooking.DeletionTime = DateTime.Now;
                 findBooking.DeleterUserId = AbpSession.UserId;
                 await _repository.DeleteAsync(findBooking);
-
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Đặt lịch";
+                nhatKyThaoTacDto.NoiDung = "Xóa lịch hẹn";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa lịch hẹn " + findBooking.TenKhachHang + " - " + findBooking.SoDienThoai + " Ngày: " + findBooking.BookingDate.ToString("dd/MM/yyyy HH:mm");
                 result = true;
             }
             return result;
@@ -482,6 +510,12 @@ namespace BanHangBeautify.Bookings.Bookings
                 
                 result = true;
             }
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Đặt lịch";
+            nhatKyThaoTacDto.NoiDung = "Hủy lịch hẹn";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Hủy lịch hẹn " + findBooking.TenKhachHang + " - " + findBooking.SoDienThoai + " Ngày: " + findBooking.BookingDate.ToString("dd/MM/yyyy HH:mm"); ;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         private LocalizableMessageNotificationData NewMessageNotification(string mess)

@@ -12,6 +12,8 @@ using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
 using BanHangBeautify.NewFolder;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +42,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private readonly IRepository<Booking, Guid> _bookingRepository;
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
         private readonly IKhachHangExcelExporter _khachHangExcelExporter;
-        ITempFileCacheManager _tempFileCacheManager;
+        INhatKyThaoTacAppService _audilogService;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
               IKhachHangRespository customerRepo,
               IRepository<DM_NhomKhachHang, Guid> nhomKhachHangRepository,
@@ -49,7 +51,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
               IRepository<Booking, Guid> bookingRepository,
               IRepository<BH_HoaDon, Guid> hoaDonRepository,
               IKhachHangExcelExporter khachHangExcelExporter,
-              ITempFileCacheManager tempFileCacheManager
+              INhatKyThaoTacAppService audilogService
               )
         {
             _repository = repository;
@@ -60,7 +62,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _bookingRepository = bookingRepository;
             _hoaDonRepository = hoaDonRepository;
             _khachHangExcelExporter = khachHangExcelExporter;
-            _tempFileCacheManager = tempFileCacheManager;
+            _audilogService = audilogService;
         }
         [AbpAuthorize(PermissionNames.Pages_KhachHang_Create, PermissionNames.Pages_KhachHang_Edit)]
         public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
@@ -103,13 +105,41 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.LastModifierUserId = AbpSession.UserId;
             khachHang.TenantId = AbpSession.TenantId ?? 1;
             khachHang.IsDeleted = false;
+            string gioiTinh = dto.GioiTinhNam ==true?"Nam":"Nữ";
+            var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == khachHang.IdNhomKhach).TenNhomKhach;
             await _repository.InsertAsync(khachHang);
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Khách hàng";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới khách hàng: " + khachHang.TenKhachHang + "(" + khachHang.MaKhachHang + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Thêm mới khách hàng" +
+                "<p>- Tên khách hàng: {0} ({1})</p><br/>" +
+                "<p>- Số điện thoại: {2}</p></br/>" +
+                "<p>- Giói tính: {3}</p></br/>" +
+                "<p>- Địa chỉ: {4}</p><br/>" +
+                "<p>- Nhóm khách: {5}</p><br/>" +
+                "</div>",khachHang.TenKhachHang,khachHang.MaKhachHang,khachHang.SoDienThoai,gioiTinh,khachHang.DiaChi,nhomKhach);
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
         public async Task<KhachHangDto> EditKhachHang(CreateOrEditKhachHangDto dto, DM_KhachHang khachHang)
         {
+            string gioiTinh = dto.GioiTinhNam == true ? "Nam" : "Nữ";
+            var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == khachHang.IdNhomKhach).TenNhomKhach;
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Khách hàng";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật khách hàng: " + khachHang.TenKhachHang + "(" + khachHang.MaKhachHang + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật khách hàng" +
+                "<p>- Tên khách hàng: {0} ({1})</p><br/>" +
+                "<p>- Số điện thoại: {2}</p></br/>" +
+                "<p>- Giói tính: {3}</p></br/>" +
+                "<p>- Địa chỉ: {4}</p><br/>" +
+                "<p>- Nhóm khách: {5}</p><br/>" +
+                "</div>", dto.TenKhachHang, dto.MaKhachHang, dto.SoDienThoai, gioiTinh, dto.DiaChi, nhomKhach);
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             KhachHangDto result = new KhachHangDto();
             khachHang.TenKhachHang = dto.TenKhachHang;
             khachHang.TenKhachHang_KhongDau = dto.TenKhachHang_KhongDau;
@@ -167,6 +197,12 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 delete.DeleterUserId = AbpSession.UserId;
                 delete.TrangThai = 0;
                 _repository.Update(delete);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Khách hàng";
+                nhatKyThaoTacDto.NoiDung = "Xóa khách hàng: " + delete.TenKhachHang + "(" + delete.MaKhachHang + ")";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa khách hàng: " + delete.TenKhachHang + "(" + delete.MaKhachHang + ")";
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = ObjectMapper.Map<KhachHangDto>(delete);
             }
             return result;
@@ -184,6 +220,12 @@ namespace BanHangBeautify.KhachHang.KhachHang
             if (checkExists != null && checkExists.Count > 0)
             {
                 _repository.RemoveRange(checkExists);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.ChucNang = "Khách hàng";
+                nhatKyThaoTacDto.NoiDung = "Xóa nhiều khách hàng";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa khách hàng: " + string.Join(", ",checkExists.Select(x=>x.MaKhachHang).ToList());
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
             }

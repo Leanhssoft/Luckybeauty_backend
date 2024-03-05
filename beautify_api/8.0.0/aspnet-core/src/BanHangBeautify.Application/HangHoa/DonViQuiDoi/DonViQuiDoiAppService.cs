@@ -2,9 +2,12 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,10 +21,17 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
     {
         private readonly IRepository<DM_DonViQuiDoi, Guid> _repository;
         private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
-        public DonViQuiDoiAppService(IRepository<DM_DonViQuiDoi, Guid> repository, IRepository<DM_HangHoa, Guid> hangHoaRepository)
+        INhatKyThaoTacAppService _audilogService;
+        public DonViQuiDoiAppService(
+            IRepository<DM_DonViQuiDoi, 
+            Guid> repository, 
+            IRepository<DM_HangHoa, Guid> hangHoaRepository,
+            INhatKyThaoTacAppService audilogService
+        )
         {
             _repository = repository;
             _hangHoaRepository = hangHoaRepository;
+            _audilogService = audilogService;
         }
         [AbpAuthorize(PermissionNames.Pages_DonViQuiDoi_Create, PermissionNames.Pages_DonViQuiDoi_Edit)]
         public async Task<DonViQuiDoiDto> CreateOrEdit(CreateOrEditDonViQuiDoiDto dto)
@@ -53,6 +63,16 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             donViQuiDoi.CreationTime = DateTime.Now;
             var result = ObjectMapper.Map<DonViQuiDoiDto>(donViQuiDoi);
             await _repository.InsertAsync(donViQuiDoi);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Đơn vị quy đổi";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới đơn vị quy đổi: " + donViQuiDoi.MaHangHoa;
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>" +
+                "<p>Giá: {0}</p>" +
+                "<p>Đơn vị tính: {1}</p>" +
+                "<p>Tỉ lệ chuyển đổi: {2}</p>" +
+                "</div>", donViQuiDoi.GiaBan, donViQuiDoi.TenDonViTinh, donViQuiDoi.TyLeChuyenDoi);
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
@@ -68,6 +88,16 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             donViQuiDoi.LastModifierUserId = AbpSession.UserId;
             var result = ObjectMapper.Map<DonViQuiDoiDto>(donViQuiDoi);
             await _repository.UpdateAsync(donViQuiDoi);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Đơn vị quy đổi";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật đơn vị quy đổi: " + donViQuiDoi.MaHangHoa;
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>" +
+                "<p>Giá: {0}</p>" +
+                "<p>Đơn vị tính: {1}</p>" +
+                "<p>Tỉ lệ chuyển đổi: {2}</p>" +
+                "</div>", donViQuiDoi.GiaBan, donViQuiDoi.TenDonViTinh, donViQuiDoi.TyLeChuyenDoi);
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         public async Task<DM_DonViQuiDoi> GetDetail(Guid id)
@@ -104,6 +134,12 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
                 donViQuiDoi.DeletionTime = DateTime.Now;
                 donViQuiDoi.DeleterUserId = AbpSession.UserId;
                 _repository.Update(donViQuiDoi);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Đơn vị quy đổi";
+                nhatKyThaoTacDto.NoiDung = "Xóa đơn vị quy đổi: " + donViQuiDoi.MaHangHoa;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa đơn vị quy đổi: " + donViQuiDoi.MaHangHoa;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = ObjectMapper.Map<DonViQuiDoiDto>(donViQuiDoi);
             }
             return result;
