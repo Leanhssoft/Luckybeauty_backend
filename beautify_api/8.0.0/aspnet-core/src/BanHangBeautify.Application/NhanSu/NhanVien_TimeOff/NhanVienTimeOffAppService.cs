@@ -1,33 +1,30 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
-using Abp.AutoMapper;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien_TimeOff.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
 {
     [AbpAuthorize(PermissionNames.Pages_NhanSu_TimeOff)]
-    public class NhanVienTimeOffAppService:SPAAppServiceBase
+    public class NhanVienTimeOffAppService : SPAAppServiceBase
     {
-        private readonly IRepository<NS_NhanVien_TimeOff,Guid> _nhanVienTimeOffRepository;
+        private readonly IRepository<NS_NhanVien_TimeOff, Guid> _nhanVienTimeOffRepository;
         public NhanVienTimeOffAppService(IRepository<NS_NhanVien_TimeOff, Guid> nhanVienTimeOffRepository)
         {
             _nhanVienTimeOffRepository = nhanVienTimeOffRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_TimeOff_Create, PermissionNames.Pages_NhanSu_TimeOff_Edit)]
         public async Task<NhanVienTimeOffDto> CreateOrEdit(CreateOrEditNhanVienTimeOffDto input)
         {
-            var check =await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            var check = await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (check == null)
             {
                 return await Create(input);
@@ -46,13 +43,13 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.TenantId = AbpSession.TenantId ?? 0;
-            data.IsDeleted= false;
+            data.IsDeleted = false;
             await _nhanVienTimeOffRepository.InsertAsync(data);
             result = ObjectMapper.Map<NhanVienTimeOffDto>(data);
             return result;
         }
         [NonAction]
-        public async Task<NhanVienTimeOffDto> Update(CreateOrEditNhanVienTimeOffDto input,NS_NhanVien_TimeOff ollData)
+        public async Task<NhanVienTimeOffDto> Update(CreateOrEditNhanVienTimeOffDto input, NS_NhanVien_TimeOff ollData)
         {
             var calculator = input.DenNgay.Subtract(input.TuNgay);
             var roundTimeOff = Math.Round(calculator.TotalDays, 1);
@@ -60,13 +57,14 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
             ollData.DenNgay = input.DenNgay;
             ollData.LoaiNghi = input.LoaiNghi;
             ollData.TongNgayNghi = roundTimeOff;
-            ollData.LastModificationTime= DateTime.Now;
+            ollData.LastModificationTime = DateTime.Now;
             ollData.LastModifierUserId = AbpSession.UserId;
             await _nhanVienTimeOffRepository.UpdateAsync(ollData);
             var result = ObjectMapper.Map<NhanVienTimeOffDto>(ollData);
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_TimeOff_Delete)]
         public async Task<NhanVienTimeOffDto> Delete(Guid id)
         {
             var check = await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x => x.Id == id);
@@ -78,7 +76,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
         public async Task<CreateOrEditNhanVienTimeOffDto> GetForEdit(Guid id)
         {
             CreateOrEditNhanVienTimeOffDto result = new CreateOrEditNhanVienTimeOffDto();
-            var check = await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x=>x.Id== id);
+            var check = await _nhanVienTimeOffRepository.FirstOrDefaultAsync(x => x.Id == id);
             if (check != null)
             {
                 result = ObjectMapper.Map<CreateOrEditNhanVienTimeOffDto>(check);
@@ -91,12 +89,12 @@ namespace BanHangBeautify.NhanSu.NhanVien_TimeOff
             {
                 input.Keyword = "";
             }
-            input.SkipCount = input.SkipCount==0|| input.SkipCount==1?0:(input.SkipCount - 1 ) * input.MaxResultCount;
+            input.SkipCount = input.SkipCount == 0 || input.SkipCount == 1 ? 0 : (input.SkipCount - 1) * input.MaxResultCount;
             PagedResultDto<NhanVienTimeOffDto> result = new PagedResultDto<NhanVienTimeOffDto>();
-            var data =await _nhanVienTimeOffRepository.GetAll().Include(x => x.NS_NhanVien)
+            var data = await _nhanVienTimeOffRepository.GetAll().Include(x => x.NS_NhanVien)
                 .Where(x =>
-                        x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false && 
-                        (x.NS_NhanVien.TenNhanVien!=null && x.NS_NhanVien.TenNhanVien.Contains(input.Keyword))
+                        x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false &&
+                        (x.NS_NhanVien.TenNhanVien != null && x.NS_NhanVien.TenNhanVien.Contains(input.Keyword))
                     )
                 .ToListAsync();
             result.TotalCount = data.Count;

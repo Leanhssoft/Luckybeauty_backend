@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static BanHangBeautify.Common.CommonClass;
+﻿using System.Collections.Generic;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto
 {

@@ -20,6 +20,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_LoaiKhach_Create)]
         public async Task<LoaiKhachDto> CreateLoaiKhach(CreateOrEditLoaiKhachDto dto)
         {
             LoaiKhachDto result = new LoaiKhachDto();
@@ -27,12 +28,13 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             loaiKhach.Id = _repository.Count() + 1;
             loaiKhach.CreationTime = DateTime.Now;
             loaiKhach.CreatorUserId = AbpSession.UserId;
-            loaiKhach.TenantId = AbpSession.TenantId ?? 1;
+            loaiKhach.TenantId = AbpSession.TenantId;
             loaiKhach.IsDeleted = false;
             await _repository.InsertAsync(loaiKhach);
             result = ObjectMapper.Map<LoaiKhachDto>(loaiKhach);
             return result;
         }
+        [AbpAuthorize(PermissionNames.Pages_LoaiKhach_Edit)]
         public async Task<LoaiKhachDto> EditLoaiKhach(CreateOrEditLoaiKhachDto dto)
         {
             LoaiKhachDto result = new LoaiKhachDto();
@@ -45,6 +47,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_LoaiKhach_Delete)]
         public async Task<LoaiKhachDto> Delete(int id)
         {
             LoaiKhachDto result = new LoaiKhachDto();
@@ -69,7 +72,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         public async Task<PagedResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input)
         {
             PagedResultDto<DM_LoaiKhach> ListResultDto = new PagedResultDto<DM_LoaiKhach>();
-            var lstData = await _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            var lstData = await _repository.GetAll().Where(x => x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
             ListResultDto.TotalCount = lstData.Count;
             if (!string.IsNullOrEmpty(input.Keyword))
             {
@@ -77,10 +80,10 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             }
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             ListResultDto.Items = lstData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
-           
+
             return ListResultDto;
         }
 
-        
+
     }
 }

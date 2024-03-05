@@ -1,41 +1,45 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
-using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository;
 using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using NPOI.POIFS.Crypt.Dsig;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace BanHangBeautify.Quy.DM_QuyHoaDon
 {
-    //[AbpAuthorize(PermissionNames.Pages_QuyHoaDon)]
+    [AbpAuthorize(PermissionNames.Pages_QuyHoaDon)]
     public class QuyHoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<QuyHoaDon, Guid> _quyHoaDon;
         private readonly IRepository<QuyHoaDon_ChiTiet, Guid> _quyHoaDonChiTiet;
         private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
         private readonly IQuyHoaDonRepository _repoQuyHD;
+        private readonly IExcelBase _excelBase;
         public QuyHoaDonAppService(IRepository<QuyHoaDon, Guid> repository, IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
             IRepository<QuyHoaDon_ChiTiet, Guid> quyHoaDonChiTiet,
+            IExcelBase excelBase,
             IQuyHoaDonRepository repoQuyHD)
         {
             _quyHoaDon = repository;
             _loaiChungTuRepository = loaiChungTuRepository;
             _quyHoaDonChiTiet = quyHoaDonChiTiet;
             _repoQuyHD = repoQuyHD;
+            _excelBase = excelBase;
         }
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Create)]
         public async Task<QuyHoaDonDto> Create(CreateOrEditQuyHoaDonDto input)
         {
             List<QuyHoaDon_ChiTiet> lstCT = new();
@@ -84,6 +88,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             oldData.IdLoaiChungTu = input.IdLoaiChungTu;
             oldData.NgayLapHoaDon = input.NgayLapHoaDon;
             oldData.IdChiNhanh = input.IdChiNhanh;
+            oldData.IdBrandname = input.IdBrandname;
             oldData.TongTienThu = input.TongTienThu;
             oldData.HachToanKinhDoanh = input.HachToanKinhDoanh;
             oldData.NoiDungThu = input.NoiDungThu;
@@ -117,42 +122,51 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             return result;
         }
 
-        // not use
-        public async Task<CreateOrEditQuyHoaDonDto> CreateQuyHoaDon([FromBody] JObject data)
+        [HttpPost]
+        public async Task<QuyHoaDonDto> UpdateQuyHD_RemoveCT_andAddAgain(CreateOrEditQuyHoaDonDto input)
         {
-            List<QuyHoaDon_ChiTiet> lstCTQuy = new();
-            QuyHoaDon objHD = ObjectMapper.Map<QuyHoaDon>(data["soquy"].ToObject<QuyHoaDon>());
-            List<QuyHoaDon_ChiTiet> dataChiTietHD = ObjectMapper.Map<List<QuyHoaDon_ChiTiet>>(data["soquyChiTiet"].ToObject<List<QuyHoaDon_ChiTiet>>());
-
-            objHD.Id = Guid.NewGuid();
-            objHD.TenantId = AbpSession.TenantId ?? 1;
-            objHD.CreatorUserId = AbpSession.UserId;
-            objHD.CreationTime = DateTime.Now;
-
-            if (string.IsNullOrEmpty(objHD.MaHoaDon))
+            var oldData = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (string.IsNullOrEmpty(input.MaHoaDon))
             {
-                var maChungTu = await _repoQuyHD.FnGetMaPhieuThuChi(AbpSession.TenantId ?? 1, objHD.IdChiNhanh ?? null,
-                    objHD.IdLoaiChungTu, objHD.NgayLapHoaDon);
-                objHD.MaHoaDon = maChungTu;
+                var maChungTu = await _repoQuyHD.FnGetMaPhieuThuChi(AbpSession.TenantId ?? 1, input.IdChiNhanh, input.IdLoaiChungTu, input.NgayLapHoaDon);
+                input.MaHoaDon = maChungTu;
             }
-            foreach (var item in dataChiTietHD)
-            {
-                QuyHoaDon_ChiTiet ctNew = ObjectMapper.Map<QuyHoaDon_ChiTiet>(item);
-                ctNew.Id = Guid.NewGuid();
-                ctNew.IdQuyHoaDon = objHD.Id;
-                ctNew.TenantId = AbpSession.TenantId ?? 1;
-                ctNew.CreatorUserId = AbpSession.UserId;
-                ctNew.CreationTime = DateTime.Now;
-                lstCTQuy.Add(ctNew);
-            }
-            await _quyHoaDon.InsertAsync(objHD);
-            await _quyHoaDonChiTiet.InsertRangeAsync(lstCTQuy);
+            oldData.MaHoaDon = input.MaHoaDon;
+            oldData.IdLoaiChungTu = input.IdLoaiChungTu;
+            oldData.NgayLapHoaDon = input.NgayLapHoaDon;
+            oldData.IdChiNhanh = input.IdChiNhanh;
+            oldData.IdBrandname = input.IdBrandname;
+            oldData.TongTienThu = input.TongTienThu;
+            oldData.HachToanKinhDoanh = input.HachToanKinhDoanh;
+            oldData.NoiDungThu = input.NoiDungThu;
+            oldData.TrangThai = input.TrangThai ?? 1;
+            oldData.LastModificationTime = DateTime.Now;
+            oldData.LastModifierUserId = AbpSession.UserId;
 
-            var result = ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(objHD);
+            // update CTOld = isDelete && add again
+            _quyHoaDonChiTiet.GetAllList(x => x.IdQuyHoaDon == input.Id).ToList().ForEach(x => { x.IsDeleted = true; });
+
+            if (input.QuyHoaDon_ChiTiet != null && input.QuyHoaDon_ChiTiet.Count > 0)
+            {
+                foreach (var item in input.QuyHoaDon_ChiTiet)
+                {
+                    QuyHoaDon_ChiTiet ctNew = ObjectMapper.Map<QuyHoaDon_ChiTiet>(item);
+                    ctNew.Id = Guid.NewGuid();
+                    ctNew.IdQuyHoaDon = input.Id;
+                    ctNew.TenantId = AbpSession.TenantId ?? 1;
+                    ctNew.CreatorUserId = AbpSession.UserId;
+                    ctNew.CreationTime = DateTime.Now;
+                    await _quyHoaDonChiTiet.InsertAsync(ctNew);
+                }
+            }
+            await _quyHoaDon.UpdateAsync(oldData);
+
+            var result = ObjectMapper.Map<QuyHoaDonDto>(oldData);
             return result;
         }
 
         [HttpGet]
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Delete)]
         public async Task<QuyHoaDonDto> Delete(Guid id)
         {
             var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == id);
@@ -174,6 +188,24 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return new QuyHoaDonDto();
         }
+
+        [HttpPost]
+        public async Task DeleteMultiple_QuyHoaDon(List<Guid> lstId)
+        {
+            _quyHoaDon.GetAllList(x => lstId.Contains(x.Id)).ToList().ForEach(x =>
+            {
+                x.TrangThai = 0;
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+            });
+            _quyHoaDonChiTiet.GetAllList(x => lstId.Contains(x.IdQuyHoaDon)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+            });
+        }
         [HttpGet]
         public async Task HuyPhieuThuChi_ofHoaDonLienQuan(Guid idHoaDonLienQuan)
         {
@@ -187,11 +219,14 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                     quyHD.DeleterUserId = AbpSession.UserId;
                     quyHD.DeletionTime = DateTime.Now;
                     quyHD.TrangThai = 0;
+                    quyHD.IsDeleted = true;
                     await _quyHoaDon.UpdateAsync(quyHD);
                 }
-                lstQCT.ForEach(x => { x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; });
+                lstQCT.ForEach(x => { x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; x.IsDeleted = true; });
             }
         }
+
+        [HttpGet]
         public async Task<CreateOrEditQuyHoaDonDto> GetForEdit(Guid id)
         {
             var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == id);
@@ -208,6 +243,12 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return new CreateOrEditQuyHoaDonDto();
         }
+        [HttpGet]
+        public async Task<List<QuyHoaDonChiTietDto>> GetQuyChiTiet_byIQuyHoaDon(Guid idQuyHoaDon)
+        {
+            var ctQuy = await _repoQuyHD.GetQuyChiTiet_byIQuyHoaDon(idQuyHoaDon);
+            return ctQuy;
+        }
         public async Task<List<QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoadonLienQuan)
         {
             var data = await _repoQuyHD.GetNhatKyThanhToan_ofHoaDon(idHoadonLienQuan);
@@ -218,7 +259,16 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             input.TenantId = AbpSession.TenantId ?? 1;
             return await _repoQuyHD.Search(input);
         }
-
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Export)]
+        public async Task<FileDto> ExportExcelQuyHoaDon(PagedQuyHoaDonRequestDto input)
+        {
+            input.TenantId = AbpSession.TenantId ?? 1;
+            var data = await _repoQuyHD.Search(input);
+            List<GetAllQuyHoaDonItemDto> lstQuy = (List<GetAllQuyHoaDonItemDto>)data.Items;
+            var dataExcel = ObjectMapper.Map<List<ExcelSoQuyDto>>(lstQuy);
+            var ff = _excelBase.WriteToExcel<ExcelSoQuyDto>("DanhSachThuChi_", "SoQuy_Export_Template.xlsx", dataExcel, 4);
+            return ff;
+        }
         [HttpGet]
         public async Task<bool> CheckExistsMaPhieuThuChi(string maphieu, Guid? id = null)
         {

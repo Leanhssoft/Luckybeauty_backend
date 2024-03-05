@@ -13,8 +13,5 @@ namespace BanHangBeautify.Entities
         [MaxLength(256)]
         public string TenNguon { get; set; }
         public int TrangThai { get; set; }
-        public Guid? NguoiTao { get; set; }
-        public Guid? NguoiSua { get; set; }
-        public Guid? NguoiXoa { get; set; }
     }
 }

@@ -8,22 +8,22 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.HoaDonAnh
 {
     [AbpAuthorize(PermissionNames.Pages_HoaDon_Anh)]
-    public class HoaDonAnhAppService: SPAAppServiceBase
+    public class HoaDonAnhAppService : SPAAppServiceBase
     {
-        private readonly IRepository<BH_HoaDon_Anh,Guid> _hoaDonAnhRepository;
+        private readonly IRepository<BH_HoaDon_Anh, Guid> _hoaDonAnhRepository;
         public HoaDonAnhAppService(IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository)
         {
             _hoaDonAnhRepository = hoaDonAnhRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Anh_Create, PermissionNames.Pages_HoaDon_Anh_Update)]
         public async Task<HoaDonAnhDto> CreateOrEdit(CreateOrEditHoaDonAnhDto input)
         {
-            var checkExist = await _hoaDonAnhRepository.FirstOrDefaultAsync(x=>x.Id== input.Id);
+            var checkExist = await _hoaDonAnhRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist != null)
             {
                 return await Update(input, checkExist);
@@ -49,7 +49,7 @@ namespace BanHangBeautify.HoaDon.HoaDonAnh
             return result;
         }
         [NonAction]
-        public async Task<HoaDonAnhDto> Update(CreateOrEditHoaDonAnhDto input,BH_HoaDon_Anh oldData)
+        public async Task<HoaDonAnhDto> Update(CreateOrEditHoaDonAnhDto input, BH_HoaDon_Anh oldData)
         {
             HoaDonAnhDto result = new HoaDonAnhDto();
             oldData.URLAnh = input.URLAnh;
@@ -63,19 +63,20 @@ namespace BanHangBeautify.HoaDon.HoaDonAnh
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Anh_Delete)]
         public async Task<HoaDonAnhDto> Delete(Guid id)
         {
             HoaDonAnhDto result = new HoaDonAnhDto();
-            var check =await _hoaDonAnhRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (check!=null)
+            var check = await _hoaDonAnhRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (check != null)
             {
                 check.IsDeleted = true;
                 check.DeleterUserId = AbpSession.UserId;
                 check.DeletionTime = DateTime.Now;
                 _hoaDonAnhRepository.Update(check);
                 result.Id = check.Id;
-                result.URLAnh= check.URLAnh;
-                result.IdHoaDon= check.IdHoaDon;
+                result.URLAnh = check.URLAnh;
+                result.IdHoaDon = check.IdHoaDon;
             }
             return result;
         }
@@ -87,7 +88,7 @@ namespace BanHangBeautify.HoaDon.HoaDonAnh
         }
         public async Task<List<BH_HoaDon_Anh>> GetAll()
         {
-            return await _hoaDonAnhRepository.GetAll().Where(x=>x.IsDeleted==false&& x.TenantId==(AbpSession.TenantId??0)).ToListAsync();
+            return await _hoaDonAnhRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0)).ToListAsync();
         }
     }
 }

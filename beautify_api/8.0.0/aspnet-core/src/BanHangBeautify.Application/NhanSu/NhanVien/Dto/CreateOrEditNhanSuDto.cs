@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using BanHangBeautify.Consts;
 using BanHangBeautify.NewFolder;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.NhanSu.NhanVien.Dto
@@ -14,10 +16,11 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         [MaxLength(50)]
         public string TenLot { set; get; }
         [MaxLength(256)]
+        [Required(ErrorMessage ="Tên nhân viên không được để trống")]
         public string TenNhanVien { get; set; }
         [MaxLength(2000)]
         public string DiaChi { get; set; }
-        [MaxLength(256)]     
+        [MaxLength(256)]
         public string SoDienThoai { get; set; }
         [MaxLength(256)]
         public string CCCD { get; set; }
@@ -35,6 +38,8 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         public Guid? IdChiNhanh { set; get; }
         public Guid? IdChucVu { set; get; }
         public string GhiChu { get; set; }
+        public int TrangThai { get; set; } = TrangThaiNhanVienConst.Ranh;
+        public List<Guid>? Services { get; set; }
 
     }
 }

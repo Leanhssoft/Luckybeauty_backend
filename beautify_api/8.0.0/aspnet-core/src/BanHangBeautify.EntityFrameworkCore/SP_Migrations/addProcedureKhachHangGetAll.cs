@@ -5,17 +5,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BanHangBeautify.SP_Migrations
 {
     [DbContext(typeof(SPADbContext))]
-    [Migration("addProcedureKhachHangGetAll")]
+    [Migration("202308007083903_add_prc_khachHang_getAll")]
     public partial class addProcedureKhachHangGetAll : Migration
     {
-       
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+			migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS [dbo].[prc_khachHang_getAll]");
             migrationBuilder.Sql(@"
                 CREATE PROCEDURE prc_khachHang_getAll
 					@TenantId INT,
 					@IdChiNhanh UNIQUEIDENTIFIER,
-					@Filter NVARCHAR,
+					@Filter NVARCHAR(200),
 					@SkipCount INT = 0,
 					@MaxResultCount INT = 10,
 					@SortBy NVARCHAR(50),
@@ -33,15 +34,12 @@ namespace BanHangBeautify.SP_Migrations
 						kh.NgaySinh,
 						nkh.TenNhomKhach,
 						CASE when kh.GioiTinhNam = 1 THEN N'Nam' ELSE N'Nữ' END as GioiTinh,
-						'' AS NhanVienPhuTrach,
 						kh.TongTichDiem,
 						kh.CreationTime,
 						hd.TongChiTieu,
-						ISNULL(hd.MaxCreationTime,kh.CreationTime) AS CuocHenGanNhat,
-						ngkh.TenNguon as TenNguonKhach
+						ISNULL(hd.MaxCreationTime,kh.CreationTime) AS CuocHenGanNhat
 						FROM DM_KhachHang kh
 						LEFT JOIN DM_NhomKhachHang nkh on nkh.Id = kh.IdNhomKhach
-						LEFT JOIN DM_NguonKhach ngkh on ngkh.Id = kh.IdNguonKhach
 						LEFT JOIN (
 							SELECT IdKhachHang, MAX(CreationTime) AS MaxCreationTime,SUM(TongTienHDSauVAT) as TongChiTieu
 							FROM BH_HoaDon
@@ -55,7 +53,6 @@ namespace BanHangBeautify.SP_Migrations
 							OR LOWER(kh.SoDienThoai) LIKE N'%' + LOWER(@Filter) + N'%'
 							OR LOWER(kh.DiaChi) LIKE N'%' + LOWER(@Filter) + N'%'
 							OR LOWER(nkh.TenNhomKhach) LIKE N'%' + LOWER(@Filter) + N'%'
-							OR LOWER(ngkh.TenNguon) LIKE N'%' + LOWER(@Filter) + N'%'
 						)
 					) as Result
 					ORDER BY
@@ -63,7 +60,6 @@ namespace BanHangBeautify.SP_Migrations
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'soDienThoai' THEN SoDienThoai END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'diaChi' THEN DiaChi END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'ngaySinh' THEN NgaySinh END,
-						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'tenNguonKhach' THEN TenNguonKhach END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'gioiTinh' THEN GioiTinh END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'tenNhomKhach' THEN TenNhomKhach END,
 						CASE WHEN LOWER(@SortType) = 'asc' AND @SortBy = 'tongChiTieu' THEN TongChiTieu END,
@@ -73,7 +69,6 @@ namespace BanHangBeautify.SP_Migrations
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'soDienThoai' THEN SoDienThoai END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'diaChi' THEN DiaChi END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'ngaySinh' THEN NgaySinh END DESC,
-						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tenNguonKhach' THEN TenNguonKhach END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'gioiTinh' THEN GioiTinh END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tenNhomKhach' THEN TenNhomKhach END DESC,
 						CASE WHEN LOWER(@SortType) = 'desc' AND @SortBy = 'tongChiTieu' THEN TongChiTieu END DESC,
@@ -85,7 +80,6 @@ namespace BanHangBeautify.SP_Migrations
 					SELECT COUNT(*) as TotalCount
 					FROM DM_KhachHang kh
 					LEFT JOIN DM_NhomKhachHang nkh on nkh.Id = kh.IdNhomKhach
-					LEFT JOIN DM_NguonKhach ngkh on ngkh.Id = kh.IdNguonKhach
 					LEFT JOIN (
 						SELECT IdKhachHang, MAX(CreationTime) AS MaxCreationTime,SUM(TongTienHDSauVAT) as TongChiTieu
 						FROM BH_HoaDon
@@ -99,7 +93,6 @@ namespace BanHangBeautify.SP_Migrations
 						OR LOWER(kh.SoDienThoai) LIKE N'%' + LOWER(@Filter) + N'%'
 						OR LOWER(kh.DiaChi) LIKE N'%' + LOWER(@Filter) + N'%'
 						OR LOWER(nkh.TenNhomKhach) LIKE N'%' + LOWER(@Filter) + N'%'
-						OR LOWER(ngkh.TenNguon) LIKE N'%' + LOWER(@Filter) + N'%'
 					);
 				END;");
         }

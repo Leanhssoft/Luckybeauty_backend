@@ -1,10 +1,6 @@
-﻿using BanHangBeautify.Data.Entities;
-using BanHangBeautify.Entities;
-using System;
+﻿using BanHangBeautify.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
 {
@@ -27,12 +23,11 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
             {
                 lstLoaiKhach.Add(new DM_LoaiKhach()
                 {
-                    Id= 1,
-                    IsDeleted= false,
+                    Id = 1,
+                    IsDeleted = false,
                     MaLoaiKhachHang = "KH",
                     TenLoaiKhachHang = "Khách hàng",
-                    TrangThai = 1,
-                    TenantId = 1
+                    TrangThai = 1
                 });
             }
 
@@ -45,13 +40,12 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                     IsDeleted = false,
                     MaLoaiKhachHang = "NCC",
                     TenLoaiKhachHang = "Nhà cung cấp",
-                    TrangThai = 1,
-                    TenantId = 1
+                    TrangThai = 1
                 });
-                
+
             };
             var exists = _context.DM_LoaiKhach.Select(x => x.Id).ToList();
-            if(exists.Count > 0 )
+            if (exists.Count > 0)
             {
                 foreach (var item in lstLoaiKhach)
                 {

@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.NguonKhach.Dto;
@@ -21,11 +22,17 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             _repository = repository;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NguonKhach_Create)]
         public async Task<NguonKhachDto> CreateNguonKhach(CreateOrEditNguonKhachDto dto)
         {
             NguonKhachDto result = new NguonKhachDto();
             var nguonKhach = ObjectMapper.Map<DM_NguonKhach>(dto);
             nguonKhach.Id = Guid.NewGuid();
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
+                nguonKhach.MaNguon = "MS00" + (checkMa.Count + 1).ToString();
+            }
             nguonKhach.CreationTime = DateTime.Now;
             nguonKhach.CreatorUserId = AbpSession.UserId;
             nguonKhach.TenantId = AbpSession.TenantId ?? 1;
@@ -34,6 +41,7 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             result = ObjectMapper.Map<NguonKhachDto>(nguonKhach);
             return result;
         }
+        [AbpAuthorize(PermissionNames.Pages_NguonKhach_Edit)]
         public async Task<NguonKhachDto> EditNguonKhach(CreateOrEditNguonKhachDto dto)
         {
             NguonKhachDto result = new NguonKhachDto();
@@ -46,6 +54,7 @@ namespace BanHangBeautify.KhachHang.NguonKhach
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NguonKhach_Delete)]
         public async Task<NguonKhachDto> Delete(Guid id)
         {
             NguonKhachDto result = new NguonKhachDto();

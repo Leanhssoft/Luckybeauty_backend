@@ -1,12 +1,13 @@
-﻿namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
+﻿using Microsoft.Extensions.Configuration;
+namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
 {
     public class InitialHostDbBuilder
     {
         private readonly SPADbContext _context;
-
         public InitialHostDbBuilder(SPADbContext context)
         {
             _context = context;
+
         }
 
         public void Create()

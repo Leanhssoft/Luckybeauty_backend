@@ -1,13 +1,9 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using BanHangBeautify.Data.Entities;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
 {
@@ -27,8 +23,8 @@ namespace BanHangBeautify.Entities
         public Guid? IdQuyHoaDon { get; set; }// Nếu chiết khấu theo hóa đơn, và theo % thực thu, --> lưu id phiếu thu (FK to QuyHoaDon)
         [ForeignKey("IdQuyHoaDon")]
         public QuyHoaDon QuyHoaDon { get; set; }
-        public float? PTChietKhau { get; set; } = 0;
-        public float? TienChietKhau { get; set; } = 0;
+        public double? PTChietKhau { get; set; } = 0;
+        public double? TienChietKhau { get; set; } = 0;
         public float? HeSo { get; set; } = 1;
         public bool? ChiaDeuChietKhau { get; set; } = false;
         public bool? TinhHoaHongTruocCK { get; set; } = false; // Nếu dịch vụ dc chiết khấu, nhưng NV vẫn dc hưởng 100% đơn giá gốc ban đầu

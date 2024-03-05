@@ -6,13 +6,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
 {
-    public class DM_LoaiKhach : FullAuditedEntity<int>, IMustHaveTenant
+    public class DM_LoaiKhach : FullAuditedEntity<int>, IMayHaveTenant
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Castle.Components.DictionaryAdapter.Key("Id")]
         override
-        public int Id { get; set; }
-        public int TenantId { get; set; }
+        public int Id
+        { get; set; }
+        public int? TenantId { get; set; }
         [MaxLength(10)]
         public string MaLoaiKhachHang { get; set; }
         [MaxLength(256)]

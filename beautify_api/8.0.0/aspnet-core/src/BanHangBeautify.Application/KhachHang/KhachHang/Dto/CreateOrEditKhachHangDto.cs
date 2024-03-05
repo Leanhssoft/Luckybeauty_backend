@@ -10,11 +10,12 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public string MaKhachHang { get; set; }
         [MaxLength(256)]
         public string TenKhachHang { get; set; }
+        public string TenKhachHang_KhongDau { get; set; }
         [MaxLength(256)]
         public string SoDienThoai { get; set; }
         [MaxLength(2000)]
         public string DiaChi { get; set; }
-        public bool GioiTinh { get; set; }
+        public bool? GioiTinhNam { get; set; }
         [MaxLength(2000)]
         public string Email { get; set; }
         [MaxLength(2000)]
@@ -32,5 +33,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public Guid? IdNguonKhach { get; set; }
         public Guid? IdTinhThanh { get; set; }
         public Guid? IdQuanHuyen { get; set; }
+        public Guid? IdKhachHangZOA { get; set; }
     }
 }

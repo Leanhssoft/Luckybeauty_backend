@@ -1,21 +1,20 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.Entities
 {
-    public class DM_NganHang : FullAuditedEntity<Guid>, IMustHaveTenant
+    public class DM_NganHang : FullAuditedEntity<Guid>, IMayHaveTenant
     {
-        [Required] public int TenantId { get; set; } = 1;
+        public int? TenantId { get; set; } = 1;
         [MaxLength(256)]
         public string MaNganHang { get; set; } = string.Empty;
         [Required, MaxLength(4000)]
         public string TenNganHang { get; set; } = string.Empty;
+        public string TenRutGon { get; set; }
+        public string BIN { get; set; }
+        public string Logo { get; set; }
         public float? ChiPhiThanhToan { get; set; } = 0;
         public bool? TheoPhanTram { get; set; } = true;
         public bool? ThuPhiThanhToan { get; set; } = false;

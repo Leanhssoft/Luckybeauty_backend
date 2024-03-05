@@ -1,21 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto
 {
     public class ChietKhauDichVuItemDto
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string TenDichVu { get; set; }
         public string TenNhomDichVu { get; set; }
-        public float GiaTri { get; set; }
+        public double GiaTri { get; set; }
         public bool LaPhanTram { set; get; }
-        public float? HoaHongThucHien { get; set; }
-        public float? HoaHongYeuCauThucHien { get; set; }
-        public float? HoaHongTuVan { get; set; }
-        public float GiaDichVu { get; set; }
+        public double? HoaHongThucHien { get; set; }
+        public double? HoaHongYeuCauThucHien { get; set; }
+        public double? HoaHongTuVan { get; set; }
+        public double GiaDichVu { get; set; }
+        public string TenNhanVien { get; set; }
+    }
+    
+    public class ChietKhauDichVuItemDto_TachRiengCot
+    {
+        public Guid? IdNhanVien { get; set; }
+        public Guid? IdDonViQuiDoi { get; set; }
+        public Guid? IdNhomHangHoa { get; set; }
+        public double? GiaDichVu { get; set; }
+        public string TenNhanVien { get; set; }
+        public string TenDichVu { get; set; }
+        public string TenNhomDichVu { get; set; }
+        public double? HoaHongThucHien { get; set; }
+        public double? HoaHongYeuCauThucHien { get; set; }
+        public double? HoaHongTuVan { get; set; }
+        public bool? LaPhanTram_HoaHongThucHien { get; set; }
+        public bool? LaPhanTram_HoaHongYeuCauThucHien { get; set; }
+        public bool? LaPhanTram_HoaHongTuVan { get; set; }
     }
 }

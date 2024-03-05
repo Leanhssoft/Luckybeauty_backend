@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.KhachHang.Dto
 {
@@ -19,10 +14,12 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public DateTime? NgaySinh { get; set; }
         public string TenNhomKhach { get; set; }
         public string GioiTinh { get; set; }
-        public string NhanVienPhuTrach { get; set; }
-        public float TongChiTieu { get; set; }
+        public double? TongChiTieu { get; set; } = 0;
+        public double? ConNo { get; set; } = 0;
         public DateTime? CuocHenGanNhat { get; set; }
-        public string TenNguonKhach { get; set; }
         public float? TongTichDiem { get; set; }
+        public int? SoLanCheckIn { get; set; }
+        public int? TrangThaiCheckIn { get; set; }
+        public string ZOAUserId { get; set; }
     }
 }

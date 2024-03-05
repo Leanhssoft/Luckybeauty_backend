@@ -2,7 +2,6 @@
 using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Domain.Repositories;
-using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Permissions.Dto;
@@ -34,6 +33,8 @@ namespace BanHangBeautify.Permissions
             GetPermissionDto data = new GetPermissionDto();
             try
             {
+
+                await UnitOfWorkManager.Current.SaveChangesAsync();
                 var userIdSession = AbpSession.UserId;
                 List<string> listPermissison = new List<string>();
                 var user = await _userRepository.FirstOrDefaultAsync(UserId);
@@ -47,7 +48,7 @@ namespace BanHangBeautify.Permissions
                     {
                         foreach (var item in rolePermissions)
                         {
-                            var permissions = item.Permissions.Where(x=>x.IsGranted==true).Select(x => x.Name).ToList();
+                            var permissions = item.Permissions.Where(x => x.IsGranted == true).Select(x => x.Name).ToList();
                             foreach (var permission in permissions)
                             {
                                 listPermissison.Add(permission);
@@ -84,16 +85,16 @@ namespace BanHangBeautify.Permissions
         private List<PermissionTreeDto> RemovePermissionNull(List<PermissionTreeDto> data)
         {
             List<PermissionTreeDto> result = new List<PermissionTreeDto>();
-            if (result!=null || result.Count > 0)
+            if (result != null || result.Count > 0)
             {
                 foreach (var item in data)
                 {
-                    if (item.ParentNode==null)
+                    if (item.ParentNode == null)
                     {
                         continue;
                     }
                     result.Add(item);
-                    if (item.Children!=null || item.Children.Count>0)
+                    if (item.Children != null || item.Children.Count > 0)
                     {
                         item.Children = RemovePermissionNull(item.Children);
                     }
@@ -104,13 +105,13 @@ namespace BanHangBeautify.Permissions
         private void AddPermission(Permission permission, IReadOnlyList<Permission> allPermissions, List<PermissionTreeDto> result)
         {
             var flatPermission = ObjectMapper.Map<PermissionTreeDto>(permission);
-            flatPermission.ParentNode = permission.Parent!=null ? permission.Parent.Name: "";
+            flatPermission.ParentNode = permission.Parent != null ? permission.Parent.Name : "";
             if (AbpSession.MultiTenancySide != Abp.MultiTenancy.MultiTenancySides.Host)
             {
                 flatPermission.Children = flatPermission.Children.Where(x => x.Name != "Pages.Tenants").ToList();
             }
-            
-            if (permission.Children == null || permission.Children.Count==0)
+
+            if (permission.Children == null || permission.Children.Count == 0)
             {
                 result.Add(flatPermission);
                 return;
@@ -119,18 +120,18 @@ namespace BanHangBeautify.Permissions
             var children = flatPermission.Children.ToList();
             foreach (var childPermission in children)
             {
-                var child = allPermissions.Where(x=>x.Name== childPermission.Name).FirstOrDefault();
+                var child = allPermissions.Where(x => x.Name == childPermission.Name).FirstOrDefault();
                 if (child != null)
                 {
                     AddPermission(child, allPermissions, flatPermission.Children);
                 }
-                
+
             }
             if (flatPermission.ParentNode != null)
             {
                 result.Add(flatPermission);
             }
-            
+
         }
     }
 

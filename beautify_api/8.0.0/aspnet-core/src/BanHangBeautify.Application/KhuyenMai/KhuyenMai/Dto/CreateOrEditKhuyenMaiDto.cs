@@ -1,8 +1,7 @@
-﻿using System;
+﻿using BanHangBeautify.Entities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
 {
@@ -14,14 +13,38 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai.Dto
         public byte LoaiKhuyenMai { get; set; }
         public byte HinhThucKM { get; set; }
         public DateTime ThoiGianApDung { get; set; }
-        public DateTime ThoiGianKetThuc { get; set; }
+        public DateTime? ThoiGianKetThuc { get; set; }
         public bool TatCaKhachHang { get; set; }
         public bool TatCaChiNhanh { get; set; }
         public bool TatCaNhanVien { get; set; }
-        public string NgayApDung { set; get; }
-        public string ThangApDunng { get; set; }
-        public string ThuApDung { get; set; }
-        public string GioApDung { get; set; }
+        public List<string> NgayApDung { set; get; }
+        public List<string> ThangApDung { get; set; }
+        public List<string> ThuApDung { get; set; }
+        public List<string> GioApDung { get; set; }
+        public List<Guid?> IdNhanViens { set; get; }
+        public List<Guid?> IdChiNhanhs { set; get; }
+        public List<Guid?> IdNhomKhachs { set; get; }
+        public List<KhuyenMaiChiTietMap> KhuyenMaiChiTiets { set; get; }
         public string GhiChu { get; set; }
+        public int TrangThai { get; set; }
+    }
+    public class KhuyenMaiChiTietMap
+    {
+        public Guid Id { get; set; }
+        public float? TongTienHang { get; set; } = 0;
+        public float? GiamGia { get; set; } = 0;
+        public bool? GiamGiaTheoPhanTram { get; set; } = true;
+        public Guid? IdNhomHangMua { get; set; }
+        public Guid? IdDonViQuiDoiMua { get; set; }
+        public Guid? IdNhomHangTang { get; set; }
+        public Guid? IdDonViQuiDoiTang { get; set; }
+        public string TenNhomHangMua { get; set; }
+        public string TenNhomHangTang { get; set; }
+        public string TenHangHoaMua { get; set; }
+        public string TenHangHoaTang { get; set; }
+        public float? SoLuongMua { get; set; } = 0;
+        public float? SoLuongTang { get; set; } = 0;
+        public float? GiaKhuyenMai { get; set; } = 0;
+        public float? SoDiemTang { set; get; } = 0;
     }
 }

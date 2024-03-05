@@ -4,13 +4,11 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
@@ -23,6 +21,7 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
         {
             _quyHoaDonCTRepository = quyHoaDonCTRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Create, PermissionNames.Pages_QuyHoaDon_Edit)]
         public async Task<QuyHoaDonChiTietDto> CreateOrEdit(QuyHoaDonChiTietDto input)
         {
             var checkExist = await _quyHoaDonCTRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -52,10 +51,10 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
             QuyHoaDonChiTietDto result = new QuyHoaDonChiTietDto();
             oldData.IdQuyHoaDon = input.IdQuyHoaDon;
             oldData.IdHoaDonLienQuan = input.IdHoaDonLienQuan;
-            oldData.IdKhachHang= input.IdKhachHang;
+            oldData.IdKhachHang = input.IdKhachHang;
             oldData.IdNhanVien = input.IdNhanVien;
             oldData.IdTaiKhoanNganHang = input.IdTaiKhoanNganHang;
-            oldData.IdKhoanThuChi= input.IdKhoanThuChi;
+            oldData.IdKhoanThuChi = input.IdKhoanThuChi;
             oldData.LaPTChiPhiNganHang = input.LaPTChiPhiNganHang;
             oldData.ChiPhiNganHang = input.ChiPhiNganHang;
             oldData.ThuPhiTienGui = input.ThuPhiTienGui;
@@ -68,6 +67,7 @@ namespace BanHangBeautify.Quy.QuyHoaDonChiTiet
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Delete)]
         public async Task<QuyHoaDonChiTietDto> Delete(Guid id)
         {
             var data = await _quyHoaDonCTRepository.FirstOrDefaultAsync(x => x.Id == id);

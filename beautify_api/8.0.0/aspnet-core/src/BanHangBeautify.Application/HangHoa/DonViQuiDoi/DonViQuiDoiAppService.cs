@@ -23,6 +23,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             _repository = repository;
             _hangHoaRepository = hangHoaRepository;
         }
+        [AbpAuthorize(PermissionNames.Pages_DonViQuiDoi_Create, PermissionNames.Pages_DonViQuiDoi_Edit)]
         public async Task<DonViQuiDoiDto> CreateOrEdit(CreateOrEditDonViQuiDoiDto dto)
         {
             var findHangHoa = await _repository.FirstOrDefaultAsync(h => h.Id == dto.Id);
@@ -86,12 +87,13 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
             }
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<DM_DonViQuiDoi> result = new PagedResultDto<DM_DonViQuiDoi>();
-            result.TotalCount = lstDonViQuiDoi.Count;   
+            result.TotalCount = lstDonViQuiDoi.Count;
             var getDonViQuiDoi = lstDonViQuiDoi.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = getDonViQuiDoi;
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_DonViQuiDoi_Delete)]
         public async Task<DonViQuiDoiDto> Delete(Guid id)
         {
             DonViQuiDoiDto result = new DonViQuiDoiDto();

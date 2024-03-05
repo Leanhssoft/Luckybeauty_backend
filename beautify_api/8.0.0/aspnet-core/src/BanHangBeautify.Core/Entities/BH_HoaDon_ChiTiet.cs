@@ -1,12 +1,8 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
 {
@@ -24,18 +20,18 @@ namespace BanHangBeautify.Entities
         public Guid? IdChiTietHoaDon { get; set; }// sử dụng khi trả hàng, lưu chi tiết hóa đơn gốc ban đầu
         [ForeignKey("IdChiTietHoaDon")]
         public BH_HoaDon_ChiTiet ChiTietHoaDonParent { get; set; }
-        public float? SoLuong { get; set; } = 0;
-        public float? DonGiaTruocCK { get; set; } = 0;
-        public float? ThanhTienTruocCK { get; set; } = 0;
-        public float? PTChietKhau { get; set; } = 0;
-        public float? TienChietKhau { get; set; } = 0;
-        public float? DonGiaSauCK { get; set; } = 0;
-        public float? ThanhTienSauCK { get; set; } = 0;
-        public float? PTThue { get; set; } = 0;   
-        public float? TienThue { get; set; } = 0;
-        public float? DonGiaSauVAT { get; set; } = 0;
-        public float? ThanhTienSauVAT { get; set; } = 0;
-        public float? TonLuyKe { get; set; } = 0;
+        public double? SoLuong { get; set; } = 0;
+        public double? DonGiaTruocCK { get; set; } = 0;
+        public double? ThanhTienTruocCK { get; set; } = 0;
+        public double? PTChietKhau { get; set; } = 0;
+        public double? TienChietKhau { get; set; } = 0;
+        public double? DonGiaSauCK { get; set; } = 0;
+        public double? ThanhTienSauCK { get; set; } = 0;
+        public double? PTThue { get; set; } = 0;
+        public double? TienThue { get; set; } = 0;
+        public double? DonGiaSauVAT { get; set; } = 0;
+        public double? ThanhTienSauVAT { get; set; } = 0;
+        public double? TonLuyKe { get; set; } = 0;
         [MaxLength(4000)] public string GhiChu { get; set; } = string.Empty;
         public int TrangThai { get; set; } = 1;// 0.Xóa, 1.Chưa xóa
     }

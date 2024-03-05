@@ -3,6 +3,7 @@ using Abp.Localization;
 using Abp.MultiTenancy;
 using Abp.Net.Mail;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Linq;
 
 namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
@@ -26,11 +27,18 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
             }
 
             // Emailing
-            AddSettingIfNotExists(EmailSettingNames.DefaultFromAddress, "admin@mydomain.com", tenantId);
-            AddSettingIfNotExists(EmailSettingNames.DefaultFromDisplayName, "mydomain.com mailer", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.DefaultFromAddress, "ssoft@ssoft.vn", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.DefaultFromDisplayName, "SSOFT", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.Smtp.UseDefaultCredentials, "false", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.Smtp.EnableSsl, "true", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.Smtp.UserName, "ducmanh.ssoft@gmail.com", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.Smtp.Password, "ovikqyilsuxzdkde", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.Smtp.Host, "smtp.gmail.com", tenantId);
+            AddSettingIfNotExists(EmailSettingNames.Smtp.Port, "465", tenantId);// 465 cho SSL ,587 cho TLS
+            AddSettingIfNotExists(EmailSettingNames.Smtp.Domain, "", tenantId);
 
             // Languages
-            AddSettingIfNotExists(LocalizationSettingNames.DefaultLanguage, "en", tenantId);
+            AddSettingIfNotExists(LocalizationSettingNames.DefaultLanguage, "vi", tenantId);
         }
 
         private void AddSettingIfNotExists(string name, string value, int? tenantId = null)

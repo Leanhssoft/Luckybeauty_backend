@@ -1,6 +1,6 @@
-﻿using System;
+﻿using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
+using System;
 using System.Collections.Generic;
-using BanHangBeautify.HangHoa.DonViQuiDoi.Dto;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Dto
 {
@@ -17,10 +17,13 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
         public float? SoPhutThucHien { get; set; }
         public int TrangThai { get; set; }
         public int IdLoaiHangHoa { get; set; }
-        public float? GiaBan { get; set; }
+        public double? GiaBan { get; set; }
         public string MoTa { get; set; }
+        public string Image { get; set; }
         public string TenLoaiHangHoa { get; set; }
         public string TxtTrangThaiHang { get; set; }
-         public List<DonViQuiDoiDto> DonViTinhs { get; set; }
+        public List<DonViQuiDoiDto> DonViTinhs { get; set; }
+        public byte? ThuTuHienThi { get; set; }// hiển thị theo mức đọ ưu tiên của nhóm hàng
+
     }
 }

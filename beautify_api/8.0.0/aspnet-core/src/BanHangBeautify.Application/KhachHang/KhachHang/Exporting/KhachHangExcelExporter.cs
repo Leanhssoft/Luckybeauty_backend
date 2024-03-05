@@ -1,21 +1,16 @@
 ﻿using Abp.Runtime.Session;
 using Abp.Timing.Timezone;
-using BanHangBeautify.Common;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Hosting;
-using NPOI.HPSF;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 namespace BanHangBeautify.KhachHang.KhachHang.Exporting
 {
     public class KhachHangExcelExporter : EpPlusExcelExporterBase, IKhachHangExcelExporter
@@ -37,7 +32,8 @@ namespace BanHangBeautify.KhachHang.KhachHang.Exporting
         public FileDto ExportDanhSachKhachHang(List<KhachHangView> model)
         {
             var pathTemplate = Path.Combine(_env.WebRootPath, $"ExcelTemplate", $"KhachHang_Export_Template.xlsx");
-            var file = new FileDto("DanhSachKhachHang.xlsx", MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
+            string fileName = "DanhSachKhachHang_" + DateTime.Now.Ticks.ToString() + ".xlsx";
+            var file = new FileDto(fileName, MimeTypeNames.ApplicationVndOpenxmlformatsOfficedocumentSpreadsheetmlSheet);
             var template = new FileInfo(pathTemplate);
             using (ExcelPackage excelPackage = new ExcelPackage(template, true))
             {
@@ -69,27 +65,25 @@ namespace BanHangBeautify.KhachHang.KhachHang.Exporting
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.DiaChi);
                     if (!string.IsNullOrWhiteSpace(item.NgaySinh.ToString()))
                     {
-                        ws.Cells[startRow, 6].Value = ConvertHelper.ToDateTime(item.NgaySinh);
+                        ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.NgaySinh.Value.ToString("dd/MM/yyyy"));
                     }
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.GioiTinh);
                     ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.TenNhomKhach);
-                    ws.Cells[startRow, 9].Value = ConvertHelper.ToString(item.TenNguonKhach);
-                    ws.Cells[startRow, 10].Value = ConvertHelper.ToString(item.NhanVienPhuTrach);
-                    ws.Cells[startRow, 11].Value = ConvertHelper.ToInt64(item.TongChiTieu);
-                    ws.Cells[startRow, 12].Value = ConvertHelper.ToString(item.TongTichDiem);
+                    ws.Cells[startRow, 9].Value = ConvertHelper.ToInt64(item.TongChiTieu);
+                    ws.Cells[startRow, 10].Value = ConvertHelper.ToString(item.TongTichDiem);
                     if (!string.IsNullOrWhiteSpace(item.CuocHenGanNhat.ToString()))
                     {
-                        ws.Cells[startRow, 13].Value = ConvertHelper.ToDateTime(item.CuocHenGanNhat);
+                        ws.Cells[startRow, 11].Value = ConvertHelper.ToDateTime(item.CuocHenGanNhat);
                     }
                     startRow++;
                     stt++;
                 }
                 if (input.Count > 0)
                 {
-                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 13].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 11].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 11].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 11].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 11].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 }
             }
             catch (Exception ex)

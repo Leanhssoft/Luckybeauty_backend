@@ -10,7 +10,7 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi.Dto
         [MaxLength(50)]
         public string TenDonViTinh { get; set; }
         public float? TyLeChuyenDoi { get; set; } = 1;
-        public float? GiaBan { get; set; } = 0;
+        public double? GiaBan { get; set; } = 0;
         public int? LaDonViTinhChuan { get; set; } = 1;
         public Guid IdHangHoa { get; set; }
     }

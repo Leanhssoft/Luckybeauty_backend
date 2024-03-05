@@ -3,37 +3,39 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.NganHang.Dto;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.AppDanhMuc.NganHang
 {
     [AbpAuthorize(PermissionNames.Pages_NganHang)]
     public class NganHangAppService : SPAAppServiceBase
     {
-        private readonly IRepository<DM_NganHang,Guid> _nganHangRepository;
+        private readonly IRepository<DM_NganHang, Guid> _nganHangRepository;
         public NganHangAppService(IRepository<DM_NganHang, Guid> nganHangRepository)
         {
             _nganHangRepository = nganHangRepository;
         }
-        public async Task<NganHangDto> CreateOrEdit(CreateOrEditNganHangDto input) {
+        public async Task<NganHangDto> CreateOrEdit(CreateOrEditNganHangDto input)
+        {
             var checkExist = await _nganHangRepository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist == null)
             {
                 return await Create(input);
             }
-            return await Update(input,checkExist);
+            return await Update(input, checkExist);
         }
         [NonAction]
-        public async Task<NganHangDto> Create(CreateOrEditNganHangDto input) {
-            NganHangDto result =new NganHangDto();
+        public async Task<NganHangDto> Create(CreateOrEditNganHangDto input)
+        {
+            NganHangDto result = new NganHangDto();
             DM_NganHang data = new DM_NganHang();
             data = ObjectMapper.Map<DM_NganHang>(input);
             data.Id = Guid.NewGuid();
@@ -44,11 +46,29 @@ namespace BanHangBeautify.AppDanhMuc.NganHang
             result = ObjectMapper.Map<NganHangDto>(data);
             return result;
         }
+
+        public async Task CreateMany(List<CreateOrEditNganHangManyDto> input)
+        {
+            foreach (var item in input)
+            {
+                DM_NganHang data = new DM_NganHang();
+                data = ObjectMapper.Map<DM_NganHang>(item);
+                data.Id = Guid.NewGuid();
+                data.CreationTime = DateTime.Now;
+                data.IsDeleted = false;
+                data.TenantId = null;
+                await _nganHangRepository.InsertAsync(data);
+            }
+        }
         [NonAction]
-        public async Task<NganHangDto> Update(CreateOrEditNganHangDto input,DM_NganHang oldData) {
+        public async Task<NganHangDto> Update(CreateOrEditNganHangDto input, DM_NganHang oldData)
+        {
             NganHangDto result = new NganHangDto();
             oldData.MaNganHang = input.MaNganHang;
             oldData.TenNganHang = input.TenNganHang;
+            oldData.BIN = input.BIN;
+            oldData.TenRutGon = input.TenRutGon;
+            oldData.Logo = input.Logo;
             oldData.ThuPhiThanhToan = input.ThuPhiThanhToan;
             oldData.TheoPhanTram = input.TheoPhanTram;
             oldData.ChungTuApDung = input.ChungTuApDung;
@@ -59,21 +79,23 @@ namespace BanHangBeautify.AppDanhMuc.NganHang
             return result;
         }
         [HttpPost]
-        public async Task<NganHangDto> Delete(Guid id) {
+        public async Task<NganHangDto> Delete(Guid id)
+        {
             var data = await _nganHangRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            if (data != null)
             {
                 data.DeletionTime = DateTime.Now;
-                data.IsDeleted= true;
+                data.IsDeleted = true;
                 data.DeleterUserId = AbpSession.UserId;
                 await _nganHangRepository.UpdateAsync(data);
-                return ObjectMapper.Map<NganHangDto>(data); 
+                return ObjectMapper.Map<NganHangDto>(data);
             }
             return new NganHangDto();
         }
-        public async Task<CreateOrEditNganHangDto> GetForEdit(Guid id) {
-            var data = await _nganHangRepository.FirstOrDefaultAsync(x=>x.Id == id);
-            if(data != null)
+        public async Task<CreateOrEditNganHangDto> GetForEdit(Guid id)
+        {
+            var data = await _nganHangRepository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateOrEditNganHangDto>(data);
             }

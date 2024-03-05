@@ -6,26 +6,24 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.LichLamViec_Ca.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.LichLamViec_Ca
 {
     [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Ca)]
-    public class LichLamViecCaAppService: SPAAppServiceBase
+    public class LichLamViecCaAppService : SPAAppServiceBase
     {
         private readonly IRepository<NS_LichLamViec_Ca, Guid> _lichLamViecCa;
         public LichLamViecCaAppService(IRepository<NS_LichLamViec_Ca, Guid> lichLamViecCa)
         {
             _lichLamViecCa = lichLamViecCa;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Ca_Create, PermissionNames.Pages_NhanSu_LichLamViec_Ca_Edit)]
         public async Task<LichLamViecCaDto> CreateOrEdit(CreateOrEditLichLamViecCaDto input)
         {
-            var check = await _lichLamViecCa.FirstOrDefaultAsync(x=>x.Id==input.Id);
+            var check = await _lichLamViecCa.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (check == null)
             {
                 return await Create(input);
@@ -47,7 +45,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
             return result;
         }
         [NonAction]
-        public async Task<LichLamViecCaDto> Update(CreateOrEditLichLamViecCaDto input,NS_LichLamViec_Ca oldData)
+        public async Task<LichLamViecCaDto> Update(CreateOrEditLichLamViecCaDto input, NS_LichLamViec_Ca oldData)
         {
             LichLamViecCaDto result = new LichLamViecCaDto();
             oldData.IdCaLamViec = input.IdCaLamViec;
@@ -58,9 +56,10 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhanSu_LichLamViec_Ca_Delete)]
         public async Task<LichLamViecCaDto> Delete(Guid id)
         {
-            var check =await _lichLamViecCa.FirstOrDefaultAsync(x => x.Id == id);
+            var check = await _lichLamViecCa.FirstOrDefaultAsync(x => x.Id == id);
             check.IsDeleted = false;
             check.DeletionTime = DateTime.Now;
             _lichLamViecCa.Update(check);
@@ -78,8 +77,8 @@ namespace BanHangBeautify.NhanSu.LichLamViec_Ca
             }
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             PagedResultDto<NS_LichLamViec_Ca> result = new PagedResultDto<NS_LichLamViec_Ca>();
-            var listData = await _lichLamViecCa.GetAllIncluding().Where(x=>x.TenantId==(AbpSession.TenantId??0)&& x.IsDeleted==false).OrderByDescending(x=>x.CreationTime).ToListAsync();
-            result.TotalCount= listData.Count;
+            var listData = await _lichLamViecCa.GetAllIncluding().Where(x => x.TenantId == (AbpSession.TenantId ?? 0) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+            result.TotalCount = listData.Count;
             listData = listData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = listData;
             return result;

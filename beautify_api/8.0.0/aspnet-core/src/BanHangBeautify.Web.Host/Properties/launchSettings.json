@@ -12,7 +12,9 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "TWILIO_ACCOUNT_SID": "AC7ef80aafceaf5e5e39419f7444abd996",
+        "TWILIO_AUTH_TOKEN": "7247c3bd1f98a05eda5463743a4a4940"
       }
     },
     "BanHangBeautify.Web.Host": {
@@ -20,7 +22,7 @@
       "launchBrowser": true,
       "launchUrl": "https://localhost:44311/",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
       },
       "applicationUrl": "https://localhost:44311/"
     }

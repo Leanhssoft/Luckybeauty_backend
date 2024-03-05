@@ -1,7 +1,6 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using BanHangBeautify.AppDanhMuc.CauHinhPhanMem.Dto;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.CauHinh.CauHinhTichDiem.Dto;
 using BanHangBeautify.Entities;
@@ -10,23 +9,24 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.CauHinh.CauHinhTichDiem
 {
     [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem)]
-    public class CauHinhTichDiemAppService:SPAAppServiceBase
+    public class CauHinhTichDiemAppService : SPAAppServiceBase
     {
-        private readonly IRepository<HT_CauHinh_TichDiem,Guid> _repository;
+        private readonly IRepository<HT_CauHinh_TichDiem, Guid> _repository;
         public CauHinhTichDiemAppService(IRepository<HT_CauHinh_TichDiem, Guid> repository)
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem_Create, PermissionNames.Pages_CauHinhTichDiem_Edit)]
+
         public async Task<CauHinhTichDiemDto> CreateOrEdit(CreateOrEditCauHinhTichDiemDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
-            if (checkExist!=null)
+            if (checkExist != null)
             {
                 return await Create(input);
             }
@@ -48,7 +48,7 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
             return result;
         }
         [NonAction]
-        public async Task<CauHinhTichDiemDto> Update(CreateOrEditCauHinhTichDiemDto input,HT_CauHinh_TichDiem oldData)
+        public async Task<CauHinhTichDiemDto> Update(CreateOrEditCauHinhTichDiemDto input, HT_CauHinh_TichDiem oldData)
         {
             CauHinhTichDiemDto result = new CauHinhTichDiemDto();
             oldData.ChoPhepThanhToanBangDiem = input.ChoPhepThanhToanBangDiem;
@@ -67,13 +67,14 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_CauHinhTichDiem_Delete)]
         public async Task<CauHinhTichDiemDto> Delete(Guid id)
         {
-            var data = await _repository.FirstOrDefaultAsync(x=>x.Id ==id);
-            if (data!=null)
+            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 data.IsDeleted = true;
-                data.DeletionTime= DateTime.Now;
+                data.DeletionTime = DateTime.Now;
                 data.DeleterUserId = AbpSession.UserId;
                 await _repository.UpdateAsync(data);
                 return ObjectMapper.Map<CauHinhTichDiemDto>(data);

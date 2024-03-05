@@ -5,12 +5,14 @@ using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace BanHangBeautify.EntityFrameworkCore
 {
     public class SPADbContext : AbpZeroDbContext<Tenant, Role, User, SPADbContext>
     {
+        #region Extending Non-Abstract Entities
+        public virtual DbSet<UserRoleChiNhanh> UserRoleChiNhanh { get; set; }
+        #endregion
         #region Booking
         public DbSet<Booking> Booking { set; get; }
         public DbSet<BookingNhanVien> BookingNhanVien { set; get; }
@@ -46,7 +48,21 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<HT_CauHinh_TichDiem> HT_CauHinh_TichDiem { get; set; }
         public DbSet<HT_CauHinh_TichDiemChiTiet> HT_CauHinh_TichDiemChiTiet { get; set; }
         public DbSet<HT_CauHinh_ChungTu> HT_CauHinh_ChungTu { get; set; }
+
+        #endregion
+
+        #region SMS
         public DbSet<HeThong_SMS> HeThong_SMS { get; set; }
+        public DbSet<HT_SMSBrandname> HT_SMSBrandname { get; set; }
+        public DbSet<SMS_Template> SMS_Template { get; set; }
+        public DbSet<SMS_CaiDat_NhacNho> SMS_CaiDat_NhacNho { get; set; }
+        public DbSet<CaiDat_NhacNho_ChiTiet> CaiDat_NhacNho_ChiTiet { get; set; }
+        public DbSet<SMS_LichSuNap_ChuyenTien> SMS_LichSuNap_ChuyenTien { get; set; }
+        public DbSet<SMS_NhatKy_GuiTin> SMS_NhatKy_GuiTin { get; set; }
+        #endregion
+        #region Zalo
+        public DbSet<ZaloAuthorization> ZaloAuthorization { get; set; }
+        public DbSet<Zalo_KhachHangThanhVien> Zalo_KhachHangThanhVien { get; set; }
         #endregion
 
         #region Nhân viên
@@ -80,6 +96,7 @@ namespace BanHangBeautify.EntityFrameworkCore
         #endregion
 
         /* Define a DbSet for each entity of the application */
+        public virtual DbSet<SubscribableEdition> SubscribableEditions { get; set; }
 
         public SPADbContext(DbContextOptions<SPADbContext> options)
             : base(options)

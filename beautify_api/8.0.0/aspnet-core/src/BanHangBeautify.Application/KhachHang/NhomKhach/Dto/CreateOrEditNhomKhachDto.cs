@@ -12,6 +12,6 @@ namespace BanHangBeautify.KhachHang.NhomKhach.Dto
         public string TenNhomKhach { get; set; }
         [MaxLength(2000)]
         public string MoTa { get; set; }
-        public int TrangThai { get; set; }
+        public int TrangThai { get; set; } = 1;
     }
 }

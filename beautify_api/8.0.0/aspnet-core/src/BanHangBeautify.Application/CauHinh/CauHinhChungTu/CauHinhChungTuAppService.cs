@@ -9,14 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.CauHinh.CauHinhChungTu
 {
     [AbpAuthorize(PermissionNames.Pages_CauHinhChungTu)]
-    public class CauHinhChungTuAppService:SPAAppServiceBase
+    public class CauHinhChungTuAppService : SPAAppServiceBase
     {
         private readonly IRepository<HT_CauHinh_ChungTu, Guid> _repository;
         private readonly IRepository<DM_LoaiChungTu, int> _loaiCHungTu;
@@ -25,7 +23,7 @@ namespace BanHangBeautify.CauHinh.CauHinhChungTu
             _repository = repository;
             _loaiCHungTu = loaiCHungTu;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_CauHinhChungTu_Create, PermissionNames.Pages_CauHinhChungTu_Edit)]
         public async Task<CauHinhChungTuDto> CreateOrEdit(CreateOrEditCauHinhChungTuDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -42,7 +40,7 @@ namespace BanHangBeautify.CauHinh.CauHinhChungTu
             HT_CauHinh_ChungTu data = new HT_CauHinh_ChungTu();
             data = ObjectMapper.Map<HT_CauHinh_ChungTu>(input);
             data.Id = Guid.NewGuid();
-            var chungTu =await _loaiCHungTu.FirstOrDefaultAsync(x => x.Id == input.IdLoaiChungTu);
+            var chungTu = await _loaiCHungTu.FirstOrDefaultAsync(x => x.Id == input.IdLoaiChungTu);
             data.MaLoaiChungTu = string.IsNullOrEmpty(data.MaLoaiChungTu) ? chungTu.MaLoaiChungTu : data.MaLoaiChungTu;
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
@@ -73,6 +71,7 @@ namespace BanHangBeautify.CauHinh.CauHinhChungTu
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_CauHinhChungTu_Delete)]
         public async Task<CauHinhChungTuDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);

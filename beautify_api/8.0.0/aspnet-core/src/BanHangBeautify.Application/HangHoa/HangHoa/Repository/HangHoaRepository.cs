@@ -1,21 +1,17 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
-using Abp.Runtime.Session;
-using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.Data.SqlClient;
+using Microsoft.VisualBasic;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using BanHangBeautify.Common;
-using AutoMapper.Internal.Mappers;
-using static BanHangBeautify.Common.CommonClass;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.HangHoa.HangHoa.Repository
 {
@@ -106,7 +102,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
                     var data = ObjectHelper.FillCollection<HangHoaDto>(ds.Tables[0]);
-                    return new BanHangBeautify.Common.CommonClass.MaxCodeDto()
+                    return new CommonClass.MaxCodeDto()
                     {
                         FirstStr = ds.Tables[0].Rows[0]["FirstStr"].ToString(),
                         MaxVal = float.Parse(ds.Tables[0].Rows[0]["MaxVal"].ToString()),
@@ -114,6 +110,21 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
                 }
             }
             return new MaxCodeDto();
+        }
+
+        public async Task ImportDanhMucHangHoa(int? tenantId, long? userId, ImportExcelHangHoaDto dataHangHoa)
+        {
+            using var command = CreateCommand("spImportDanhMucHangHoa");
+            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            command.Parameters.Add(new SqlParameter("@CreatorUserId", userId));
+            command.Parameters.Add(new SqlParameter("@TenNhomHangHoa", dataHangHoa.TenNhomHangHoa ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@MaHangHoa", dataHangHoa.MaHangHoa ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@TenHangHoa", dataHangHoa.TenHangHoa ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdLoaiHangHoa", dataHangHoa.IdLoaiHangHoa));
+            command.Parameters.Add(new SqlParameter("@GiaBan", dataHangHoa.GiaBan ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoPhutThucHien", dataHangHoa.SoPhutThucHien ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@GhiChu", dataHangHoa.GhiChu ?? (object)DBNull.Value));
+            await command.ExecuteNonQueryAsync();
         }
     }
 }

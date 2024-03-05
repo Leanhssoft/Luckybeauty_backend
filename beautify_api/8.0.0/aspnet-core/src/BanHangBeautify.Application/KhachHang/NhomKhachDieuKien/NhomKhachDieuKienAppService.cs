@@ -9,19 +9,19 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
 {
     [AbpAuthorize(PermissionNames.Pages_NhomKhach_DieuKien)]
-    public class NhomKhachDieuKienAppService:SPAAppServiceBase
+    public class NhomKhachDieuKienAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_NhomKhach_DieuKien, Guid> _repository;
         public NhomKhachDieuKienAppService(IRepository<DM_NhomKhach_DieuKien, Guid> repository)
         {
             _repository = repository;
         }
+        [AbpAuthorize(PermissionNames.Pages_NhomKhach_DieuKien_Create, PermissionNames.Pages_NhomKhach_DieuKien_Edit)]
         public async Task<NhomKhachDieuKienDto> CreateOrEdit(CreateOrEditNhomKhachDieuKienDto input)
         {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
@@ -53,7 +53,7 @@ namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
             oldData.IdNhomKhach = input.IdNhomKhach;
             oldData.LoaiDieuKien = input.LoaiDieuKien;
             oldData.LoaiSoSanh = input.LoaiSoSanh;
-            oldData.GiaTriKhuVuc= input.GiaTriKhuVuc;
+            oldData.GiaTriKhuVuc = input.GiaTriKhuVuc;
             oldData.GiaTriThoiGian = input.GiaTriThoiGian;
             oldData.GiaTriBool = input.GiaTriBool;
             oldData.GiaTriSo = input.GiaTriSo;
@@ -63,6 +63,7 @@ namespace BanHangBeautify.KhachHang.NhomKhachDieuKien
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_NhomKhach_DieuKien_Delete)]
         public async Task<NhomKhachDieuKienDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);

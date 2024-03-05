@@ -1,12 +1,6 @@
-﻿using Abp.Application.Services.Dto;
-using BanHangBeautify.Data.Entities;
-using Microsoft.Extensions.Hosting;
-using System;
+﻿using BanHangBeautify.Data.Entities;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
 {
@@ -34,7 +28,6 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                     IsDeleted = false,
                     MaLoaiHangHoa = "HH",
                     TenLoaiHangHoa = "Hàng Hóa",
-                    TenantId = 1,
                     TrangThai = 1
                 });
             }
@@ -47,7 +40,6 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                     IsDeleted = false,
                     MaLoaiHangHoa = "DV",
                     TenLoaiHangHoa = "Dịch Vụ",
-                    TenantId = 1,
                     TrangThai = 1
                 });
             }
@@ -60,7 +52,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.LoaiHangHoa
                     IsDeleted = false,
                     MaLoaiHangHoa = "CB",
                     TenLoaiHangHoa = "Combo",
-                    TenantId = 1
+                    TrangThai = 1
                 });
             };
             _context.DM_LoaiHangHoa.AddRange(lstLoaiHangHoa);

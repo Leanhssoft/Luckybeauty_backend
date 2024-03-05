@@ -1,8 +1,10 @@
 ﻿using Abp.Authorization.Users;
 using Abp.Extensions;
+using BanHangBeautify.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Authorization.Users
 {
@@ -16,6 +18,9 @@ namespace BanHangBeautify.Authorization.Users
         [Required(AllowEmptyStrings = true)]
         public override string EmailAddress { get; set; }
         public Guid? NhanSuId { get; set; }
+        public Guid? IdChiNhanhMacDinh { get; set; }
+        [ForeignKey("IdChiNhanhMacDinh")]
+        public DM_ChiNhanh DM_ChiNhanh { get; set; }
 
         public bool IsAdmin { set; get; }
 

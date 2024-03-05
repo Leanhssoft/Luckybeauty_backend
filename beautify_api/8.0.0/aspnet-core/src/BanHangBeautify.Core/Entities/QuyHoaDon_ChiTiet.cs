@@ -1,14 +1,9 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using BanHangBeautify.Data.Entities;
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Policy;
 
 namespace BanHangBeautify.Entities
 {
@@ -37,18 +32,18 @@ namespace BanHangBeautify.Entities
 
         // Dùng khi khách quẹt thẻ, và phải trả thêm 1 khoản phí gọi là Phí cà thẻ
         // ---> khi đó, phải cài đặt thêm phí ở DM_NganHang"				
-        public float? LaPTChiPhiNganHang { get; set; } = 0;
-        public float? ChiPhiNganHang { get; set; } = 0;
-        public float? ThuPhiTienGui { get; set; } = 0;
+        public double? LaPTChiPhiNganHang { get; set; } = 0;
+        public double? ChiPhiNganHang { get; set; } = 0;
+        public double? ThuPhiTienGui { get; set; } = 0;
         // Nếu khách thanh toán = đổi điểm, DiemThanhToan = số điểm quy đổi, TienThu = số tiền quy đổi từ điểm)
-        public float? DiemThanhToan { get; set; } = 0;
+        public double? DiemThanhToan { get; set; } = 0;
         // HinhThucThanhToan
         // 1. Tiền mặt	
-        // 2. Pos	
-        // 3. Chuyển khoản	
+        // 2. Chuyển khoản	
+        // 3. Pos	
         // 4. Thẻ giá trị(khách nạp sẵn tiền vào Thẻ, sau đó dùng thẻ này để thanh toán)
         // 5. Sử dụng điểm
         public byte HinhThucThanhToan { get; set; } = 1; // byte (C#) = tinyint (sql)
-        public float? TienThu { get; set; } = 0;
+        public double? TienThu { get; set; } = 0;
     }
 }

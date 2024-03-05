@@ -1,22 +1,35 @@
-﻿using Abp.Application.Services.Dto;
+﻿using Abp.Application.Features;
+using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
-using Abp.Runtime.Session;
+using Abp.Domain.Uow;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto;
+using BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting;
 using BanHangBeautify.AppDanhMuc.AppChiNhanh.Repository;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
-using BanHangBeautify.PhongBan.Dto;
+using BanHangBeautify.Features;
+using BanHangBeautify.NewFolder;
+using BanHangBeautify.NhanSu.NhanVien.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
+using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests.Dto;
-using Microsoft.AspNetCore.Authorization;
+using Google.Apis.Drive.v3.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
 {
@@ -28,23 +41,36 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public readonly IRepository<User, long> _userRepository;
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
         private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
-        public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService,IRepository<User, long> userRepository,
-            IRepository<NS_NhanVien,Guid> nhanSuRepository,
-            IRepository<NS_QuaTrinh_CongTac,Guid> quaTrinhCongTacRepository,
-            IChiNhanhRepository chiNhanhRepository)
+        private readonly IChiNhanhExcelExporter _chiNhanhExcelExporter;
+        private readonly IRepository<HT_CongTy, Guid> _congTyRpository;
+        private readonly IRepository<UserRoleChiNhanh, long> _userRole;
+        INhatKyThaoTacAppService _audilogService;
+        public ChiNhanhAppService(IRepository<DM_ChiNhanh, Guid> chiNhanhService, IRepository<User, long> userRepository,
+            IRepository<NS_NhanVien, Guid> nhanSuRepository,
+            IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository,
+            IChiNhanhRepository chiNhanhRepository,
+            IChiNhanhExcelExporter chiNhanhExcelExporter,
+            IRepository<HT_CongTy, Guid> congTyRpository,
+             IRepository<UserRoleChiNhanh, long> userRole,
+             INhatKyThaoTacAppService audilogService
+            )
         {
             _chiNhanhService = chiNhanhService;
             _userRepository = userRepository;
             _nhanSuRepository = nhanSuRepository;
             _quaTrinhCongTacRepository = quaTrinhCongTacRepository;
             _chiNhanhReponsitory = chiNhanhRepository;
+            _chiNhanhExcelExporter = chiNhanhExcelExporter;
+            _congTyRpository = congTyRpository;
+            _userRole = userRole;
+            _audilogService = audilogService;
         }
         [HttpGet]
         public async Task<PagedResultDto<ChiNhanhDto>> GetAllChiNhanh(PagedRequestDto input)
         {
-            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount -1) * input.MaxResultCount : 0;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-            return await _chiNhanhReponsitory.GetAll(input,AbpSession.TenantId??1);
+            return await _chiNhanhReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
         }
         public async Task<DM_ChiNhanh> GetChiNhanh(Guid id)
         {
@@ -53,9 +79,9 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public async Task<List<SuggestChiNhanh>> GetByUserId(long userId)
         {
             List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();
-            var user =await _userRepository.FirstOrDefaultAsync(x => x.Id == userId && x.TenantId==AbpSession.TenantId);
-            var nhanSu =await  _nhanSuRepository.FirstOrDefaultAsync(x => x.Id == user.NhanSuId && x.TenantId == (AbpSession.TenantId??1));
-            if (nhanSu==null)
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == userId && x.TenantId == AbpSession.TenantId);
+            var nhanSu = await _nhanSuRepository.FirstOrDefaultAsync(x => x.Id == user.NhanSuId && x.TenantId == (AbpSession.TenantId ?? 1));
+            if (nhanSu == null)
             {
                 var chiNhanh = _chiNhanhService.GetAll().Where(x => x.IsDeleted == false).ToList();
                 foreach (var item in chiNhanh)
@@ -68,7 +94,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             }
             else
             {
-                var idChiNhanh = _quaTrinhCongTacRepository.GetAll().Where(x=>x.IsDeleted==false&& x.TenantId==(AbpSession.TenantId??1)).OrderByDescending(x=>x.CreationTime).FirstOrDefault(x => x.IdNhanVien == nhanSu.Id).IdChiNhanh;
+                var idChiNhanh = _quaTrinhCongTacRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).OrderByDescending(x => x.CreationTime).FirstOrDefault(x => x.IdNhanVien == nhanSu.Id).IdChiNhanh;
                 var chiNhanh = _chiNhanhService.FirstOrDefault(x => x.Id == idChiNhanh);
                 result.Add(new SuggestChiNhanh()
                 {
@@ -83,14 +109,14 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
         public async Task<CreateChiNhanhDto> GetForEdit(Guid id)
         {
             var data = await _chiNhanhService.GetAsync(id);
-            if (data!=null)
+            if (data != null)
             {
                 return ObjectMapper.Map<CreateChiNhanhDto>(data);
             }
             return new CreateChiNhanhDto();
         }
         [HttpPost]
-        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Edit,PermissionNames.Pages_ChiNhanh_Create)]
+        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Edit, PermissionNames.Pages_ChiNhanh_Create)]
         public async Task<ExecuteResultDto> CreateOrEditChiNhanh(CreateChiNhanhDto dto)
         {
             var exits = await _chiNhanhService.FirstOrDefaultAsync(dto.Id);
@@ -108,31 +134,66 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             {
                 DM_ChiNhanh chiNhanh = new DM_ChiNhanh();
                 var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh == dto.TenChiNhanh);
-                if (checkTenChiNhanh == null)
+                int maxBranchCount = 0;
+                var maxBranch = FeatureChecker.GetValue(AbpSession.TenantId ?? 0, AppFeatureConst.MaxBranchCount);
+                if (maxBranch != null && !string.IsNullOrEmpty(maxBranch))
                 {
-                    chiNhanh.Id = Guid.NewGuid();
-                    var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
-                    chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
-                    chiNhanh.TenChiNhanh = dto.TenChiNhanh;
-                    chiNhanh.MaSoThue = dto.MaSoThue;
-                    chiNhanh.DiaChi = dto.DiaChi;
-                    chiNhanh.GhiChu = dto.GhiChu;
-                    chiNhanh.Logo = dto.Logo;
-                    chiNhanh.NgayApDung = dto.NgayApDung;
-                    chiNhanh.NgayHetHan = dto.NgayHetHan;
-                    chiNhanh.TenantId = AbpSession.TenantId ?? 1;
-                    chiNhanh.CreatorUserId = AbpSession.UserId;
-                    chiNhanh.IdCongTy = dto.IdCongTy;
-                    chiNhanh.CreationTime = DateTime.Now;
-                    await _chiNhanhService.InsertAsync(chiNhanh);
-                    result.Message = "Thêm mới chi nhánh thành công!";
-                    result.Status = "success";
+                    maxBranchCount = int.Parse(maxBranch);
+                }
+                var totalBranch = _chiNhanhService.Count();
+                if (maxBranchCount > totalBranch || maxBranchCount == 0)
+                {
+                    if (checkTenChiNhanh == null)
+                    {
+                        chiNhanh.Id = Guid.NewGuid();
+                        using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+                        {
+                            var chiNhanhCount = _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IdCongTy == dto.IdCongTy).Count() + 1;
+                            chiNhanh.MaChiNhanh = string.IsNullOrEmpty(dto.MaChiNhanh) ? "CN_0" + chiNhanhCount.ToString() : dto.MaChiNhanh;
+                        }
+                        chiNhanh.SoDienThoai = dto.SoDienThoai;
+                        chiNhanh.TenChiNhanh = dto.TenChiNhanh;
+                        chiNhanh.MaSoThue = dto.MaSoThue;
+                        chiNhanh.DiaChi = dto.DiaChi;
+                        chiNhanh.GhiChu = dto.GhiChu;
+                        chiNhanh.Logo = dto.Logo;
+                        chiNhanh.NgayApDung = dto.NgayApDung;
+                        chiNhanh.NgayHetHan = dto.NgayHetHan;
+                        chiNhanh.TenantId = AbpSession.TenantId ?? 1;
+                        chiNhanh.CreatorUserId = AbpSession.UserId;
+                        var congTy = await _congTyRpository.GetAll().FirstOrDefaultAsync();
+                        if (congTy == null)
+                        {
+                            chiNhanh.IdCongTy = dto.IdCongTy;
+                        }
+                        else
+                        {
+                            chiNhanh.IdCongTy = congTy.Id;
+                        }
+                        chiNhanh.TrangThai = dto.TrangThai;
+                        chiNhanh.CreationTime = DateTime.Now;
+                        await _chiNhanhService.InsertAsync(chiNhanh);
+                        result.Message = "Thêm mới chi nhánh thành công!";
+                        result.Status = "success";
+                        var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                        nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                        nhatKyThaoTacDto.ChucNang = "Chi nhánh";
+                        nhatKyThaoTacDto.NoiDung = "Thêm mới chi nhánh "+ chiNhanh.TenChiNhanh;
+                        nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới chi nhánh " + chiNhanh.TenChiNhanh;
+                        await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+                    }
+                    else
+                    {
+                        result.Message = "Tên chi nhánh đã tồn tại!";
+                        result.Status = "error";
+                    }
                 }
                 else
                 {
-                    result.Message = "Tên chi nhánh đã tồn tại!";
+                    result.Message = "Số lượng chi nhánh đã bị giới hạn!";
                     result.Status = "error";
                 }
+
             }
             catch (Exception ex)
             {
@@ -148,28 +209,40 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
             ExecuteResultDto result = new ExecuteResultDto();
             try
             {
-                var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh == dto.TenChiNhanh);
-                if (checkTenChiNhanh==null)
+                var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == dto.Id);
+                if (checkTenChiNhanh != null)
                 {
-                    chiNhanh.TenChiNhanh = dto.TenChiNhanh;
-                    chiNhanh.MaSoThue = dto.MaSoThue;
-                    chiNhanh.DiaChi = dto.DiaChi;
-                    chiNhanh.GhiChu = dto.GhiChu;
-                    chiNhanh.Logo = dto.Logo;
-                    chiNhanh.NgayApDung = dto.NgayApDung;
-                    chiNhanh.NgayHetHan = dto.NgayHetHan;
-                    chiNhanh.TenantId = AbpSession.TenantId ?? 1;
-                    chiNhanh.LastModifierUserId = AbpSession.UserId;
-                    await _chiNhanhService.UpdateAsync(chiNhanh);
-                    result.Message = "Cập nhật thông tin chi nhánh thành công!";
-                    result.Status = "success";
+                    var chiNhanhExits = await _chiNhanhService.GetAll().Where(x=>x.Id!=dto.Id).Select(x=>x.TenChiNhanh).ToListAsync();
+                    if (chiNhanhExits.Contains(dto.TenChiNhanh))
+                    {
+                        result.Message = "Tên chi nhánh đã tồn tại!";
+                        result.Status = "error";
+                    }
+                    else
+                    {
+                        chiNhanh.TenChiNhanh = dto.TenChiNhanh;
+                        chiNhanh.MaSoThue = dto.MaSoThue;
+                        chiNhanh.SoDienThoai = dto.SoDienThoai;
+                        chiNhanh.DiaChi = dto.DiaChi;
+                        chiNhanh.GhiChu = dto.GhiChu;
+                        chiNhanh.Logo = dto.Logo;
+                        chiNhanh.NgayApDung = dto.NgayApDung;
+                        chiNhanh.NgayHetHan = dto.NgayHetHan;
+                        chiNhanh.TenantId = AbpSession.TenantId ?? 1;
+                        chiNhanh.TrangThai = dto.TrangThai;
+                        chiNhanh.LastModifierUserId = AbpSession.UserId;
+                        await _chiNhanhService.UpdateAsync(chiNhanh);
+                        result.Message = "Cập nhật thông tin chi nhánh thành công!";
+                        result.Status = "success";
+                        var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                        nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+                        nhatKyThaoTacDto.ChucNang = "Chi nhánh";
+                        nhatKyThaoTacDto.NoiDung = "Cập nhật thông tin chi nhánh " + chiNhanh.TenChiNhanh;
+                        nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật thông tin chi nhánh " + chiNhanh.TenChiNhanh;
+                        await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+                    }
                 }
-                else
-                {
-                    result.Message = "Tên chi nhánh đã tồn tại!";
-                    result.Status = "error";
-                }
-               
+
             }
             catch (Exception ex)
             {
@@ -191,6 +264,13 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 findBranch.DeleterUserId = AbpSession.UserId;
                 findBranch.DeletionTime = DateTime.Now;
                 _chiNhanhService.Update(findBranch);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Chi nhánh";
+                nhatKyThaoTacDto.NoiDung = "Xóa chi nhánh " + findBranch.TenChiNhanh;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa chi nhánh" + findBranch.TenChiNhanh;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+
                 return new ExecuteResultDto()
                 {
                     Status = "success",
@@ -205,15 +285,42 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 Detail = ""
             };
         }
+        [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_ChiNhanh_Delete)]
+        public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
+        {
+            ExecuteResultDto result = new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
+            };
+            {
+                var finds = await _chiNhanhService.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+                if (finds != null && finds.Count > 0)
+                {
+                    _chiNhanhService.RemoveRange(finds);
+                    result.Status = "success";
+                    result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                    nhatKyThaoTacDto.ChucNang = "Chi nhánh";
+                    nhatKyThaoTacDto.NoiDung = "Xóa nhiều chi nhánh";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Xóa chi nhánh: " + string.Join(", ",finds.Select(x=>x.TenChiNhanh).ToList());
+                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+                }
+                return result;
+            }
+        }
+
         public async Task<List<SuggestChiNhanh>> GetChiNhanhByUser()
         {
             List<SuggestChiNhanh> result = new List<SuggestChiNhanh>();
-            var user =await _userRepository.FirstOrDefaultAsync(x=>x.Id==AbpSession.UserId&&x.TenantId==AbpSession.TenantId);
+            var user = await _userRepository.FirstOrDefaultAsync(x => x.Id == AbpSession.UserId && x.TenantId == AbpSession.TenantId);
             if (user != null)
             {
                 if (user.IsAdmin)
                 {
-                    var lst = await _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x=>x.CreationTime).ToListAsync();
+                    var lst = await _chiNhanhService.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1) && x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
                     if (lst != null || lst.Count > 0)
                     {
                         foreach (var item in lst)
@@ -227,24 +334,147 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 }
                 else
                 {
-                    var qtct = _quaTrinhCongTacRepository.GetAll().
-                        Include(x => x.NS_NhanVien).
-                        Where(x=>x.NS_NhanVien.Id==user.NhanSuId &&
-                            x.IsDeleted==false && x.TenantId == (AbpSession.TenantId??1)
-                            ).
-                        OrderByDescending(x => x.CreationTime).Take(1).ToList().FirstOrDefault();
-                    var chiNhanh =await _chiNhanhService.FirstOrDefaultAsync(x=>x.Id==qtct.IdChiNhanh);
-                    if (chiNhanh!=null)
+                    //var qtct = _quaTrinhCongTacRepository.GetAll().
+                    //    Include(x => x.NS_NhanVien).
+                    //    Where(x => x.NS_NhanVien.Id == user.NhanSuId &&
+                    //        x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)
+                    //        ).
+                    //    OrderByDescending(x => x.CreationTime).Take(1).ToList().FirstOrDefault();
+                    //var chiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == qtct.IdChiNhanh);
+                    //if (chiNhanh != null)
+                    //{
+                    //    result.Add(new SuggestChiNhanh()
+                    //    {
+                    //        Id = chiNhanh.Id,
+                    //        TenChiNhanh = chiNhanh.TenChiNhanh
+                    //    });
+                    //}
+
+                    // get list chinhanh by role
+                    var arrIdChiNhanh = _userRole.GetAll().Where(x => x.UserId == AbpSession.UserId).Select(x => x.IdChiNhanh).ToList();
+                    if (arrIdChiNhanh != null && arrIdChiNhanh.Count > 0)
                     {
-                        result.Add(new SuggestChiNhanh()
+                        result = _chiNhanhService.GetAll().Where(x => arrIdChiNhanh.Contains(x.Id)).Select(x =>
+                        new SuggestChiNhanh
                         {
-                            Id = chiNhanh.Id,
-                            TenChiNhanh = chiNhanh.TenChiNhanh
-                        });
+                            Id = x.Id,
+                            TenChiNhanh = x.TenChiNhanh
+                        }).ToList();
                     }
                 }
             }
             result.Reverse();
+            return result;
+        }
+        public async Task<FileDto> ExportDanhSach(PagedRequestDto input)
+        {
+            input.Keyword = (input.Keyword ?? string.Empty).Trim();
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await GetAllChiNhanh(input);
+            List<ChiNhanhDto> model = new List<ChiNhanhDto>();
+            model = (List<ChiNhanhDto>)data.Items;
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Chi nhánh";
+            nhatKyThaoTacDto.NoiDung = "Xuất danh sách chi nhánh";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xuất danh sách chi nhánh";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+            return _chiNhanhExcelExporter.ExportDanhSachChiNhanh(model);
+        }
+        public async Task<FileDto> ExportSelectedDanhSach(List<Guid> IdChiNhanhs)
+        {
+            PagedRequestDto input = new PagedRequestDto();
+            input.Keyword = "";
+            input.SkipCount = 0;
+            input.MaxResultCount = int.MaxValue;
+            var data = await GetAllChiNhanh(input);
+            List<ChiNhanhDto> model = new List<ChiNhanhDto>();
+            model = (List<ChiNhanhDto>)data.Items.Where(x => IdChiNhanhs.Contains(x.Id)).ToList();
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Chi nhánh";
+            nhatKyThaoTacDto.NoiDung = "Xuất danh sách chi nhánh";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xuất danh sách chi nhánh";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+            return _chiNhanhExcelExporter.ExportDanhSachChiNhanh(model);
+        }
+        [HttpPost]
+        [UnitOfWork(IsolationLevel.ReadUncommitted)]
+        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
+        {
+            ExecuteResultDto result = new ExecuteResultDto();
+            try
+            {
+                int countImportData = 0;
+                int countImportLoi = 0;
+                if (file.Type == ".xlsx")
+                {
+                    using (MemoryStream stream = new MemoryStream(file.File))
+                    {
+                        using (var package = new ExcelPackage())
+                        {
+                            package.Load(stream);
+                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
+
+                            int rowCount = worksheet.Dimension.Rows;
+
+                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
+                            {
+                                CreateChiNhanhDto data = new CreateChiNhanhDto();
+                                data.Id = Guid.NewGuid();
+                                data.MaChiNhanh = worksheet.Cells[row, 2].Value?.ToString();
+                                data.TenChiNhanh = worksheet.Cells[row, 3].Value?.ToString();
+                                data.SoDienThoai = worksheet.Cells[row, 4].Value?.ToString();
+                                var checkPhoneNumber = await _chiNhanhService.FirstOrDefaultAsync(x => x.SoDienThoai == data.SoDienThoai);
+                                await UnitOfWorkManager.Current.SaveChangesAsync();
+                                var checkChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.TenChiNhanh.ToLower().Trim() == data.TenChiNhanh.ToLower().Trim());
+                                await UnitOfWorkManager.Current.SaveChangesAsync();
+                                if (checkPhoneNumber != null || data.TenChiNhanh == null || data.SoDienThoai == null || checkChiNhanh != null)
+                                {
+                                    countImportLoi++;
+                                    continue;
+                                }
+                                data.MaSoThue = worksheet.Cells[row, 5].Value?.ToString();
+                                data.DiaChi = worksheet.Cells[row, 6].Value?.ToString();
+                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 7].Value?.ToString()))
+                                {
+                                    data.NgayApDung = DateTime.Parse(worksheet.Cells[row, 7].Value.ToString());
+                                }
+                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 8].Value?.ToString()))
+                                {
+                                    data.NgayHetHan = DateTime.Parse(worksheet.Cells[row, 8].Value.ToString());
+                                }
+                                await Create(data);
+                                countImportData++;
+                            }
+                        }
+                    }
+                    if (countImportData > 0)
+                    {
+                        result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
+                        result.Status = "success";
+                    }
+                    else
+                    {
+                        result.Message = "Không có dữ liệu được nhập";
+                        result.Status = "info";
+                    }
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+                    nhatKyThaoTacDto.ChucNang = "Chi nhánh";
+                    nhatKyThaoTacDto.NoiDung = "Nhập danh sách chi nhánh";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Nhập danh sách chi nhánh";
+                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
+                result.Status = "error";
+                result.Detail = ex.Message;
+            }
+
             return result;
         }
     }

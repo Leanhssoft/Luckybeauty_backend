@@ -4,33 +4,31 @@ using Abp.Domain.Repositories;
 using BanHangBeautify.AppDanhMuc.CauHinhPhanMem.Dto;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
-using BanHangBeautify.NhanSu.CaLamViec.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
 {
     [AbpAuthorize(PermissionNames.Pages_CauHinhPhanMem)]
-    public class CauHinhPhanMemAppService:SPAAppServiceBase
+    public class CauHinhPhanMemAppService : SPAAppServiceBase
     {
-        private readonly IRepository<HT_CauHinhPhanMem,Guid> _repository;
+        private readonly IRepository<HT_CauHinhPhanMem, Guid> _repository;
         public CauHinhPhanMemAppService(IRepository<HT_CauHinhPhanMem, Guid> repository)
         {
             _repository = repository;
         }
         public async Task<CauHinhPhanMemDto> CreateOrEdit(CreateOrEditCauHinhDto input)
         {
-            var checkExist =await _repository.FirstOrDefaultAsync(x=>x.Id==input.Id);
-            if (checkExist==null)
+            var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
+            if (checkExist == null)
             {
-               return await Create(input);
+                return await Create(input);
             }
-            return await Update(input,checkExist);
+            return await Update(input, checkExist);
         }
         [NonAction]
         public async Task<CauHinhPhanMemDto> Create(CreateOrEditCauHinhDto input)
@@ -47,7 +45,7 @@ namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
             return result;
         }
         [NonAction]
-        public async Task<CauHinhPhanMemDto> Update(CreateOrEditCauHinhDto input,HT_CauHinhPhanMem oldData)
+        public async Task<CauHinhPhanMemDto> Update(CreateOrEditCauHinhDto input, HT_CauHinhPhanMem oldData)
         {
             oldData.MauInMacDinh = input.MauInMacDinh;
             oldData.SuDungMaChungTu = input.SuDungMaChungTu;
@@ -64,11 +62,11 @@ namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
         [HttpPost]
         public async Task<CauHinhPhanMemDto> Delete(Guid id)
         {
-            var data = await _repository.FirstOrDefaultAsync(x=>x.Id==id);
-            if (data!=null)
+            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 data.IsDeleted = true;
-                data.DeleterUserId= AbpSession.UserId;
+                data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
                 _repository.Update(data);
                 return ObjectMapper.Map<CauHinhPhanMemDto>(data);
@@ -77,8 +75,8 @@ namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
         }
         public async Task<CauHinhPhanMemDto> GetEdit(Guid id)
         {
-            var data = await _repository.FirstOrDefaultAsync(x=>x.Id== id);
-            if (data!=null)
+            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 return ObjectMapper.Map<CauHinhPhanMemDto>(data);
             }
@@ -86,7 +84,7 @@ namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
         }
         public async Task<PagedResultDto<CauHinhPhanMemDto>> GetAll(PagedRequestDto input)
         {
-            PagedResultDto<CauHinhPhanMemDto> result =new PagedResultDto<CauHinhPhanMemDto>();
+            PagedResultDto<CauHinhPhanMemDto> result = new PagedResultDto<CauHinhPhanMemDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             var data = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0)).ToListAsync();

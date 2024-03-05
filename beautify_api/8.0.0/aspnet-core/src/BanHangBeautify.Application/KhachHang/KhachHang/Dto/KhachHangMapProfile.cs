@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BanHangBeautify.Entities;
-using System.Collections.Generic;
 
 namespace BanHangBeautify.KhachHang.KhachHang.Dto
 {

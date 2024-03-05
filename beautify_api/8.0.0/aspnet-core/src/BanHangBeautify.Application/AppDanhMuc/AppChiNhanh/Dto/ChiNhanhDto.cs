@@ -1,11 +1,10 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Dto
 {
     public class ChiNhanhDto
     {
-        public Guid Id { set;get; }
+        public Guid Id { set; get; }
         public Guid IdCongTy { get; set; }
         public string MaChiNhanh { get; set; }
         public string TenChiNhanh { get; set; }

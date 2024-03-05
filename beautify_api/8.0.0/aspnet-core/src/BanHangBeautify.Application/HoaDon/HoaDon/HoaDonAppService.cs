@@ -1,36 +1,27 @@
-﻿using Abp.Authorization;
+﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
+using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
-using BanHangBeautify.Common.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
+using BanHangBeautify.HoaDon.HoaDon.Exporting;
+using BanHangBeautify.HoaDon.HoaDon.Repository;
+using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
+using BanHangBeautify.HoaDon.NhanVienThucHien;
+using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BanHangBeautify.HoaDon.HoaDon.Repository;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using BanHangBeautify.HangHoa.HangHoa.Repository;
-using Abp.EntityFrameworkCore.Repositories;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
-using static BanHangBeautify.Common.CommonClass;
-using BanHangBeautify.HoaDon.NhanVienThucHien;
-using OfficeOpenXml.Style;
-using Abp.Application.Services.Dto;
-using NPOI.OpenXmlFormats.Wordprocessing;
-using BanHangBeautify.NhanSu.NhanVien.Dto;
-using BanHangBeautify.Storage;
-using BanHangBeautify.HoaDon.HoaDon.Exporting;
+using BanHangBeautify.AppCommon;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
-    //[AbpAuthorize(PermissionNames.Pages_HoaDon)]
+    [AbpAuthorize]
     public class HoaDonAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
@@ -57,6 +48,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _repoHoaDon = repoHoaDon;
             _hoaDonExcelExporter = hoaDonExcelExporter;
         }
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
         {
             List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
@@ -66,6 +58,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             objHD.TenantId = AbpSession.TenantId ?? 1;
             objHD.CreatorUserId = AbpSession.UserId;
             objHD.CreationTime = DateTime.Now;
+            objHD.NgayLapHoaDon = ObjectHelper.AddTimeNow_forDate(objHD.NgayLapHoaDon);
 
             if (string.IsNullOrEmpty(objHD.MaHoaDon))
             {
@@ -111,7 +104,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
             return result;
         }
-
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon2([FromBody] JObject data)
         {
             List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
@@ -149,6 +142,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
         public async Task<CreateHoaDonDto> UpdateHoaDon(CreateHoaDonDto objUp)
         {
             try
@@ -208,6 +202,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
         /// chỉ cập nhật thông tin hóa đơn, không cập nhật chi tiết hóa đơn
         /// </summary>
         /// <param name="objUp"></param>
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
+        [HttpPost]
         public async Task<CreateHoaDonDto> Update_InforHoaDon(CreateHoaDonDto objUp)
         {
             BH_HoaDon objOld = await _hoaDonRepository.FirstOrDefaultAsync(objUp.Id);
@@ -221,7 +217,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 {
                     objOld.MaHoaDon = objUp.MaHoaDon;
                 }
-                objOld.NgayLapHoaDon = objUp.NgayLapHoaDon;
+                objOld.NgayLapHoaDon = ObjectHelper.AddTimeNow_forDate(objUp.NgayLapHoaDon);
                 objOld.NgayApDung = objUp.NgayApDung;
                 objOld.NgayHetHan = objUp.NgayHetHan;
                 objOld.IdChiNhanh = objUp.IdChiNhanh;
@@ -260,10 +256,13 @@ namespace BanHangBeautify.HoaDon.HoaDon
         /// <param name="lstCT"></param>
         /// <param name="idHoadon"></param>
         /// <returns></returns>
-        public async Task Update_ChiTietHoaDon(List<HoaDonChiTietDto> lstCT, Guid idHoadon)
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
+        [HttpPost]
+        public async Task<List<HoaDonChiTietDto>> Update_ChiTietHoaDon(List<HoaDonChiTietDto> lstCT, Guid idHoadon)
         {
             var userID = AbpSession.UserId;
             List<BH_NhanVienThucHien> lstNVTH = new();
+            List<BH_HoaDon_ChiTiet> ctAfter = new();
 
             #region Delete ct if not exist
             // comapre old & new
@@ -284,7 +283,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 if (ctUpdate != null)
                 {
                     ctUpdate.STT = item.STT;
-                    ctUpdate.SoLuong = item.STT;
+                    ctUpdate.SoLuong = item.SoLuong;
                     ctUpdate.IdDonViQuyDoi = item.IdDonViQuyDoi;
                     ctUpdate.IdChiTietHoaDon = item.IdChiTietHoaDon;
                     ctUpdate.DonGiaTruocCK = item.DonGiaTruocCK;
@@ -302,6 +301,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctUpdate.LastModifierUserId = userID;
                     ctUpdate.LastModificationTime = DateTime.Now;
                     await _hoaDonChiTietRepository.UpdateAsync(ctUpdate);
+                    ctAfter.Add(ctUpdate);
 
                     _nvthService.DeleteNVThucHienDichVu(item.Id);
 
@@ -328,6 +328,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctNew.CreatorUserId = AbpSession.UserId;
                     ctNew.CreationTime = DateTime.Now;
                     await _hoaDonChiTietRepository.InsertAsync(ctNew);
+                    ctAfter.Add(ctNew);
 
                     if (item.nhanVienThucHien != null)
                     {
@@ -348,8 +349,10 @@ namespace BanHangBeautify.HoaDon.HoaDon
             {
                 await _nvThucHien.InsertRangeAsync(lstNVTH);
             }
+            return ObjectMapper.Map<List<HoaDonChiTietDto>>(ctAfter);
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Delete)]
         public async Task DeleteHoaDon(Guid id)
         {
             var hoaDon = _hoaDonRepository.FirstOrDefault(x => x.Id == id);
@@ -386,6 +389,31 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 await _hoaDonRepository.UpdateAsync(hoaDon);
             }
         }
+
+        [HttpPost]
+        public async Task Delete_MultipleHoaDon(List<Guid> lstId)
+        {
+            _hoaDonRepository.GetAll().Where(x => lstId.Contains(x.Id)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+                x.TrangThai = 0;
+            });
+            _hoaDonChiTietRepository.GetAll().Where(x => lstId.Contains(x.IdHoaDon)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+                x.TrangThai = 0;
+            });
+            _hoaDonAnhRepository.GetAll().Where(x => lstId.Contains(x.IdHoaDon)).ToList().ForEach(x =>
+            {
+                x.IsDeleted = true;
+                x.DeleterUserId = AbpSession.UserId;
+                x.DeletionTime = DateTime.Now;
+            });
+        }
         public async Task<List<PageHoaDonDto>> GetInforHoaDon_byId(Guid id)
         {
             return await _repoHoaDon.GetInforHoaDon_byId(id);
@@ -400,10 +428,11 @@ namespace BanHangBeautify.HoaDon.HoaDon
         {
             return await _repoHoaDon.GetListHoaDon(param, AbpSession.TenantId ?? 1);
         }
+        [AbpAuthorize(PermissionNames.Pages_HoaDon_Export)]
         public async Task<FileDto> ExportDanhSach(HoaDonRequestDto input)
         {
             input.TextSearch = (input.TextSearch ?? string.Empty).Trim();
-            input.CurrentPage = 0;
+            input.CurrentPage = 1;
             input.PageSize = int.MaxValue;
             var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
             List<PageHoaDonDto> model = new List<PageHoaDonDto>();

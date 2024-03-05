@@ -1,19 +1,19 @@
-﻿using Abp.Domain.Entities.Auditing;
-using Abp.Domain.Entities;
+﻿using Abp.Domain.Entities;
+using Abp.Domain.Entities.Auditing;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
 {
-    public class DM_LoaiChungTu : FullAuditedEntity<int>, IMustHaveTenant
+    public class DM_LoaiChungTu : FullAuditedEntity<int>, IMayHaveTenant
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Castle.Components.DictionaryAdapter.Key("Id")]
         override
         public int Id
         { get; set; }
-        public int TenantId { get; set; }
+        public int? TenantId { get; set; }
         [MaxLength(10)]
         public string MaLoaiChungTu { get; set; }
         [MaxLength(256)]

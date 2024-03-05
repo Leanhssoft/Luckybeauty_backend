@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -47,7 +46,7 @@ BEGIN
 	) qct on qhd.Id= qct.IdQuyHoaDon
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
 			@TenantId int =1,
 			@IdChiNhanhs nvarchar(max)=null,
 			@IdLoaiChungTus varchar(20)= null,
@@ -198,7 +197,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-           
+
         }
     }
 }

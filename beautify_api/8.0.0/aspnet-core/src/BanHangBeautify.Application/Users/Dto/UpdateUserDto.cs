@@ -1,13 +1,8 @@
-﻿using Abp.Auditing;
-using Abp.Authorization.Users;
+﻿using Abp.Authorization.Users;
 using Abp.AutoMapper;
 using BanHangBeautify.Authorization.Users;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify.Users.Dto
 {
@@ -15,35 +10,29 @@ namespace BanHangBeautify.Users.Dto
     public class UpdateUserDto
     {
         public long Id { get; set; }
-        [Required]
-        [StringLength(AbpUserBase.MaxUserNameLength)]
+        [Required(ErrorMessage ="Tên tài khoản không được để trống")]
+        [StringLength(AbpUserBase.MaxUserNameLength,ErrorMessage ="Tên tài khoản không được quá 256 ký tự")]
         public string UserName { get; set; }
 
-        [Required]
-        [StringLength(AbpUserBase.MaxNameLength)]
+        //[Required]
+        //[StringLength(AbpUserBase.MaxNameLength)]
         public string Name { get; set; }
 
-        [Required]
-        [StringLength(AbpUserBase.MaxSurnameLength)]
-        public string Surname { get; set; }
-        [Phone]
+        //[Required]
+        //[StringLength(AbpUserBase.MaxSurnameLength)]
+        public string Surname { get; set; } 
+        //[Phone]
         public string PhoneNumber { get; set; }
         //[Required]
         //[EmailAddress]
         //[StringLength(AbpUserBase.MaxEmailAddressLength)]
         public string EmailAddress { get; set; }
-
+        public string Password { set; get; }
         public bool IsActive { get; set; }
         public bool? IsAdmin { get; set; }
 
         public string[] RoleNames { get; set; }
-        public Guid? NhanSuId { set; get; } = Guid.Empty;
-        public void Normalize()
-        {
-            if (RoleNames == null)
-            {
-                RoleNames = new string[0];
-            }
-        }
+        public Guid? NhanSuId { set; get; } = null;
+        public Guid? IdChiNhanhMacDinh { set; get; } = null;
     }
 }

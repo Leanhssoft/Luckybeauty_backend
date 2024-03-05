@@ -1,22 +1,18 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
-using BanHangBeautify.Common;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.NhanSu.NgayNghiLe.Dto;
 using Microsoft.Data.SqlClient;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhanSu.NgayNghiLe.Repository
 {
-    public class NgayNghiLeRepository : SPARepositoryBase<DM_NgayNghiLe,Guid>, INgayNghiLeRepository
+    public class NgayNghiLeRepository : SPARepositoryBase<DM_NgayNghiLe, Guid>, INgayNghiLeRepository
     {
         public NgayNghiLeRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
@@ -41,7 +37,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillCollection<NgayNghiLeDto>(ds.Tables[0]);
-                        
+
                         return new PagedResultDto<NgayNghiLeDto>()
                         {
                             TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString()),

@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Abp.Collections.Extensions;
+﻿using Abp.Collections.Extensions;
 using Abp.Dependency;
 using BanHangBeautify.Net.MimeTypes;
 using BanHangBeautify.Storage;
 using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
 
 namespace BanHangBeautify.DataExporting.Excel.EpPlus
 {
-    public abstract class EpPlusExcelExporterBase: ITransientDependency
+    public abstract class EpPlusExcelExporterBase : ITransientDependency
     {
         private readonly ITempFileCacheManager _tempFileCacheManager;
 

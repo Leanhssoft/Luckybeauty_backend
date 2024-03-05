@@ -1,19 +1,16 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto;
-using BanHangBeautify.Common;
-using BanHangBeautify.Data.Entities;
+using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
-using BanHangBeautify.HangHoa.HangHoa.Dto;
-using BanHangBeautify.HangHoa.HangHoa.Repository;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
@@ -25,16 +22,17 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
         {
         }
 
-        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAll(PagedRequestDto input,int tenantId, Guid idNhanVien, Guid idChiNhanh)
+        public async Task<PagedResultDto<ChietKhauDichVuItemDto>> GetAll(PagedRequestDto input, int tenantId,
+            Guid? idNhanVien = null, Guid? idChiNhanh = null)
         {
-            using(var cmd = CreateCommand("prc_chietKhauDichVu_getAll"))
+            using (var cmd = CreateCommand("prc_chietKhauDichVu_getAll"))
             {
-                cmd.Parameters.Add(new SqlParameter("@TenantId",tenantId));
-                cmd.Parameters.Add(new SqlParameter("@IdChiNhanh",idChiNhanh));
-                cmd.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanVien));
+                cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+                cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
+                cmd.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanVien ?? (object)DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Filter", input.Keyword ?? ""));
-                cmd.Parameters.Add(new SqlParameter("@SortBy", input.SortBy??""));
-                cmd.Parameters.Add(new SqlParameter("@SortType", input.SortType??"desc"));
+                cmd.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
+                cmd.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
                 cmd.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
                 cmd.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
                 using (var dataReadder = await cmd.ExecuteReaderAsync())
@@ -65,27 +63,96 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Repository
             return new PagedResultDto<ChietKhauDichVuItemDto>();
         }
 
-        public async Task<ChietKhauDichVuDto> GetHoaHongNV_theoDichVu( int tenantId, Guid idNhanVien, Guid idDonViQuyDoi)
+        public async Task<PagedResultDto<ChietKhauDichVuItemDto_TachRiengCot>> GetAllSetup_HoaHongDichVu(PagedRequestDto input, int tenantId,
+            Guid? idNhanVien = null, Guid? idChiNhanh = null)
         {
-            using var command = CreateCommand("GetHoaHongNV_theoDichVu");
-            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-            command.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanVien));
-            command.Parameters.Add(new SqlParameter("@IdDonViQuyDoi", idDonViQuyDoi));
-            using (var dataReader = await command.ExecuteReaderAsync())
+            using (var cmd = CreateCommand("GetAllSetup_HoaHongDichVu"))
             {
-                string[] array = { "Data" };
-                var ds = new DataSet();
-                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
-                var ddd = ds.Tables;
-
-                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+                cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
+                cmd.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanVien ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Filter", input.Keyword ?? ""));
+                cmd.Parameters.Add(new SqlParameter("@SortBy", input.SortBy ?? ""));
+                cmd.Parameters.Add(new SqlParameter("@SortType", input.SortType ?? "desc"));
+                cmd.Parameters.Add(new SqlParameter("@SkipCount", input.SkipCount));
+                cmd.Parameters.Add(new SqlParameter("@MaxResultCount", input.MaxResultCount));
+                using (var dataReadder = await cmd.ExecuteReaderAsync())
                 {
-                    var data = ObjectHelper.FillCollection<ChietKhauDichVuDto>(ds.Tables[0]).FirstOrDefault();
-                    return data;
+                    string[] array = { "Data", "TotalCount" };
+                    var ds = new DataSet();
+                    ds.Load(dataReadder, LoadOption.OverwriteChanges, array);
+                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                    {
+                        var data = ObjectHelper.FillCollection<ChietKhauDichVuItemDto_TachRiengCot>(ds.Tables[0]);
+                        return new PagedResultDto<ChietKhauDichVuItemDto_TachRiengCot>()
+                        {
+                            Items = data,
+                            TotalCount = int.Parse(ds.Tables[1].Rows[0]["TotalCount"].ToString() ?? "0")
+                        };
+                    }
                 }
             }
-            return new ChietKhauDichVuDto();
+            return new PagedResultDto<ChietKhauDichVuItemDto_TachRiengCot>();
         }
+        public async Task<int> AddMultiple_ChietKhauDichVu_toMultipleNhanVien(ChietKhauDichVuDto_AddMultiple param, int tenantId, long? userId = 1)
+        {
+            string idNhanViens = string.Empty, idQuyDois = string.Empty;
+            if (param.IdNhanViens != null && param.IdNhanViens.Count > 0)
+            {
+                idNhanViens = string.Join(",", param.IdNhanViens);
+            }
+            if (param.IdDonViQuyDois != null && param.IdDonViQuyDois.Count > 0)
+            {
+                idQuyDois = string.Join(",", param.IdDonViQuyDois);
+            }
 
+            if (string.IsNullOrEmpty(idNhanViens) && string.IsNullOrEmpty(idQuyDois)) return 0;
+            if (param.IdChiNhanh == null || param.IdChiNhanh == Guid.Empty) return 0;
+
+            using var cmd = CreateCommand("AddMultiple_ChietKhauDichVu_toMultipleNhanVien");
+            cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", param.IdChiNhanh));
+            cmd.Parameters.Add(new SqlParameter("@IdNhanViens", idNhanViens));
+            cmd.Parameters.Add(new SqlParameter("@IdDonViQuyDois", idQuyDois));
+            cmd.Parameters.Add(new SqlParameter("@LoaiChietKhau", param.LoaiChietKhau ?? 1));
+            cmd.Parameters.Add(new SqlParameter("@GiaTriChietKhau", param.GiaTri ?? 0));
+            cmd.Parameters.Add(new SqlParameter("@LaPhanTram", param.LaPhanTram ?? true));
+            cmd.Parameters.Add(new SqlParameter("@CreatorUserId", userId));
+
+            var countOK = await cmd.ExecuteNonQueryAsync();
+            return countOK;
+        }
+        public async Task<int> ApplyAll_SetupHoaHongDV(ChietKhauDichVuDto_AddMultiple param, Guid? idNhanVienChosed,
+            byte? loaiApDung = 0, long? userId = 1)
+        {
+            try
+            {
+                string idNhanViens = string.Empty, idQuyDois = string.Empty;
+                if (param.IdNhanViens != null && param.IdNhanViens.Count > 0)
+                {
+                    idNhanViens = string.Join(",", param.IdNhanViens);
+                }
+                if (param.IdDonViQuyDois != null && param.IdDonViQuyDois.Count > 0)
+                {
+                    idQuyDois = string.Join(",", param.IdDonViQuyDois);
+                }
+                using var cmd = CreateCommand("ApplyAll_SetupHoaHongDV");
+                cmd.Parameters.Add(new SqlParameter("@IdNhanVienChosed", idNhanVienChosed ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@IdNhanVien", idNhanViens ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@IdDonViQuyDoi", idQuyDois == string.Empty ? (object)DBNull.Value : idQuyDois));
+                cmd.Parameters.Add(new SqlParameter("@IdNhomHang", param.IdNhomHang ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@LoaiApDung", loaiApDung));
+                cmd.Parameters.Add(new SqlParameter("@LoaiChietKhau", param.LoaiChietKhau ?? 1));
+                cmd.Parameters.Add(new SqlParameter("@GiaTriChietKhau", param.GiaTri ?? 0));
+                cmd.Parameters.Add(new SqlParameter("@LaPhanTram", param.LaPhanTram ?? true));
+                cmd.Parameters.Add(new SqlParameter("@UpdateUserId", userId));
+                var countOK = await cmd.ExecuteNonQueryAsync();
+                return countOK;
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
+        }
     }
 }

@@ -3,31 +3,31 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
-using BanHangBeautify.KhuyenMai.KhuyenMai.Dto;
 using BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet
 {
     [AbpAuthorize(PermissionNames.Pages_KhuyenMai)]
-    public class KhuyenMaiChiTietAppService: SPAAppServiceBase
+    public class KhuyenMaiChiTietAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_KhuyenMai_ChiTiet, Guid> _repository;
         public KhuyenMaiChiTietAppService(IRepository<DM_KhuyenMai_ChiTiet, Guid> repository)
         {
             _repository = repository;
         }
-        public async Task<KhuyenMaiChiTietDto> CreateOrEdit(CreateOrEditKhuyenMaiChiTietDto input) {
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Create, PermissionNames.Pages_KhuyenMai_Edit)]
+        public async Task<KhuyenMaiChiTietDto> CreateOrEdit(CreateOrEditKhuyenMaiChiTietDto input)
+        {
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
-            if (checkExist!=null)
+            if (checkExist != null)
             {
-                return await Update(input,checkExist);
+                return await Update(input, checkExist);
             }
             return await Create(input);
         }
@@ -41,11 +41,11 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet
             data.CreationTime = DateTime.Now;
             data.CreatorUserId = AbpSession.UserId;
             data.IsDeleted = false;
-            data.TenantId = AbpSession.TenantId??1;
+            data.TenantId = AbpSession.TenantId ?? 1;
             return result;
         }
         [NonAction]
-        public async Task<KhuyenMaiChiTietDto> Update(CreateOrEditKhuyenMaiChiTietDto input,DM_KhuyenMai_ChiTiet oldData)
+        public async Task<KhuyenMaiChiTietDto> Update(CreateOrEditKhuyenMaiChiTietDto input, DM_KhuyenMai_ChiTiet oldData)
         {
             KhuyenMaiChiTietDto result = new KhuyenMaiChiTietDto();
             oldData.IdDonViQuiDoiMua = input.IdDonViQuyDoiMua;
@@ -67,20 +67,21 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMaiChiTiet
             return result;
         }
         [HttpPost]
+        [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Delete)]
         public async Task<KhuyenMaiChiTietDto> Delete(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            if (data != null)
             {
                 data.IsDeleted = true;
-                data.DeleterUserId= AbpSession.UserId;
+                data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
                 _repository.Update(data);
                 return ObjectMapper.Map<KhuyenMaiChiTietDto>(data);
             }
             return new KhuyenMaiChiTietDto();
         }
-        public async Task<CreateOrEditKhuyenMaiChiTietDto> GetFOrEdit(Guid id)
+        public async Task<CreateOrEditKhuyenMaiChiTietDto> GetForEdit(Guid id)
         {
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
