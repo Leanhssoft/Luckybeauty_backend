@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using User = BanHangBeautify.Authorization.Users.User;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
 {

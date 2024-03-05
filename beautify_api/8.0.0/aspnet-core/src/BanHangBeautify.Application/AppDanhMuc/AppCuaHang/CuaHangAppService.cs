@@ -113,7 +113,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Cửa hàng";
-                nhatKyThaoTacDto.NoiDung = "Xóa của hàng;
+                nhatKyThaoTacDto.NoiDung = "Xóa của hàng";
                 nhatKyThaoTacDto.NoiDungChiTiet = "Xóa cửa hàng";
                 result = true;
             }
