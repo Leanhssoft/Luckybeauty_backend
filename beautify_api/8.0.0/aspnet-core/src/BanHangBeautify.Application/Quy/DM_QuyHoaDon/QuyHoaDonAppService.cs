@@ -12,6 +12,7 @@ using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using NPOI.HPSF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -259,14 +260,32 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             input.TenantId = AbpSession.TenantId ?? 1;
             return await _repoQuyHD.Search(input);
         }
+        public async Task<ThuChi_DauKyCuoiKyDto> GetThuChi_DauKyCuoiKy(PagedQuyHoaDonRequestDto input)
+        {
+            input.TenantId = AbpSession.TenantId ?? 1;
+            return await _repoQuyHD.GetThuChi_DauKyCuoiKy(input);
+        }
         [AbpAuthorize(PermissionNames.Pages_QuyHoaDon_Export)]
         public async Task<FileDto> ExportExcelQuyHoaDon(PagedQuyHoaDonRequestDto input)
         {
             input.TenantId = AbpSession.TenantId ?? 1;
             var data = await _repoQuyHD.Search(input);
             List<GetAllQuyHoaDonItemDto> lstQuy = (List<GetAllQuyHoaDonItemDto>)data.Items;
-            var dataExcel = ObjectMapper.Map<List<ExcelSoQuyDto>>(lstQuy);
-            var ff = _excelBase.WriteToExcel<ExcelSoQuyDto>("DanhSachThuChi_", "SoQuy_Export_Template.xlsx", dataExcel, 4);
+            var dataNew = lstQuy.Select(x => new
+            {
+                x.LoaiPhieu,
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.TenNguoiNop,
+                x.MaHoaDonLienQuans,
+                x.TienMat,
+                x.TienChuyenKhoan,
+                x.TienQuyetThe,
+                x.TongTienThu,
+                x.NoiDungThu,
+                x.TxtTrangThai
+            }).ToList();
+            FileDto ff = _excelBase.WriteToExcel("DanhSachThuChi_", "SoQuy_Export_Template.xlsx", dataNew, 4, null, 20);
             return ff;
         }
         [HttpGet]

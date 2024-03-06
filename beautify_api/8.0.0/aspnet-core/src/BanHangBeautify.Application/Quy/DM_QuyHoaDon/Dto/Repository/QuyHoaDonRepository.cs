@@ -9,6 +9,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -32,16 +33,23 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
         public async Task<PagedResultDto<GetAllQuyHoaDonItemDto>> Search(PagedQuyHoaDonRequestDto input)
         {
             using var command = CreateCommand("spGetAllSoQuy");
-            string idChiNhanhs = string.Empty;
+            string idChiNhanhs = string.Empty, hinhThucThanhToans = string.Empty;
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
             }
+            if (input.HinhThucThanhToans != null && input.HinhThucThanhToans.Count > 0)
+            {
+                hinhThucThanhToans = string.Join(",", input.HinhThucThanhToans);
+            }
             command.Parameters.Add(new SqlParameter("@TenantId", input.TenantId ?? 1));
-            command.Parameters.Add(new SqlParameter("@Filter", input.TextSearch ?? ""));
-            command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@HinhThucThanhToans", hinhThucThanhToans));
+            command.Parameters.Add(new SqlParameter("@IdKhoanThuChi", input?.IdKhoanThuChi ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdTaiKhoanNganHang", input?.IdTaiKhoanNganHang ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@Filter", input.TextSearch ?? ""));
             command.Parameters.Add(new SqlParameter("@SortBy", input.ColumnSort ?? "ngayLapHoaDon"));
             command.Parameters.Add(new SqlParameter("@SortType", input.TypeSort ?? "desc"));
             command.Parameters.Add(new SqlParameter("@MaxResultCount", input.PageSize));
@@ -57,12 +65,44 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
                     var data = ObjectHelper.FillCollection<GetAllQuyHoaDonItemDto>(ds.Tables[0]);
                     return new PagedResultDto<GetAllQuyHoaDonItemDto>()
                     {
-                        TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalCount"].ToString()),
+                        TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalRow"].ToString()),
                         Items = data
                     };
                 }
             }
             return new PagedResultDto<GetAllQuyHoaDonItemDto>();
+        }
+        public async Task<ThuChi_DauKyCuoiKyDto> GetThuChi_DauKyCuoiKy(PagedQuyHoaDonRequestDto input)
+        {
+            using var command = CreateCommand("GetThuChi_DauKyCuoiKy");
+            string idChiNhanhs = string.Empty, hinhThucThanhToans = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
+            if (input.HinhThucThanhToans != null && input.HinhThucThanhToans.Count > 0)
+            {
+                hinhThucThanhToans = string.Join(",", input.HinhThucThanhToans);
+            }
+            command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@HinhThucThanhToans", hinhThucThanhToans));
+            command.Parameters.Add(new SqlParameter("@IdKhoanThuChi", input?.IdKhoanThuChi ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdTaiKhoanNganHang", input?.IdTaiKhoanNganHang ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
+
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var data = ObjectHelper.FillCollection<ThuChi_DauKyCuoiKyDto>(ds.Tables[0]);
+                    return data.FirstOrDefault();
+                }
+            }
+            return new ThuChi_DauKyCuoiKyDto();
         }
         public async Task<List<QuyHoaDonViewItemDto>> GetNhatKyThanhToan_ofHoaDon(Guid idHoaDonLienQuan)
         {
