@@ -229,6 +229,7 @@
         public const string Pages_HoaDon_Import = "Pages.HoaDon.Import";
         public const string Pages_HoaDon_Export = "Pages.HoaDon.Export";
         public const string Pages_HoaDon_Print = "Pages.HoaDon.Print";
+        public const string Pages_HoaDon_Not_XemDanhSach_OtherUser = "Pages.HoaDon.Not_XemDanhSach_OtherUser";
 
         public const string Pages_LoaiChungTu = "Pages.LoaiChungTu";
         public const string Pages_LoaiChungTu_Create = "Pages.LoaiChungTu.Create";

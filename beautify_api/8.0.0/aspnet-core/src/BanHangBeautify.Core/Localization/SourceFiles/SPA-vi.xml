@@ -267,5 +267,6 @@
 		<text name="ChiTiet">Chi tiết</text>
 		<text name="ChiTietSoQuy">Chi tiết sổ quỹ</text>
 		<text name="ChiTietCongNo">Chi tiết công nợ</text>
+		<text name="Not_XemDanhSach_OtherUser">Không được xem hóa đơn của nhân viên khác </text>
 	</texts>
 </localizationDictionary>
