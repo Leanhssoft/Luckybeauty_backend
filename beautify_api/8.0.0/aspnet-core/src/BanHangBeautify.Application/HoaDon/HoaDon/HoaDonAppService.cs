@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BanHangBeautify.AppCommon;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -30,14 +31,15 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
         private readonly IHoaDonRepository _repoHoaDon;
         private readonly NhanVienThucHienAppService _nvthService;
-        private readonly IHoaDonExcelExporter _hoaDonExcelExporter;
+        private readonly IExcelBase _excelBase;
+
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
             IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             NhanVienThucHienAppService nvthService,
-            IHoaDonRepository repoHoaDon, IHoaDonExcelExporter hoaDonExcelExporter
+            IHoaDonRepository repoHoaDon, IExcelBase excelBase
         )
         {
             _hoaDonRepository = hoaDonRepository;
@@ -46,7 +48,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _hoaDonAnhRepository = hoaDonAnhRepository;
             _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
-            _hoaDonExcelExporter = hoaDonExcelExporter;
+            _excelBase = excelBase;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
@@ -426,6 +428,10 @@ namespace BanHangBeautify.HoaDon.HoaDon
         [HttpPost]
         public async Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param)
         {
+            if (param != null)
+            {
+                param.IdUserLogin = AbpSession?.UserId ?? 1;
+            }
             return await _repoHoaDon.GetListHoaDon(param, AbpSession.TenantId ?? 1);
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Export)]
@@ -434,10 +440,25 @@ namespace BanHangBeautify.HoaDon.HoaDon
             input.TextSearch = (input.TextSearch ?? string.Empty).Trim();
             input.CurrentPage = 1;
             input.PageSize = int.MaxValue;
+            if (input != null)
+            {
+                input.IdUserLogin = AbpSession?.UserId ?? 1;
+            }
             var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
-            List<PageHoaDonDto> model = new List<PageHoaDonDto>();
-            model = (List<PageHoaDonDto>)data.Items;
-            return _hoaDonExcelExporter.ExportDanhSachHoaDon(model);
+            List<PageHoaDonDto> lstHD = (List<PageHoaDonDto>)data.Items;
+            var dtNew = lstHD.Select(x =>
+            new
+            {
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.TenKhachHang,
+                x.TongTienHang,
+                x.TongThanhToan,
+                x.DaThanhToan,
+                x.ConNo,
+                x.TxtTrangThaiHD
+            }).ToList();
+            return _excelBase.WriteToExcel(@"DanhSachHoaDon_", @"GiaoDichThanhToan_Export_Template.xlsx", dtNew, 4, null, 10);
         }
     }
 }

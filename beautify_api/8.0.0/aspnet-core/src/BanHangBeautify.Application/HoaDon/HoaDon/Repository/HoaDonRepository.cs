@@ -56,7 +56,8 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
         }
         public async Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param, int? tenantId = 1)
         {
-            string idChiNhanhs = string.Empty, idLoaiChungTus = string.Empty;
+            string idChiNhanhs = string.Empty, idLoaiChungTus = string.Empty,
+                trangThaiHDs = string.Empty, trangThaiNos = string.Empty;
             if (param.IdChiNhanhs != null && param.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", param.IdChiNhanhs);
@@ -65,10 +66,21 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
             {
                 idLoaiChungTus = string.Join(",", param.IdLoaiChungTus);
             }
+            if (param.TrangThais != null && param.TrangThais.Count > 0)
+            {
+                trangThaiHDs = string.Join(",", param.TrangThais);
+            }
+            if (param.TrangThaiNos != null && param.TrangThaiNos.Count > 0)
+            {
+                trangThaiNos = string.Join(",", param.TrangThaiNos);
+            }
             using var command = CreateCommand("spGetListHoaDon");
             command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
             command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdUserLogin", param.IdUserLogin));
             command.Parameters.Add(new SqlParameter("@IdLoaiChungTus", idLoaiChungTus));
+            command.Parameters.Add(new SqlParameter("@TrangThaiHDs", trangThaiHDs));
+            command.Parameters.Add(new SqlParameter("@TrangThaiNos", trangThaiNos));
             command.Parameters.Add(new SqlParameter("@DateFrom", param.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@DateTo", param.ToDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@TextSearch", param.TextSearch ?? (object)DBNull.Value));
