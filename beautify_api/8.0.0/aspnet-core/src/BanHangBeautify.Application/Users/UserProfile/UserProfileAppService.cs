@@ -3,7 +3,10 @@ using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,11 +24,14 @@ namespace BanHangBeautify.Users.UserProfile
     {
         private readonly UserManager _userManager;
         IRepository<NS_NhanVien, Guid> _nhanVienRepository;
+        INhatKyThaoTacAppService _audilogService;
         public UserProfileAppService(UserManager userManager, 
-            IRepository<NS_NhanVien, Guid> nhanVienRepository)
+            IRepository<NS_NhanVien, Guid> nhanVienRepository,
+            INhatKyThaoTacAppService audilogService)
         {
             _userManager = userManager;
             _nhanVienRepository = nhanVienRepository;
+            _audilogService = audilogService;
         }
         public async Task<ProfileDto> GetForUpdateProfile()
         {
@@ -67,6 +73,7 @@ namespace BanHangBeautify.Users.UserProfile
             user.Surname = input.Surname;
             user.PhoneNumber = input.PhoneNumber;
             user.EmailAddress = input.EmailAddress;
+            string fullName = input.Name + " " + input.Surname;
             if (user.NhanSuId != null)
             {
                 var nhanSu = await _nhanVienRepository.FirstOrDefaultAsync(x => x.Id == input.NhanSuId);
@@ -86,6 +93,15 @@ namespace BanHangBeautify.Users.UserProfile
                     await _nhanVienRepository.UpdateAsync(nhanSu);
                 }
             }
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Profile";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật thông tin tài khoản";
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div><p>Họ và tên : {0} - {1} - {2} </p>/div>", fullName, input.PhoneNumber,input.EmailAddress)+ string.Format("<div> <h4>Thông tin cũ</h4><br/>" +
+                "<p>Họ và tên: {0}</p>" +
+                "<p>Số điện thoại: {1}</p>" +
+                "<p>Email: {2}</p>" +
+                "</div>", user.FullName, user.PhoneNumber, user.EmailAddress);
             await _userManager.UpdateAsync(user);
             return true;
         }
@@ -120,7 +136,12 @@ namespace BanHangBeautify.Users.UserProfile
                 result.Status = "error";
                 result.Message = "Mật khẩu hiện tại không đúng vui lòng kiểm tra lại";
             }
-
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Người dùng";
+            nhatKyThaoTacDto.NoiDung = "Đổi mật khẩu";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Đổi mật khẩu tài khoản: " + user.UserName +" thành: "+ input.NewPassword;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
     }

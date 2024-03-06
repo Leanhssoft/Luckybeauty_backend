@@ -2,8 +2,11 @@
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.LoaiKhach.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,9 +19,11 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
     public class LoaiKhachAppService : SPAAppServiceBase, ILoaiKhachAppService
     {
         private readonly IRepository<DM_LoaiKhach, int> _repository;
-        public LoaiKhachAppService(IRepository<DM_LoaiKhach, int> repository)
+        INhatKyThaoTacAppService _audilogService;
+        public LoaiKhachAppService(IRepository<DM_LoaiKhach, int> repository,INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
+            _audilogService = audilogService;
         }
         [AbpAuthorize(PermissionNames.Pages_LoaiKhach_Create)]
         public async Task<LoaiKhachDto> CreateLoaiKhach(CreateOrEditLoaiKhachDto dto)
@@ -31,6 +36,12 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             loaiKhach.TenantId = AbpSession.TenantId;
             loaiKhach.IsDeleted = false;
             await _repository.InsertAsync(loaiKhach);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Loại khách";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới loại khách hàng";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới loại khách hàng: " + loaiKhach.TenLoaiKhachHang;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             result = ObjectMapper.Map<LoaiKhachDto>(loaiKhach);
             return result;
         }
@@ -43,7 +54,12 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
             loaiKhach.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(loaiKhach);
             result = ObjectMapper.Map<LoaiKhachDto>(loaiKhach);
-
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Loại khách";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật loại khách hàng";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật loại khách hàng: " + loaiKhach.TenLoaiKhachHang;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [HttpPost]
@@ -59,6 +75,12 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
                 delete.DeleterUserId = AbpSession.UserId;
                 delete.TrangThai = 1;
                 _repository.Update(delete);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Loại khách";
+                nhatKyThaoTacDto.NoiDung = "Xóa loại khách hàng";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa loại khách hàng: " + delete.TenLoaiKhachHang;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = ObjectMapper.Map<LoaiKhachDto>(delete);
             }
             return result;

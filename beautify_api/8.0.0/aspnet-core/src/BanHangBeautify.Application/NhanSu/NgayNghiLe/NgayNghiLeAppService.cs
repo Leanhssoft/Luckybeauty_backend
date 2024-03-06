@@ -4,11 +4,14 @@ using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhanSu.NgayNghiLe.Dto;
 using BanHangBeautify.NhanSu.NgayNghiLe.Exporting;
 using BanHangBeautify.NhanSu.NgayNghiLe.Repository;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,11 +31,16 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
         private readonly IRepository<DM_NgayNghiLe, Guid> _ngayNghiLeService;
         private readonly INgayNghiLeRepository _ngayNghiLeReponsitory;
         private readonly INgayNghiLeExcelExporter _ngayNghiLeExcelExporter;
-        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeService, INgayNghiLeRepository ngayNghiLeReponsitory, INgayNghiLeExcelExporter ngayNghiLeExcelExporter)
+        private readonly INhatKyThaoTacAppService _audilogService;
+        public NgayNghiLeAppService(IRepository<DM_NgayNghiLe, Guid> ngayNghiLeService,
+            INgayNghiLeRepository ngayNghiLeReponsitory,
+            INgayNghiLeExcelExporter ngayNghiLeExcelExporter,
+            INhatKyThaoTacAppService audilogService)
         {
             _ngayNghiLeService = ngayNghiLeService;
             _ngayNghiLeReponsitory = ngayNghiLeReponsitory;
             _ngayNghiLeExcelExporter = ngayNghiLeExcelExporter;
+            _audilogService = audilogService;
         }
         public async Task<PagedResultDto<NgayNghiLeDto>> GetAll(PagedRequestDto input)
         {
@@ -79,6 +87,11 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             dto.TrangThai = 0;
             _ngayNghiLeService.Insert(dto);
             var result = ObjectMapper.Map<NgayNghiLeDto>(dto);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Ca làm việc";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới ngày lễ: " + input.TenNgayLe;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
@@ -94,6 +107,11 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             oldData.LastModificationTime = DateTime.Now;
             _ngayNghiLeService.Update(oldData);
             var result = ObjectMapper.Map<NgayNghiLeDto>(oldData);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Ngày lễ";
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin ngày lễ: " + input.TenNgayLe;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [HttpPost]
@@ -108,6 +126,11 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                 checkExists.DeletionTime = DateTime.Now;
                 checkExists.DeleterUserId = AbpSession.UserId;
                 _ngayNghiLeService.Update(checkExists);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+                nhatKyThaoTacDto.ChucNang = "Ngày lễ";
+                nhatKyThaoTacDto.NoiDung = "Xóa ngày lễ: " + checkExists.TenNgayLe;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = true;
             }
             return result;
@@ -127,6 +150,11 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                 _ngayNghiLeService.RemoveRange(checkExists);
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+                nhatKyThaoTacDto.ChucNang = "Ngày lễ";
+                nhatKyThaoTacDto.NoiDung = "Xóa các ngày lễ: " + string.Join(", ", checkExists.Select(x=>x.TenNgayLe).ToList());
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             return result;
         }
@@ -140,6 +168,11 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             input.MaxResultCount = int.MaxValue;
             var data = await _ngayNghiLeReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Ngày lễ";
+            nhatKyThaoTacDto.NoiDung = "Xuất danh sách ngày lễ";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _ngayNghiLeExcelExporter.ExportDanhSachNgayNghiLe(data.Items.ToList());
         }
         public async Task<FileDto> ExportSelectedNghiLe(List<Guid> IdLichNghis)
@@ -149,6 +182,11 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             input.SkipCount = 0;
             input.MaxResultCount = int.MaxValue;
             var data = await _ngayNghiLeReponsitory.GetAll(input, AbpSession.TenantId ?? 1);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
+            nhatKyThaoTacDto.ChucNang = "Ngày lễ";
+            nhatKyThaoTacDto.NoiDung = "Xuất danh sách ngày lễ";
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _ngayNghiLeExcelExporter.ExportDanhSachNgayNghiLe(data.Items.Where(x=>IdLichNghis.Contains(x.Id)).ToList());
         }
         [HttpPost]
@@ -193,6 +231,10 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                         result.Message = "Không có dữ liệu được nhập";
                         result.Status = "info";
                     }
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
+                    nhatKyThaoTacDto.ChucNang = "Ngày lễ";
+                    nhatKyThaoTacDto.NoiDung = "Nhập danh sách ngày lễ";
                 }
             }
             catch (Exception ex)

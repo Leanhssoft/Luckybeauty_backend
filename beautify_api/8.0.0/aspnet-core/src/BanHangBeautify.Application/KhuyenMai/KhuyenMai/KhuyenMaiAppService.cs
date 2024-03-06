@@ -3,8 +3,11 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhuyenMai.KhuyenMai.Dto;
+using BanHangBeautify.NhatKyHoatDong;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NPOI.SS.Formula.Functions;
@@ -24,17 +27,20 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
         private readonly IRepository<DM_KhuyenMai_ChiTiet, Guid> _khuyenMaiChiTietService;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiService;
         private readonly IRepository<DM_NhomHangHoa,Guid> _nhomHangHoaService;
+        INhatKyThaoTacAppService _audilogService;
         public KhuyenMaiAppService(IRepository<DM_KhuyenMai, Guid> khuyenMaiRepository,
             IRepository<DM_KhuyenMai_ApDung, Guid> khuyenMaiApDungService,
             IRepository<DM_KhuyenMai_ChiTiet, Guid> khuyenMaiChiTietService, 
             IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiService,
-            IRepository<DM_NhomHangHoa, Guid> nhomHangHoaService)
+            IRepository<DM_NhomHangHoa, Guid> nhomHangHoaService,
+            INhatKyThaoTacAppService audilogService)
         {
             _khuyenMaiRepository = khuyenMaiRepository;
             _khuyenMaiApDungService = khuyenMaiApDungService;
             _khuyenMaiChiTietService = khuyenMaiChiTietService;
             _donViQuiDoiService = donViQuiDoiService;
             _nhomHangHoaService = nhomHangHoaService;
+            _audilogService = audilogService;
         }
         [AbpAuthorize(PermissionNames.Pages_KhuyenMai_Create, PermissionNames.Pages_KhuyenMai_Edit)]
         public async Task<KhuyenMaiDto> CreateOrEdit(CreateOrEditKhuyenMaiDto input)
@@ -222,6 +228,12 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                 }
             }
             result = ObjectMapper.Map<KhuyenMaiDto>(input);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Khuyến mại";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới chương trình khuyến mại";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới chương trình khuyến mại: " + data.TenKhuyenMai;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
@@ -401,6 +413,12 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                 }
             }
             result = ObjectMapper.Map<KhuyenMaiDto>(oldData);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.ChucNang = "Khuyến mại";
+            nhatKyThaoTacDto.NoiDung = "Cập nhật chương trình khuyến mại";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật chương trình khuyến mại: " + oldData.TenKhuyenMai;
+            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [HttpPost]
@@ -414,6 +432,12 @@ namespace BanHangBeautify.KhuyenMai.KhuyenMai
                 data.DeletionTime = DateTime.Now;
                 data.IsDeleted = true;
                 _khuyenMaiRepository.Update(data);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+                nhatKyThaoTacDto.ChucNang = "Khuyến mại";
+                nhatKyThaoTacDto.NoiDung = "Xóa chương trình khuyến mại";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa chương trình khuyến mại: " + data.TenKhuyenMai;
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<KhuyenMaiDto>(data);
             }
             return new KhuyenMaiDto();
