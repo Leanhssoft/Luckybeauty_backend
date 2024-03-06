@@ -31,7 +31,7 @@ using static BanHangBeautify.AppCommon.ObjectHelper;
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
-    [AbpAuthorize(PermissionNames.Pages_DM_HangHoa)]
+    [AbpAuthorize]
     public class HangHoaAppService : SPAAppServiceBase, IHangHoaAppService
     {
         private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
