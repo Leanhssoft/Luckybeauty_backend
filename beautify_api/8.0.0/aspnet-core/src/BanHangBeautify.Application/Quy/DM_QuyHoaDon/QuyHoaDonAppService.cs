@@ -3,7 +3,9 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Consts;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
 using BanHangBeautify.Quy.DM_QuyHoaDon.Dto;
@@ -93,7 +95,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             oldData.TongTienThu = input.TongTienThu;
             oldData.HachToanKinhDoanh = input.HachToanKinhDoanh;
             oldData.NoiDungThu = input.NoiDungThu;
-            oldData.TrangThai = input.TrangThai ?? 1;
+            oldData.TrangThai = input.TrangThai ?? TrangThaiSoQuyConst.DA_THANH_TOAN;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
 
@@ -140,7 +142,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             oldData.TongTienThu = input.TongTienThu;
             oldData.HachToanKinhDoanh = input.HachToanKinhDoanh;
             oldData.NoiDungThu = input.NoiDungThu;
-            oldData.TrangThai = input.TrangThai ?? 1;
+            oldData.TrangThai = input.TrangThai ?? TrangThaiSoQuyConst.DA_THANH_TOAN;
             oldData.LastModificationTime = DateTime.Now;
             oldData.LastModifierUserId = AbpSession.UserId;
 
@@ -173,7 +175,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
-                data.TrangThai = 0;
+                data.TrangThai = TrangThaiSoQuyConst.DA_HUY;
                 data.IsDeleted = true;
                 data.DeleterUserId = AbpSession.UserId;
                 data.DeletionTime = DateTime.Now;
@@ -181,7 +183,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                 var lstQCT = await _quyHoaDonChiTiet.GetAllListAsync(x => x.IdQuyHoaDon == id);
                 if (lstQCT != null && lstQCT.Count > 0)
                 {
-                    lstQCT.ForEach(x => { x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; });
+                    lstQCT.ForEach(x => { x.IsDeleted = true; x.DeleterUserId = AbpSession.UserId; x.DeletionTime = DateTime.Now; });
                 }
 
                 await _quyHoaDon.UpdateAsync(data);
@@ -189,13 +191,42 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             return new QuyHoaDonDto();
         }
+        [HttpGet]
+        public async Task<QuyHoaDonDto> KhoiPhucSoQuy(Guid idQuyHoaDon)
+        {
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == idQuyHoaDon);
+                if (data != null)
+                {
+                    data.TrangThai = TrangThaiSoQuyConst.DA_THANH_TOAN;
+                    data.IsDeleted = false;
+                    data.LastModifierUserId = AbpSession.UserId;
+                    data.LastModificationTime = DateTime.Now;
+
+                    // nhiều chi tiết quá --> lấy những chi tiết dc xóa lần cuối
+                    var lastDeletionTime = ConvertHelper.ConverDateTimeToString(data.DeletionTime, "yyy-MM-dd HH:mm:ss");
+                    var ctQuyAll = _quyHoaDonChiTiet.GetAllList(x => x.IdQuyHoaDon == idQuyHoaDon).AsEnumerable();
+                    var ctQuy = ctQuyAll.Where(x => ConvertHelper.ConverDateTimeToString(data.DeletionTime, "yyy-MM-dd HH:mm:ss") == lastDeletionTime).ToList();
+
+                    if (ctQuy != null && ctQuy.Count > 0)
+                    {
+                        ctQuy.ForEach(x => { x.LastModifierUserId = AbpSession.UserId; x.LastModificationTime = DateTime.Now; });
+                    }
+
+                    await _quyHoaDon.UpdateAsync(data);
+                    return ObjectMapper.Map<QuyHoaDonDto>(data);
+                }
+                return new QuyHoaDonDto();
+            }
+        }
 
         [HttpPost]
         public async Task DeleteMultiple_QuyHoaDon(List<Guid> lstId)
         {
             _quyHoaDon.GetAllList(x => lstId.Contains(x.Id)).ToList().ForEach(x =>
             {
-                x.TrangThai = 0;
+                x.TrangThai = TrangThaiSoQuyConst.DA_HUY;
                 x.IsDeleted = true;
                 x.DeleterUserId = AbpSession.UserId;
                 x.DeletionTime = DateTime.Now;
@@ -219,7 +250,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                 {
                     quyHD.DeleterUserId = AbpSession.UserId;
                     quyHD.DeletionTime = DateTime.Now;
-                    quyHD.TrangThai = 0;
+                    quyHD.TrangThai = TrangThaiHoaDonConst.DA_HUY;
                     quyHD.IsDeleted = true;
                     await _quyHoaDon.UpdateAsync(quyHD);
                 }
@@ -230,19 +261,40 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
         [HttpGet]
         public async Task<CreateOrEditQuyHoaDonDto> GetForEdit(Guid id)
         {
-            var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == id);
-            if (data != null)
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                // get ctquy
-                var ctQuy = await _quyHoaDonChiTiet.GetAllListAsync(x => x.IdQuyHoaDon == id);
-                var result = ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(data);
-                if (ctQuy != null)
+                var data = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == id);
+                if (data != null)
                 {
-                    result.QuyHoaDon_ChiTiet = ObjectMapper.Map<List<QuyHoaDonChiTietDto>>(ctQuy);
+                    if (data.IsDeleted)
+                    {
+                        // đã xóa: get chi tiết bị xóa cuối cùng --> sử dụng khi muốn xem lại phiếu hủy
+                        // .AsEnumerable() hoặc .ToList thì mới ConverDateTimeToString
+                        var lastDeletionTime = ConvertHelper.ConverDateTimeToString(data.DeletionTime, "yyy-MM-dd HH:mm:ss");
+                        var ctQuyAll = _quyHoaDonChiTiet.GetAllList(x => x.IdQuyHoaDon == id).AsEnumerable();
+                        var ctQuy = ctQuyAll.Where(x => ConvertHelper.ConverDateTimeToString(x.DeletionTime, "yyy-MM-dd HH:mm:ss") == lastDeletionTime);
+                        var result = ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(data);
+                        if (ctQuy != null)
+                        {
+                            result.QuyHoaDon_ChiTiet = ObjectMapper.Map<List<QuyHoaDonChiTietDto>>(ctQuy.OrderBy(x => x.HinhThucThanhToan));
+                        }
+                        return result;
+                    }
+                    else
+                    {
+                        // nếu chưa xóa: chỉ get những chi tiết chưa bị xóa
+                        var ctQuy = await _quyHoaDonChiTiet.GetAllListAsync(x => x.IdQuyHoaDon == id && x.IsDeleted == false);
+                        var result = ObjectMapper.Map<CreateOrEditQuyHoaDonDto>(data);
+                        if (ctQuy != null)
+                        {
+                            // nếu thanh toán kết hợp: order hinhThucThanhToan theo thứ tu: mạt, ck, pos
+                            result.QuyHoaDon_ChiTiet = ObjectMapper.Map<List<QuyHoaDonChiTietDto>>(ctQuy.OrderBy(x => x.HinhThucThanhToan));
+                        }
+                        return result;
+                    }
                 }
-                return result;
+                return new CreateOrEditQuyHoaDonDto();
             }
-            return new CreateOrEditQuyHoaDonDto();
         }
         [HttpGet]
         public async Task<List<QuyHoaDonChiTietDto>> GetQuyChiTiet_byIQuyHoaDon(Guid idQuyHoaDon)

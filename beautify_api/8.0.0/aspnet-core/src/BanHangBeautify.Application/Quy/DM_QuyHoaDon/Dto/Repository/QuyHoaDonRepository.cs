@@ -6,6 +6,7 @@ using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.Quy.QuyHoaDonChiTiet.Dto;
 using Microsoft.Data.SqlClient;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,7 +34,8 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
         public async Task<PagedResultDto<GetAllQuyHoaDonItemDto>> Search(PagedQuyHoaDonRequestDto input)
         {
             using var command = CreateCommand("spGetAllSoQuy");
-            string idChiNhanhs = string.Empty, hinhThucThanhToans = string.Empty;
+            string idChiNhanhs = string.Empty, hinhThucThanhToans = string.Empty,
+                idLoaiChungTus = string.Empty, trangThais = string.Empty;
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
@@ -42,11 +44,22 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
             {
                 hinhThucThanhToans = string.Join(",", input.HinhThucThanhToans);
             }
+            if (input.IdLoaiChungTus != null && input.IdLoaiChungTus.Count > 0)
+            {
+                idLoaiChungTus = string.Join(",", input.IdLoaiChungTus);
+            }
+            if (input.TrangThais != null && input.TrangThais.Count > 0)
+            {
+                trangThais = string.Join(",", input.TrangThais);
+            }
             command.Parameters.Add(new SqlParameter("@TenantId", input.TenantId ?? 1));
             command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@IdLoaiChungTus", idLoaiChungTus));
+            command.Parameters.Add(new SqlParameter("@IdLoaiChungTuLienQuan", input?.IdLoaiChungTuLienQuan ?? 0));// 0.all
             command.Parameters.Add(new SqlParameter("@HinhThucThanhToans", hinhThucThanhToans));
             command.Parameters.Add(new SqlParameter("@IdKhoanThuChi", input?.IdKhoanThuChi ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@IdTaiKhoanNganHang", input?.IdTaiKhoanNganHang ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@TrangThais", trangThais));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@Filter", input.TextSearch ?? ""));
@@ -75,7 +88,8 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
         public async Task<ThuChi_DauKyCuoiKyDto> GetThuChi_DauKyCuoiKy(PagedQuyHoaDonRequestDto input)
         {
             using var command = CreateCommand("GetThuChi_DauKyCuoiKy");
-            string idChiNhanhs = string.Empty, hinhThucThanhToans = string.Empty;
+            string idChiNhanhs = string.Empty, hinhThucThanhToans = string.Empty,
+                idLoaiChungTus = string.Empty, trangThais = string.Empty;
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
@@ -84,10 +98,21 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon.Dto.Repository
             {
                 hinhThucThanhToans = string.Join(",", input.HinhThucThanhToans);
             }
+            if (input.IdLoaiChungTus != null && input.IdLoaiChungTus.Count > 0)
+            {
+                idLoaiChungTus = string.Join(",", input.IdLoaiChungTus);
+            }
+            if (input.TrangThais != null && input.TrangThais.Count > 0)
+            {
+                trangThais = string.Join(",", input.TrangThais);
+            }
             command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@IdLoaiChungTus", idLoaiChungTus));
+            command.Parameters.Add(new SqlParameter("@IdLoaiChungTuLienQuan", input?.IdLoaiChungTuLienQuan ?? 0));// 0.all
             command.Parameters.Add(new SqlParameter("@HinhThucThanhToans", hinhThucThanhToans));
             command.Parameters.Add(new SqlParameter("@IdKhoanThuChi", input?.IdKhoanThuChi ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@IdTaiKhoanNganHang", input?.IdTaiKhoanNganHang ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@TrangThais", trangThais));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
 
