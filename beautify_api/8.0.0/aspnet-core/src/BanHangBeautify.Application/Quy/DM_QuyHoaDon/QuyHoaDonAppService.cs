@@ -78,6 +78,11 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             var result = ObjectMapper.Map<QuyHoaDonDto>(data);
             return result;
         }
+        /// <summary>
+        /// dùng cho update soquy (không liên quan đến hóa đơn)
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<QuyHoaDonDto> UpdateQuyHoaDon(CreateOrEditQuyHoaDonDto input)
         {
@@ -124,48 +129,59 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             var result = ObjectMapper.Map<QuyHoaDonDto>(oldData);
             return result;
         }
-
+        /// <summary>
+        /// dùng cho phiếu thu/chi liên quan đến hóa đơn (xóa hẳn quyCT khỏi DB) và add new ct
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<QuyHoaDonDto> UpdateQuyHD_RemoveCT_andAddAgain(CreateOrEditQuyHoaDonDto input)
         {
-            var oldData = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == input.Id);
-            if (string.IsNullOrEmpty(input.MaHoaDon))
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                var maChungTu = await _repoQuyHD.FnGetMaPhieuThuChi(AbpSession.TenantId ?? 1, input.IdChiNhanh, input.IdLoaiChungTu, input.NgayLapHoaDon);
-                input.MaHoaDon = maChungTu;
-            }
-            oldData.MaHoaDon = input.MaHoaDon;
-            oldData.IdLoaiChungTu = input.IdLoaiChungTu;
-            oldData.NgayLapHoaDon = input.NgayLapHoaDon;
-            oldData.IdChiNhanh = input.IdChiNhanh;
-            oldData.IdBrandname = input.IdBrandname;
-            oldData.TongTienThu = input.TongTienThu;
-            oldData.HachToanKinhDoanh = input.HachToanKinhDoanh;
-            oldData.NoiDungThu = input.NoiDungThu;
-            oldData.TrangThai = input.TrangThai ?? TrangThaiSoQuyConst.DA_THANH_TOAN;
-            oldData.LastModificationTime = DateTime.Now;
-            oldData.LastModifierUserId = AbpSession.UserId;
-
-            // update CTOld = isDelete && add again
-            _quyHoaDonChiTiet.GetAllList(x => x.IdQuyHoaDon == input.Id).ToList().ForEach(x => { x.IsDeleted = true; });
-
-            if (input.QuyHoaDon_ChiTiet != null && input.QuyHoaDon_ChiTiet.Count > 0)
-            {
-                foreach (var item in input.QuyHoaDon_ChiTiet)
+                var oldData = await _quyHoaDon.FirstOrDefaultAsync(x => x.Id == input.Id);
+                if (string.IsNullOrEmpty(input.MaHoaDon))
                 {
-                    QuyHoaDon_ChiTiet ctNew = ObjectMapper.Map<QuyHoaDon_ChiTiet>(item);
-                    ctNew.Id = Guid.NewGuid();
-                    ctNew.IdQuyHoaDon = input.Id;
-                    ctNew.TenantId = AbpSession.TenantId ?? 1;
-                    ctNew.CreatorUserId = AbpSession.UserId;
-                    ctNew.CreationTime = DateTime.Now;
-                    await _quyHoaDonChiTiet.InsertAsync(ctNew);
+                    var maChungTu = await _repoQuyHD.FnGetMaPhieuThuChi(AbpSession.TenantId ?? 1, input.IdChiNhanh, input.IdLoaiChungTu, input.NgayLapHoaDon);
+                    input.MaHoaDon = maChungTu;
                 }
-            }
-            await _quyHoaDon.UpdateAsync(oldData);
+                oldData.MaHoaDon = input.MaHoaDon;
+                oldData.IdLoaiChungTu = input.IdLoaiChungTu;
+                oldData.NgayLapHoaDon = input.NgayLapHoaDon;
+                oldData.IdChiNhanh = input.IdChiNhanh;
+                oldData.IdBrandname = input.IdBrandname;
+                oldData.TongTienThu = input.TongTienThu;
+                oldData.HachToanKinhDoanh = input.HachToanKinhDoanh;
+                oldData.NoiDungThu = input.NoiDungThu;
+                oldData.TrangThai = input.TrangThai ?? TrangThaiSoQuyConst.DA_THANH_TOAN;
+                oldData.LastModificationTime = DateTime.Now;
+                oldData.LastModifierUserId = AbpSession.UserId;
 
-            var result = ObjectMapper.Map<QuyHoaDonDto>(oldData);
-            return result;
+                // delete & add again
+                var lstQuyCTOld = await _quyHoaDonChiTiet.GetAllListAsync(x => x.IdQuyHoaDon == input.Id);
+                foreach (var item in lstQuyCTOld)
+                {
+                    await _quyHoaDonChiTiet.HardDeleteAsync(item);
+                }
+
+                if (input.QuyHoaDon_ChiTiet != null && input.QuyHoaDon_ChiTiet.Count > 0)
+                {
+                    foreach (var item in input.QuyHoaDon_ChiTiet)
+                    {
+                        QuyHoaDon_ChiTiet ctNew = ObjectMapper.Map<QuyHoaDon_ChiTiet>(item);
+                        ctNew.Id = Guid.NewGuid();
+                        ctNew.IdQuyHoaDon = input.Id;
+                        ctNew.TenantId = AbpSession.TenantId ?? 1;
+                        ctNew.CreatorUserId = AbpSession.UserId;
+                        ctNew.CreationTime = DateTime.Now;
+                        await _quyHoaDonChiTiet.InsertAsync(ctNew);
+                    }
+                }
+                await _quyHoaDon.UpdateAsync(oldData);
+
+                var result = ObjectMapper.Map<QuyHoaDonDto>(oldData);
+                return result;
+            }
         }
 
         [HttpGet]
