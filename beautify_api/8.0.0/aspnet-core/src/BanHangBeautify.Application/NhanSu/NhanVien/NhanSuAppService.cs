@@ -20,6 +20,7 @@ using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests;
 using BanHangBeautify.Suggests.Repository;
+using Google.Apis.Drive.v3.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Transactions;
+using User = BanHangBeautify.Authorization.Users.User;
 
 namespace BanHangBeautify.NhanSu.NhanVien
 {
@@ -98,9 +100,6 @@ namespace BanHangBeautify.NhanSu.NhanVien
         public async Task<NhanSuItemDto> Create(CreateOrEditNhanSuDto dto)
         {
             var result = new NhanSuItemDto();
-            var nhatKyThaoTacDto =new  CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
-            nhatKyThaoTacDto.ChucNang = "Nhân viên";
             NS_NhanVien nhanSu = new NS_NhanVien();
             nhanSu.Id = Guid.NewGuid();
             nhanSu.IdChucVu = dto.IdChucVu;
@@ -122,8 +121,6 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 }
             
             }
-
-            nhatKyThaoTacDto.NoiDung = "Thêm mới nhân viên: " + dto.TenNhanVien + " ("+ nhanSu.MaNhanVien +")";
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
             nhanSu.TenNhanVien = dto.TenNhanVien;
@@ -156,6 +153,16 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 await _nhanVienDichVuService.CreateOrUpdateServicesByEmployee(services);
             }
             await _quaTrinhCongTac.InsertAsync(qtct);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.ChucNang = "Nhân viên";
+            nhatKyThaoTacDto.NoiDung = "Thêm mới nhân viên: " + dto.TenNhanVien + " (" + nhanSu.MaNhanVien + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>" +
+                    "<p>Thêm mới nhân viên:</p>"+
+                    "<p>- Họ và tên: {0}</p>" +
+                    "<p>- Số điện thoại {1}</p>" +
+                    "<p>- Giới tính: {2}</p>" +
+                    "</div>", nhanSu.TenNhanVien, nhanSu.SoDienThoai,nhanSu.GioiTinh==1?"Nam":"Nữ");
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             
             return result;
@@ -212,6 +219,12 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Nhân viên";
             nhatKyThaoTacDto.NoiDung = "Sửa thông tin nhân viên: " + nhanSu.TenNhanVien +"("+nhanSu.MaNhanVien+")";
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>" +
+                    "<p>Thông tin nhân viên:</p>" +
+                    "<p>- Họ và tên: {0}</p>" +
+                    "<p>- Số điện thoại {1}</p>" +
+                    "<p>- Giới tính: {2}</p>" +
+                    "</div>", nhanSu.TenNhanVien, nhanSu.SoDienThoai, nhanSu.GioiTinh == 1 ? "Nam" : "Nữ");
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }

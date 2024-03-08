@@ -5,6 +5,7 @@ using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhatKyHoatDong.Dto;
+using BanHangBeautify.NhatKyThaoTac.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -33,7 +34,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             NhatKyThaoTacDto result = new NhatKyThaoTacDto();
             data = ObjectMapper.Map<HT_NhatKyThaoTac>(input);
             data.Id = Guid.NewGuid();
-            data.IdChiNhanh = input.IdChiNhanh==Guid.Empty?null:input.IdChiNhanh;
+            data.IdChiNhanh = input.IdChiNhanh;
             data.TenantId = AbpSession.TenantId??1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
@@ -53,12 +54,20 @@ namespace BanHangBeautify.NhatKyHoatDong
             return ObjectMapper.Map<NhatKyThaoTacDto>(data);
         }
         [AbpAuthorize(PermissionNames.Pages_NhatKyThaoTac)]
-        public async Task<PagedResultDto<NhatKyThaoTacItemDto>> GetAll(PagedRequestDto input)
+        [HttpPost]
+        public async Task<PagedResultDto<NhatKyThaoTacItemDto>> GetAll(PagedNhatKyRequestDto input)
         {
             PagedResultDto<NhatKyThaoTacItemDto> result = new PagedResultDto<NhatKyThaoTacItemDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            var data = await _repository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0)).ToListAsync();
+            DateTime timeFrom = new DateTime(input.TimeFrom.Year,input.TimeFrom.Month,input.TimeFrom.Day,0,0,1);
+            DateTime timeTo = new DateTime(input.TimeTo.Year, input.TimeTo.Month, input.TimeTo.Day, 23, 59, 59, 59);
+            var data = await _repository.GetAllIncluding().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0) && x.CreationTime>=timeFrom&&x.CreationTime<=timeTo).ToListAsync();
+            data = data.Where(x=>x.NoiDung.Contains(input.Keyword)||x.ChucNang.Contains(input.Keyword)||x.NoiDungChiTiet.Contains(input.Keyword)).ToList();
+            if(input.LoaiNhatKys!=null && input.LoaiNhatKys.Count > 0)
+            {
+                data = data.Where(x => input.LoaiNhatKys.Contains(x.LoaiNhatKy)).ToList();
+            }
             result.TotalCount = data.Count;
             data = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
             result.Items = ObjectMapper.Map<List<NhatKyThaoTacItemDto>>(data);
@@ -76,7 +85,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (data != null)
             {
-                result.LoaNhatKy = data.LoaiNhatKy;
+                result.LoaiNhatKy = data.LoaiNhatKy;
                 result.NoiDung = data.NoiDung;
                 result.NoiDungChiTiet = data.NoiDungChiTiet;
                 result.ChucNang = data.ChucNang;

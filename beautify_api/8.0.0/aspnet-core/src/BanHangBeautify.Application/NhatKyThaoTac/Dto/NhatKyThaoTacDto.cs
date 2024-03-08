@@ -6,7 +6,7 @@ namespace BanHangBeautify.NhatKyHoatDong.Dto
     {
         public Guid Id { get; set; }
         public string ChucNang { get; set; }
-        public int LoaNhatKy { get; set; }
+        public int LoaiNhatKy { get; set; }
         public string NoiDung { get; set; }
         public string NoiDungChiTiet { get; set; }
         public DateTime CreateTime { get; set; }
