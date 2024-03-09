@@ -58,12 +58,12 @@ namespace BanHangBeautify.BaoCao.Exporting
                     }
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TenKhachHang);
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.SoDienThoai);
-                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.NhomHangHoa);
+                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.TenNhomHang);
                     
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.TenHangHoa);
-                    ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.GiaBan);
+                    ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.DonGiaTruocCK);
                     ws.Cells[startRow, 9].Value = ConvertHelper.ToString(item.SoLuong);
-                    ws.Cells[startRow, 10].Value = ConvertHelper.ToString(item.ThanhTien);
+                    ws.Cells[startRow, 10].Value = ConvertHelper.ToString(item.ThanhTienTruocCK);
                     startRow++;
                     stt++;
                 }
@@ -106,10 +106,10 @@ namespace BanHangBeautify.BaoCao.Exporting
                     ws.Cells[startRow, 1].Value = stt.ToString();
                     ws.Cells[startRow, 2].Value = ConvertHelper.ToString(item.TenHangHoa);
                     ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.MaHangHoa);
-                    ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.NhomHangHoa);
-                    ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.GiaBan);
+                    ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TenNhomHang);
+                    ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.ThanhTienTruocCK);
                     ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.SoLuong);
-                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.DoanhThu);
+                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.ThanhTienSauCK);
                     startRow++;
                     stt++;
                 }

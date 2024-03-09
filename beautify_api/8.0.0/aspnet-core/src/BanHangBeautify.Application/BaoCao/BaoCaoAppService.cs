@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.BaoCao
 {
@@ -50,12 +51,11 @@ namespace BanHangBeautify.BaoCao
         }
         #region Báo cáo bán hàng
         [HttpPost]
-        public async Task<PagedResultDto<BaoCaoBanHangChiTietDto>> GetBaoCaoBanHangChiTiet(PagedBaoCaoBanHangRequestDto input)
+        public async Task<PagedResultDto<BaoCaoBanHangChiTietDto>> GetBaoCaoBanHangChiTiet(ParamSearchBaoCaoBanHang input)
         {
             try
             {
                 int tenantId = AbpSession.TenantId ?? 1;
-                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
                 return await _baoCaoBanHangRepository.GetBaoCaoBanHangChiTiet(input, tenantId);
             }
             catch (Exception)
@@ -68,12 +68,11 @@ namespace BanHangBeautify.BaoCao
             }
         }
         [HttpPost]
-        public async Task<PagedResultDto<BaoCaoBanHangTongHopDto>> GetBaoCaoBanHangTongHop(PagedBaoCaoBanHangRequestDto input)
+        public async Task<PagedResultDto<BaoCaoBanHangTongHopDto>> GetBaoCaoBanHangTongHop(ParamSearchBaoCaoBanHang input)
         {
             try
             {
                 int tenantId = AbpSession.TenantId ?? 1;
-                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
                 return await _baoCaoBanHangRepository.GetBaoCaoBanHangTongHop(input, tenantId);
             }
             catch (Exception)
@@ -85,25 +84,44 @@ namespace BanHangBeautify.BaoCao
                 };
             }
         }
-        public async Task<FileDto> ExportBaoCaoBanHangChiTiet(PagedBaoCaoBanHangRequestDto input)
+        public async Task<FileDto> ExportBaoCaoBanHangChiTiet(ParamSearchBaoCaoBanHang input)
         {
             int tenantId = AbpSession.TenantId ?? 1;
-            input.SkipCount = 0;
-            input.MaxResultCount = int.MaxValue;
             var data = await _baoCaoBanHangRepository.GetBaoCaoBanHangChiTiet(input, tenantId);
-            List<BaoCaoBanHangChiTietDto> model = new List<BaoCaoBanHangChiTietDto>();
-            model = (List<BaoCaoBanHangChiTietDto>)data.Items;
-            return _baoCaoExcelExporter.ExportBaoCaoBanHangChiTiet(model);
+            List<BaoCaoBanHangChiTietDto> dataExcel = (List<BaoCaoBanHangChiTietDto>)data.Items;
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.TenNhomHang,
+                x.MaHangHoa,
+                x.TenHangHoa,
+                x.SoLuong,
+                x.DonGiaTruocCK,
+                x.ThanhTienTruocCK,
+                x.TienChietKhau,
+                x.ThanhTienSauCK,
+            }).ToList();
+            return _excelBase.WriteToExcel("BaoCaoBanHangChiTiet_", @"BaoCaoBanHangChiTiet_Export_Template.xlsx", dataNew, 5, input?.ReportValueCell, 10);
         }
-        public async Task<FileDto> ExportBaoCaoBanHangTongHop(PagedBaoCaoBanHangRequestDto input)
+        public async Task<FileDto> ExportBaoCaoBanHangTongHop(ParamSearchBaoCaoBanHang input)
         {
             int tenantId = AbpSession.TenantId ?? 1;
-            input.SkipCount = 0;
-            input.MaxResultCount = int.MaxValue;
             var data = await _baoCaoBanHangRepository.GetBaoCaoBanHangTongHop(input, tenantId);
-            List<BaoCaoBanHangTongHopDto> model = new List<BaoCaoBanHangTongHopDto>();
-            model = (List<BaoCaoBanHangTongHopDto>)data.Items;
-            return _baoCaoExcelExporter.ExportBaoCaoBanHangTongHop(model);
+            List<BaoCaoBanHangTongHopDto> dataExcel = (List<BaoCaoBanHangTongHopDto>)data.Items;
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.TenNhomHang,
+                x.MaHangHoa,
+                x.TenHangHoa,
+                x.SoLuong,
+                x.ThanhTienTruocCK,
+                x.TienChietKhau,
+                x.ThanhTienSauCK,
+            }).ToList();
+            return _excelBase.WriteToExcel("BaoCaoBanHangTongHop_", @"BaoCaoBanHangTongHop_Export_Template.xlsx", dataNew, 5, input?.ReportValueCell, 10);
         }
         #endregion
 
@@ -254,7 +272,7 @@ namespace BanHangBeautify.BaoCao
                 x.ConNo,
                 x.GhiChuHD
             }).ToList();
-            return _excelBase.WriteToExcel("BaoCaoChiTietCongNo", @"BaoCao\BaoCaoTaiChinh_ChiTietCongNo_Template.xlsx", dataNew, 5);
+            return _excelBase.WriteToExcel("BaoCaoChiTietCongNo_", @"BaoCao\BaoCaoTaiChinh_ChiTietCongNo_Template.xlsx", dataNew, 5);
         }
         #endregion
         #region bao cao hoa hong
@@ -363,7 +381,7 @@ namespace BanHangBeautify.BaoCao
                 x.HoaHongTuVan_TienChietKhau,
                 x.TongHoaHong
             }).ToList();
-            return _excelBase.WriteToExcel("BaoCaoHoaHongChiTiet", @"BaoCao\BaoCaoHoaHongChiTiet_Template.xlsx", dataNew, 6);
+            return _excelBase.WriteToExcel("BaoCaoHoaHongChiTiet_", @"BaoCao\BaoCaoHoaHongChiTiet_Template.xlsx", dataNew, 6);
         }
         #endregion
     }
