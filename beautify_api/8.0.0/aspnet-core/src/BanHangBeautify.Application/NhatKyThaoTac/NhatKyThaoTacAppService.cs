@@ -62,7 +62,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
             DateTime timeFrom = new DateTime(input.TimeFrom.Year,input.TimeFrom.Month,input.TimeFrom.Day,0,0,1);
             DateTime timeTo = new DateTime(input.TimeTo.Year, input.TimeTo.Month, input.TimeTo.Day, 23, 59, 59, 59);
-            var data = await _repository.GetAllIncluding().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0) && x.CreationTime>=timeFrom&&x.CreationTime<=timeTo).ToListAsync();
+            var data = await _repository.GetAllIncluding().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0) && x.CreationTime>=timeFrom&&x.CreationTime<=timeTo).OrderByDescending(x=>x.CreationTime).ToListAsync();
             data = data.Where(x=>x.NoiDung.Contains(input.Keyword)||x.ChucNang.Contains(input.Keyword)||x.NoiDungChiTiet.Contains(input.Keyword)).ToList();
             if(input.LoaiNhatKys!=null && input.LoaiNhatKys.Count > 0)
             {
