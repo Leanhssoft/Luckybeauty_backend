@@ -48,7 +48,6 @@ namespace BanHangBeautify.BaoCao.BaoCaoHoaHong
                 string[] array = { "Data" };
                 var ds = new DataSet();
                 ds.Load(dataReader, LoadOption.OverwriteChanges, array);
-                var ddd = ds.Tables;
 
                 if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                 {
@@ -56,7 +55,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoHoaHong
                     return new PagedResultDto<PageBaoCaoHoaHongTongHopDto>()
                     {
                         TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalRow"].ToString()),
-                        Items = data
+                        Items = data,
                     };
                 }
             }

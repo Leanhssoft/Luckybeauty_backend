@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.HoaDon.NhanVienThucHien
 {
-    [AbpAuthorize(PermissionNames.Pages_NhanVienThucHien)]
+    [AbpAuthorize]
     public class NhanVienThucHienAppService : SPAAppServiceBase
     {
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;

@@ -229,6 +229,9 @@
         public const string Pages_HoaDon_Import = "Pages.HoaDon.Import";
         public const string Pages_HoaDon_Export = "Pages.HoaDon.Export";
         public const string Pages_HoaDon_Print = "Pages.HoaDon.Print";
+        public const string Pages_HoaDon_Restore = "Pages.HoaDon.Restore";
+        public const string Pages_HoaDon_XemDanhSach = "Pages.HoaDon.XemDanhSach";
+        public const string Pages_HoaDon_Not_XemDanhSach_OtherUser = "Pages.HoaDon.Not_XemDanhSach_OtherUser";
 
         public const string Pages_LoaiChungTu = "Pages.LoaiChungTu";
         public const string Pages_LoaiChungTu_Create = "Pages.LoaiChungTu.Create";
@@ -293,6 +296,7 @@
         public const string Pages_QuyHoaDon_Delete = "Pages.QuyHoaDon.Delete";
         public const string Pages_QuyHoaDon_Export = "Pages.QuyHoaDon.Export";
         public const string Pages_QuyHoaDon_Print = "Pages.QuyHoaDon.Print";
+        public const string Pages_QuyHoaDon_Restore = "Pages.QuyHoaDon.Restore";
 
         public const string Pages_KhoanThuChi = "Pages.KhoanThuChi";
         public const string Pages_KhoanThuChi_Create = "Pages.KhoanThuChi.Create";

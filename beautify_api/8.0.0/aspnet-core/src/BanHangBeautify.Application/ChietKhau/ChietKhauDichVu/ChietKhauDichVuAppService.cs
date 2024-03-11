@@ -124,7 +124,10 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
                   && x.IdDonViQuiDoi == input.IdDonViQuiDoi && x.LoaiChietKhau == input.LoaiChietKhau);
                 if (lstDelete != null)
                 {
-                    _hoahongDichVu.RemoveRange(lstDelete);
+                    foreach (var item in lstDelete)
+                    {
+                        await _hoahongDichVu.HardDeleteAsync(item);
+                    }
                 }
             }
             await Create(input);
@@ -194,11 +197,13 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu
         {
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                // không xóa vĩnh viễn dc?? vì GetAllListAsync luôn enable xóa mềm
                 var lstDelete = await _hoahongDichVu.GetAllListAsync(x => arrIdNhanVien.Contains(x.IdNhanVien) && arrIdDonViQuyDoi.Contains(x.IdDonViQuiDoi));
                 if (lstDelete != null)
                 {
-                    _hoahongDichVu.RemoveRange(lstDelete);
+                    foreach (var item in lstDelete)
+                    {
+                        await _hoahongDichVu.HardDeleteAsync(item);
+                    }
                 }
             }
             return true;

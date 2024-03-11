@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Dto
 {
@@ -17,5 +18,10 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Dto
         public int MaxResultCount { get; set; } = 10;
         public DateTime TimeFrom { get; set; }
         public DateTime TimeTo { get; set; }
+    }
+    public class ParamSearchBaoCaoBanHang : ParamSearch
+    {
+        public string IdNhomHangHoa { get; set; }
+        public List<Excel_CellData> ReportValueCell { get; set; }
     }
 }

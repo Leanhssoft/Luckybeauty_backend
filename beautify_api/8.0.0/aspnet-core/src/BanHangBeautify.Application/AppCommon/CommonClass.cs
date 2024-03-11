@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Abp.Runtime.Session;
+using System;
 using System.Collections.Generic;
 
 namespace BanHangBeautify.AppCommon
@@ -8,6 +9,7 @@ namespace BanHangBeautify.AppCommon
         public class ParamSearch
         {
             public int? TenantId { get; set; }
+            public long? IdUserLogin { get; set; }
             public List<string> IdChiNhanhs { get; set; }
             public List<string> TrangThais { get; set; }
             public string TextSearch { get; set; } = string.Empty;

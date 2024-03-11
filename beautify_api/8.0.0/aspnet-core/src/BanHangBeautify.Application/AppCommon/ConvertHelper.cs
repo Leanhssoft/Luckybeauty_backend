@@ -263,7 +263,8 @@ namespace BanHangBeautify.AppCommon
                 return null;
             }
 
-            string[] formats = { "d/M/yy", "dd/MM/yyyy", "dd-MM-yyyy", "MM/dd/yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "M/d/yy" };
+            string[] formats = { "d/M/yy", "dd/MM/yyyy", "dd-MM-yyyy", "MM/dd/yyyy", "MM-dd-yyyy", "yyyy-MM-dd", 
+                "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "M/d/yy" };
 
             if (!DateTime.TryParseExact(obj.ToString(), formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out retVal))
             {
@@ -297,6 +298,19 @@ namespace BanHangBeautify.AppCommon
             }
 
             return retVal;
+        }
+        public static string ConverDateTimeToString(DateTime? dt, string pattern)
+        {
+            if (string.IsNullOrEmpty(pattern))
+            {
+                pattern = "yyyy-MM-dd";
+            }
+
+            if (dt == null)
+            {
+                return string.Empty;
+            }
+            return dt?.ToString(pattern, CultureInfo.InvariantCulture);
         }
 
         public static decimal ToDecimal(object obj)

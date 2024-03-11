@@ -31,7 +31,7 @@ using static BanHangBeautify.AppCommon.ObjectHelper;
 
 namespace BanHangBeautify.KhachHang.KhachHang
 {
-    [AbpAuthorize(PermissionNames.Pages_KhachHang)]
+    [AbpAuthorize]
     public class KhachHangAppService : SPAAppServiceBase, IKhachHangAppService
     {
         private IRepository<DM_KhachHang, Guid> _repository;

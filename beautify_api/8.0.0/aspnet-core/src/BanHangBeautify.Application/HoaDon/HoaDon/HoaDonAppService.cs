@@ -18,6 +18,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BanHangBeautify.AppCommon;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
+using Abp.Domain.Uow;
+using BanHangBeautify.Consts;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -30,14 +33,15 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
         private readonly IHoaDonRepository _repoHoaDon;
         private readonly NhanVienThucHienAppService _nvthService;
-        private readonly IHoaDonExcelExporter _hoaDonExcelExporter;
+        private readonly IExcelBase _excelBase;
+
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
             IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             NhanVienThucHienAppService nvthService,
-            IHoaDonRepository repoHoaDon, IHoaDonExcelExporter hoaDonExcelExporter
+            IHoaDonRepository repoHoaDon, IExcelBase excelBase
         )
         {
             _hoaDonRepository = hoaDonRepository;
@@ -46,7 +50,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _hoaDonAnhRepository = hoaDonAnhRepository;
             _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
-            _hoaDonExcelExporter = hoaDonExcelExporter;
+            _excelBase = excelBase;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
@@ -274,7 +278,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                             select ctOld.Id);
             // update ct with TrangThai = 0 if delete
             (await _hoaDonChiTietRepository.GetAllListAsync(x => ctDelete.Contains(x.Id))).ToList().ForEach(x =>
-            { x.TrangThai = 0; x.DeleterUserId = userID; x.DeletionTime = DateTime.Now; });
+            { x.TrangThai = TrangThaiHoaDonConst.DA_HUY; x.IsDeleted = true; x.DeleterUserId = userID; x.DeletionTime = DateTime.Now; });
             #endregion
 
             foreach (var item in lstCT)
@@ -351,8 +355,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
             }
             return ObjectMapper.Map<List<HoaDonChiTietDto>>(ctAfter);
         }
-        [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Delete)]
+        [HttpGet]
         public async Task DeleteHoaDon(Guid id)
         {
             var hoaDon = _hoaDonRepository.FirstOrDefault(x => x.Id == id);
@@ -366,7 +370,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                         item.IsDeleted = true;
                         item.DeleterUserId = AbpSession.UserId;
                         item.DeletionTime = DateTime.Now;
-                        item.TrangThai = 0;
+                        item.TrangThai = TrangThaiHoaDonConst.DA_HUY;
                         await _hoaDonChiTietRepository.UpdateAsync(item);
                     }
                 }
@@ -385,8 +389,54 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 hoaDon.IsDeleted = true;
                 hoaDon.DeleterUserId = AbpSession.UserId;
                 hoaDon.DeletionTime = DateTime.Now;
-                hoaDon.TrangThai = 0;
+                hoaDon.TrangThai = TrangThaiHoaDonConst.DA_HUY;
                 await _hoaDonRepository.UpdateAsync(hoaDon);
+            }
+        }
+
+        [HttpGet]
+        public async Task<bool> KhoiPhucHoaDon(Guid idHoaDon)
+        {
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var hoaDon = _hoaDonRepository.FirstOrDefault(x => x.Id == idHoaDon);
+                if (hoaDon != null)
+                {
+                    var lastDeleteTime = ConvertHelper.ConverDateTimeToString(hoaDon.DeletionTime, "yyyy-MM-dd HH:mm:ss");
+                    var hoaDonCTs = await _hoaDonChiTietRepository.GetAll().Where(x => x.IdHoaDon == hoaDon.Id).ToListAsync();
+                    if (hoaDonCTs != null || hoaDonCTs.Count > 0)
+                    {
+                        // only get cthd was delete lastest
+                        var lstCT = hoaDonCTs.Where(x => ConvertHelper.ConverDateTimeToString(x.DeletionTime, "yyyy-MM-dd HH:mm:ss") == lastDeleteTime);
+                        foreach (var item in lstCT)
+                        {
+                            item.IsDeleted = false;
+                            item.LastModifierUserId = AbpSession.UserId;
+                            item.LastModificationTime = DateTime.Now;
+                            item.TrangThai = TrangThaiHoaDonConst.HOAN_THANH;
+                            await _hoaDonChiTietRepository.UpdateAsync(item);
+                        }
+                    }
+
+                    var hoaDonAnh = await _hoaDonAnhRepository.GetAll().Where(x => x.IdHoaDon == hoaDon.IdHoaDon).ToListAsync();
+                    if (hoaDonAnh != null || hoaDonAnh.Count > 0)
+                    {
+                        foreach (var item in hoaDonAnh)
+                        {
+                            item.IsDeleted = false;
+                            item.LastModifierUserId = AbpSession.UserId;
+                            item.LastModificationTime = DateTime.Now;
+                            await _hoaDonAnhRepository.UpdateAsync(item);
+                        }
+                    }
+                    hoaDon.IsDeleted = false;
+                    hoaDon.LastModifierUserId = AbpSession.UserId;
+                    hoaDon.LastModificationTime = DateTime.Now;
+                    hoaDon.TrangThai = TrangThaiHoaDonConst.HOAN_THANH;
+                    await _hoaDonRepository.UpdateAsync(hoaDon);
+                    return true;
+                }
+                return false;
             }
         }
 
@@ -398,14 +448,14 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 x.IsDeleted = true;
                 x.DeleterUserId = AbpSession.UserId;
                 x.DeletionTime = DateTime.Now;
-                x.TrangThai = 0;
+                x.TrangThai = TrangThaiHoaDonConst.DA_HUY;
             });
             _hoaDonChiTietRepository.GetAll().Where(x => lstId.Contains(x.IdHoaDon)).ToList().ForEach(x =>
             {
                 x.IsDeleted = true;
                 x.DeleterUserId = AbpSession.UserId;
                 x.DeletionTime = DateTime.Now;
-                x.TrangThai = 0;
+                x.TrangThai = TrangThaiHoaDonConst.DA_HUY;
             });
             _hoaDonAnhRepository.GetAll().Where(x => lstId.Contains(x.IdHoaDon)).ToList().ForEach(x =>
             {
@@ -426,6 +476,10 @@ namespace BanHangBeautify.HoaDon.HoaDon
         [HttpPost]
         public async Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param)
         {
+            if (param != null)
+            {
+                param.IdUserLogin = AbpSession?.UserId ?? 1;
+            }
             return await _repoHoaDon.GetListHoaDon(param, AbpSession.TenantId ?? 1);
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Export)]
@@ -434,10 +488,25 @@ namespace BanHangBeautify.HoaDon.HoaDon
             input.TextSearch = (input.TextSearch ?? string.Empty).Trim();
             input.CurrentPage = 1;
             input.PageSize = int.MaxValue;
+            if (input != null)
+            {
+                input.IdUserLogin = AbpSession?.UserId ?? 1;
+            }
             var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
-            List<PageHoaDonDto> model = new List<PageHoaDonDto>();
-            model = (List<PageHoaDonDto>)data.Items;
-            return _hoaDonExcelExporter.ExportDanhSachHoaDon(model);
+            List<PageHoaDonDto> lstHD = (List<PageHoaDonDto>)data.Items;
+            var dtNew = lstHD.Select(x =>
+            new
+            {
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.TenKhachHang,
+                x.TongTienHang,
+                x.TongThanhToan,
+                x.DaThanhToan,
+                x.ConNo,
+                x.TxtTrangThaiHD
+            }).ToList();
+            return _excelBase.WriteToExcel(@"DanhSachHoaDon_", @"GiaoDichThanhToan_Export_Template.xlsx", dtNew, 4, null, 10);
         }
     }
 }

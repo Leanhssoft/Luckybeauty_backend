@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
 {
-    [AbpAuthorize(PermissionNames.Pages_Administration)]
+    [AbpAuthorize]
     public class TaiKhoanNganHangAppService : SPAAppServiceBase
     {
         private readonly IRepository<DM_TaiKhoanNganHang, Guid> _dmTaiKhoanNganHang;
