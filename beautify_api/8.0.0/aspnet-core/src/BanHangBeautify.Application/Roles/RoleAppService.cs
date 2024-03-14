@@ -63,6 +63,7 @@ namespace BanHangBeautify.Roles
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
             nhatKyThaoTacDto.ChucNang = "Vai trò";
             nhatKyThaoTacDto.NoiDung = "Thêm mới vai trò: " + role.DisplayName;
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới vai trò: " + role.DisplayName;
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return MapToEntityDto(role);
         }
@@ -100,6 +101,7 @@ namespace BanHangBeautify.Roles
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Vai trò";
             nhatKyThaoTacDto.NoiDung = "Cập nhật vai trò: " + role.DisplayName;
+            nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật vai trò: " + role.DisplayName;
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return MapToEntityDto(role);
         }
@@ -136,6 +138,7 @@ namespace BanHangBeautify.Roles
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                 nhatKyThaoTacDto.ChucNang = "Vai trò";
                 nhatKyThaoTacDto.NoiDung = "Thêm mới vai trò: " + role.DisplayName;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới vai trò: " + role.DisplayName;
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return checkError;
             }
@@ -194,6 +197,7 @@ namespace BanHangBeautify.Roles
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                 nhatKyThaoTacDto.ChucNang = "Vai trò";
                 nhatKyThaoTacDto.NoiDung = "Cập nhật vai trò: " + role.DisplayName;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật vai trò: " + role.DisplayName;
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return checkError;
             }
@@ -222,6 +226,7 @@ namespace BanHangBeautify.Roles
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
             nhatKyThaoTacDto.ChucNang = "Vai trò";
             nhatKyThaoTacDto.NoiDung = "Xóa vai trò: " + role.DisplayName;
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xóa vai trò: " + role.DisplayName;
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             CheckErrors(await _roleManager.DeleteAsync(role));
         }
@@ -246,6 +251,7 @@ namespace BanHangBeautify.Roles
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Vai trò";
                 nhatKyThaoTacDto.NoiDung = "Xóa vai trò: " + role.DisplayName;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa vai trò: " + role.DisplayName;
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = true;
             }
@@ -275,6 +281,7 @@ namespace BanHangBeautify.Roles
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Vai trò";
                 nhatKyThaoTacDto.NoiDung = "Xóa các vai trò: " + string.Format(", "+ checkExists.Select(x=>x.DisplayName).ToList());
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa các vai trò: " + string.Format(", " + checkExists.Select(x => x.DisplayName).ToList());
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             return result;

@@ -106,6 +106,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
             nhatKyThaoTacDto.ChucNang = "Lịch làm việc";
             nhatKyThaoTacDto.NoiDung = "Thêm mới lịch làm việc cho nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới lịch làm việc cho nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
@@ -169,6 +170,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Lịch làm việc";
             nhatKyThaoTacDto.NoiDung = "Sửa lịch làm việc cho nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Sửa lịch làm việc cho nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
 
@@ -192,6 +194,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                 nhatKyThaoTacDto.ChucNang = "Lịch làm việc";
                 nhatKyThaoTacDto.NoiDung = "Xóa lịch làm việc nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa lịch làm việc nhân viên: " + nhanVien.TenNhanVien + "(" + nhanVien.MaNhanVien + ")";
                 await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return new ExecuteResultDto()
                 {

@@ -383,6 +383,7 @@ namespace BanHangBeautify.Users
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Người dùng";
                 nhatKyThaoTacDto.NoiDung = "Xóa người dùng: " + user.UserName;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa người dùng: " + user.UserName;
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception)
@@ -410,6 +411,7 @@ namespace BanHangBeautify.Users
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Người dùng";
                 nhatKyThaoTacDto.NoiDung = "Xóa người dùng: " + string.Join(", ", checkExists.Select(x=>x.UserName).ToList());
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa người dùng: " + string.Join(", ", checkExists.Select(x => x.UserName).ToList());
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
 
             }
@@ -419,28 +421,33 @@ namespace BanHangBeautify.Users
         [AbpAuthorize(PermissionNames.Pages_Users_Activation)]
         public async Task Activate(EntityDto<long> user)
         {
-            await Repository.UpdateAsync(user.Id, async (entity) =>
-            {
-                entity.IsActive = true;
-            });
             var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Người dùng";
             nhatKyThaoTacDto.NoiDung = "Kích hoạt người dùng";
+           
+            await Repository.UpdateAsync(user.Id, async (entity) =>
+            {
+                entity.IsActive = true;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Kích hoạt người dùng :" + entity.UserName;
+            });
+            
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
         }
 
         [AbpAuthorize(PermissionNames.Pages_Users_Activation)]
         public async Task DeActivate(EntityDto<long> user)
         {
-            await Repository.UpdateAsync(user.Id, async (entity) =>
-            {
-                entity.IsActive = false;
-            });
             var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Người dùng";
             nhatKyThaoTacDto.NoiDung = "Hủy kích hoạt người dùng";
+            await Repository.UpdateAsync(user.Id, async (entity) =>
+            {
+                entity.IsActive = false;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Hủy kích hoạt người dùng: " + entity.UserName;
+            });
+            
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
         }
 
@@ -583,7 +590,7 @@ namespace BanHangBeautify.Users
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Người dùng";
             nhatKyThaoTacDto.NoiDung = "Đặt lại mật khẩu";
-            nhatKyThaoTacDto.NoiDungChiTiet = "Đặt lại mật khẩu";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Đặt lại mật khẩu cho người dùng: "+ user.UserName;
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return true;
         }

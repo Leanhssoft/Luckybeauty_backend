@@ -66,6 +66,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
                 nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
                 nhatKyThaoTacDto.NoiDung = "Phân công dịch vụ cho nhân viên";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Phân công dịch vụ cho nhân viên";
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)
@@ -121,6 +122,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                     nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
                     nhatKyThaoTacDto.NoiDung = "Cập nhật phân công dịch vụ cho nhiều nhân viên";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật phân công dịch vụ cho nhiều nhân viên";
                     await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
                 else
@@ -154,6 +156,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                     nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
                     nhatKyThaoTacDto.NoiDung = "Phân công dịch vụ cho nhiều nhân viên";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Phân công dịch vụ cho nhiều nhân viên";
                     await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
 
@@ -211,6 +214,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                     nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
                     nhatKyThaoTacDto.NoiDung = "Cập nhật phân công dịch vụ cho nhân viên";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật phân công dịch vụ cho nhân viên";
                     await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
                 else
@@ -243,6 +247,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                     nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
                     nhatKyThaoTacDto.NoiDung = "Thêm mới phân công dịch vụ cho nhân viên";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới phân công dịch vụ cho nhân viên";
                 }
 
                 result.Status = "success";
@@ -337,6 +342,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
                 nhatKyThaoTacDto.NoiDung = "Xóa phân công dịch vụ nhân viên";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa phân công dịch vụ nhân viên";
             }
             catch (Exception ex)
             {
@@ -377,6 +383,7 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                 nhatKyThaoTacDto.ChucNang = "Dịch vụ nhân viên";
                 nhatKyThaoTacDto.NoiDung = "Cập nhật phân công dịch vụ nhân viên";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật phân công dịch vụ nhân viên";
             }
             catch (Exception ex)
             {

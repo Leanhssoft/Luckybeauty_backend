@@ -104,7 +104,7 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                 nhatKyThaoTacDto.ChucNang = "Tài khoản ngân hàng";
                 nhatKyThaoTacDto.NoiDung = "Thêm mới tài khoản ngân hàng";
-                nhatKyThaoTacDto.NoiDung = string.Format("<div><p>Thêm mới tài khoản ngân hàng</p><br/><p>STK :</p><br/><p>Ngân hàng :</p><br/><p>Người hưởng thụ :</p></div>", input.SoTaiKhoan, nganHang.TenNganHang, input.TenChuThe);
+                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div><p>Thêm mới tài khoản ngân hàng</p><br/><p>STK :</p><br/><p>Ngân hàng :</p><br/><p>Người hưởng thụ :</p></div>", input.SoTaiKhoan, nganHang.TenNganHang, input.TenChuThe);
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)

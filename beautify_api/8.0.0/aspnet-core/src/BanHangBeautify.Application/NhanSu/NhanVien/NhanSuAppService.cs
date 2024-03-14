@@ -250,7 +250,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Nhân viên";
-                nhatKyThaoTacDto.NoiDung = "Xóa nhân viên: " +find.TenNhanVien + "("+find.MaNhanVien+")";
+                nhatKyThaoTacDto.NoiDung = "Xóa nhân viên: " + find.TenNhanVien + "(" + find.MaNhanVien + ")";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhân viên: " + find.TenNhanVien + "(" + find.MaNhanVien + ")";
                 await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<NhanSuItemDto>(find);
             }
@@ -280,6 +281,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Nhân viên";
                 nhatKyThaoTacDto.NoiDung = "Xóa nhiều nhân viên: " + string.Join(", ",findNhanViens.SelectMany(x=>x.TenNhanVien).ToList());
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhiều nhân viên: " + string.Join(", ", findNhanViens.SelectMany(x => x.TenNhanVien).ToList());
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
             }
@@ -324,6 +326,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
             nhatKyThaoTacDto.ChucNang = "Nhân viên";
             nhatKyThaoTacDto.NoiDung = "Xuất file Excel danh sách nhân viên";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xuất file Excel danh sách nhân viên";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _nhanVienExcelExporter.ExportDanhSachNhanVien(model);
         }
@@ -340,6 +343,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Export;
             nhatKyThaoTacDto.ChucNang = "Nhân viên";
             nhatKyThaoTacDto.NoiDung = "Xuất file Excel danh sách nhân viên";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Xuất file Excel danh sách nhân viên";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return _nhanVienExcelExporter.ExportDanhSachNhanVien(model);
         }
@@ -416,6 +420,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
                     nhatKyThaoTacDto.ChucNang = "Nhân viên";
                     nhatKyThaoTacDto.NoiDung = "Nhập danh sách nhân viên từ file Excel";
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Nhập danh sách nhân viên từ file Excel";
                     await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
             }

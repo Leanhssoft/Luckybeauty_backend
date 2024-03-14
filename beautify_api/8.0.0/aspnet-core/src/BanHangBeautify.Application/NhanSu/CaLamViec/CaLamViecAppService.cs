@@ -105,6 +105,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
             nhatKyThaoTacDto.ChucNang = "Ca làm việc";
             nhatKyThaoTacDto.NoiDung = "Thêm mới ca làm việc: " + data.TenCa + "(" + data.MaCa + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới ca làm việc: " + data.TenCa + "(" + data.MaCa + ")";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
@@ -140,6 +141,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Ca làm việc";
             nhatKyThaoTacDto.NoiDung = "Sửa thông tin ca làm việc: " + data.TenCa + "(" + data.MaCa + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Sửa thông tin ca làm việc: " + data.TenCa + "(" + data.MaCa + ")";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
@@ -159,6 +161,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Ca làm việc";
                 nhatKyThaoTacDto.NoiDung = "Xóa ca làm việc: " + caLamViec.TenCa + "(" + caLamViec.MaCa + ")";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa ca làm việc: " + caLamViec.TenCa + "(" + caLamViec.MaCa + ")";
                 await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<CaLamViecDto>(caLamViec);
             }
@@ -184,6 +187,7 @@ namespace BanHangBeautify.NhanSu.CaLamViec
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                     nhatKyThaoTacDto.ChucNang = "Ca làm việc";
                     nhatKyThaoTacDto.NoiDung = "Xóa nhiều ca làm việc: " + string.Join(",", finds.SelectMany(x => x.TenCa).ToList());
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhiều ca làm việc: " + string.Join(",", finds.SelectMany(x => x.TenCa).ToList());
                     await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
 
                 }

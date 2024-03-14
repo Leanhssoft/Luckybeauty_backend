@@ -82,6 +82,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
             nhatKyThaoTacDto.ChucNang = "Chức vụ";
             nhatKyThaoTacDto.NoiDung = "Thêm mới chức vụ: " + chucVu.TenChucVu + "(" + chucVu.MaChucVu + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới chức vụ: " + chucVu.TenChucVu + "(" + chucVu.MaChucVu + ")";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
@@ -100,6 +101,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Chức vụ";
             nhatKyThaoTacDto.NoiDung = "Sửa thông tin chức vụ: " + chucVu.TenChucVu + "(" + chucVu.MaChucVu + ")";
+            nhatKyThaoTacDto.NoiDungChiTiet = "Sửa thông tin chức vụ: " + chucVu.TenChucVu + "(" + chucVu.MaChucVu + ")";
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
@@ -120,6 +122,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Chức vụ";
                 nhatKyThaoTacDto.NoiDung = "Xóa chức vụ: " + find.TenChucVu + "(" + find.MaChucVu + ")";
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa chức vụ: " + find.TenChucVu + "(" + find.MaChucVu + ")";
                 await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return result;
             }
@@ -145,6 +148,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                     nhatKyThaoTacDto.ChucNang = "Chức vụ";
                     nhatKyThaoTacDto.NoiDung = "Xóa nhiều chức vụ: " + string.Join(",", finds.SelectMany(x => x.TenChucVu).ToList());
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhiều chức vụ: " + string.Join(",", finds.SelectMany(x => x.TenChucVu).ToList());
                 }
                 return result;
             }
