@@ -103,10 +103,6 @@ namespace BanHangBeautify.MultiTenancy
             {
                 tenant.SubscriptionEndDate = DateTime.Now.AddDays(7);
             }
-            else
-            {
-                tenant.SubscriptionEndDate = (DateTime)input.SubscriptionEndDate;
-            }
             tenant.ConnectionString = input.ConnectionString.IsNullOrEmpty()
                 ? null
                 : SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
@@ -279,6 +275,11 @@ namespace BanHangBeautify.MultiTenancy
             tenant.Name = input.Name;
             tenant.TenancyName = input.TenancyName;
             tenant.EditionId = input.EditionId;
+            tenant.IsTrial = input.IsTrial;
+            if (tenant.IsTrial == false)
+            {
+                tenant.SubscriptionEndDate = input.SubscriptionEndDate;
+            }
             if (!string.IsNullOrEmpty(input.ConnectionString))
             {
                 tenant.ConnectionString = SimpleStringCipher.Instance.Encrypt(input.ConnectionString);

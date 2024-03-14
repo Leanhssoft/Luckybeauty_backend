@@ -58,13 +58,17 @@ namespace BanHangBeautify.Authorization.Accounts
 
         public async Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input)
         {
+            //if (string.IsNullOrEmpty(input.TenancyName)) // nếu input.TenancyName null hoặc empty thì là host
+            //{
+            //    return new IsTenantAvailableOutput(TenantAvailabilityState.Available, null);
+            //}
             var tenant = await TenantManager.FindByTenancyNameAsync(input.TenancyName);
             if (tenant == null)
             {
                 return new IsTenantAvailableOutput(TenantAvailabilityState.NotFound);
             }
 
-            if (!tenant.IsActive || tenant.SubscriptionEndDate<DateTime.Now)
+            if (!tenant.IsActive || (tenant.SubscriptionEndDate!=null && tenant.SubscriptionEndDate<DateTime.Now))
             {
                 return new IsTenantAvailableOutput(TenantAvailabilityState.InActive);
             }
