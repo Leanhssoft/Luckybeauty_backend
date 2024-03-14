@@ -99,6 +99,14 @@ namespace BanHangBeautify.MultiTenancy
 
             // Create tenant
             var tenant = ObjectMapper.Map<Tenant>(input);
+            if(tenant.IsTrial==true)
+            {
+                tenant.SubscriptionEndDate = DateTime.Now.AddDays(7);
+            }
+            else
+            {
+                tenant.SubscriptionEndDate = (DateTime)input.SubscriptionEndDate;
+            }
             tenant.ConnectionString = input.ConnectionString.IsNullOrEmpty()
                 ? null
                 : SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
@@ -113,7 +121,6 @@ namespace BanHangBeautify.MultiTenancy
             {
                 throw new UserFriendlyException(string.Format(L("TenancyNameIsAlreadyTaken{0}"), tenant.TenancyName));
             }
-           
             await _tenantManager.CreateAsync(tenant);
             await CurrentUnitOfWork.SaveChangesAsync(); // To get new tenant's id.
             // We are working entities of new tenant, so changing tenant filter

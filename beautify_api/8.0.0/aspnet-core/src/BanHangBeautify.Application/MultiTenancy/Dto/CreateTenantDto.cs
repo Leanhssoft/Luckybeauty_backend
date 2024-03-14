@@ -1,5 +1,6 @@
 using Abp.AutoMapper;
 using Abp.MultiTenancy;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace BanHangBeautify.MultiTenancy.Dto
@@ -28,5 +29,8 @@ namespace BanHangBeautify.MultiTenancy.Dto
         public bool IsActive { get; set; }
         [Required]
         public int EditionId { get; set; }
+
+        public bool IsTrial { get; set; }
+        public DateTime? SubscriptionEndDate { get; set; }
     }
 }

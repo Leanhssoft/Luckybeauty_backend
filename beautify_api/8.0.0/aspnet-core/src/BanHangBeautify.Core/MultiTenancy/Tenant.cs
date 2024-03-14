@@ -1,5 +1,6 @@
 ﻿using Abp.MultiTenancy;
 using BanHangBeautify.Authorization.Users;
+using System;
 
 namespace BanHangBeautify.MultiTenancy
 {
@@ -13,5 +14,8 @@ namespace BanHangBeautify.MultiTenancy
             : base(tenancyName, name)
         {
         }
+
+        public bool IsTrial { get; set; }
+        public DateTime SubscriptionEndDate { get; set; } 
     }
 }

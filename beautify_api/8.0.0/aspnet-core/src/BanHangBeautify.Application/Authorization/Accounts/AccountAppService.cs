@@ -64,7 +64,7 @@ namespace BanHangBeautify.Authorization.Accounts
                 return new IsTenantAvailableOutput(TenantAvailabilityState.NotFound);
             }
 
-            if (!tenant.IsActive)
+            if (!tenant.IsActive || tenant.SubscriptionEndDate<DateTime.Now)
             {
                 return new IsTenantAvailableOutput(TenantAvailabilityState.InActive);
             }
