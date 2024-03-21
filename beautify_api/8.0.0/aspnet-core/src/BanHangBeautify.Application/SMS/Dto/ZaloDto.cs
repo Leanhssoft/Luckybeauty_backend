@@ -25,4 +25,12 @@ namespace BanHangBeautify.SMS.Dto
         public string CodeResult { get; set; }// 100. thanh cong
         public string Phone { get; set; }// gui thang cong ? tin
     }
+
+    public class Zalo_InforHoaDonSend
+    {
+        public Guid? Id { get; set; }
+        public string MaHoaDon { get; set; }
+        public DateTime? NgayLapHoaDon { get; set; }
+        public double? TongTienHang { get; set; }
+    }
 }
