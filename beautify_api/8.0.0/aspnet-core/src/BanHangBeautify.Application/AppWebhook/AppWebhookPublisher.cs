@@ -44,22 +44,34 @@ namespace BanHangBeautify.AppWebhook
                 ZOAUserId = zaloUserId
             };
 
-            var dataUser = await _zaloKhachHangThanhVien.DangKyThanhVienZOA(newUser);
-           
+            // check exists zaloUserId
+            var existsZOAUserId = _zaloKhachHangThanhVien.CheckExistZaloUserId(zaloUserId);
+            Guid? idKhachHangThanhVien;
+            if (existsZOAUserId)
+            {
+                var dataUser = await _zaloKhachHangThanhVien.DangKyThanhVienZOA(newUser);
+                idKhachHangThanhVien = dataUser.Id ?? null;
+            }
+            else
+            {
+                var dataUser = await _zaloKhachHangThanhVien.UpdateThanhVienZOA(newUser);
+                idKhachHangThanhVien = dataUser.Id ?? null;
+            }
+
             var exists = await _khachHangAppService.CheckExistSoDienThoai(userInfor.Phone);
             if (exists)
             {
                 List<Guid> arrIdCustomer = await _khachHangAppService.GetListCustomerId_byPhone(userInfor.Phone);
                 if (arrIdCustomer != null && arrIdCustomer.Count > 0)
                 {
-                    await _khachHangAppService.Update_IdKhachHangZOA(arrIdCustomer[0], dataUser.Id);
+                    await _khachHangAppService.Update_IdKhachHangZOA(arrIdCustomer[0], idKhachHangThanhVien);
                 }
             }
             else
             {
                 CreateOrEditKhachHangDto customer = new()
                 {
-                    IdKhachHangZOA = dataUser.Id,
+                    IdKhachHangZOA = idKhachHangThanhVien,
                     TenKhachHang = userInfor.Name,
                     TenKhachHang_KhongDau = BanHangBeautify.AppCommon.ConvertHelper.ConvertToUnSign(userInfor.Name),
                     SoDienThoai = userInfor.Phone,
