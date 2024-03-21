@@ -23,6 +23,8 @@ namespace BanHangBeautify.SMS.Dto
     public class CustomerWithZOA : CustomerBasicDto
     {
         public string ZOAUserId { get; set; }
+        public Guid? IdHoaDon { get; set; }
+        public Guid? IdBooking { get; set; }
     }
 
     public class ParamSearchSMS : CommonClass.ParamSearch
