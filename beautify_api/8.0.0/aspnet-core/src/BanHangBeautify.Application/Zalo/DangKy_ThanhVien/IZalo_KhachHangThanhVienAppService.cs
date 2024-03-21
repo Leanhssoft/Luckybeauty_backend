@@ -10,5 +10,7 @@ namespace BanHangBeautify.Zalo.DangKy_ThanhVien
     public interface IZalo_KhachHangThanhVienAppService
     {
         Task<Zalo_KhachHangThanhVienDto> DangKyThanhVienZOA(Zalo_KhachHangThanhVienDto dto);
+        Task<Zalo_KhachHangThanhVienDto> UpdateThanhVienZOA(Zalo_KhachHangThanhVienDto dto);
+        bool CheckExistZaloUserId(string zaloUserId);
     }
 }
