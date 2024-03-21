@@ -106,40 +106,40 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.TenantId = AbpSession.TenantId ?? 1;
             khachHang.IsDeleted = false;
             string gioiTinh = dto.GioiTinhNam ==true?"Nam":"Nữ";
-            var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == khachHang.IdNhomKhach).TenNhomKhach;
+            //var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == khachHang.IdNhomKhach).TenNhomKhach;
             await _repository.InsertAsync(khachHang);
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
-            nhatKyThaoTacDto.ChucNang = "Khách hàng";
-            nhatKyThaoTacDto.NoiDung = "Thêm mới khách hàng: " + khachHang.TenKhachHang + "(" + khachHang.MaKhachHang + ")";
-            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Thêm mới khách hàng" +
-                "<p>- Tên khách hàng: {0} ({1})</p><br/>" +
-                "<p>- Số điện thoại: {2}</p></br/>" +
-                "<p>- Giói tính: {3}</p></br/>" +
-                "<p>- Địa chỉ: {4}</p><br/>" +
-                "<p>- Nhóm khách: {5}</p><br/>" +
-                "</div>",khachHang.TenKhachHang,khachHang.MaKhachHang,khachHang.SoDienThoai,gioiTinh,khachHang.DiaChi,nhomKhach);
-            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+            //var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            //nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            //nhatKyThaoTacDto.ChucNang = "Khách hàng";
+            //nhatKyThaoTacDto.NoiDung = "Thêm mới khách hàng: " + khachHang.TenKhachHang + "(" + khachHang.MaKhachHang + ")";
+            //nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Thêm mới khách hàng" +
+            //    "<p>- Tên khách hàng: {0} ({1})</p><br/>" +
+            //    "<p>- Số điện thoại: {2}</p></br/>" +
+            //    "<p>- Giói tính: {3}</p></br/>" +
+            //    "<p>- Địa chỉ: {4}</p><br/>" +
+            //    "<p>- Nhóm khách: {5}</p><br/>" +
+            //    "</div>",khachHang.TenKhachHang,khachHang.MaKhachHang,khachHang.SoDienThoai,gioiTinh,khachHang.DiaChi,nhomKhach);
+            //await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         [NonAction]
         public async Task<KhachHangDto> EditKhachHang(CreateOrEditKhachHangDto dto, DM_KhachHang khachHang)
         {
             string gioiTinh = dto.GioiTinhNam == true ? "Nam" : "Nữ";
-            var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == khachHang.IdNhomKhach).TenNhomKhach;
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-            nhatKyThaoTacDto.ChucNang = "Khách hàng";
-            nhatKyThaoTacDto.NoiDung = "Cập nhật khách hàng: " + khachHang.TenKhachHang + "(" + khachHang.MaKhachHang + ")";
-            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật khách hàng" +
-                "<p>- Tên khách hàng: {0} ({1})</p><br/>" +
-                "<p>- Số điện thoại: {2}</p></br/>" +
-                "<p>- Giói tính: {3}</p></br/>" +
-                "<p>- Địa chỉ: {4}</p><br/>" +
-                "<p>- Nhóm khách: {5}</p><br/>" +
-                "</div>", dto.TenKhachHang, dto.MaKhachHang, dto.SoDienThoai, gioiTinh, dto.DiaChi, nhomKhach);
-            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+            //var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == khachHang.IdNhomKhach).TenNhomKhach;
+            //var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            //nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            //nhatKyThaoTacDto.ChucNang = "Khách hàng";
+            //nhatKyThaoTacDto.NoiDung = "Cập nhật khách hàng: " + khachHang.TenKhachHang + "(" + khachHang.MaKhachHang + ")";
+            //nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật khách hàng" +
+            //    "<p>- Tên khách hàng: {0} ({1})</p><br/>" +
+            //    "<p>- Số điện thoại: {2}</p></br/>" +
+            //    "<p>- Giói tính: {3}</p></br/>" +
+            //    "<p>- Địa chỉ: {4}</p><br/>" +
+            //    "<p>- Nhóm khách: {5}</p><br/>" +
+            //    "</div>", dto.TenKhachHang, dto.MaKhachHang, dto.SoDienThoai, gioiTinh, dto.DiaChi, nhomKhach);
+            //await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             KhachHangDto result = new KhachHangDto();
             khachHang.TenKhachHang = dto.TenKhachHang;
             khachHang.TenKhachHang_KhongDau = dto.TenKhachHang_KhongDau;
