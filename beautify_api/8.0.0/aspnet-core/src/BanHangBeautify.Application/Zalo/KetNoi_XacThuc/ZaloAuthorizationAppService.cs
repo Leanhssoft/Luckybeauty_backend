@@ -202,7 +202,7 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
                         ZaloAuthorizationDto zaloToken = new()
                         {
                             AccessToken = newToken.access_token,
-                            RefreshToken = newToken.access_token,
+                            RefreshToken = newToken.refresh_token,
                             ExpiresToken = newToken.expires_in,
                             CodeVerifier = codeVerifier,
                             CodeChallenge = codeChallenge,
@@ -219,47 +219,6 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
             }
             return null;
         }
-
-        private async Task WebRequest(string refresh_token)
-        {
-            const string WEBSERVICE_URL = "https://oauth.zaloapp.com/v4/oa/access_token";
-            try
-            {
-                HttpClient client = new()
-                {
-                    BaseAddress = new Uri(WEBSERVICE_URL)
-                };
-                using HttpRequestMessage request = new(HttpMethod.Post, WEBSERVICE_URL);
-                request.Headers.Add("refresh_token", refresh_token);
-                request.Headers.Add("Session_key", refresh_token);
-                request.Headers.Add("grant_type", "refresh_token");
-                string json = JsonSerializer.Serialize(WEBSERVICE_URL);
-                request.Content = new StringContent(json, Encoding.UTF8, "application/x-www-form-urlencoded");
-                using HttpResponseMessage response = await client.SendAsync(request);
-                response.EnsureSuccessStatusCode();
-
-                //var webRequest = await client.SendAsync(WEBSERVICE_URL);
-                //if (webRequest != null)
-                //{
-                //    webRequest.Method = "POST";
-                //    webRequest.Timeout = 12000;
-                //    webRequest.ContentType = "application/x-www-form-urlencoded";
-                //    webRequest.Headers.Add("refresh_token", refresh_token);
-                //    webRequest.Headers.Add("app_id", refresh_token);
-                //    webRequest.Headers.Add("grant_type", "refresh_token");
-
-                //using System.IO.Stream s = webRequest.GetResponse().GetResponseStream();
-                //using System.IO.StreamReader sr = new System.IO.StreamReader(s);
-                //    var jsonResponse = sr.ReadToEnd();
-                //    Console.WriteLine(String.Format("Response: {0}", jsonResponse));
-                //}
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
-
 
         static string GenerateCodeVerifier()
         {
