@@ -70,6 +70,11 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
                 return new List<CustomerWithZOA>();
             }
             string idChiNhanhs = string.Empty;
+            int isUserZalo = 0;// 1. nếu khách hàng có tài khoản Zalo, và quan tâm đến Cửa hàng
+            if(input.TrangThais!=null && input.TrangThais.Count > 0)
+            {
+                isUserZalo = Int32.Parse(input.TrangThais[0]);
+            }
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
@@ -80,6 +85,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IsUserZalo", isUserZalo));
             command.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
             command.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
 

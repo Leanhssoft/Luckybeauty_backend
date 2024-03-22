@@ -21,6 +21,8 @@ using BanHangBeautify.AppCommon;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using Abp.Domain.Uow;
 using BanHangBeautify.Consts;
+using BanHangBeautify.SMS.Dto;
+using System.Runtime.InteropServices;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -508,5 +510,20 @@ namespace BanHangBeautify.HoaDon.HoaDon
             }).ToList();
             return _excelBase.WriteToExcel(@"DanhSachHoaDon_", @"GiaoDichThanhToan_Export_Template.xlsx", dtNew, 4, null, 10);
         }
+
+        #region hoadon used to zalo 
+        [HttpPost]
+        public async Task<List<Zalo_InforHoaDonSend>> Zalo_GetInforHoaDon(List<Guid> arrIdHoaDon)
+        {
+            var data = _hoaDonRepository.GetAllList(x => arrIdHoaDon.Contains(x.Id)).Select(x => new Zalo_InforHoaDonSend
+            {
+                Id = x.Id,
+                MaHoaDon = x.MaHoaDon,
+                NgayLapHoaDon = x.NgayLapHoaDon,
+                TongTienHang = x.TongTienHang,
+            }).ToList();
+            return data;
+        }
+        #endregion
     }
 }

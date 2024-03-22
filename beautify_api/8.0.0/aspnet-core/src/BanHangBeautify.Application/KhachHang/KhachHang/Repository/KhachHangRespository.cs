@@ -178,6 +178,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
             {
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
                 command.Parameters.Add(new SqlParameter("@LoaiDoiTuong", input.LoaiDoiTuong ?? 1));
+                command.Parameters.Add(new SqlParameter("@IsUserZalo", input.IsUserZalo ?? 0));
                 command.Parameters.Add(new SqlParameter("@TextSearch", input.keyword ?? ""));
                 command.Parameters.Add(new SqlParameter("@CurrentPage", input.SkipCount));
                 command.Parameters.Add(new SqlParameter("@PageSize", input.MaxResultCount));
