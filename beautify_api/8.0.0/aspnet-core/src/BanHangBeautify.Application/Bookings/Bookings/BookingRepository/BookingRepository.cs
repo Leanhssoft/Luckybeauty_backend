@@ -75,22 +75,22 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
             return new List<BookingDetailDto>();
         }
 
-        public async Task<List<BookingDetailDto>> GetInforBooking_byID(Guid idBooking)
+        public async Task<List<BookingDetailDto>> GetInforBooking_byID(List<Guid> arrIdBooking)
         {
-            using (var cmd = CreateCommand("prc_GetInforBooking_byID"))
+            if (arrIdBooking != null && arrIdBooking.Count > 0)
             {
-                cmd.Parameters.Add(new SqlParameter("@IdBooking", idBooking));
-                using (var dataReader = await cmd.ExecuteReaderAsync())
-                {
-                    string[] array = { "Data" };
-                    var ds = new DataSet();
-                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+                using var cmd = CreateCommand("prc_GetInforBooking_byID");
+                string idBookings = string.Join(",", arrIdBooking);
+                cmd.Parameters.Add(new SqlParameter("@IdBookings", idBookings));
+                using var dataReader = await cmd.ExecuteReaderAsync();
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
 
-                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                    {
-                        var data = ObjectHelper.FillCollection<BookingDetailDto>(ds.Tables[0]);
-                        return data;
-                    }
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var data = ObjectHelper.FillCollection<BookingDetailDto>(ds.Tables[0]);
+                    return data;
                 }
             }
             return new List<BookingDetailDto>();
