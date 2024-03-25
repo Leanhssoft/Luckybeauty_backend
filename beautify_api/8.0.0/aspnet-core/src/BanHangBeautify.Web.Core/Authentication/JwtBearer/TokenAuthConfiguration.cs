@@ -13,6 +13,8 @@ namespace BanHangBeautify.Authentication.JwtBearer
 
         public SigningCredentials SigningCredentials { get; set; }
 
-        public TimeSpan Expiration { get; set; }
+        public TimeSpan AccessTokenExpiration { get; set; }
+
+        public TimeSpan RefreshTokenExpiration { get; set; }
     }
 }
