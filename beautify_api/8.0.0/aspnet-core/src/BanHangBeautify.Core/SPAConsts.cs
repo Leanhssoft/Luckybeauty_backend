@@ -15,8 +15,8 @@ namespace BanHangBeautify
         /// <summary>
         /// Default pass phrase for SimpleStringCipher decrypt/encrypt operations
         /// </summary>
-        //public static readonly string DefaultPassPhrase =
-        //    DebugHelper.IsDebug ? "gsKxGZ012HLL3MI5" : "e384d1716a8642c28a9387892dd10535";
-        public static readonly string DefaultPassPhrase = "e384d1716a8642c28a9387892dd10535";
+        public static readonly string DefaultPassPhrase =
+            DebugHelper.IsDebug ? "gsKxGZ012HLL3MI5" : "e384d1716a8642c28a9387892dd10535";
+        //public static readonly string DefaultPassPhrase = "e384d1716a8642c28a9387892dd10535";
     }
 }

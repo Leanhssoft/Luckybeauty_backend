@@ -18,6 +18,10 @@ namespace BanHangBeautify.SMS.Dto
         public string ThoiGianHen { set; get; } // từ HH:mm - HH:mm
         public string STrangThaiGuiTinNhan { get; set; }
         public int? TrangThai { get; set; }// used to bind background color
+
+        public string ZOAUserId { get; set; }
+        public Guid? IdHoaDon { get; set; }
+        public Guid? IdBooking { get; set; }
     }
 
     public class CustomerWithZOA : CustomerBasicDto
@@ -30,6 +34,7 @@ namespace BanHangBeautify.SMS.Dto
     public class ParamSearchSMS : CommonClass.ParamSearch
     {
         public List<byte> HinhThucGuiTins { get; set; }
+        public bool? IsFilterCustomer { get; set; } = false;
+        public byte? LoaiUser_CoTheGuiTin { get; set; } = 0;
     }
-
 }

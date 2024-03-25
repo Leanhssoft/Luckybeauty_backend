@@ -57,6 +57,7 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
                 {
                     return "object null";
                 }
+                //objUp.OAId = dto.CodeVerifier;// todo
                 objUp.CodeVerifier = dto.CodeVerifier;
                 objUp.CodeChallenge = dto.CodeChallenge;
                 objUp.AuthorizationCode = dto.AuthorizationCode;
@@ -182,8 +183,12 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
             }
         }
 
+        /// <summary>
+        /// !!! luôn tạo codeVerifier, codeChallenge trước khi kết nối zalo
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<ZaloAuthorizationDto> GetForEdit()
+        public async Task<ZaloAuthorizationDto> Innit_orGetToken()
         {
             ZaloAuthorization lastObj = _zaloAuthorization.GetAllList().OrderByDescending(x => x.CreationTime).FirstOrDefault();
             if (lastObj != null)
@@ -194,6 +199,7 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
                 dataReturn.IsExpiresAccessToken = totalSecond > 9000;
                 if (totalSecond > 9000)
                 {
+                    // hết hạn access token: tạo access token từ refresh_token
                     var newToken = await GetNewAccessToken_fromRefreshToken(dataReturn.RefreshToken);
                     if (newToken != null && newToken.access_token != null)
                     {
@@ -212,12 +218,17 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
                     }
                     else
                     {
-                        return null;
+                        // token refreh không đúng --> tạo mới lại
+                        return await CreateCodeVerifier_andCodeChallenge(); ;
                     }
                 }
-                return dataReturn;
+                return dataReturn;// chưa hết hạn access token
             }
-            return null;
+            else
+            {
+                // nếu chưa có data: {CodeVerifier, odeChalleng}: tạo trước
+                return await CreateCodeVerifier_andCodeChallenge();
+            }
         }
 
         static string GenerateCodeVerifier()

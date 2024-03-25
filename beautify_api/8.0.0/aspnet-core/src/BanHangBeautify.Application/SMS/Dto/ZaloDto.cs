@@ -29,6 +29,7 @@ namespace BanHangBeautify.SMS.Dto
     public class Zalo_InforHoaDonSend
     {
         public Guid? Id { get; set; }
+        public Guid? IdKhachHang { get; set; }
         public string MaHoaDon { get; set; }
         public DateTime? NgayLapHoaDon { get; set; }
         public double? TongTienHang { get; set; }

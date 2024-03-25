@@ -75,14 +75,14 @@ namespace BanHangBeautify.Web.Host.Controllers
             {
                 var body = await reader.ReadToEndAsync();
 
-                if (!IsSignatureCompatible2(body))
-                {
-                    return StatusCode(500, "Unexpected Signature");
-                }
-
                 // Xử lý dữ liệu từ Zalo sau khi xác thực chữ ký
                 var zaloEventData = JsonConvert.DeserializeObject<ZaloWebhookPayload>(body);
 
+                if (!IsSignatureCompatible2(body, zaloEventData.Timestamp))
+                {
+                    return StatusCode(500, "Unexpected Signature");
+                }
+              
                 // Xử lý sự kiện cụ thể
                 switch (zaloEventData.EventName)
                 {
@@ -119,16 +119,18 @@ namespace BanHangBeautify.Web.Host.Controllers
             //}
         }
 
-        private bool IsSignatureCompatible2(string body)
+        private bool IsSignatureCompatible2(string body, long timeStamp)
         {
             if (!HttpContext.Request.Headers.ContainsKey("X-ZEvent-Signature"))
             {
                 return false;
             }
 
-            long timeStamp = 54390853474;
+            //DateTime currentTime = DateTime.Now;
+            //long timeStamp = ((DateTimeOffset)currentTime).ToUnixTimeSeconds();
+
             string string_body = JsonConvert.SerializeObject(body);
-            string raw_verify = $"{_zaloAppId}{string_body}{timeStamp}{_zaloAppSecret}";
+            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloAppSecret}";
 
             // mac = sha256(appId + data + timeStamp + OAsecretKey)
             string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];

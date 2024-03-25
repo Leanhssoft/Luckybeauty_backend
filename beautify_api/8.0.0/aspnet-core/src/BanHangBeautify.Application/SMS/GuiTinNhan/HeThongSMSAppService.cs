@@ -168,16 +168,17 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             return await _repoSMS.GetListSMS(input);
         }
         [HttpPost]
-        public async Task<List<CustomerWithZOA>> JqAutoCustomer_byIdLoaiTin(CommonClass.ParamSearch input, int? idLoaiTin = 1)
+        public async Task<List<PageKhachHangSMSDto>> JqAutoCustomer_byIdLoaiTin(ParamSearchSMS input, int? idLoaiTin = 1)
         {
-            try
-            {
-                return await _repoSMS.JqAutoCustomer_byIdLoaiTin(input, idLoaiTin);
-            }
-            catch (Exception)
-            {
-                return new List<CustomerWithZOA>();
-            }
+            //try
+            //{
+                var data =  await _repoSMS.GetListCustomer_byIdLoaiTin(input, idLoaiTin);
+                return (List<PageKhachHangSMSDto>)data.Items;
+            //}
+            //catch (Exception)
+            //{
+            //    return new List<CustomerWithZOA>();
+            //}
         }
 
         [HttpPost]
