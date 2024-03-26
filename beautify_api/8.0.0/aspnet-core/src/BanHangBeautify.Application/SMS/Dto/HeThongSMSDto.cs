@@ -22,6 +22,11 @@ namespace BanHangBeautify.SMS.Dto
         public string ZOAUserId { get; set; }
         public Guid? IdHoaDon { get; set; }
         public Guid? IdBooking { get; set; }
+        // đặt hẹn, giao dịch ở chi nhánh nào: used to background worker
+        public Guid? IdChiNhanh { get; set; }
+        public string TenChiNhanh { get; set; }
+        public string SoDienThoaiChiNhanh { get; set; }
+        public string DiaChiChiNhanh { get; set; }
     }
 
     public class CustomerWithZOA : CustomerBasicDto
