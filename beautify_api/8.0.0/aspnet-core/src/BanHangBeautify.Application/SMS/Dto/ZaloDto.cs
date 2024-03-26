@@ -1,4 +1,5 @@
-﻿using NPOI.SS.Formula.Functions;
+﻿using Newtonsoft.Json;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,22 @@ namespace BanHangBeautify.SMS.Dto
         public string SendDate { get; set; }// Thời gian hẹn gửi của tin yyyy-mm-dd hh:MM:ss
     }
 
+    public class ZaloDataDto
+    {
+        [JsonProperty("message_id")]
+        public string MessageId { get; set; }
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+    }
+
     public class ResultZaloDto
     {
-        public string SMSID { get; set; } // ID của tin nhắn mới được tạo 
-        public string CodeResult { get; set; }// 100. thanh cong
-        public string Phone { get; set; }// gui thang cong ? tin
+        [JsonProperty("data")]
+        public ZaloDataDto Data { get; set; } // ID của tin nhắn mới được tạo 
+        [JsonProperty("data")]
+        public string Error { get; set; }// = 0, Gửi thành công
+        [JsonProperty("message")]
+        public string Message { get; set; }// nếu gửi thành công message = Success, ngược lại: thông báo lỗi
     }
 
     public class Zalo_InforHoaDonSend
