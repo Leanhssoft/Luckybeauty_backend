@@ -16,11 +16,10 @@ using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.SMS.Brandname.Repository;
 using Abp.Net.Mail;
-using BanHangBeautify.Configuration.Dto;
-using Abp.Configuration;
-using NPOI.XWPF.UserModel;
 using Abp.Application.Services.Dto;
 using BanHangBeautify.Consts;
+using BanHangBeautify.Zalo.ZaloTemplate;
+using BanHangBeautify.Zalo.GuiTinNhan;
 
 namespace BanHangBeautify.BackgroundWorker
 {
@@ -36,9 +35,11 @@ namespace BanHangBeautify.BackgroundWorker
         private readonly IRepository<Tenant> _tenantRepository;
         public readonly IHeThongSMSRepository _repoSMS;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
-        private readonly SettingManager _settingManager;
         private readonly IEmailSender _emailSender;
         private readonly IBrandnameRepository _repoBrandname;
+        public readonly IZalo_TemplateRepository _zaloTemplateRepo;
+        public readonly IZaloSendMes _zaloApi;
+        public readonly IRepository<ZaloAuthorization, Guid> _zaloAuthorization;
         readonly DateTime _dtNow = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, 0);
 
         public SendEmailSMSAutoWorker(AbpTimer timer,
@@ -52,9 +53,12 @@ namespace BanHangBeautify.BackgroundWorker
              IRepository<Tenant> tenantRepository,
             IHeThongSMSRepository repoSMS,
             IUnitOfWorkManager unitOfWorkManager,
-            SettingManager settingManager,
             IEmailSender emailSender,
-            IBrandnameRepository repoBrandname
+            IBrandnameRepository repoBrandname,
+            IZalo_TemplateRepository zaloTemplateRepo,
+            IRepository<ZaloAuthorization, Guid> zaloAuthorization,
+              IZaloSendMes zaloApi
+
             ) : base(timer)
         {
             Timer.Period = 10000;
@@ -68,9 +72,11 @@ namespace BanHangBeautify.BackgroundWorker
             _tenantRepository = tenantRepository;
             _repoSMS = repoSMS;
             _unitOfWorkManager = unitOfWorkManager;
-            _settingManager = settingManager;
             _emailSender = emailSender;
             _repoBrandname = repoBrandname;
+            _zaloTemplateRepo = zaloTemplateRepo;
+            _zaloApi = zaloApi;
+            _zaloAuthorization = zaloAuthorization;
         }
 
         protected async override void DoWork()
@@ -79,7 +85,7 @@ namespace BanHangBeautify.BackgroundWorker
             var tenants = _tenantRepository.GetAllList();
             var lstBrandname = await _repoBrandname.GetListBandname(new ParamSearchBrandname { Keyword = string.Empty, SkipCount = 0 }, 1);  // get all brand name at host
 
-             for (int i = 0; i < tenants.Count; i++)
+            for (int i = 0; i < tenants.Count; i++)
             {
                 var tenantId = tenants[i].Id;
 
@@ -117,7 +123,7 @@ namespace BanHangBeautify.BackgroundWorker
                             {
                                 FromDate = _dtNow,
                                 ToDate = _dtNow,
-                                IdChiNhanhs = chiNhanh,
+                                IdChiNhanhs = chiNhanh,// all chinhanh
                                 TrangThais = new List<string> { "0" }, // chi get tin chua gui (trangthai = 0)
                                 CurrentPage = 1,
                                 PageSize = 10000,
@@ -202,11 +208,7 @@ namespace BanHangBeautify.BackgroundWorker
                             var turnOnZalo = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Zalo).Select(x => x);
                             foreach (var item in turnOnZalo)
                             {
-                                if (!string.IsNullOrEmpty(item.NoiDungTin))
-                                {
-                                    inforCommon.NoiDungTinNhan = item.NoiDungTin;
-                                    //await SendSMS(item.IdLoaiTin, param, inforCommon); // todo
-                                }
+                                await Zalo_SendMes(item.IdLoaiTin, param, inforCommon);
                             }
 
                             var turnOnEmail = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Gmail).Select(x => x);
@@ -233,6 +235,7 @@ namespace BanHangBeautify.BackgroundWorker
 
         protected string ReplaceContent(PageKhachHangSMSDto cutomer, string noiDungTin)
         {
+            if (noiDungTin == null) return string.Empty;
             var ss = noiDungTin.Replace("{TenKhachHang}", cutomer.TenKhachHang);
             ss = ss.Replace("{NgaySinh}", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
             ss = ss.Replace("{BookingDate}", cutomer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
@@ -240,6 +243,9 @@ namespace BanHangBeautify.BackgroundWorker
             ss = ss.Replace("{TenHangHoa}", cutomer.TenHangHoa);// dichvuhen
             ss = ss.Replace("{MaGiaoDich}", cutomer.MaHoaDon);
             ss = ss.Replace("{NgayGiaoDich}", cutomer.NgayLapHoaDon?.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
+            ss = ss.Replace("{TenChiNhanh}", cutomer.TenChiNhanh);
+            ss = ss.Replace("{SoDienThoaiChiNhanh}", cutomer.SoDienThoaiChiNhanh);
+            ss = ss.Replace("{DiaChiChiNhanh}", cutomer.DiaChiChiNhanh);
             return ss;
         }
 
@@ -249,11 +255,11 @@ namespace BanHangBeautify.BackgroundWorker
             {
                 paramSearch.HinhThucGuiTins = new List<byte> { ConstSMS.HinhThucGuiTin.SMS };
                 PagedResultDto<PageKhachHangSMSDto> data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
-               
+
                 if (data.TotalCount > 0)
                 {
                     IReadOnlyCollection<PageKhachHangSMSDto> lstCustomer = null;
-                    if(totalTime > 0)
+                    if (totalTime > 0)
                     {
                         // Nếu gửi trước: check start time ...: có thể có sai số (chênh lệch xx)
                         float? saisoTruoc = totalTime - 10;
@@ -283,7 +289,7 @@ namespace BanHangBeautify.BackgroundWorker
                             Id = Guid.NewGuid(),
                             TenantId = inforCommon.TenantId,
                             IdLoaiTin = idLoaiTin ?? 0,
-                            IdChiNhanh = (Guid)inforCommon.IdChiNhanhFirst,
+                            IdChiNhanh = customer.IdChiNhanh ?? (Guid)inforCommon.IdChiNhanhFirst,
                             IdKhachHang = customer.IdKhachHang,
                             SoDienThoai = customer.SoDienThoai,
                             SoTinGui = (int)Math.Ceiling(noidung.Length / 160.0),
@@ -314,6 +320,108 @@ namespace BanHangBeautify.BackgroundWorker
                             IsDeleted = false,
                         };
                         await _smsNhatKyGuiTin.InsertAsync(nkyGuiSMS);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        protected async Task Zalo_SendMes(byte? idLoaiTin, ParamSearchSMS paramSearch, InforAutoWorker inforCommon, float? totalTime = 0)
+        {
+            try
+            {
+                paramSearch.HinhThucGuiTins = new List<byte> { ConstSMS.HinhThucGuiTin.Zalo };
+                PagedResultDto<PageKhachHangSMSDto> data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
+
+                if (data.TotalCount > 0)
+                {
+                    IReadOnlyCollection<PageKhachHangSMSDto> lstCustomer = null;
+                    if (totalTime > 0)
+                    {
+                        // Nếu gửi trước: check start time ...: có thể có sai số (chênh lệch xx)
+                        float? saisoTruoc = totalTime - 10;
+                        float? saisoSau = totalTime + 10;
+                        lstCustomer = data.Items.Where(x => x.ChenhLech > saisoTruoc && x.ChenhLech < saisoSau).ToList();
+                    }
+                    else
+                    {
+                        lstCustomer = data.Items;
+                    }
+
+                    //// get token zalo
+                    var zaloToken = _zaloAuthorization.GetAllList().OrderByDescending(x => x.CreationTime).FirstOrDefault();
+                    // get temp default: todo get from db
+                    var objFind = await _zaloTemplateRepo.FindTempDefault_ByIdLoaiTin(idLoaiTin ?? 0);
+                    if (objFind != null)
+                    {
+                        foreach (var customer in lstCustomer)
+                        {
+                            // chỉ gửi tin nếu khách hàng chia sẻ thông tin cho OA
+                            if (!string.IsNullOrEmpty(customer.ZOAUserId))
+                            {
+                                var noidung = string.Empty;
+
+                                switch (idLoaiTin)
+                                {
+                                    case ConstSMS.LoaiTin.SinhNhat:
+                                        noidung = $@"Chúc mừng sinh nhật khách hàng {customer.TenKhachHang},ngày sinh {customer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
+                                        break;
+                                    case ConstSMS.LoaiTin.GiaoDich:
+                                        noidung = $@"Xác nhận thanh toán Hóa đơn: {customer.MaHoaDon}<br/> Ngày lập: {customer.NgayLapHoaDon?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)} <br/> Tổng tiền: {customer.TongThanhToan}";
+                                        break;
+                                    case ConstSMS.LoaiTin.LichHen:
+                                        noidung = $@"Xác nhận lịch hẹn dịch vụ: {customer.TenHangHoa}<br/> Số điện thoại đặt lịch: {customer.SoDienThoai}<br/> Ngày đặt lịch: {customer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
+                                        break;
+                                    default:
+                                        noidung = ReplaceContent(customer, inforCommon.NoiDungTinNhan);
+                                        break;
+                                }
+
+                                // send mes zalo
+                                var smsResult = await _zaloApi.GuiTinGiaoDich_fromDataDB(customer, zaloToken.AccessToken, objFind);
+                                if (smsResult != null && smsResult.data != null)
+                                {
+                                    HeThong_SMS hethongSMS = new()
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        TenantId = inforCommon.TenantId,
+                                        IdLoaiTin = idLoaiTin ?? 0,
+                                        IdChiNhanh = customer.IdChiNhanh ?? (Guid)inforCommon.IdChiNhanhFirst,
+                                        IdKhachHang = customer.IdKhachHang,
+                                        SoDienThoai = customer.SoDienThoai,
+                                        SoTinGui = 1,
+                                        IdTinNhan = smsResult.data.message_id,
+                                        GiaTienMoiTinNhan = 200,
+                                        TrangThai = 200,
+                                        NoiDungTin = noidung,
+                                        IdNguoiGui = inforCommon.UserId,
+                                        CreatorUserId = inforCommon.UserId,
+                                        ThoiGianGui = DateTime.Now,
+                                        CreationTime = DateTime.Now,
+                                        IsDeleted = false,
+                                        HinhThucGui = ConstSMS.HinhThucGuiTin.Zalo,
+                                    };
+                                    await _hethongSMS.InsertAsync(hethongSMS);
+
+                                    SMS_NhatKy_GuiTin nkyGuiSMS = new()
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        TenantId = inforCommon.TenantId,
+                                        IdHeThongSMS = hethongSMS.Id,
+                                        ThoiGianTu = _dtNow,
+                                        ThoiGianDen = _dtNow,
+                                        IdBooking = idLoaiTin == ConstSMS.LoaiTin.LichHen ? customer.IdBooking : null,
+                                        IdHoaDon = idLoaiTin == ConstSMS.LoaiTin.GiaoDich ? customer.IdHoaDon : null,
+                                        CreationTime = DateTime.Now,
+                                        CreatorUserId = inforCommon.UserId,
+                                        IsDeleted = false,
+                                    };
+                                    await _smsNhatKyGuiTin.InsertAsync(nkyGuiSMS);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -399,5 +507,10 @@ namespace BanHangBeautify.BackgroundWorker
         public Guid? IdChiNhanhFirst { get; set; }
         public string BrandNameFirst { get; set; }
         public string NoiDungTinNhan { get; set; }
+
+        public string TenChiNhanh { get; set; }
+        public string SoDienThoaiChiNhanh { get; set; }
+        public string DiaChiChiNhanh { get; set; }
+        public string LogoChiNhanh { get; set; }
     }
 }

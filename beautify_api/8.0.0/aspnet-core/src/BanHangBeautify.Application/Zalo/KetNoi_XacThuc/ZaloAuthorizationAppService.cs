@@ -5,18 +5,14 @@ using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.SMS.Dto;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-//using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Security.Cryptography;
@@ -30,160 +26,10 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
     {
         private readonly IRepository<ZaloAuthorization, Guid> _zaloAuthorization;
         private readonly IConfiguration _config;
-        private List<Zalo_Template> _lstZaloTemp;
         public ZaloAuthorizationAppService(IRepository<ZaloAuthorization, Guid> zaloAuthorization, IConfiguration config)
         {
             _zaloAuthorization = zaloAuthorization;
             _config = config;
-            InnitData_TempZalo();
-        }
-
-        private Zalo_Template InitData_TempSinhNhat()
-        {
-            Guid zaloIdTemp = new("583D011C-78F5-48D4-A284-898441E00987");
-            Zalo_Template zalotemp = new()
-            {
-                Id = zaloIdTemp,
-                IdLoaiTin = ConstSMS.LoaiTin.SinhNhat,
-                TemplateType = "promotion",
-                Language = "VI"
-            };
-
-            Guid zaloIdElement = new("E6041AC0-806E-4835-8F21-DBD69CC6A170");
-            List<Zalo_Element> lstElm = new()
-            {
-                new Zalo_Element
-                {
-                    Id = zaloIdElement,
-                    IdTemplate = zaloIdTemp,
-                    ElementType = "header",
-                    Content = "Const Content header",
-                    IsImage = false,
-                    ThuTuSapXep = 1,
-                },
-                new Zalo_Element
-                {
-                    Id = zaloIdElement,
-                    IdTemplate = zaloIdTemp,
-                    ElementType = "text",
-                    Content = @"<TenChiNhanh> kính chúc <TenKhachHang> có một ngày sinh nhật ý nghĩa bên người thân và gia đình",
-                    IsImage = false,
-                    ThuTuSapXep = 2,
-                }
-            };
-            zalotemp.elements = lstElm;
-            return zalotemp;
-        }
-        private Zalo_Template InitData_TempGiaoDich()
-        {
-            Guid zaloIdTemp = new("3ABE0F1B-D70E-4A1A-B5DE-2BC8CCD71514");
-            Zalo_Template zalotemp = new()
-            {
-                Id = zaloIdTemp,
-                IdLoaiTin = ConstSMS.LoaiTin.SinhNhat,
-                TemplateType = "transaction_transaction",
-                Language = "VI"
-            };
-
-            Guid zaloIdElement = new("F8A61D16-801F-4B31-8A60-EAAE3BE72CC7");
-
-            List<Zalo_TableDetails> tables = new()
-            {
-                new Zalo_TableDetails
-                {
-                    Id = Guid.NewGuid(),
-                    IdElement = zaloIdElement,
-                    Key = "Mã hóa đơn",
-                    Value = "<MaHoaDon>",
-                    ThuTuSapXep= 1,
-                },
-                new Zalo_TableDetails
-                {
-                     Id = Guid.NewGuid(),
-                    IdElement = zaloIdElement,
-                    Key = "Ngày mua hàng",
-                    Value = "<NgayLapHoaDon>",
-                    ThuTuSapXep= 1,
-                },
-                new Zalo_TableDetails
-                {
-                     Id = Guid.NewGuid(),
-                    IdElement = zaloIdElement,
-                    Key = "Tổng tiền",
-                    Value = "<TongTienHang>",
-                    ThuTuSapXep= 3,
-                }
-            };
-
-            List<Zalo_Element> lstElm = new()
-            {
-                new Zalo_Element
-                {
-                    Id = zaloIdElement,
-                    IdTemplate = zaloIdTemp,
-                    ElementType = "banner",
-                    Content = @"https://drive.usercontent.google.com/download?id=1TDXeqE458lvu9DJXFg85FtBEuC_1OHUw&export=view&authuser=0",
-                    IsImage = true,
-                    ThuTuSapXep = 1,
-                },
-                new Zalo_Element
-                {
-                    Id = zaloIdElement,
-                    IdTemplate = zaloIdTemp,
-                    ElementType = "header",
-                    Content = @"Thông báo giao dịch",
-                    IsImage = false,
-                    ThuTuSapXep = 2,
-                },
-                new Zalo_Element
-                {
-                    Id = zaloIdElement,
-                    IdTemplate = zaloIdTemp,
-                    ElementType = "text",
-                    Content = @"Xin chào <TenKhachHang>, cảm ơn bạn đã mua hàng tại cửa hàng. Chúng tôi đã ghi nhận thanh toán của bạn với chi tiết như sau:",
-                    IsImage = false,
-                    ThuTuSapXep = 3,
-                },
-                new Zalo_Element
-                {
-                    Id = zaloIdElement,
-                    IdTemplate = zaloIdTemp,
-                    ElementType = "table",
-                    IsImage = false,
-                    ThuTuSapXep = 4,
-                    tables = tables,
-                }
-            };
-
-            List<Zalo_ButtonDetails> buttons = new()
-            {
-                new Zalo_ButtonDetails
-                {
-                    Id = Guid.NewGuid(),
-                    IdElement = zaloIdElement,
-                    Type = "oa.open.url",
-                    Title = "Xem chi tiết đơn hàng",
-                    Payload = "url...",
-                    ThuTuSapXep= 1,
-                },
-            };
-            zalotemp.elements = lstElm;
-            zalotemp.buttons = buttons;
-
-            return zalotemp;
-        }
-        [HttpGet]
-        public List<Zalo_Template> InnitData_TempZalo()
-        {
-            var obj1 = InitData_TempSinhNhat();
-            var obj2 = InitData_TempGiaoDich();
-            List<Zalo_Template> lst = new()
-            {
-                obj1,
-                obj2
-            };
-            _lstZaloTemp = lst;
-            return _lstZaloTemp;
         }
 
         [HttpPost]
@@ -250,219 +96,7 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
                 return string.Concat(ex.InnerException + ex.Message);
             }
         }
-        /// <summary>
-        /// mỗi refreshToken chỉ dùng 1 lần, sau đó sẽ không dùng dc nữa
-        /// </summary>
-        /// <param name="refreshToken"></param>
-        /// <returns></returns>
-        public async Task<ZaloToken> GetNewAccessToken_fromRefreshToken(string refreshToken)
-        {
-            try
-            {
-                string appId = _config["Zalo:AppId"];
-                string appSecret = _config["Zalo:AppSecret"];
-                //var json = JsonSerializer.Serialize(new { app_id = appId, refresh_token = refreshToken, grant_type = "refresh_token" });
 
-                // Tạo nội dung của body
-                Dictionary<string, string> postParams = new()
-                {
-                    { "app_id", appId },
-                    { "refresh_token", refreshToken },
-                    { "grant_type", "refresh_token" }
-                };
-
-                var body = new FormUrlEncodedContent(postParams).ReadAsStringAsync().Result;
-                // Chuyển đổi body thành chuỗi x-www-form-urlencoded
-                var stringContent = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
-
-                HttpClient client = new();
-                string url = $"https://oauth.zaloapp.com/v4/oa/access_token";
-
-                using HttpRequestMessage request = new(HttpMethod.Post, url);
-                request.Headers.Add("secret_key", appSecret);
-                request.Content = stringContent;
-
-                HttpResponseMessage response = client.SendAsync(request).Result;
-                // Kiểm tra xem yêu cầu có thành công hay không
-                if (response.IsSuccessStatusCode)
-                {
-                    var apiResponse = await response.Content.ReadAsStringAsync();
-                    var newToken = JsonSerializer.Deserialize<ZaloToken>(apiResponse);
-                    return newToken;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        public async Task<string> GuiTinGiaoDich_fromDataDB(PageKhachHangSMSDto dataSend, string accessToken, byte? idLoaiTin)
-        {
-            Zalo_Template tempItem = _lstZaloTemp.Where(x => x.IdLoaiTin == idLoaiTin).FirstOrDefault();
-            if (tempItem != null)
-            {
-                RequestData requestData = new();
-                requestData.recipient = new Recipient { user_id = dataSend.ZOAUserId };
-
-                //Payload payload = new();
-                //payload.elements = new List<object>();
-
-                List<object> lstElem = new List<object>();
-                if (tempItem.elements.Count > 0)
-                {
-                    foreach (var item in tempItem.elements)
-                    {
-                        switch (item.ElementType)
-                        {
-                            case ZaloElementTypeType.BANNER:
-                                {
-                                    if (item.IsImage ?? false)
-                                    {
-                                        //payload.elements.Add(new { type = item.ElementType, image_url = item.Content });
-                                        lstElem.Add(new { type = item.ElementType, image_url = item.Content });
-                                    }
-                                    else
-                                    {
-                                        //payload.elements.Add(new { type = item.ElementType, attachment_id = item.Content });
-                                        lstElem.Add(new { type = item.ElementType, attachment_id = item.Content });
-                                    }
-                                }
-                                break;
-                            case ZaloElementTypeType.HEADER:
-                            case ZaloElementTypeType.TEXT:
-                                {
-                                    lstElem.Add(new { type = item.ElementType, content = ReplaceContent(dataSend, item.Content) });
-                                    //payload.elements.Add(new { type = item.ElementType, content = ReplaceContent(dataSend, item.Content)});
-                                }
-                                break;
-                            case ZaloElementTypeType.TABLE:
-                                {
-                                    List<PayloadContent> lstContentTbl = new();
-                                    foreach (var itemTbl in item.tables)
-                                    {
-                                        PayloadContent objNew = new PayloadContent { key = itemTbl.Key, value = ReplaceContent_Withkey(dataSend, itemTbl.Value) };
-                                        lstContentTbl.Add(objNew);
-                                    }
-                                    //payload.elements.Add(new { type = item.ElementType, content = lstContentTbl });
-                                    lstElem.Add(new { type = item.ElementType, content = lstContentTbl });
-                                }
-                                break;
-                        }
-                    }
-                }
-
-                if (tempItem.buttons != null)
-                {
-                    List<Button> lstBtn = new();
-                    foreach (var item in tempItem.buttons)
-                    {
-                        Button newBtn = new() { title = item.Title, type = item.Type, image_icon = item.ImageIcon, payload = new ButtonPayload { url = item.Payload } };
-                        lstBtn.Add(newBtn);
-                    }
-
-                    requestData.message = new()
-                    {
-                        attachment = new Attachment()
-                        {
-                            type = "template",
-                            payload = new Payload()
-                            {
-                                template_type = tempItem.TemplateType,
-                                language = tempItem.Language,
-                                elements = lstElem,
-                                buttons = lstBtn,
-                            }
-                        }
-                    };
-                }
-                else
-                {
-                    requestData.message = new()
-                    {
-                        attachment = new Attachment()
-                        {
-                            type = "template",
-                            payload = new Payload()
-                            {
-                                template_type = tempItem.TemplateType,
-                                language = tempItem.Language,
-                                elements = lstElem,
-                            }
-                        }
-                    };
-                }
-
-                // Chuyển đổi thành chuỗi JSON
-                string jsonData = System.Text.Json.JsonSerializer.Serialize(requestData, new System.Text.Json.JsonSerializerOptions
-                {
-                    WriteIndented = true // Để định dạng dữ liệu JSON
-                });
-
-                HttpClient client = new();
-                string url = $@"https://openapi.zalo.me/v3.0/oa/message/{tempItem.TemplateType}";
-                var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
-                client.DefaultRequestHeaders.Add("access_token", accessToken);
-                HttpResponseMessage response = await client.PostAsync(url, stringContent);
-                string htmltext = await response.Content.ReadAsStringAsync();
-                return htmltext;
-            }
-            return string.Empty;
-        }
-
-        protected string ReplaceContent_Withkey(PageKhachHangSMSDto cutomer, string key)
-        {
-            string txt = string.Empty;
-            switch (key)
-            {
-                case "<TenKhachHang>":
-                    txt = cutomer.TenKhachHang;
-                    break;
-                case "<NgaySinh>":
-                    txt = cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
-                    break;
-                case "<BookingDate>":
-                    txt = cutomer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
-                    break;
-                case "<ThoiGianHen>":
-                    txt = cutomer.ThoiGianHen;
-                    break;
-                case "<TenDichVu>":
-                    txt = cutomer.TenHangHoa;
-                    break;
-                case "<MaGiaoDich>":
-                    txt = cutomer.MaHoaDon;
-                    break;
-                case "<NgayGiaoDich>":
-                    txt = cutomer.NgayLapHoaDon?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture);
-                    break;
-                case "<TenChiNhanh>":
-                    txt = cutomer.TenChiNhanh;
-                    break;
-                case "<SoDienThoaiChiNhanh>":
-                    txt = cutomer.SoDienThoaiChiNhanh;
-                    break;
-                case "<DiaChiChiNhanh>":
-                    txt = cutomer.DiaChiChiNhanh;
-                    break;
-            }
-            return txt;
-        }
-        protected string ReplaceContent(PageKhachHangSMSDto cutomer, string noiDungTin)
-        {
-            var ss = noiDungTin.Replace("<TenKhachHang>", cutomer.TenKhachHang);
-            ss = ss.Replace("<NgaySinh>", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
-            ss = ss.Replace("<BookingDate>", cutomer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
-            ss = ss.Replace("<ThoiGianHen>", cutomer.ThoiGianHen);
-            ss = ss.Replace("<TenHangHoa>", cutomer.TenHangHoa);// dichvuhen
-            ss = ss.Replace("<MaGiaoDich>", cutomer.MaHoaDon);
-            ss = ss.Replace("<NgayGiaoDich>", cutomer.NgayLapHoaDon?.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
-            ss = ss.Replace("<TenChiNhanh>", cutomer.TenChiNhanh);
-            ss = ss.Replace("<SoDienThoaiChiNhanh>", cutomer.SoDienThoaiChiNhanh);
-            ss = ss.Replace("<DiaChiChiNhanh>", cutomer.DiaChiChiNhanh);
-            return ss;
-        }
         /// <summary>
         /// Gửi tin nhắn tự động
         /// </summary>
@@ -660,6 +294,54 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
 
             string htmltext = await response.Content.ReadAsStringAsync();
             return htmltext;
+        }
+
+        /// <summary>
+        /// mỗi refreshToken chỉ dùng 1 lần, sau đó sẽ không dùng dc nữa
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
+        public async Task<ZaloToken> GetNewAccessToken_fromRefreshToken(string refreshToken)
+        {
+            try
+            {
+                string appId = _config["Zalo:AppId"];
+                string appSecret = _config["Zalo:AppSecret"];
+                //var json = JsonSerializer.Serialize(new { app_id = appId, refresh_token = refreshToken, grant_type = "refresh_token" });
+
+                // Tạo nội dung của body
+                Dictionary<string, string> postParams = new()
+                {
+                    { "app_id", appId },
+                    { "refresh_token", refreshToken },
+                    { "grant_type", "refresh_token" }
+                };
+
+                var body = new FormUrlEncodedContent(postParams).ReadAsStringAsync().Result;
+                // Chuyển đổi body thành chuỗi x-www-form-urlencoded
+                var stringContent = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
+
+                HttpClient client = new();
+                string url = $"https://oauth.zaloapp.com/v4/oa/access_token";
+
+                using HttpRequestMessage request = new(HttpMethod.Post, url);
+                request.Headers.Add("secret_key", appSecret);
+                request.Content = stringContent;
+
+                HttpResponseMessage response = client.SendAsync(request).Result;
+                // Kiểm tra xem yêu cầu có thành công hay không
+                if (response.IsSuccessStatusCode)
+                {
+                    var apiResponse = await response.Content.ReadAsStringAsync();
+                    var newToken = JsonSerializer.Deserialize<ZaloToken>(apiResponse);
+                    return newToken;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         /// <summary>

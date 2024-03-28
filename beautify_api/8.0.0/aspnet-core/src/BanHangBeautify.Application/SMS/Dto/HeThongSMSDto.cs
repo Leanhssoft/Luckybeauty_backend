@@ -11,6 +11,7 @@ namespace BanHangBeautify.SMS.Dto
         public DateTime? NgaySinh { set; get; } = null;
         public string MaHoaDon { get; set; }
         public DateTime? NgayLapHoaDon { set; get; } = null;
+        public double? TongThanhToan { set; get; } = null;
         public string TenHangHoa { get; set; }
         public DateTime? BookingDate { set; get; } = null;
         public DateTime? StartTime { set; get; } = null;

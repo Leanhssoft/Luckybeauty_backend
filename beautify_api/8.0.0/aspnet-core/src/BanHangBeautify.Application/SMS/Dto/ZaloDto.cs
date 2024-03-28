@@ -3,39 +3,23 @@ using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BanHangBeautify.SMS.Dto
 {
-    public class ZaloDto
-    {
-        public string AOID { get; set; }
-        public string TempID { get; set; } // Template của Zalo OA mà khách hàng đăng kí với eSMS --> Id của mẫu tin Zalo
-        public List<string> Params { get; set; }// * Giá trị cần truyền cho các biến trong Template theo thứ tự
-        public string Phone { get; set; }// * Số điện thoại nhận tin
-        public string OAID { get; set; }// * Id Zalo Offical Account của doanh nghiệp
-        public string ApiKey { get; set; }
-        public string SecretKey { get; set; }
-        public string SendDate { get; set; }// Thời gian hẹn gửi của tin yyyy-mm-dd hh:MM:ss
-    }
-
     public class ZaloDataDto
     {
-        [JsonProperty("message_id")]
-        public string MessageId { get; set; }
-        [JsonProperty("user_id")]
-        public string UserId { get; set; }
+        public string message_id { get; set; }
+        public string user_id { get; set; }
     }
 
-    public class ResultZaloDto
+    public class ResultMessageZaloDto
     {
-        [JsonProperty("data")]
-        public ZaloDataDto Data { get; set; } // ID của tin nhắn mới được tạo 
-        [JsonProperty("data")]
-        public string Error { get; set; }// = 0, Gửi thành công
-        [JsonProperty("message")]
-        public string Message { get; set; }// nếu gửi thành công message = Success, ngược lại: thông báo lỗi
+        public ZaloDataDto data { get; set; } // ID của tin nhắn mới được tạo 
+        public int error { get; set; }// = 0, Gửi thành công
+        public string message { get; set; }// nếu gửi thành công message = Success, ngược lại: thông báo lỗi
     }
 
     public class Zalo_InforHoaDonSend
@@ -45,5 +29,50 @@ namespace BanHangBeautify.SMS.Dto
         public string MaHoaDon { get; set; }
         public DateTime? NgayLapHoaDon { get; set; }
         public double? TongTienHang { get; set; }
+    }
+
+    // Khai báo các lớp để mô tả kiểu dữ liệu trong dữ liệu JSON khi gửi tin nhắn Zalo
+    public class ZaloRecipient
+    {
+        public string user_id { get; set; }
+    }
+
+    public class ZaloPayloadContent
+    {
+        public string value { get; set; }
+        public string key { get; set; }
+    }
+
+    public class ZaloButton
+    {
+        public string title { get; set; }
+        public string image_icon { get; set; }
+        public string type { get; set; }
+        public object payload { get; set; }
+    }
+
+    public class ZaloPayload
+    {
+        public string template_type { get; set; }
+        public string language { get; set; }
+        public List<object> elements { get; set; }
+        public List<ZaloButton> buttons { get; set; }
+    }
+
+    public class ZaloAttachment
+    {
+        public string type { get; set; }
+        public ZaloPayload payload { get; set; }
+    }
+
+    public class ZaloMessage
+    {
+        public ZaloAttachment attachment { get; set; }
+    }
+
+    public class ZaloRequestData
+    {
+        public ZaloRecipient recipient { get; set; }
+        public ZaloMessage message { get; set; }
     }
 }

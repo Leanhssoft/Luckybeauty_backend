@@ -10,6 +10,10 @@ namespace BanHangBeautify.Consts
             public const byte SinhNhat = 2;
             public const byte LichHen = 3;
             public const byte GiaoDich = 4;
+            public const byte NhacLichHen = 31;
+            public const byte XacNhanLichHen = 32;
+            public const byte ThayDoiLichHen = 33;
+            public const byte KhuyenMai = 5;
         }
         public class HinhThucGuiTin
         {
