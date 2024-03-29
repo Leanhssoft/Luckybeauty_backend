@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BanHangBeautify.SMS.Dto
+namespace BanHangBeautify.Zalo.GuiTinNhan
 {
     public class ZaloDataDto
     {

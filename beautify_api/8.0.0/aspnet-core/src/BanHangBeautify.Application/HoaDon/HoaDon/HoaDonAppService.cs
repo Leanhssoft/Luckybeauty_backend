@@ -21,8 +21,8 @@ using BanHangBeautify.AppCommon;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using Abp.Domain.Uow;
 using BanHangBeautify.Consts;
-using BanHangBeautify.SMS.Dto;
 using System.Runtime.InteropServices;
+using BanHangBeautify.Zalo.GuiTinNhan;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
