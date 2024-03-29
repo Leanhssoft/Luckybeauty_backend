@@ -1,11 +1,13 @@
 ﻿using Abp.Authorization;
 using Abp.Webhooks;
+using Azure.Core;
 using BanHangBeautify.AppWebhook.Dto;
 using BanHangBeautify.Consts;
 using BanHangBeautify.KhachHang.KhachHang;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.Zalo.DangKy_ThanhVien;
 using BanHangBeautify.Zalo.DangKyThanhVien;
+using BanHangBeautify.Zalo.KetNoi_XacThuc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,72 +20,62 @@ namespace BanHangBeautify.AppWebhook
         private readonly IWebhookPublisher _webHookPublisher;
         private readonly IZalo_KhachHangThanhVienAppService _zaloKhachHangThanhVien;
         private readonly IKhachHangAppService _khachHangAppService;
-
+        private readonly IZaloAuthorization _zaloAuthen;
         public AppWebhookPublisher(IWebhookPublisher webHookPublisher, IZalo_KhachHangThanhVienAppService zaloKhachHangThanhVien,
-            IKhachHangAppService khachHangAppService)
+            IKhachHangAppService khachHangAppService, IZaloAuthorization zaloAuthen)
         {
             _webHookPublisher = webHookPublisher;
             _zaloKhachHangThanhVien = zaloKhachHangThanhVien;
             _khachHangAppService = khachHangAppService;
+            _zaloAuthen = zaloAuthen;
         }
         /// <summary>
-        /// userInfor: thông tin người dùng chia sẻ từ ZOA (chỉ gửi webhook đến tennant hiện tại)
+        /// zaloUserId: user của user (quantam/khong quan tam oa)
         /// </summary>
-        /// <param name="userInfor"></param>
         /// <param name="zaloUserId"></param>
         /// <returns></returns>
-        public async Task UserSendMessage(ZOA_InforUserSubmit userInfor, string zaloUserId)
+        public async Task<Guid?> AddUpdate_ZaloKhachHangThanhVien(string zaloUserId)
         {
-            Zalo_KhachHangThanhVienDto newUser = new()
+            var zaloToken = await _zaloAuthen.Innit_orGetToken();
+            var userInfor = await _zaloAuthen.GetInforUser_ofOA(zaloToken.AccessToken, zaloUserId);
+            if (userInfor != null)
             {
-                TenDangKy = userInfor.Name,
-                SoDienThoaiDK = userInfor.Phone,
-                DiaChi = userInfor.Address,
-                TenTinhThanh = userInfor.City, // todo get IdQuanHuyen + IdTinhThanh 
-                TenQuanHuyen = userInfor.District,
-                ZOAUserId = zaloUserId
-            };
-
-            // check exists zaloUserId
-            var existsZOAUserId = _zaloKhachHangThanhVien.CheckExistZaloUserId(zaloUserId);
-            Guid? idKhachHangThanhVien;
-            if (existsZOAUserId)
-            {
-                var dataUser = await _zaloKhachHangThanhVien.UpdateThanhVienZOA(newUser);
-                idKhachHangThanhVien = dataUser.Id ?? null;
-            }
-            else
-            {
-                var dataUser = await _zaloKhachHangThanhVien.DangKyThanhVienZOA(newUser);
-                idKhachHangThanhVien = dataUser.Id ?? null;
-            }
-
-            var exists = await _khachHangAppService.CheckExistSoDienThoai(userInfor.Phone);
-            if (exists)
-            {
-                List<Guid> arrIdCustomer = await _khachHangAppService.GetListCustomerId_byPhone(userInfor.Phone);
-                if (arrIdCustomer != null && arrIdCustomer.Count > 0)
+                Zalo_KhachHangThanhVienDto newUser = new()
                 {
-                    await _khachHangAppService.Update_IdKhachHangZOA(arrIdCustomer[0], idKhachHangThanhVien);
-                }
-            }
-            else
-            {
-                CreateOrEditKhachHangDto customer = new()
-                {
-                    IdKhachHangZOA = idKhachHangThanhVien,
-                    TenKhachHang = userInfor.Name,
-                    TenKhachHang_KhongDau = BanHangBeautify.AppCommon.ConvertHelper.ConvertToUnSign(userInfor.Name),
-                    SoDienThoai = userInfor.Phone,
-                    DiaChi = userInfor.Address,
-                    GioiTinhNam = false,
-                    TrangThai = 1,
-                    IdLoaiKhach = LoaiKhachHang.KHACH_HANG,
+                    DisplayName = userInfor.DisplayName,
+                    UserIdByApp = userInfor.UserIdByApp,
+                    UserIsFollower = userInfor.UserIsFollower,
+                    Avatar = userInfor.Avatar,
+                    ZOAUserId = zaloUserId
                 };
-                await _khachHangAppService.CreateOrEdit(customer);
-            }
 
-            //await _webHookPublisher.PublishAsync(ConstAppWebHookNames.ZOA_UserSendMessage, userInfor, AbpSession.TenantId ?? 1);
+                var idKhachHangThanhVien = _zaloKhachHangThanhVien.GetId_fromZOAUserId(zaloUserId);
+                if (idKhachHangThanhVien != null)
+                {
+                    await _zaloKhachHangThanhVien.UpdateThanhVienZOA(newUser);
+                }
+                else
+                {
+                    var dataNew = await _zaloKhachHangThanhVien.DangKyThanhVienZOA(newUser);
+                    idKhachHangThanhVien = dataNew.Id;
+                }
+                return idKhachHangThanhVien;
+            }
+            return null;
+        }
+        public async Task AddNewCustomer_ShareInfor(Guid idKhachHangThanhVien, ZaloUserShareInforDto inforShare)
+        {
+            CreateOrEditKhachHangDto newCus = new()
+            {
+                Id = Guid.NewGuid(),
+                TenKhachHang = inforShare.name,
+                SoDienThoai = inforShare.phone,
+                DiaChi = inforShare.address,
+                TrangThai = 1,
+                IdLoaiKhach = 1,
+                IdKhachHangZOA = idKhachHangThanhVien
+            };
+            await _khachHangAppService.CreateOrEdit(newCus);
         }
 
         public async Task UserRecieveMessage(int tenantId)
