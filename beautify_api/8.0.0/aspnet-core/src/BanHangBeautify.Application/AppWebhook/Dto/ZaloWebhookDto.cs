@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BanHangBeautify.Zalo.DangKyThanhVien;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +52,7 @@ namespace BanHangBeautify.AppWebhook.Dto
         [JsonProperty("message")]
         public ZOA_Message Message { get; set; }
         [JsonProperty("info")]
-        public ZOA_InforUserSubmit InforUserSubmit { get; set; }
+        public ZaloUserShareInforDto InforUserSubmit { get; set; }
 
         [JsonProperty("timestamp")]
         public long Timestamp { get; set; }

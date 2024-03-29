@@ -5,6 +5,7 @@ using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.SMS.Dto;
+using BanHangBeautify.Zalo.DangKyThanhVien;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -22,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Zalo.KetNoi_XacThuc
 {
-    public class ZaloAuthorizationAppService : SPAAppServiceBase
+    public class ZaloAuthorizationAppService : SPAAppServiceBase, IZaloAuthorization
     {
         private readonly IRepository<ZaloAuthorization, Guid> _zaloAuthorization;
         private readonly IConfiguration _config;
@@ -95,6 +96,30 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
             {
                 return string.Concat(ex.InnerException + ex.Message);
             }
+        }
+
+        [HttpGet]
+        /// <summary>
+        /// get infor user OA
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<Zalo_KhachHangThanhVienDto> GetInforUser_ofOA(string accessToken, string userId)
+        {
+            HttpClient client = new();
+            var requestData = new
+            {
+                user_id = userId,
+            };
+            string jsonData = JsonSerializer.Serialize(requestData);
+            string url = $"https://openapi.zalo.me/v3.0/oa/user/detail?data={jsonData}";
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.GetAsync(url);
+            string htmltext = await response.Content.ReadAsStringAsync();
+            // todo: data return null
+            var dataReturn = JsonSerializer.Deserialize<ResultDataZaloCommon<Zalo_KhachHangThanhVienDto>>(htmltext);
+            return dataReturn.data;
         }
 
         /// <summary>
