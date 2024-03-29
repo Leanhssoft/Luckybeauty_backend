@@ -22,6 +22,15 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
         {
         }
 
+        public async Task<string> FnGetMaKhachHang(Guid? idChiNhanh, int idLoaiDoiTuong)
+        {
+            using var command = CreateCommand("select dbo.fnGetMaKhachHang(@IdChiNhanh,@IdLoaiDoiTuong) ", System.Data.CommandType.Text);
+            command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdLoaiChungTu", idLoaiDoiTuong));
+            var code = (await command.ExecuteScalarAsync()).ToString();
+            return code;
+        }
+
         public async Task<List<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId)
         {
             using (var command = CreateCommand("prc_getKhachHang_noBooking"))
