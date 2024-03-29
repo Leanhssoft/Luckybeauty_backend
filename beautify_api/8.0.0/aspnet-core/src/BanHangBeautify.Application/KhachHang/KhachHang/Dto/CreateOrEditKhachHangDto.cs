@@ -34,5 +34,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public Guid? IdTinhThanh { get; set; }
         public Guid? IdQuanHuyen { get; set; }
         public Guid? IdKhachHangZOA { get; set; }
+        public string ZOAUserId { get; set; }
     }
 }
