@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -182,7 +182,7 @@ BEGIN
     
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spJqAutoCustomer]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spJqAutoCustomer]
 	@TenantId int= 3,
 	@LoaiDoiTuong int= 1,
 	@IsUserZalo int = 0,
@@ -233,7 +233,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
+
         }
     }
 }

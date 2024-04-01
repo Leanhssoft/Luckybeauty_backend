@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -125,7 +125,7 @@ BEGIN
 	RETURN @ReturnValue
 END");
 
-			migrationBuilder.Sql(@"ALTER FUNCTION [dbo].[fnGetMaPhieuThuChi]
+            migrationBuilder.Sql(@"ALTER FUNCTION [dbo].[fnGetMaPhieuThuChi]
 (
 	@TenantId int,
 	@IdChiNhanh uniqueidentifier= null,
@@ -180,7 +180,7 @@ BEGIN
 
 	return @strReturn
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetAllSoQuy]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetAllSoQuy]
 	@TenantId INT = 1,
     @IdChiNhanhs nvarchar(max)='2324f320-30f3-4182-be92-e6d11b107601',
 	@IdLoaiChungTus varchar(20)= null, ---- 11.thu.12.chi
@@ -444,7 +444,7 @@ BEGIN
 		OFFSET (@SkipCount* @MaxResultCount) ROWS
 		FETCH NEXT @MaxResultCount ROWS ONLY
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetChiTietHoaDon_byIdHoaDon]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetChiTietHoaDon_byIdHoaDon]
 	@IdHoaDon uniqueidentifier
 AS
 BEGIN
@@ -488,7 +488,7 @@ BEGIN
 		where (@hdIsDelete = '0' and ctLast.IsDeleted ='0') ---- hd chuaxoa: chi get cthd chua xoa
 		or (@hdIsDelete ='1' and ctLast.LastTimeDelete = @lastTimeDelete) --- nguoclai: get cthd xoa cuoicung
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetInforHoaDon_byId]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetInforHoaDon_byId]
 	@Id uniqueidentifier
 AS
 BEGIN
@@ -528,7 +528,7 @@ BEGIN
 		) sq on hd.id= sq.IdHoaDonLienQuan
 		where hd.Id= @Id
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
 			@TenantId int =7,
 			@IdChiNhanhs nvarchar(max)=null,
 			@IdUserLogin bigint = 1,

@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -11,7 +11,7 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-           
+
             migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[GetDetailProduct]
 	@IdDonViQuyDoi uniqueidentifier
 AS
@@ -284,7 +284,7 @@ BEGIN
 		) sq on hd.id= sq.IdHoaDonLienQuan
 		where hd.Id= @Id
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
                 @TenantId INT = 7,
                 @IdChiNhanh NVARCHAR(MAX) ='ecf5ec7a-15e6-4b42-9b97-ed84dcbf6d05',
 				@FromDate datetime = null,
@@ -509,7 +509,7 @@ BEGIN
 
   
 END");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetQuyChiTiet_byIQuyHoaDon]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetQuyChiTiet_byIQuyHoaDon]
 	@IdQuyHoaDon uniqueidentifier 
 AS
 BEGIN

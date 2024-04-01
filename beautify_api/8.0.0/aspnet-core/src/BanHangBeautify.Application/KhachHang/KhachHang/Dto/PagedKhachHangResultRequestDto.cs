@@ -14,7 +14,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public Guid? IdNhomKhach { get; set; }
         public double? TongChiTieuTu { get; set; }
         public double? TongChiTieuDen { get; set; }
-        public bool?  GioiTinh{ get; set; }
+        public bool? GioiTinh { get; set; }
         public DateTime? TimeFrom { get; set; }
         public DateTime? TimeTo { get; set; }
         public int? IsUserZalo { get; set; }

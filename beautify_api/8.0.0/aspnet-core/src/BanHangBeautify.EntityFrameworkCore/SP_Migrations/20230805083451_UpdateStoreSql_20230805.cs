@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -50,7 +50,7 @@ BEGIN
 	left join NS_NhanVien nv on bkN.IdNhanVien = nv.Id
 	where bk.Id = @IdBooking
 END");
-            
+
         }
 
         /// <inheritdoc />

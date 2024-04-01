@@ -29,7 +29,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
             {
                 defaultEdition = new SubscribableEdition { Name = EditionManager.DefaultEditionName, DisplayName = EditionManager.DefaultEditionName };
                 _context.SubscribableEditions.Add(defaultEdition);
-                
+
                 _context.SaveChanges();
 
                 /* Add desired features to the standard edition, if wanted... */

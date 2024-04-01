@@ -21,7 +21,7 @@ namespace BanHangBeautify.AppDanhMuc.AppCuaHang
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         INhatKyThaoTacAppService _audilogService;
-        public CuaHangAppService(IRepository<HT_CongTy, Guid> congTyRepository, IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,INhatKyThaoTacAppService audilogervice)
+        public CuaHangAppService(IRepository<HT_CongTy, Guid> congTyRepository, IRepository<DM_ChiNhanh, Guid> chiNhanhRepository, INhatKyThaoTacAppService audilogervice)
         {
             _congTyRepository = congTyRepository;
             _chiNhanhRepository = chiNhanhRepository;

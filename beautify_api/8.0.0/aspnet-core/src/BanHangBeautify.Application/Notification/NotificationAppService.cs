@@ -83,12 +83,12 @@ namespace BanHangBeautify.Notification
             }
             catch (Exception)
             {
-                return new GetNotificationsOutput(0, 0,new List<UserCustomNotification>());
+                return new GetNotificationsOutput(0, 0, new List<UserCustomNotification>());
             }
-           
+
         }
-        [AbpAuthorize]        
-        
+        [AbpAuthorize]
+
         public async Task SetAllNotificationsAsRead()
         {
             await _userNotificationManager.UpdateAllUserNotificationStatesAsync(AbpSession.ToUserIdentifier(), UserNotificationState.Read);

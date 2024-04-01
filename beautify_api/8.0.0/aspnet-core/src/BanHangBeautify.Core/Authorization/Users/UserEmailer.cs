@@ -135,11 +135,11 @@ namespace BanHangBeautify.Authorization.Users
             {
                 tenancyName = "HOST";
             }
-            mailMessage.AppendLine("<div><h1>" +"Xin chào " + user.Name + " " + user.Surname + ","+ "</h1></div>");
+            mailMessage.AppendLine("<div><h1>" + "Xin chào " + user.Name + " " + user.Surname + "," + "</h1></div>");
             mailMessage.AppendLine("<span>" + "Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản: " + user.UserName + " " + "của Tenancy: " + tenancyName + "." + "</span> <br/>");
-            mailMessage.AppendLine("<span>" +"Sau đây là mã xác nhận đặt lại mật khẩu của bạn: " + user.PasswordResetCode +"</span> <br/>");
+            mailMessage.AppendLine("<span>" + "Sau đây là mã xác nhận đặt lại mật khẩu của bạn: " + user.PasswordResetCode + "</span> <br/>");
             mailMessage.AppendLine("<span>" + "Vui lòng không chia sẽ mã này cho bất kỳ ai." + "</span> <br/>");
-            
+
             if (!link.IsNullOrEmpty())
             {
                 link = link.Replace("{userId}", user.Id.ToString());
@@ -191,7 +191,7 @@ namespace BanHangBeautify.Authorization.Users
                     return tenant?.Name;
                 }
                 return null;
-               
+
             }
         }
         private StringBuilder GetTitleAndSubTitle(int? tenantId, string title, string subTitle)

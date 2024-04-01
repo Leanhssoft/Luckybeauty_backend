@@ -4,14 +4,12 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using static Google.Apis.Drive.v3.FilesResource;
 
@@ -27,7 +25,7 @@ namespace BanHangBeautify.UploadFile
         {
             _hostEnvironment = hostEnvironment;
             _config = config;
-            _folderId= _config["GoogleApi:FolderShareId"];
+            _folderId = _config["GoogleApi:FolderShareId"];
             // cấp quyền truy cập vào drive
             var pathFile = Path.Combine(_hostEnvironment.WebRootPath, @"GoogleAPI\credentials.json");
             var credential = GoogleCredential.FromFile(pathFile).CreateScoped(DriveService.ScopeConstants.Drive);
@@ -108,7 +106,7 @@ namespace BanHangBeautify.UploadFile
             }
         }
 
-        
+
         [HttpGet]
         public async Task<IList<Google.Apis.Drive.v3.Data.File>> GoogleApi_GetAllFile()
         {

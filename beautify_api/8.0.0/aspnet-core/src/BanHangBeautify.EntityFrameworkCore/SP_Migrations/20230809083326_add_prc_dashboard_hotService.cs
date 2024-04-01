@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -68,7 +68,7 @@ END;
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql("DROP PROCEDURE prc_dashboard_hotService");
+            migrationBuilder.Sql("DROP PROCEDURE prc_dashboard_hotService");
         }
     }
 }

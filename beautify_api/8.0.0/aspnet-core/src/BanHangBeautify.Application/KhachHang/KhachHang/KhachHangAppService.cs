@@ -105,7 +105,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.LastModifierUserId = AbpSession.UserId;
             khachHang.TenantId = AbpSession.TenantId ?? 1;
             khachHang.IsDeleted = false;
-            string gioiTinh = dto.GioiTinhNam ==true?"Nam":"Nữ";
+            string gioiTinh = dto.GioiTinhNam == true ? "Nam" : "Nữ";
             //var nhomKhach = _nhomKhachHangRepository.FirstOrDefault(x => x.Id == khachHang.IdNhomKhach).TenNhomKhach;
             await _repository.InsertAsync(khachHang);
             result = ObjectMapper.Map<KhachHangDto>(khachHang);
@@ -224,7 +224,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                 nhatKyThaoTacDto.ChucNang = "Khách hàng";
                 nhatKyThaoTacDto.NoiDung = "Xóa nhiều khách hàng";
-                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa khách hàng: " + string.Join(", ",checkExists.Select(x=>x.MaKhachHang).ToList());
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa khách hàng: " + string.Join(", ", checkExists.Select(x => x.MaKhachHang).ToList());
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);

@@ -1,26 +1,26 @@
-﻿using Abp.Dependency;
+﻿using Abp.Application.Services.Dto;
+using Abp.Configuration;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using Abp.Net.Mail;
 using Abp.Threading.BackgroundWorkers;
 using Abp.Threading.Timers;
-using System;
-using System.Linq;
-using System.Globalization;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using BanHangBeautify.Entities;
-using BanHangBeautify.SMS.Dto;
-using BanHangBeautify.SMS.GuiTinNhan.Repository;
-using BanHangBeautify.SMS.ESMS;
-using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.Authorization.Users;
-using BanHangBeautify.SMS.Brandname.Repository;
-using Abp.Net.Mail;
 using BanHangBeautify.Configuration.Dto;
-using Abp.Configuration;
-using NPOI.XWPF.UserModel;
-using Abp.Application.Services.Dto;
 using BanHangBeautify.Consts;
+using BanHangBeautify.Entities;
+using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.SMS.Brandname.Repository;
+using BanHangBeautify.SMS.Dto;
+using BanHangBeautify.SMS.ESMS;
+using BanHangBeautify.SMS.GuiTinNhan.Repository;
+using NPOI.XWPF.UserModel;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.BackgroundWorker
 {
@@ -79,7 +79,7 @@ namespace BanHangBeautify.BackgroundWorker
             var tenants = _tenantRepository.GetAllList();
             var lstBrandname = await _repoBrandname.GetListBandname(new ParamSearchBrandname { Keyword = string.Empty, SkipCount = 0 }, 1);  // get all brand name at host
 
-             for (int i = 0; i < tenants.Count; i++)
+            for (int i = 0; i < tenants.Count; i++)
             {
                 var tenantId = tenants[i].Id;
 
@@ -249,11 +249,11 @@ namespace BanHangBeautify.BackgroundWorker
             {
                 paramSearch.HinhThucGuiTins = new List<byte> { ConstSMS.HinhThucGuiTin.SMS };
                 PagedResultDto<PageKhachHangSMSDto> data = await _repoSMS.GetListCustomer_byIdLoaiTin(paramSearch, idLoaiTin);
-               
+
                 if (data.TotalCount > 0)
                 {
                     IReadOnlyCollection<PageKhachHangSMSDto> lstCustomer = null;
-                    if(totalTime > 0)
+                    if (totalTime > 0)
                     {
                         // Nếu gửi trước: check start time ...: có thể có sai số (chênh lệch xx)
                         float? saisoTruoc = totalTime - 10;

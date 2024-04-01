@@ -21,7 +21,7 @@ namespace BanHangBeautify.AppDanhMuc.CauHinhPhanMem
     {
         private readonly IRepository<HT_CauHinhPhanMem, Guid> _repository;
         INhatKyThaoTacAppService _audilogService;
-        public CauHinhPhanMemAppService(IRepository<HT_CauHinhPhanMem, Guid> repository,INhatKyThaoTacAppService audilogService)
+        public CauHinhPhanMemAppService(IRepository<HT_CauHinhPhanMem, Guid> repository, INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
             _audilogService = audilogService;

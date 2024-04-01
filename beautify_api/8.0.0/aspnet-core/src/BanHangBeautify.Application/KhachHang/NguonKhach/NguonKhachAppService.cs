@@ -21,7 +21,7 @@ namespace BanHangBeautify.KhachHang.NguonKhach
     {
         private IRepository<DM_NguonKhach, Guid> _repository;
         INhatKyThaoTacAppService _audilogService;
-        public NguonKhachAppService(IRepository<DM_NguonKhach, Guid> repository,INhatKyThaoTacAppService audilogService)
+        public NguonKhachAppService(IRepository<DM_NguonKhach, Guid> repository, INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
             _audilogService = audilogService;

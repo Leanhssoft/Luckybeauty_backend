@@ -20,12 +20,12 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Users.UserProfile
 {
     [AbpAuthorize]
-    public class UserProfileAppService: SPAAppServiceBase
+    public class UserProfileAppService : SPAAppServiceBase
     {
         private readonly UserManager _userManager;
         IRepository<NS_NhanVien, Guid> _nhanVienRepository;
         INhatKyThaoTacAppService _audilogService;
-        public UserProfileAppService(UserManager userManager, 
+        public UserProfileAppService(UserManager userManager,
             IRepository<NS_NhanVien, Guid> nhanVienRepository,
             INhatKyThaoTacAppService audilogService)
         {
@@ -97,7 +97,7 @@ namespace BanHangBeautify.Users.UserProfile
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Profile";
             nhatKyThaoTacDto.NoiDung = "Cập nhật thông tin tài khoản";
-            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div><p>Họ và tên : {0} - {1} - {2} </p>/div>", fullName, input.PhoneNumber,input.EmailAddress)+ string.Format("<div> <h4>Thông tin cũ</h4><br/>" +
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div><p>Họ và tên : {0} - {1} - {2} </p>/div>", fullName, input.PhoneNumber, input.EmailAddress) + string.Format("<div> <h4>Thông tin cũ</h4><br/>" +
                 "<p>Họ và tên: {0}</p>" +
                 "<p>Số điện thoại: {1}</p>" +
                 "<p>Email: {2}</p>" +
@@ -105,7 +105,7 @@ namespace BanHangBeautify.Users.UserProfile
             await _userManager.UpdateAsync(user);
             return true;
         }
-       
+
         public async Task<ExecuteResultDto> ChangeUserPassword(ChangePasswordDto input)
         {
             ExecuteResultDto result = new ExecuteResultDto();
@@ -140,7 +140,7 @@ namespace BanHangBeautify.Users.UserProfile
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Người dùng";
             nhatKyThaoTacDto.NoiDung = "Đổi mật khẩu";
-            nhatKyThaoTacDto.NoiDungChiTiet = "Đổi mật khẩu tài khoản: " + user.UserName +" thành: "+ input.NewPassword;
+            nhatKyThaoTacDto.NoiDungChiTiet = "Đổi mật khẩu tài khoản: " + user.UserName + " thành: " + input.NewPassword;
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }

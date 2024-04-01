@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -11,8 +11,8 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS [dbo].[spInsertNhatKyGuiTinSMS]");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spInsertNhatKyGuiTinSMS]
+            migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS [dbo].[spInsertNhatKyGuiTinSMS]");
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spInsertNhatKyGuiTinSMS]
 	@TenantId int =1,
 	@IdHeThongSMS uniqueidentifier = null,
 	@IdCustomer uniqueidentifier = null,
@@ -75,7 +75,7 @@ BEGIN
     
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListSMS]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListSMS]
 	@IdChiNhanhs nvarchar(max)='',
 	@FromDate datetime= '2023-11-01',
 	@ToDate datetime = '2023-11-30',
@@ -742,7 +742,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS [dbo].[spInsertNhatKyGuiTinSMS]");
+            migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS [dbo].[spInsertNhatKyGuiTinSMS]");
         }
     }
 }

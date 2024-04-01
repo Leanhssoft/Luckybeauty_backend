@@ -19,8 +19,6 @@ using BanHangBeautify.NhatKyHoatDong;
 using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests;
-using BanHangBeautify.Suggests.Repository;
-using Google.Apis.Drive.v3.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -119,7 +117,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
                 {
                     nhanSu.MaNhanVien = "NS00" + countNhanVien;
                 }
-            
+
             }
             nhanSu.Ho = dto.Ho;
             nhanSu.TenLot = dto.TenLot;
@@ -158,13 +156,13 @@ namespace BanHangBeautify.NhanSu.NhanVien
             nhatKyThaoTacDto.ChucNang = "Nhân viên";
             nhatKyThaoTacDto.NoiDung = "Thêm mới nhân viên: " + dto.TenNhanVien + " (" + nhanSu.MaNhanVien + ")";
             nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>" +
-                    "<p>Thêm mới nhân viên:</p>"+
+                    "<p>Thêm mới nhân viên:</p>" +
                     "<p>- Họ và tên: {0}</p>" +
                     "<p>- Số điện thoại {1}</p>" +
                     "<p>- Giới tính: {2}</p>" +
-                    "</div>", nhanSu.TenNhanVien, nhanSu.SoDienThoai,nhanSu.GioiTinh==1?"Nam":"Nữ");
+                    "</div>", nhanSu.TenNhanVien, nhanSu.SoDienThoai, nhanSu.GioiTinh == 1 ? "Nam" : "Nữ");
             await _audiLogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
-            
+
             return result;
         }
         [NonAction]
@@ -218,7 +216,7 @@ namespace BanHangBeautify.NhanSu.NhanVien
             var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Nhân viên";
-            nhatKyThaoTacDto.NoiDung = "Sửa thông tin nhân viên: " + nhanSu.TenNhanVien +"("+nhanSu.MaNhanVien+")";
+            nhatKyThaoTacDto.NoiDung = "Sửa thông tin nhân viên: " + nhanSu.TenNhanVien + "(" + nhanSu.MaNhanVien + ")";
             nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>" +
                     "<p>Thông tin nhân viên:</p>" +
                     "<p>- Họ và tên: {0}</p>" +
@@ -235,12 +233,12 @@ namespace BanHangBeautify.NhanSu.NhanVien
             var find = await _repository.FirstOrDefaultAsync(x => x.Id == id);
             if (find != null)
             {
-                var user = _userService.FirstOrDefault(x=>x.NhanSuId==id);
-                if (user!=null)
+                var user = _userService.FirstOrDefault(x => x.NhanSuId == id);
+                if (user != null)
                 {
                     user.IsActive = false;
-                    user.LastModificationTime= DateTime.Now;
-                    user.LastModifierUserId= AbpSession.UserId;
+                    user.LastModificationTime = DateTime.Now;
+                    user.LastModifierUserId = AbpSession.UserId;
                     await _userService.UpdateAsync(user);
                 }
                 find.IsDeleted = true;
@@ -261,26 +259,27 @@ namespace BanHangBeautify.NhanSu.NhanVien
         [AbpAuthorize(PermissionNames.Pages_NhanSu_Delete)]
         public async Task<ExecuteResultDto> DeleteMany(List<Guid> ids)
         {
-            ExecuteResultDto result = new ExecuteResultDto() { 
-                Status= "error",
-                Message= "Có lỗi xảy ra vui lòng thử lại sau!"
-            };
-            if (ids!=null && ids.Count>0)
+            ExecuteResultDto result = new ExecuteResultDto()
             {
-                var findNhanViens = await _repository.GetAll().Where(x=>ids.Contains(x.Id)).ToListAsync();
-                var findUsers = await _userService.GetAll().Where(x=>ids.Contains((Guid)x.NhanSuId)).ToListAsync();
+                Status = "error",
+                Message = "Có lỗi xảy ra vui lòng thử lại sau!"
+            };
+            if (ids != null && ids.Count > 0)
+            {
+                var findNhanViens = await _repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
+                var findUsers = await _userService.GetAll().Where(x => ids.Contains((Guid)x.NhanSuId)).ToListAsync();
                 _repository.RemoveRange(findNhanViens);
                 foreach (var item in findUsers)
                 {
-                    item.IsActive= false;
-                    item.LastModificationTime= DateTime.Now;
-                    item.LastModifierUserId= AbpSession.UserId;
+                    item.IsActive = false;
+                    item.LastModificationTime = DateTime.Now;
+                    item.LastModifierUserId = AbpSession.UserId;
                     await _userService.UpdateAsync(item);
                 }
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Nhân viên";
-                nhatKyThaoTacDto.NoiDung = "Xóa nhiều nhân viên: " + string.Join(", ",findNhanViens.SelectMany(x=>x.TenNhanVien).ToList());
+                nhatKyThaoTacDto.NoiDung = "Xóa nhiều nhân viên: " + string.Join(", ", findNhanViens.SelectMany(x => x.TenNhanVien).ToList());
                 nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhiều nhân viên: " + string.Join(", ", findNhanViens.SelectMany(x => x.TenNhanVien).ToList());
                 result.Status = "success";
                 result.Message = string.Format("Xóa {0} bản ghi thành công!", ids.Count);
@@ -299,8 +298,8 @@ namespace BanHangBeautify.NhanSu.NhanVien
             if (nhanSu != null)
             {
                 var result = ObjectMapper.Map<CreateOrEditNhanSuDto>(nhanSu);
-                var services =await _suggestService.SuggestDichVu(nhanSu.Id);
-                result.Services = services.Select(x=>x.Id).ToList();
+                var services = await _suggestService.SuggestDichVu(nhanSu.Id);
+                result.Services = services.Select(x => x.Id).ToList();
                 return result;
             }
 

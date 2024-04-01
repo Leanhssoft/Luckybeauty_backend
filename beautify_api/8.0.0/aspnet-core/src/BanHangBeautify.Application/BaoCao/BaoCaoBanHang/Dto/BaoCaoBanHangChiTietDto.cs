@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Dto
 {
-    public class BaoCaoBanHangChiTietDto: BaoCaoBanHang_SumFooterDto
+    public class BaoCaoBanHangChiTietDto : BaoCaoBanHang_SumFooterDto
     {
         public string MaHoaDon { get; set; }
         public DateTime NgayLapHoaDon { get; set; }

@@ -11,7 +11,7 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            
+
             migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
 			@TenantId int =7,
 			@IdChiNhanhs nvarchar(max)=null,
@@ -163,7 +163,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-           
+
         }
     }
 }

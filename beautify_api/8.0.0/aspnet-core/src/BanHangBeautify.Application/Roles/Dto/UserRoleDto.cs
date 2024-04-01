@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Roles.Dto
 {
-    public class CreateOrUpdateUserRoleDto: UserRole
+    public class CreateOrUpdateUserRoleDto : UserRole
     {
         //public int? TenantId { get; set; }
         //public long UserId { get; set; }

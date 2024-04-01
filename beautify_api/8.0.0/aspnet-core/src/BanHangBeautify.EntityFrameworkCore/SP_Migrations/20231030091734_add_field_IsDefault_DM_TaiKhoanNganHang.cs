@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -18,13 +18,13 @@ namespace BanHangBeautify.SPMigrations
                 nullable: false,
                 defaultValue: false);
 
-           
+
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
+
         }
     }
 }

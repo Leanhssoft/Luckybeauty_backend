@@ -19,7 +19,7 @@ namespace BanHangBeautify.Users.Dto
         public string NoiCap { get; set; }
         public string DiaChi { get; set; }
         public string Password { get; set; }
-       
+
     }
 
     public class UserProfileDto : ProfileDto

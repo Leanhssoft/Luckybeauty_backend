@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -47,7 +47,7 @@ BEGIN
 	) qct on qhd.Id= qct.IdQuyHoaDon
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_SoQuy_GetAll]
                 @TenantId INT = 3,
                 @IdChiNhanh NVARCHAR(MAX) ='66AA813E-BB0F-4AEA-8729-44D391DDB567',
 				@FromDate datetime = null,
@@ -186,7 +186,7 @@ END");
 					
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_khachHang_getAll]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_khachHang_getAll]
 					@TenantId INT,
 					@IdChiNhanh UNIQUEIDENTIFIER = null,
 					@Filter NVARCHAR(max) =N'',
@@ -301,7 +301,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
+
         }
     }
 }

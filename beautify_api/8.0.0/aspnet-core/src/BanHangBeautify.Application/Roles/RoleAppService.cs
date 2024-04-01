@@ -33,8 +33,8 @@ namespace BanHangBeautify.Roles
         private readonly RoleManager _roleManager;
         private readonly UserManager _userManager;
         INhatKyThaoTacAppService _audilogService;
-        
-        public RoleAppService(IRepository<Role> repository, RoleManager roleManager, UserManager userManager,INhatKyThaoTacAppService audilogService)
+
+        public RoleAppService(IRepository<Role> repository, RoleManager roleManager, UserManager userManager, INhatKyThaoTacAppService audilogService)
             : base(repository)
         {
             _roleManager = roleManager;
@@ -124,7 +124,7 @@ namespace BanHangBeautify.Roles
             var role = new Role(AbpSession.TenantId, input.Name, input.DisplayName) { };
             role.SetNormalizedName();
             var checkError = await CheckDuplicateRoleNameAsync(role.Id, role.Name, role.DisplayName);
-            if (checkError.Status=="error")
+            if (checkError.Status == "error")
             {
                 return checkError;
             }
@@ -162,11 +162,12 @@ namespace BanHangBeautify.Roles
             role = await Repository.FirstOrDefaultAsync(x => x.DisplayName == displayName);
             if (role != null && role.Id != expectedRoleId)
             {
-               return new ExecuteResultDto() { 
-               Status="error",
-               Message=string.Format(L("RoleDisplayNameIsAlreadyTaken{0}"),displayName),
-               Detail = displayName
-               };
+                return new ExecuteResultDto()
+                {
+                    Status = "error",
+                    Message = string.Format(L("RoleDisplayNameIsAlreadyTaken{0}"), displayName),
+                    Detail = displayName
+                };
             }
 
             return new ExecuteResultDto()
@@ -271,7 +272,7 @@ namespace BanHangBeautify.Roles
                 Status = "error",
                 Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
-            var checkExists = await Repository.GetAll().Where(x=>ids.Contains(x.Id)).ToListAsync();
+            var checkExists = await Repository.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
             if (checkExists != null && checkExists.Count > 0)
             {
                 Repository.RemoveRange(checkExists);
@@ -280,7 +281,7 @@ namespace BanHangBeautify.Roles
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Vai trò";
-                nhatKyThaoTacDto.NoiDung = "Xóa các vai trò: " + string.Format(", "+ checkExists.Select(x=>x.DisplayName).ToList());
+                nhatKyThaoTacDto.NoiDung = "Xóa các vai trò: " + string.Format(", " + checkExists.Select(x => x.DisplayName).ToList());
                 nhatKyThaoTacDto.NoiDungChiTiet = "Xóa các vai trò: " + string.Format(", " + checkExists.Select(x => x.DisplayName).ToList());
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }

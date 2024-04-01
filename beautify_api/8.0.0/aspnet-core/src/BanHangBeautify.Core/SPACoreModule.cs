@@ -1,6 +1,5 @@
 ﻿using Abp.Localization;
 using Abp.Modules;
-using Abp.Notifications;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Security;
 using Abp.Timing;
@@ -41,7 +40,7 @@ namespace BanHangBeautify
             // Configure roles
             AppRoleConfig.Configure(Configuration.Modules.Zero().RoleManagement);
             Configuration.Settings.Providers.Add<AppSettingProvider>();
-           
+
             //Adding feature providers
             Configuration.Features.Providers.Add<AppFeatureProvider>();
             // Configure email

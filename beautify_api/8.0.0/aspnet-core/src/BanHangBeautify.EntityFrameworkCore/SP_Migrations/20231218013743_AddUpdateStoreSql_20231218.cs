@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -164,7 +164,7 @@ BEGIN
 					SELECT COUNT(*) AS TotalCount FROM #temp;
 
 END");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[AddMultiple_ChietKhauDichVu_toMultipleNhanVien]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[AddMultiple_ChietKhauDichVu_toMultipleNhanVien]
 	@TenantId int = 1,
 	@IdChiNhanh uniqueidentifier = 'C4FBE44F-C26E-499F-9033-AF9C4E3C6FC3',
 	@IdNhanViens varchar(max) ='64A16837-26C6-42FF-B52B-B0FD1F6CB228',
@@ -382,7 +382,7 @@ END");
 
  END;");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetChiTietHoaDon_byIdHoaDon]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetChiTietHoaDon_byIdHoaDon]
 	@IdHoaDon uniqueidentifier
 AS
 BEGIN
@@ -415,7 +415,7 @@ BEGIN
 		where cthd.IdHoaDon= @IdHoaDon
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListHoaDon]
 			@TenantId int =7,
 			@IdChiNhanhs nvarchar(max)=null,
 			@IdLoaiChungTus varchar(20)= null,
@@ -563,7 +563,7 @@ END");
 		OFFSET (@CurrentPage* @PageSize) ROWS
 		FETCH NEXT @PageSize ROWS ONLY
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetNhatKyThanhToan_ofHoaDon]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetNhatKyThanhToan_ofHoaDon]
 	@IdHoaDonLienQuan uniqueidentifier 
 AS
 BEGIN
@@ -600,7 +600,7 @@ BEGIN
 	) qct on qhd.Id= qct.IdQuyHoaDon
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetAllSoQuy]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetAllSoQuy]
                 @TenantId INT = 1,
                 @IdChiNhanh NVARCHAR(MAX) ='2324F320-30F3-4182-BE92-E6D11B107601',
 				@FromDate datetime = null,

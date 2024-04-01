@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Editions.Dto
 {
-    public class EditionListDto:EntityDto
+    public class EditionListDto : EntityDto
     {
         public string Name { get; set; }
 
         public string DisplayName { get; set; }
-        public  decimal? Price { get; set; }
+        public decimal? Price { get; set; }
         public DateTime CreationTime { get; set; }
     }
 }

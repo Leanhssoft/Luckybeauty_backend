@@ -135,7 +135,7 @@ namespace BanHangBeautify.Bookings.Bookings
             {
                 var bookingNhanVien = CreateBookingNhanVien(booking.Id, dto.IdNhanVien ?? Guid.Empty);
                 _bookingNhanVienRepository.Insert(bookingNhanVien);
-                var nhanVien = _nhanVienService.FirstOrDefault(x => x.Id == dto.IdNhanVien && x.IsDeleted == false&&x.TrangThai==TrangThaiNhanVienConst.Ranh);
+                var nhanVien = _nhanVienService.FirstOrDefault(x => x.Id == dto.IdNhanVien && x.IsDeleted == false && x.TrangThai == TrangThaiNhanVienConst.Ranh);
                 nhanVien.TrangThai = TrangThaiNhanVienConst.Ban;
                 _nhanVienService.Update(nhanVien);
             }
@@ -236,7 +236,7 @@ namespace BanHangBeautify.Bookings.Bookings
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Lịch hẹn";
             nhatKyThaoTacDto.NoiDung = "Cập nhật lịch hẹn";
-            nhatKyThaoTacDto.NoiDungChiTiet ="<div> Cập nhật lịch hẹn: "+mess+"</div>";
+            nhatKyThaoTacDto.NoiDungChiTiet = "<div> Cập nhật lịch hẹn: " + mess + "</div>";
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return findBooking;
 
@@ -285,7 +285,7 @@ namespace BanHangBeautify.Bookings.Bookings
                 objUp.TrangThai = trangThai;
                 objUp.LastModificationTime = DateTime.Now;
                 objUp.LastModifierUserId = AbpSession.UserId;
-                if (trangThai == TrangThaiBookingConst.Huy||trangThai==TrangThaiBookingConst.HoanThanh)
+                if (trangThai == TrangThaiBookingConst.Huy || trangThai == TrangThaiBookingConst.HoanThanh)
                 {
                     var bookingNhanVien = _bookingNhanVienRepository.FirstOrDefault(x => x.IdBooking == objUp.Id);
                     if (bookingNhanVien != null)
@@ -501,13 +501,13 @@ namespace BanHangBeautify.Bookings.Bookings
                 findBooking.TrangThai = TrangThaiBookingConst.Huy;
                 await _repository.UpdateAsync(findBooking);
                 var bookingNhanVien = _bookingNhanVienRepository.FirstOrDefault(x => x.IdBooking == findBooking.Id);
-                if(bookingNhanVien != null)
+                if (bookingNhanVien != null)
                 {
                     var nhanVien = _nhanVienService.FirstOrDefault(x => x.Id == bookingNhanVien.IdNhanVien);
                     nhanVien.TrangThai = TrangThaiNhanVienConst.Ranh;
                     _nhanVienService.Update(nhanVien);
                 }
-                
+
                 result = true;
             }
             var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();

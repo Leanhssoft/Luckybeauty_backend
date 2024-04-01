@@ -72,7 +72,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
             await _lichLamViecService.InsertAsync(data);
             var tongSoNgay = data.DenNgay.Value.Subtract(data.TuNgay).TotalDays;
             List<DateTime> danhSachNgayNghi = new List<DateTime>();
-            var ngayNghi = _dmNgayNghiLeService.GetAll().Where(x=> x.IsDeleted==false && x.TenantId==(AbpSession.TenantId??1)).ToList();
+            var ngayNghi = _dmNgayNghiLeService.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
             foreach (var item in ngayNghi)
             {
                 for (int i = 1; i <= item.TongSoNgay; i++)
@@ -81,7 +81,7 @@ namespace BanHangBeautify.NhanSu.LichLamViec
                     danhSachNgayNghi.Add(day);
                 }
             }
-            for (int i = 0; i < tongSoNgay+1; i++)
+            for (int i = 0; i < tongSoNgay + 1; i++)
             {
                 var day = data.TuNgay.AddDays(i);
                 if (danhSachNgayNghi.Contains(day))
@@ -113,8 +113,8 @@ namespace BanHangBeautify.NhanSu.LichLamViec
         [NonAction]
         public async Task<LichLamViecDto> Update(CreateOrEditLichLamViecDto input, NS_LichLamViec oldData)
         {
-            var lichLamViecCaAll = _lichLamViecCaService.GetAll().Where(x=>x.IdLichLamViec==oldData.Id).ToList();
-            if(lichLamViecCaAll!=null && lichLamViecCaAll.Count > 0)
+            var lichLamViecCaAll = _lichLamViecCaService.GetAll().Where(x => x.IdLichLamViec == oldData.Id).ToList();
+            if (lichLamViecCaAll != null && lichLamViecCaAll.Count > 0)
             {
                 foreach (var item in lichLamViecCaAll)
                 {
@@ -202,9 +202,10 @@ namespace BanHangBeautify.NhanSu.LichLamViec
                     Message = "Xóa dữ liệu thành công!"
                 };
             }
-            return new ExecuteResultDto() { 
-                Status="error",
-                Message="Có lỗi xảy ra vu lòng thử lại sau!"
+            return new ExecuteResultDto()
+            {
+                Status = "error",
+                Message = "Có lỗi xảy ra vu lòng thử lại sau!"
             };
         }
         public async Task<NS_LichLamViec> GetDetail(Guid id)
@@ -226,8 +227,8 @@ namespace BanHangBeautify.NhanSu.LichLamViec
                 var ngayLamViec = new List<string>();
                 ngayLamViec.AddRange(checkExist.NgayLamViecTrongTuan.Split(';'));
                 createOrEdit.NgayLamViec = ngayLamViec;
-                var lichLamViecCa =await _lichLamViecCaService.FirstOrDefaultAsync(x => x.IdLichLamViec == checkExist.Id);
-                if (lichLamViecCa!=null)
+                var lichLamViecCa = await _lichLamViecCaService.FirstOrDefaultAsync(x => x.IdLichLamViec == checkExist.Id);
+                if (lichLamViecCa != null)
                 {
                     createOrEdit.IdCaLamViec = lichLamViecCa.IdCaLamViec;
                 }

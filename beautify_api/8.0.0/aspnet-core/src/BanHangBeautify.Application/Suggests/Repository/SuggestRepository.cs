@@ -19,12 +19,12 @@ namespace BanHangBeautify.Suggests.Repository
         {
         }
 
-        
+
 
         public async Task<List<SuggestLoaiChungTu>> SuggestLoaiChungTu()
         {
             string query = "SELECT Id,TenLoaiChungTu FROM DM_LoaiChungTu where IsDeleted = 0;";
-            using(var cmd = CreateCommand(query,commandType: CommandType.Text))
+            using (var cmd = CreateCommand(query, commandType: CommandType.Text))
             {
                 using (var dataReader = await cmd.ExecuteReaderAsync())
                 {
@@ -43,12 +43,12 @@ namespace BanHangBeautify.Suggests.Repository
             }
         }
 
-        public async Task<List<SuggestNhanSu>> SuggestNhanSu(int tenantId,Guid idChiNhanh)
+        public async Task<List<SuggestNhanSu>> SuggestNhanSu(int tenantId, Guid idChiNhanh)
         {
             using (var cmd = CreateCommand("prc_SuggestNhanVien"))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter("@TenantId",tenantId ));
+                cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
                 cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
                 using (var dataReader = await cmd.ExecuteReaderAsync())
                 {

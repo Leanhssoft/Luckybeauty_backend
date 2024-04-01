@@ -21,8 +21,8 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Tenants
         public void Create()
         {
             var tenancy = _context.Tenants.FirstOrDefault();
-            int? tenantId =null;
-            if (tenancy!=null)
+            int? tenantId = null;
+            if (tenancy != null)
             {
                 tenantId = tenancy.Id;
             }

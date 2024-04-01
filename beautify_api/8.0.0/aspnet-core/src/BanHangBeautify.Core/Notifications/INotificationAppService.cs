@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Notifications
 {
-    public interface INotificationAppService: IApplicationService
+    public interface INotificationAppService : IApplicationService
     {
         Task<GetNotificationsOutput> GetUserNotifications(GetUserNotificationsInput input);
 

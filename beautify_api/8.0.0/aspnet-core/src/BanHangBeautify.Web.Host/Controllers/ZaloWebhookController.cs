@@ -143,7 +143,7 @@ namespace BanHangBeautify.Web.Host.Controllers
                     // Tạo đối tượng SHA256
                     byte[] hash = SHA256.HashData(bytes);
                     // Chuyển đổi mảng byte thành chuỗi hex
-                    computedSignature = BitConverter.ToString(hash).Replace("-","").ToLower();
+                    computedSignature = BitConverter.ToString(hash).Replace("-", "").ToLower();
                     break;
                 default:
                     throw new NotImplementedException();

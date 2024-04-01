@@ -71,7 +71,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             }
             string idChiNhanhs = string.Empty;
             int isUserZalo = 0;// 1. nếu khách hàng có tài khoản Zalo, và quan tâm đến Cửa hàng
-            if(input.TrangThais!=null && input.TrangThais.Count > 0)
+            if (input.TrangThais != null && input.TrangThais.Count > 0)
             {
                 isUserZalo = Int32.Parse(input.TrangThais[0]);
             }
@@ -108,7 +108,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             {
                 return new PagedResultDto<PageKhachHangSMSDto>();
             }
-            string idChiNhanhs = string.Empty, trangThais = string.Empty, hinhThucGui= string.Empty;
+            string idChiNhanhs = string.Empty, trangThais = string.Empty, hinhThucGui = string.Empty;
             if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
@@ -116,7 +116,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             if (input.TrangThais != null && input.TrangThais.Count > 0)
             {
                 trangThais = string.Join(",", input.TrangThais);
-            } 
+            }
             if (input.HinhThucGuiTins != null && input.HinhThucGuiTins.Count > 0)
             {
                 hinhThucGui = string.Join(",", input.HinhThucGuiTins);

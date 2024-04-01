@@ -14,7 +14,7 @@ namespace BanHangBeautify.Url
     public class WebUrlService : WebUrlServiceBase, IWebUrlService, ITransientDependency
     {
         readonly IConfigurationRoot _appConfiguration;
-        
+
         public WebUrlService(
             IAppConfigurationAccessor appConfigurationAccessor) :
             base(appConfigurationAccessor)

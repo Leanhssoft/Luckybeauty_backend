@@ -1,10 +1,10 @@
 ﻿using Abp.Application.Services.Dto;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BanHangBeautify.AppCommon;
 
 
 namespace BanHangBeautify.KhachHang.KhachHang.Repository

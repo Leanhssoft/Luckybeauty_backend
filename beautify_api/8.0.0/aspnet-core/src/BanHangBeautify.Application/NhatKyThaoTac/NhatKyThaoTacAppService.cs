@@ -27,7 +27,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             _repository = repository;
             _userRepository = userRepository;
         }
-       
+
         public async Task<NhatKyThaoTacDto> CreateNhatKyHoatDong(CreateNhatKyThaoTacDto input)
         {
             HT_NhatKyThaoTac data = new HT_NhatKyThaoTac();
@@ -35,7 +35,7 @@ namespace BanHangBeautify.NhatKyHoatDong
             data = ObjectMapper.Map<HT_NhatKyThaoTac>(input);
             data.Id = Guid.NewGuid();
             data.IdChiNhanh = input.IdChiNhanh;
-            data.TenantId = AbpSession.TenantId??1;
+            data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
             data.IsDeleted = false;
@@ -60,11 +60,11 @@ namespace BanHangBeautify.NhatKyHoatDong
             PagedResultDto<NhatKyThaoTacItemDto> result = new PagedResultDto<NhatKyThaoTacItemDto>();
             input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            DateTime timeFrom = new DateTime(input.TimeFrom.Year,input.TimeFrom.Month,input.TimeFrom.Day,0,0,1);
+            DateTime timeFrom = new DateTime(input.TimeFrom.Year, input.TimeFrom.Month, input.TimeFrom.Day, 0, 0, 1);
             DateTime timeTo = new DateTime(input.TimeTo.Year, input.TimeTo.Month, input.TimeTo.Day, 23, 59, 59, 59);
-            var data = await _repository.GetAllIncluding().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0) && x.CreationTime>=timeFrom&&x.CreationTime<=timeTo).OrderByDescending(x=>x.CreationTime).ToListAsync();
-            data = data.Where(x=>x.NoiDung.Contains(input.Keyword)||x.ChucNang.Contains(input.Keyword)||x.NoiDungChiTiet.Contains(input.Keyword)).ToList();
-            if(input.LoaiNhatKys!=null && input.LoaiNhatKys.Count > 0)
+            var data = await _repository.GetAllIncluding().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 0) && x.CreationTime >= timeFrom && x.CreationTime <= timeTo).OrderByDescending(x => x.CreationTime).ToListAsync();
+            data = data.Where(x => x.NoiDung.Contains(input.Keyword) || x.ChucNang.Contains(input.Keyword) || x.NoiDungChiTiet.Contains(input.Keyword)).ToList();
+            if (input.LoaiNhatKys != null && input.LoaiNhatKys.Count > 0)
             {
                 data = data.Where(x => input.LoaiNhatKys.Contains(x.LoaiNhatKy)).ToList();
             }

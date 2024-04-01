@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -71,7 +71,7 @@ END;");
                 name: "TrangThai",
                 table: "NS_NhanVien");
 
-           
+
         }
     }
 }

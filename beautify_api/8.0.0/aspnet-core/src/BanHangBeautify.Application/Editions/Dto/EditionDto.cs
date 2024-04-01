@@ -11,6 +11,6 @@ namespace BanHangBeautify.Editions.Dto
         public int? Id { get; set; }
         public string Name { get; set; }
         public string DisplayName { get; set; }
-        public decimal? Price { get; set; }     
+        public decimal? Price { get; set; }
     }
 }

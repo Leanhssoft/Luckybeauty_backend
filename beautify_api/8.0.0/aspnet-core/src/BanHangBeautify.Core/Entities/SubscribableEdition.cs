@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Entities
 {
-    
-    public class SubscribableEdition: Edition
+
+    public class SubscribableEdition : Edition
     {
         public decimal? Price { get; set; } = 0;
     }

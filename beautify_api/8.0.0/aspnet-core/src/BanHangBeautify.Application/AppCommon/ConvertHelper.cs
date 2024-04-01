@@ -263,7 +263,7 @@ namespace BanHangBeautify.AppCommon
                 return null;
             }
 
-            string[] formats = { "d/M/yy", "dd/MM/yyyy", "dd-MM-yyyy", "MM/dd/yyyy", "MM-dd-yyyy", "yyyy-MM-dd", 
+            string[] formats = { "d/M/yy", "dd/MM/yyyy", "dd-MM-yyyy", "MM/dd/yyyy", "MM-dd-yyyy", "yyyy-MM-dd",
                 "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "M/d/yy" };
 
             if (!DateTime.TryParseExact(obj.ToString(), formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out retVal))
@@ -685,6 +685,6 @@ namespace BanHangBeautify.AppCommon
             }
 
             return false;
-        }        
+        }
     }
 }

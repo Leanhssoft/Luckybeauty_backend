@@ -196,18 +196,18 @@ namespace BanHangBeautify.NhanSu.NhanVien_DichVu
                             rdo.IsDeleted = false;
                             await _repository.InsertAsync(rdo);
                         }
-                        
+
                     }
                     foreach (var item in checkExist)
                     {
-                        if (input.IdDonViQuiDois.Contains(item.IdDonViQuyDoi)==false)
+                        if (input.IdDonViQuiDois.Contains(item.IdDonViQuyDoi) == false)
                         {
                             item.IsDeleted = true;
                             item.DeletionTime = DateTime.Now;
                             item.DeleterUserId = AbpSession.UserId;
                             await _repository.UpdateAsync(item);
                         }
-                        
+
                     }
                     result.Message = "Cập nhật thành công!";
                     var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();

@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -612,7 +612,7 @@ BEGIN
 	FETCH NEXT @PageSize ROWS ONLY
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spImportDanhMucHangHoa]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spImportDanhMucHangHoa]
 	@TenantId int = 1,
 	@CreatorUserId int,
 	@TenNhomHangHoa nvarchar(max)='',
@@ -707,7 +707,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
+
         }
     }
 }

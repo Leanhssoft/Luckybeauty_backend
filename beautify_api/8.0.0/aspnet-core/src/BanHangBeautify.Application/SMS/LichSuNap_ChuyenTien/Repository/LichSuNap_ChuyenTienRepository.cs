@@ -28,7 +28,7 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien.Repository
         {
             using (var cmd = CreateCommand("GetAllNhatKyChuyenTien"))
             {
-                cmd.Parameters.Add(new SqlParameter("@TextSearch",  param.TextSearch ?? (object)DBNull.Value)); ;
+                cmd.Parameters.Add(new SqlParameter("@TextSearch", param.TextSearch ?? (object)DBNull.Value)); ;
                 cmd.Parameters.Add(new SqlParameter("@CurrentPage", param.CurrentPage ?? 0));
                 cmd.Parameters.Add(new SqlParameter("@PageSize", param.PageSize ?? 10));
                 cmd.Parameters.Add(new SqlParameter("@ColumnSort", param.ColumnSort ?? "createTime"));

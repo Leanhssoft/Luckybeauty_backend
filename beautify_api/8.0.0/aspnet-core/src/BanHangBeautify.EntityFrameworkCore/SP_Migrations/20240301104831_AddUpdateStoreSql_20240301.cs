@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -224,7 +224,7 @@ BEGIN
 		OFFSET (@CurrentPage* @PageSize) ROWS
 		FETCH NEXT @PageSize ROWS ONLY
 END");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[BaoCaoTaiChinh_ChiTietSoQuy]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[BaoCaoTaiChinh_ChiTietSoQuy]
 	@IdChiNhanhs nvarchar(max)='2324f320-30f3-4182-be92-e6d11b107601',
 	@IdLoaiChungTus nvarchar(max)='',
 	@NgayLapPhieuThuChi_FromDate datetime = '2024-02-01',
@@ -453,7 +453,7 @@ BEGIN
 		FETCH NEXT @PageSize ROWS ONLY
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetAllSoQuy]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetAllSoQuy]
                 @TenantId INT = 1,
                 @IdChiNhanh NVARCHAR(MAX) ='2324F320-30F3-4182-BE92-E6D11B107601',
 				@FromDate datetime = null,
@@ -627,7 +627,7 @@ END");
 				FETCH NEXT @MaxResultCount ROWS ONLY
 				
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetDMHangHoa]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetDMHangHoa]
 			@TenantId int =2,
 			@TextSearch nvarchar(max)=null,
 			@IdNhomHangHoas nvarchar(max)=null,
@@ -729,7 +729,7 @@ END");
 		FETCH NEXT @PageSize ROWS ONLY;
 
  END;");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[BaoCaoHoaHongChiTiet]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[BaoCaoHoaHongChiTiet]
 	@IdChiNhanhs nvarchar(max)='',
 	@IdLoaiChungTus nvarchar(max)='',
 	@IdNhomHangs nvarchar(max)='',
@@ -903,7 +903,7 @@ BEGIN
 	OFFSET (@CurrentPage* @PageSize) ROWS
 	FETCH NEXT @PageSize ROWS ONLY
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[BaoCaoHoaHongTongHop]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[BaoCaoHoaHongTongHop]
 	@IdChiNhanhs nvarchar(max)='',
 	@IdLoaiChungTus nvarchar(max)='',
 	@FromDate datetime = null,
@@ -1022,7 +1022,7 @@ BEGIN
 	OFFSET (@CurrentPage* @PageSize) ROWS
 	FETCH NEXT @PageSize ROWS ONLY
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_nhanVien_getAll]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_nhanVien_getAll]
 				@TenantId INT,
 				@IdChiNhanh UNIQUEIDENTIFIER = NULL,
 				@IdChucVu UNIQUEIDENTIFIER = NULL,

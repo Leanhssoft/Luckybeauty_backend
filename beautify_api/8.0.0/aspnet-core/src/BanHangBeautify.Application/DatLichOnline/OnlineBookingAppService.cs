@@ -32,7 +32,7 @@ namespace BanHangBeautify.DatLichOnline
     {
         IRepository<Tenant, int> _tenantRepository;
         IRepository<Booking, Guid> _bookingRepository;
-      
+
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<DM_HangHoa, Guid> _dichVuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
@@ -86,7 +86,7 @@ namespace BanHangBeautify.DatLichOnline
             _appNotifier = appNotifier;
             _notificationAppService = notificationAppService;
             _dmKhachHangRepository = khachHangRepository;
-            _nhanSuService= nhanSuService;
+            _nhanSuService = nhanSuService;
             _nhanVienResponsitory = nhanVienResponsitory;
             _userRoleRepository = userRoleRepository;
         }
@@ -393,8 +393,8 @@ namespace BanHangBeautify.DatLichOnline
                 {
                     await CurrentUnitOfWork.SaveChangesAsync();
                     DM_KhachHang kh = new DM_KhachHang();
-                    var checkKhachHang =await _dmKhachHangRepository.GetAll().Where(x=>x.SoDienThoai==data.SoDienThoai).FirstOrDefaultAsync();
-                    if (checkKhachHang!=null)
+                    var checkKhachHang = await _dmKhachHangRepository.GetAll().Where(x => x.SoDienThoai == data.SoDienThoai).FirstOrDefaultAsync();
+                    if (checkKhachHang != null)
                     {
                         kh.Id = checkKhachHang.Id;
                     }
@@ -409,7 +409,7 @@ namespace BanHangBeautify.DatLichOnline
                         kh.IsDeleted = false;
                         kh.CreationTime = DateTime.Now;
                         await _dmKhachHangRepository.InsertAsync(kh);
-                        
+
                     }
                     Booking bk = new Booking();
                     bk.Id = Guid.NewGuid();
@@ -438,8 +438,8 @@ namespace BanHangBeautify.DatLichOnline
                         var nhanVien = _nhanVienResponsitory.FirstOrDefault(x => x.Id == data.IdNhanVien && x.IsDeleted == false && x.TrangThai == TrangThaiNhanVienConst.Ranh);
                         if (nhanVien != null)
                         {
-                                nhanVien.TrangThai = TrangThaiNhanVienConst.Ban;
-                                _nhanVienResponsitory.Update(nhanVien);
+                            nhanVien.TrangThai = TrangThaiNhanVienConst.Ban;
+                            _nhanVienResponsitory.Update(nhanVien);
                         }
                     }
                     _bookingNhanVienRepository.Insert(bookingNhanVien);
@@ -472,7 +472,7 @@ namespace BanHangBeautify.DatLichOnline
             return result;
         }
         [NonAction]
-        private async Task<List<UserIdentifier>> getUserAdmin(Guid idChiNhanh,int tenantId)
+        private async Task<List<UserIdentifier>> getUserAdmin(Guid idChiNhanh, int tenantId)
         {
             var nhanViens = (await _nhanSuService.GetAllNhanSu(new PagedNhanSuRequestDto
             {
@@ -515,7 +515,7 @@ namespace BanHangBeautify.DatLichOnline
             {
                 bookingService = new BookingService();
             }
-             return bookingService;
+            return bookingService;
         }
         [NonAction]
         public BookingNhanVien CreateBookingNhanVien(Guid idBooking, Guid idNhanVien)
@@ -552,10 +552,10 @@ namespace BanHangBeautify.DatLichOnline
                 var lichLamViec = _lichLamViecRepository.GetAll().Where(x => x.IdNhanVien == input.IdNhanVien && x.IsDeleted == false).ToList();
                 var lichLamViecCa = _lichLamViecCaRepository.GetAll().Where(x => lichLamViec.Select(z => z.Id).ToList().Contains(x.IdLichLamViec) && x.NgayLamViec.Date == input.DateBooking.Date && x.IsDeleted == false).ToList();
                 var caLamViec = _caLamViecRepository.GetAll().Where(x => lichLamViecCa.Select(y => y.IdCaLamViec).Contains(x.Id) && x.IsDeleted == false).ToList();
-                var nghiLe = _nghiLeRepository.GetAll().Where(x => x.DenNgay>= input.DateBooking && x.TuNgay <= input.DateBooking).ToList();
+                var nghiLe = _nghiLeRepository.GetAll().Where(x => x.DenNgay >= input.DateBooking && x.TuNgay <= input.DateBooking).ToList();
                 if (nghiLe != null && nghiLe.Count > 0)
                 {
-                   return new List<AvailableTime>();
+                    return new List<AvailableTime>();
                 }
                 if (caLamViec != null && caLamViec.Count > 0)
                 {
@@ -571,7 +571,7 @@ namespace BanHangBeautify.DatLichOnline
                             AvailableTime time = new AvailableTime();
                             bool isAvailableTime = true;
                             time.Time = currentTime.ToString("HH:mm");
-                            
+
                             if (x.LaNghiGiuaCa == true)
                             {
                                 var nghiTuStr = input.DateBooking.ToString("yyyy/MM/dd") + " " + x.GioNghiTu.Value.ToString("HH:mm");
@@ -628,35 +628,35 @@ namespace BanHangBeautify.DatLichOnline
                 }
                 else
                 {
-                    var currentTime = new DateTime(input.DateBooking.Year, input.DateBooking.Month, input.DateBooking.Day,07,00,00);
+                    var currentTime = new DateTime(input.DateBooking.Year, input.DateBooking.Month, input.DateBooking.Day, 07, 00, 00);
                     var endTime = new DateTime(input.DateBooking.Year, input.DateBooking.Month, input.DateBooking.Day, 20, 00, 00);
                     while (currentTime.AddMinutes(input.ServiceTime) <= endTime)
                     {
                         AvailableTime time = new AvailableTime();
                         bool isAvailableTime = true;
                         time.Time = currentTime.ToString("HH:mm");
-                        
-                            if (currentTime < DateTime.Now)
+
+                        if (currentTime < DateTime.Now)
+                        {
+                            isAvailableTime = false;
+                        }
+                        else
+                        {
+                            foreach (var appointment in appointments)
                             {
-                                isAvailableTime = false;
-                            }
-                            else
-                            {
-                                foreach (var appointment in appointments)
+                                if ((currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime))
                                 {
-                                    if ((currentTime >= appointment.StartTime && currentTime.AddMinutes(input.ServiceTime) <= appointment.EndTime))
-                                    {
-                                        isAvailableTime = false;
-                                        break;
-                                    }
+                                    isAvailableTime = false;
+                                    break;
                                 }
                             }
-                            time.IsAvailableTime = isAvailableTime;
-                            times.Add(time);
-                            currentTime = currentTime.AddMinutes(input.ServiceTime);
+                        }
+                        time.IsAvailableTime = isAvailableTime;
+                        times.Add(time);
+                        currentTime = currentTime.AddMinutes(input.ServiceTime);
                     }
                 }
-                
+
             }
             return times.OrderByDescending(x => x.Time).Reverse().ToList();
         }

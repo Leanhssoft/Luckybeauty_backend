@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Zalo
 {
-    public class ZaloMapProfile: Profile
+    public class ZaloMapProfile : Profile
     {
         public ZaloMapProfile()
         {

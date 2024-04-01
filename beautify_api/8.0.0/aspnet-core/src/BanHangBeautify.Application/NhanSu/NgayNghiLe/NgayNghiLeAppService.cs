@@ -148,7 +148,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                 Message = "Có lỗi xảy ra vui lòng thử lại sau!"
             };
             var checkExists = await _ngayNghiLeService.GetAll().Where(x => ids.Contains(x.Id)).ToListAsync();
-            if (checkExists != null && checkExists.Count>0)
+            if (checkExists != null && checkExists.Count > 0)
             {
                 _ngayNghiLeService.RemoveRange(checkExists);
                 result.Status = "success";
@@ -156,7 +156,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
                 nhatKyThaoTacDto.ChucNang = "Ngày lễ";
-                nhatKyThaoTacDto.NoiDung = "Xóa các ngày lễ: " + string.Join(", ", checkExists.Select(x=>x.TenNgayLe).ToList());
+                nhatKyThaoTacDto.NoiDung = "Xóa các ngày lễ: " + string.Join(", ", checkExists.Select(x => x.TenNgayLe).ToList());
                 nhatKyThaoTacDto.NoiDungChiTiet = "Xóa các ngày lễ: " + string.Join(", ", checkExists.Select(x => x.TenNgayLe).ToList());
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
@@ -193,7 +193,7 @@ namespace BanHangBeautify.NhanSu.NgayNghiLe
             nhatKyThaoTacDto.NoiDung = "Xuất danh sách ngày lễ";
             nhatKyThaoTacDto.NoiDungChiTiet = "Xuất danh sách ngày lễ";
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
-            return _ngayNghiLeExcelExporter.ExportDanhSachNgayNghiLe(data.Items.Where(x=>IdLichNghis.Contains(x.Id)).ToList());
+            return _ngayNghiLeExcelExporter.ExportDanhSachNgayNghiLe(data.Items.Where(x => IdLichNghis.Contains(x.Id)).ToList());
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]

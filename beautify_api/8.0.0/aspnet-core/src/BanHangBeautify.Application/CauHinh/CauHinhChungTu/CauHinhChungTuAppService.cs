@@ -23,8 +23,8 @@ namespace BanHangBeautify.CauHinh.CauHinhChungTu
         private readonly IRepository<DM_LoaiChungTu, int> _loaiCHungTu;
         INhatKyThaoTacAppService _audilogService;
         public CauHinhChungTuAppService(
-            IRepository<HT_CauHinh_ChungTu, 
-            Guid> repository, 
+            IRepository<HT_CauHinh_ChungTu,
+            Guid> repository,
             IRepository<DM_LoaiChungTu, int> loaiCHungTu,
             INhatKyThaoTacAppService audilogService
         )

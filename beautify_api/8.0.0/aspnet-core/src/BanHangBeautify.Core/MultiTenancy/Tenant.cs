@@ -16,6 +16,6 @@ namespace BanHangBeautify.MultiTenancy
         }
 
         public bool IsTrial { get; set; }
-        public DateTime? SubscriptionEndDate { get; set; } 
+        public DateTime? SubscriptionEndDate { get; set; }
     }
 }

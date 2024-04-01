@@ -21,8 +21,8 @@ namespace BanHangBeautify.Authorization
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Create, L("CreateBranch"));
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Edit, L("EditBranch"));
             chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Delete, L("DeleteBranch"));
-            chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Export, L("ExportBranch"));  
-            
+            chiNhanh.CreateChildPermission(PermissionNames.Pages_ChiNhanh_Export, L("ExportBranch"));
+
             var brandname = pages.CreateChildPermission(PermissionNames.Pages_Brandname, L("Brandname"));
             brandname.CreateChildPermission(PermissionNames.Pages_Brandname_Create, L("Create"));
             brandname.CreateChildPermission(PermissionNames.Pages_Brandname_Edit, L("Edit"));
@@ -324,7 +324,7 @@ namespace BanHangBeautify.Authorization
             edition.CreateChildPermission(PermissionNames.Pages_Editions_Create, L("CreatingNewEdition"), multiTenancySides: MultiTenancySides.Host);
             edition.CreateChildPermission(PermissionNames.Pages_Editions_Edit, L("EditingEdition"), multiTenancySides: MultiTenancySides.Host);
             edition.CreateChildPermission(PermissionNames.Pages_Editions_Delete, L("DeleteEdition"), multiTenancySides: MultiTenancySides.Host);
-            
+
 
             var tenants = pages.CreateChildPermission(PermissionNames.Pages_Tenants, L("Tenants"), multiTenancySides: MultiTenancySides.Host);
             tenants.CreateChildPermission(PermissionNames.Pages_Tenants_Create, L("CreatingNewTenant"), multiTenancySides: MultiTenancySides.Host);

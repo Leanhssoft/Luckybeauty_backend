@@ -51,7 +51,7 @@ namespace BanHangBeautify.Zalo.DangKy_ThanhVien
             var objUpdate = _zaloKhachHangThanhVien.GetAllList().Where(x => x.ZOAUserId == dto.ZOAUserId).FirstOrDefault();
             if (objUpdate == null)
             {
-                 return new Zalo_KhachHangThanhVienDto(); 
+                return new Zalo_KhachHangThanhVienDto();
             }
             Zalo_KhachHangThanhVien objNew = ObjectMapper.Map<Zalo_KhachHangThanhVien>(dto);
             objUpdate.TenDangKy = dto.TenDangKy;

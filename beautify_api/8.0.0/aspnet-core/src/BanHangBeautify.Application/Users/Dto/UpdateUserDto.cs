@@ -10,8 +10,8 @@ namespace BanHangBeautify.Users.Dto
     public class UpdateUserDto
     {
         public long Id { get; set; }
-        [Required(ErrorMessage ="Tên tài khoản không được để trống")]
-        [StringLength(AbpUserBase.MaxUserNameLength,ErrorMessage ="Tên tài khoản không được quá 256 ký tự")]
+        [Required(ErrorMessage = "Tên tài khoản không được để trống")]
+        [StringLength(AbpUserBase.MaxUserNameLength, ErrorMessage = "Tên tài khoản không được quá 256 ký tự")]
         public string UserName { get; set; }
 
         //[Required]
@@ -20,7 +20,7 @@ namespace BanHangBeautify.Users.Dto
 
         //[Required]
         //[StringLength(AbpUserBase.MaxSurnameLength)]
-        public string Surname { get; set; } 
+        public string Surname { get; set; }
         //[Phone]
         public string PhoneNumber { get; set; }
         //[Required]

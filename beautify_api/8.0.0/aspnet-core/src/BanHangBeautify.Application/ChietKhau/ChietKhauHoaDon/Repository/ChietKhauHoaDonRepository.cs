@@ -1,25 +1,25 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore;
+using BanHangBeautify.AppCommon;
 using BanHangBeautify.ChietKhau.ChietKhauHoaDon.Dto;
+using BanHangBeautify.Data.Entities;
+using BanHangBeautify.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
+using BanHangBeautify.EntityFrameworkCore;
+using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Data;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
-using Abp.Domain.Uow;
-using BanHangBeautify.Entities;
-using BanHangBeautify.EntityFrameworkCore;
-using BanHangBeautify.EntityFrameworkCore.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using BanHangBeautify.Data.Entities;
-using BanHangBeautify.AppCommon;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace BanHangBeautify.ChietKhau.ChietKhauHoaDon.Repository
 {

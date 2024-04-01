@@ -27,8 +27,8 @@ namespace BanHangBeautify.AppCommon
                 string dateParam = dt?.ToString("yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
                 string dtNow = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", System.Globalization.CultureInfo.InvariantCulture);
 
-                string [] dtNow_split = dtNow.Split(':'); // 3 elemnt: [2024-01-01 HH, mm, ss.fff]
-                string [] dtParam_split = dateParam.Split(':');
+                string[] dtNow_split = dtNow.Split(':'); // 3 elemnt: [2024-01-01 HH, mm, ss.fff]
+                string[] dtParam_split = dateParam.Split(':');
 
                 var dtNow_hours = Convert.ToDouble(dtNow_split[0].Split(" ")[1]); // 2024-01-01 HH = [2024-01-01,HH]
                 var dtNow_minutes = Convert.ToDouble(dtNow_split[1]);// mm
@@ -39,7 +39,7 @@ namespace BanHangBeautify.AppCommon
                 var dtParam_hours = Convert.ToDouble(dtParam_split[0].Split(" ")[1]);
                 var dtParam_minutes = Convert.ToDouble(dtParam_split[1]);
 
-                if (dtParam_hours == 0 && dtParam_minutes ==0)
+                if (dtParam_hours == 0 && dtParam_minutes == 0)
                 {
                     dt = dt?.AddHours(dtNow_hours).AddMinutes(dtNow_minutes);
                 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Notifications
 {
-    public class AppNotifier: BanHangBeautifyDomainServiceBase, IAppNotifier
+    public class AppNotifier : BanHangBeautifyDomainServiceBase, IAppNotifier
     {
         private readonly INotificationPublisher _notificationPublisher;
         public AppNotifier(INotificationPublisher notificationPublisher)

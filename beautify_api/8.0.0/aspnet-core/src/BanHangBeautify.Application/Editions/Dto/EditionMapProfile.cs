@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Editions.Dto
 {
-    public class EditionMapProfile:Profile
+    public class EditionMapProfile : Profile
     {
         public EditionMapProfile()
         {

@@ -28,9 +28,9 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
         //public static readonly string App = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         //public static readonly string Templates = Path.Combine(App, "Template");
         //private readonly IHostingEnvironment _env;
-        public MauInAppService(IWebHostEnvironment hostEnvironment, 
-            IRepository<DM_MauIn, 
-            Guid> dmMauInRepository, 
+        public MauInAppService(IWebHostEnvironment hostEnvironment,
+            IRepository<DM_MauIn,
+            Guid> dmMauInRepository,
             IRepository<DM_LoaiChungTu> dmLoaiChungTu,
             IUnitOfWorkManager unitOfWorkManager,
             INhatKyThaoTacAppService audilogService

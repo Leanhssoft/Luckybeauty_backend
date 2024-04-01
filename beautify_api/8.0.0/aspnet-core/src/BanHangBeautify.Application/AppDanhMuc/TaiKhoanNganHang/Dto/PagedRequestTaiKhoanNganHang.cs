@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Dto
 {
-    public class PagedRequestTaiKhoanNganHang: PagedRequestDto
+    public class PagedRequestTaiKhoanNganHang : PagedRequestDto
     {
         public Guid IdChiNhanh { get; set; }
     }

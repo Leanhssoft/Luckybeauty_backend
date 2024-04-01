@@ -20,7 +20,7 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
     {
         private readonly IRepository<DM_LoaiKhach, int> _repository;
         INhatKyThaoTacAppService _audilogService;
-        public LoaiKhachAppService(IRepository<DM_LoaiKhach, int> repository,INhatKyThaoTacAppService audilogService)
+        public LoaiKhachAppService(IRepository<DM_LoaiKhach, int> repository, INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
             _audilogService = audilogService;

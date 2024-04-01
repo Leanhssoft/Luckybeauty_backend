@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -252,7 +252,7 @@ BEGIN
 					SELECT COUNT(Id) as TotalCount
 					FROM #tblCus
 END;");
-            
+
             migrationBuilder.Sql(@"ALTER procedure [dbo].[prc_lichSuGiaoDich]
 	@TenantId INT,
 	@IdKhachHang UNIQUEIDENTIFIER,

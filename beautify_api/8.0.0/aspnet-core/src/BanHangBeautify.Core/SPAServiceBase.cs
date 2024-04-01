@@ -1,9 +1,4 @@
 ﻿using Abp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BanHangBeautify
 {
@@ -14,7 +9,7 @@ namespace BanHangBeautify
     /// For domain services inherit <see cref="BanHangBeautifyDomainServiceBase"/>.
     /// For application services inherit AbpZeroTemplateAppServiceBase.
     /// </summary>
-    public abstract class SPAServiceBase: AbpServiceBase
+    public abstract class SPAServiceBase : AbpServiceBase
     {
         protected SPAServiceBase()
         {

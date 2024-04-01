@@ -23,7 +23,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
     {
         private readonly IRepository<NS_ChucVu, Guid> _repository;
         private readonly INhatKyThaoTacAppService _audiLogService;
-        public ChucVuAppService(IRepository<NS_ChucVu, Guid> repository,INhatKyThaoTacAppService audiLogService)
+        public ChucVuAppService(IRepository<NS_ChucVu, Guid> repository, INhatKyThaoTacAppService audiLogService)
         {
             _repository = repository;
             _audiLogService = audiLogService;
@@ -52,16 +52,16 @@ namespace BanHangBeautify.NhanSu.ChucVu
         public async Task<ChucVuDto> Create(CreateOrEditChucVuDto dto)
         {
             NS_ChucVu chucVu = new NS_ChucVu();
-            
+
             chucVu.Id = Guid.NewGuid();
             using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
                 var countIdChucVu = _repository.Count() + 1;
-                if (countIdChucVu.ToString().Length>=3)
+                if (countIdChucVu.ToString().Length >= 3)
                 {
                     chucVu.MaChucVu = "CV" + (countIdChucVu + 1).ToString();
                 }
-                else if (countIdChucVu.ToString().Length==2)
+                else if (countIdChucVu.ToString().Length == 2)
                 {
                     chucVu.MaChucVu = "CV0" + (countIdChucVu + 1).ToString();
                 }
@@ -69,7 +69,7 @@ namespace BanHangBeautify.NhanSu.ChucVu
                 {
                     chucVu.MaChucVu = "CV00" + (countIdChucVu + 1).ToString();
                 }
-                
+
             }
             chucVu.TenChucVu = dto.TenChucVu;
             chucVu.TrangThai = 1;

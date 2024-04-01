@@ -60,7 +60,7 @@ namespace BanHangBeautify.Web.Host.Startup
             IdentityRegistrar.Register(services);
             AuthConfigurer.Configure(services, _appConfiguration);
 
-           
+
             services.AddSignalR();
             // Configure CORS for angular2 UI
 
@@ -80,15 +80,15 @@ namespace BanHangBeautify.Web.Host.Startup
                         .AllowCredentials()
                 )
             );
-                //services.AddCors(options =>
-                // {
-                //     options.AddPolicy(_defaultCorsPolicyName, builder =>
-                //     {
-                //         builder.AllowAnyOrigin()
-                //             .AllowAnyHeader()
-                //             .AllowAnyMethod();
-                //     });
-                // });
+            //services.AddCors(options =>
+            // {
+            //     options.AddPolicy(_defaultCorsPolicyName, builder =>
+            //     {
+            //         builder.AllowAnyOrigin()
+            //             .AllowAnyHeader()
+            //             .AllowAnyMethod();
+            //     });
+            // });
 
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             ConfigureSwagger(services);
