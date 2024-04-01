@@ -9,7 +9,7 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
     {
         Task<List<BookingGetAllItemDto>> GetAllBooking(PagedBookingResultRequestDto input, int tenantId, DateTime timeFrom, DateTime timeTo);
         Task<List<BookingDetailDto>> GetKhachHang_Booking(BookingRequestDto input);
-        Task<List<BookingDetailDto>> GetInforBooking_byID(Guid idBooking);
+        Task<List<BookingDetailDto>> GetInforBooking_byID(List<Guid> arrIdBooking);
         Task<BookingInfoDto> GetBookingInfo(Guid id, int tenantId);
     }
 }

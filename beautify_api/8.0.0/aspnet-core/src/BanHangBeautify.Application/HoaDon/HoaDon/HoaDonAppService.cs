@@ -518,6 +518,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             var data = _hoaDonRepository.GetAllList(x => arrIdHoaDon.Contains(x.Id)).Select(x => new Zalo_InforHoaDonSend
             {
                 Id = x.Id,
+                IdKhachHang = x.IdKhachHang,
                 MaHoaDon = x.MaHoaDon,
                 NgayLapHoaDon = x.NgayLapHoaDon,
                 TongTienHang = x.TongTienHang,

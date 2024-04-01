@@ -54,6 +54,6 @@ namespace BanHangBeautify.AppWebhook.Dto
         public ZOA_InforUserSubmit InforUserSubmit { get; set; }
 
         [JsonProperty("timestamp")]
-        public string Timestamp { get; set; }
+        public long Timestamp { get; set; }
     }
 }

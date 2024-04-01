@@ -422,9 +422,10 @@ namespace BanHangBeautify.Bookings.Bookings
             }).ToList();
             return dtGr;
         }
-        public async Task<List<BookingDetailOfCustometDto>> GetInforBooking_byID(Guid idBooking)
+        [HttpPost]
+        public async Task<List<BookingDetailOfCustometDto>> GetInforBooking_byID(List<Guid> arrIdBooking)
         {
-            List<BookingDetailDto> data = await _bookingRepository.GetInforBooking_byID(idBooking);
+            List<BookingDetailDto> data = await _bookingRepository.GetInforBooking_byID(arrIdBooking);
             var dtGr = data.GroupBy(x => new
             {
                 x.IdBooking,

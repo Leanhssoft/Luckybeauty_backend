@@ -30,5 +30,6 @@ namespace BanHangBeautify
         public static TimeSpan RefreshTokenExpiration = TimeSpan.FromDays(365);
 
         public const string DateTimeOffsetFormat = "yyyy-MM-ddTHH:mm:sszzz";
+        //public static readonly string DefaultPassPhrase = "e384d1716a8642c28a9387892dd10535";
     }
 }

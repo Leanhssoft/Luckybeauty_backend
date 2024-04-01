@@ -75,13 +75,13 @@ namespace BanHangBeautify.Web.Host.Controllers
             {
                 var body = await reader.ReadToEndAsync();
 
-                if (!IsSignatureCompatible2(body))
+                // Xử lý dữ liệu từ Zalo sau khi xác thực chữ ký
+                var zaloEventData = JsonConvert.DeserializeObject<ZaloWebhookPayload>(body);
+
+                if (!IsSignatureCompatible(body, zaloEventData.Timestamp))
                 {
                     return StatusCode(500, "Unexpected Signature");
                 }
-
-                // Xử lý dữ liệu từ Zalo sau khi xác thực chữ ký
-                var zaloEventData = JsonConvert.DeserializeObject<ZaloWebhookPayload>(body);
 
                 // Xử lý sự kiện cụ thể
                 switch (zaloEventData.EventName)
@@ -119,21 +119,22 @@ namespace BanHangBeautify.Web.Host.Controllers
             //}
         }
 
-        private bool IsSignatureCompatible2(string body)
+        private bool IsSignatureCompatible2(string body, long timeStamp)
         {
             if (!HttpContext.Request.Headers.ContainsKey("X-ZEvent-Signature"))
             {
                 return false;
             }
 
-            long timeStamp = 54390853474;
+            //DateTime currentTime = DateTime.Now;
+            //long timeStamp = ((DateTimeOffset)currentTime).ToUnixTimeSeconds();
+
             string string_body = JsonConvert.SerializeObject(body);
-            string raw_verify = $"{_zaloAppId}{string_body}{timeStamp}{_zaloAppSecret}";
+            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloAppSecret}";
 
             // mac = sha256(appId + data + timeStamp + OAsecretKey)
             string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
             var receivedSignature = secret.ToString().Split("=");
-
             string computedSignature;
             switch (receivedSignature[0])
             {
@@ -143,36 +144,41 @@ namespace BanHangBeautify.Web.Host.Controllers
                     // Tạo đối tượng SHA256
                     byte[] hash = SHA256.HashData(bytes);
                     // Chuyển đổi mảng byte thành chuỗi hex
-                    computedSignature = BitConverter.ToString(hash).Replace("-", "").ToLower();
+                    computedSignature = BitConverter.ToString(hash).Replace("-", "");
                     break;
                 default:
                     throw new NotImplementedException();
             }
             return computedSignature == receivedSignature[1];
         }
-        private bool IsSignatureCompatible(string body)
+        private bool IsSignatureCompatible(string body, long timeStamp)
         {
             if (!HttpContext.Request.Headers.ContainsKey("X-ZEvent-Signature"))
             {
                 return false;
             }
 
-            // mac = sha256(appId + data + timeStamp + OAsecretKey)
-            var receivedSignature = HttpContext.Request.Headers["X-ZEvent-Signature"].ToString().Split("=");//will be something like "sha256=whs_XXXXXXXXXXXXXX"
+            string string_body = JsonConvert.SerializeObject(body);
+            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloAppSecret}";
 
+            // mac = sha256(appId + data + timeStamp + OAsecretKey)
+            string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
+            var receivedSignature = secret.ToString().Split("=");
             string computedSignature;
             switch (receivedSignature[0])
             {
-                case "sha256":
-                    var secretBytes = Encoding.UTF8.GetBytes(_zaloAppSecret);// chuyen doi chuoi thanh byte
-                    using (var hasher = new HMACSHA256(secretBytes))// tao ma Hash với khóa bí mật
+                case "mac":
+                    // Convert the input string to a byte array and compute the hash.
+                    byte[] inputBytes = Encoding.UTF8.GetBytes(raw_verify);
+                    byte[] hashBytes = SHA256.HashData(inputBytes);
+
+                    // Convert the byte array to a hexadecimal string.
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < hashBytes.Length; i++)
                     {
-                        var data = Encoding.UTF8.GetBytes(body);
-                        // ComputeHash(data) Tính toán giá trị hash của dữ liệu --> tra ve mang byte
-                        // 1 byte trong mang duoc chuyển đổi thành một chuỗi hex,
-                        // và các chuỗi hex này được nối lại với nhau, thường được phân tách bằng dấu gạch nối.
-                        computedSignature = BitConverter.ToString(hasher.ComputeHash(data));
+                        builder.Append(hashBytes[i].ToString("x2"));
                     }
+                    computedSignature = builder.ToString();
                     break;
                 default:
                     throw new NotImplementedException();

@@ -63,13 +63,13 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             }
             return new PagedResultDto<CreateOrEditHeThongSMSDto>();
         }
-        public async Task<List<CustomerWithZOA>> JqAutoCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1)
+        public async Task<List<CustomerWithZOA>> JqAutoCustomer_byIdLoaiTin(ParamSearchSMS input, int? idLoaiTin = 1)
         {
             if (input == null)
             {
                 return new List<CustomerWithZOA>();
             }
-            string idChiNhanhs = string.Empty;
+            string idChiNhanhs = string.Empty, trangThais = string.Empty, hinhThucGui = string.Empty;
             int isUserZalo = 0;// 1. nếu khách hàng có tài khoản Zalo, và quan tâm đến Cửa hàng
             if (input.TrangThais != null && input.TrangThais.Count > 0)
             {
@@ -79,9 +79,19 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             {
                 idChiNhanhs = string.Join(",", input.IdChiNhanhs);
             }
+            if (input.TrangThais != null && input.TrangThais.Count > 0)
+            {
+                trangThais = string.Join(",", input.TrangThais);
+            }
+            if (input.HinhThucGuiTins != null && input.HinhThucGuiTins.Count > 0)
+            {
+                hinhThucGui = string.Join(",", input.HinhThucGuiTins);
+            }
             using var command = CreateCommand("spJqAutoCustomer_byIdLoaiTin");
             command.Parameters.Add(new SqlParameter("@IdLoaiTin", idLoaiTin));
             command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@TrangThais", trangThais));
+            command.Parameters.Add(new SqlParameter("@HinhThucGuiTins", hinhThucGui));
             command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
@@ -126,6 +136,8 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
             command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
             command.Parameters.Add(new SqlParameter("@TrangThais", trangThais));
             command.Parameters.Add(new SqlParameter("@HinhThucGuiTins", hinhThucGui));
+            command.Parameters.Add(new SqlParameter("@IsFilterCustomer", input?.IsFilterCustomer ?? false));
+            command.Parameters.Add(new SqlParameter("@LoaiUser_CoTheGuiTin", input?.LoaiUser_CoTheGuiTin ?? 0));
             command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? ""));
             command.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));

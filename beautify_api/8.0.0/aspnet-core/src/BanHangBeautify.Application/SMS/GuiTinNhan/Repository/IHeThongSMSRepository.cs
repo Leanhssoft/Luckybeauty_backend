@@ -16,7 +16,7 @@ namespace BanHangBeautify.SMS.GuiTinNhan.Repository
     public interface IHeThongSMSRepository
     {
         Task<PagedResultDto<CreateOrEditHeThongSMSDto>> GetListSMS(ParamSearch input);
-        Task<List<CustomerWithZOA>> JqAutoCustomer_byIdLoaiTin(ParamSearch input, int? idLoaiTin = 1);
+        Task<List<CustomerWithZOA>> JqAutoCustomer_byIdLoaiTin(ParamSearchSMS input, int? idLoaiTin = 1);
         Task<PagedResultDto<PageKhachHangSMSDto>> GetListCustomer_byIdLoaiTin(ParamSearchSMS input, int? idLoaiTin = 1);
         Task<int> InsertNhatKyGuiTinSMS(NhatKyGuiTinSMSDto input, int tenantId);
     }

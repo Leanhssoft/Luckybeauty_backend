@@ -49,12 +49,12 @@ namespace BanHangBeautify.AppWebhook
             Guid? idKhachHangThanhVien;
             if (existsZOAUserId)
             {
-                var dataUser = await _zaloKhachHangThanhVien.DangKyThanhVienZOA(newUser);
+                var dataUser = await _zaloKhachHangThanhVien.UpdateThanhVienZOA(newUser);
                 idKhachHangThanhVien = dataUser.Id ?? null;
             }
             else
             {
-                var dataUser = await _zaloKhachHangThanhVien.UpdateThanhVienZOA(newUser);
+                var dataUser = await _zaloKhachHangThanhVien.DangKyThanhVienZOA(newUser);
                 idKhachHangThanhVien = dataUser.Id ?? null;
             }
 

@@ -62,5 +62,9 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public int TrangThai { get; set; }
         public string TxtTrangThaiBook { get; set; }
         public List<BookingDetailDto> Details { get; set; }
+
+        public string TenChiNhanh { get; set; }
+        public string SoDienThoaiChiNhanh { get; set; }
+        public string DiaChiChiNhanh { get; set; }
     }
 }
