@@ -1,4 +1,5 @@
-﻿using Abp.Configuration;
+﻿using Abp.Authorization;
+using Abp.Configuration;
 using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.Runtime.Session;
@@ -208,7 +209,7 @@ namespace BanHangBeautify.Authorization.Accounts
         }
 
 
-
+        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Impersonation)]
         public virtual async Task<ImpersonateOutput> Impersonate(ImpersonateInput input)
         {
             return new ImpersonateOutput
