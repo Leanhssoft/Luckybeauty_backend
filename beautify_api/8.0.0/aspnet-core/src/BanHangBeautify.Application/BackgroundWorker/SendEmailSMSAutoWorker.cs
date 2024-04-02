@@ -1,5 +1,9 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using Abp.Application.Services.Dto;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
@@ -7,22 +11,15 @@ using Abp.Net.Mail;
 using Abp.Threading.BackgroundWorkers;
 using Abp.Threading.Timers;
 using BanHangBeautify.Authorization.Users;
-using BanHangBeautify.Configuration.Dto;
 using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.SMS.Brandname.Repository;
 using BanHangBeautify.SMS.Dto;
 using BanHangBeautify.SMS.ESMS;
-using BanHangBeautify.MultiTenancy;
-using BanHangBeautify.Authorization.Users;
-using BanHangBeautify.SMS.Brandname.Repository;
-using Abp.Net.Mail;
-using BanHangBeautify.Configuration.Dto;
-using Abp.Configuration;
-using NPOI.XWPF.UserModel;
-using Abp.Application.Services.Dto;
-using BanHangBeautify.Consts;
+using BanHangBeautify.SMS.GuiTinNhan.Repository;
+using BanHangBeautify.Zalo.GuiTinNhan;
+using BanHangBeautify.Zalo.ZaloTemplate;
 
 namespace BanHangBeautify.BackgroundWorker
 {
