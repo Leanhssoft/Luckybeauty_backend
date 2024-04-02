@@ -41,6 +41,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private readonly IRepository<DM_NguonKhach, Guid> _nguonKhachRepository;
         private readonly IRepository<Booking, Guid> _bookingRepository;
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
+        private readonly IRepository<Zalo_KhachHangThanhVien, Guid> _zaloKhachHang;
         private readonly IKhachHangExcelExporter _khachHangExcelExporter;
         INhatKyThaoTacAppService _audilogService;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
@@ -50,6 +51,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
               IRepository<DM_NguonKhach, Guid> nguonKhachRepository,
               IRepository<Booking, Guid> bookingRepository,
               IRepository<BH_HoaDon, Guid> hoaDonRepository,
+              IRepository<Zalo_KhachHangThanhVien, Guid> zaloKhachHang,
               IKhachHangExcelExporter khachHangExcelExporter,
               INhatKyThaoTacAppService audilogService
               )
@@ -61,6 +63,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _nhomKhachHangRepository = nhomKhachHangRepository;
             _bookingRepository = bookingRepository;
             _hoaDonRepository = hoaDonRepository;
+            _zaloKhachHang = zaloKhachHang;
             _khachHangExcelExporter = khachHangExcelExporter;
             _audilogService = audilogService;
         }
@@ -157,6 +160,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             khachHang.IdKhachHangZOA = dto.IdKhachHangZOA;
             khachHang.IdTinhThanh = dto.IdTinhThanh;
             khachHang.IdQuanHuyen = dto.IdQuanHuyen;
+            khachHang.IdKhachHangZOA = dto.IdKhachHangZOA;
             khachHang.LastModificationTime = DateTime.Now;
             khachHang.LastModifierUserId = AbpSession.UserId;
             await _repository.UpdateAsync(khachHang);
@@ -166,19 +170,23 @@ namespace BanHangBeautify.KhachHang.KhachHang
 
         public async Task<CreateOrEditKhachHangDto> GetKhachHang(Guid id)
         {
-            try
+            var KhachHang = await _repository.GetAsync(id);
+            if (KhachHang != null)
             {
-                // GetAsync: exception nếu không tìm thấy
-                var KhachHang = await _repository.GetAsync(id);
-                if (KhachHang != null)
+                Guid? idKhachHangZOA = KhachHang.IdKhachHangZOA;
+                string zoaUserId = string.Empty;
+                if (idKhachHangZOA != null)
                 {
-                    var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
-                    return result;
+                    var zaloAcc = await _zaloKhachHang.GetAsync(idKhachHangZOA ?? Guid.Empty);
+                    if (zaloAcc != null)
+                    {
+                        zoaUserId = zaloAcc.ZOAUserId;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
 
+                var result = ObjectMapper.Map<CreateOrEditKhachHangDto>(KhachHang);
+                result.ZOAUserId = zoaUserId;
+                return result;
             }
             return new CreateOrEditKhachHangDto();
         }
@@ -396,6 +404,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
             return false;
         }
+
         /// <summary>
         /// dùng cho đăng ký thành viên ZOA
         /// </summary>

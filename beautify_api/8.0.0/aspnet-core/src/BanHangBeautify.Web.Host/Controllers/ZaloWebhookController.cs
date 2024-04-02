@@ -87,17 +87,35 @@ namespace BanHangBeautify.Web.Host.Controllers
                 switch (zaloEventData.EventName)
                 {
                     case "user_send_text":
-                        // Xử lý tin nhắn từ người dùng
-                        var message = zaloEventData.Message;
+                        {
+                            // Xử lý tin nhắn từ người dùng
+                            var message = zaloEventData.Message;
+                        }
                         break;
                     case "user_submit_info":
                         {
-                            var inforUser = zaloEventData.InforUserSubmit;
-                            // 1. check exist tbl DM_KhachHang (by Phone) & insert to DM_KhachHang
-                            // 2. Insert into Zalo_KhachHangThanhVien
                             try
                             {
-                                await _webhookPublisher.UserSendMessage(inforUser, zaloEventData.Sender.Id);
+                                var inforUser = zaloEventData.InforUserSubmit;
+                                var idKhachHangZOA = await _webhookPublisher.AddUpdate_ZaloKhachHangThanhVien(zaloEventData.Sender.Id);
+                                if (idKhachHangZOA != null)
+                                {
+                                    await _webhookPublisher.AddNewCustomer_ShareInfor(idKhachHangZOA ?? Guid.Empty, inforUser);
+                                }
+                            }
+                            catch (Exception)
+                            {
+
+                                throw;
+                            }
+                        }
+                        break;
+                    case "follow":
+                    case "unfollow":
+                        {
+                            try
+                            {
+                                await _webhookPublisher.AddUpdate_ZaloKhachHangThanhVien(zaloEventData.Sender.Id);
                             }
                             catch (Exception ex)
                             {

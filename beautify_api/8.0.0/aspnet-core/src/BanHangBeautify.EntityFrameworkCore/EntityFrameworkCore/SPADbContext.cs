@@ -63,6 +63,10 @@ namespace BanHangBeautify.EntityFrameworkCore
         #region Zalo
         public DbSet<ZaloAuthorization> ZaloAuthorization { get; set; }
         public DbSet<Zalo_KhachHangThanhVien> Zalo_KhachHangThanhVien { get; set; }
+        public DbSet<Zalo_Template> Zalo_Template { get; set; }
+        public DbSet<Zalo_Element> Zalo_Element { get; set; }
+        public DbSet<Zalo_TableDetail> Zalo_TableDetail { get; set; }
+        public DbSet<Zalo_ButtonDetail> Zalo_ButtonDetail { get; set; }
         #endregion
 
         #region Nhân viên

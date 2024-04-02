@@ -1,20 +1,21 @@
 ﻿using Abp.Domain.Repositories;
+using Azure.Core;
 using BanHangBeautify.Configuration;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
-using Microsoft.AspNetCore.Hosting;
+using BanHangBeautify.SMS.Dto;
+using BanHangBeautify.Zalo.DangKyThanhVien;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-//using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NPOI.POIFS.Crypt;
-using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -22,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Zalo.KetNoi_XacThuc
 {
-    public class ZaloAuthorizationAppService : SPAAppServiceBase
+    public class ZaloAuthorizationAppService : SPAAppServiceBase, IZaloAuthorization
     {
         private readonly IRepository<ZaloAuthorization, Guid> _zaloAuthorization;
         private readonly IConfiguration _config;
@@ -96,6 +97,230 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
                 return string.Concat(ex.InnerException + ex.Message);
             }
         }
+
+        [HttpGet]
+        /// <summary>
+        /// get infor user OA
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<Zalo_KhachHangThanhVienDto> GetInforUser_ofOA(string accessToken, string userId)
+        {
+            HttpClient client = new();
+            var requestData = new
+            {
+                user_id = userId,
+            };
+            string jsonData = JsonSerializer.Serialize(requestData);
+            string url = $"https://openapi.zalo.me/v3.0/oa/user/detail?data={jsonData}";
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.GetAsync(url);
+            string htmltext = await response.Content.ReadAsStringAsync();
+            // todo: data return null
+            var dataReturn = JsonSerializer.Deserialize<ResultDataZaloCommon<Zalo_KhachHangThanhVienDto>>(htmltext);
+            return dataReturn.data;
+        }
+
+        /// <summary>
+        /// Gửi tin nhắn tự động
+        /// </summary>
+        /// <param name="dataSend"></param>
+        /// <param name="accessToken"></param>
+        [HttpPost]
+        public async Task<string> GuiTinTuVan(PageKhachHangSMSDto dataSend, string accessToken)
+        {
+            // Tạo đối tượng recipient
+            var recipient = new
+            {
+                user_id = dataSend.ZOAUserId
+            };
+
+            // Tạo đối tượng elements
+            var elements = new[]
+            {
+                new
+                {
+                    type = "header",
+                    content = "Content Header"
+                },
+                new
+                {
+                    type = "text",
+                    content = $@"{dataSend?.TenChiNhanh} chào khách hàng {dataSend?.TenKhachHang}"
+                }
+            };
+
+            // Tạo đối tượng payload
+            var payload = new
+            {
+                template_type = "promotion",
+                language = "VI",
+                elements
+            };
+
+            // Tạo đối tượng attachment
+            var attachment = new
+            {
+                type = "template",
+                payload
+            };
+
+            // Tạo đối tượng message
+            var message = new
+            {
+                attachment
+            };
+
+            // Tạo đối tượng JSON chứa recipient và message
+            var jsonData = new
+            {
+                recipient,
+                message
+            };
+
+            // Chuyển đối tượng JSON dynamic thành chuỗi JSON và thực hiện gửi tin nhắn
+            string jsonString = JsonSerializer.Serialize(jsonData);
+
+            HttpClient client = new();
+            const string url = "https://openapi.zalo.me/v3.0/oa/message/promotion";
+            var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.PostAsync(url, stringContent);
+            string htmltext = await response.Content.ReadAsStringAsync();
+            return htmltext;
+        }
+
+        [HttpPost]
+        public async Task<string> GuiTinGiaoDich(PageKhachHangSMSDto dataSend, string accessToken)
+        {
+            // Tạo đối tượng recipient
+            var recipient = new
+            {
+                user_id = dataSend.ZOAUserId
+            };
+
+            var payload = new
+            {
+                template_type = "promotion",
+                elements = new object[]
+            {
+                new
+                {
+                    attachment_id = "aERC3A0iYGgQxim8fYIK6fxzsXkaFfq7ZFRB3RCyZH6RyziRis3RNydebK3iSPCJX_cJ3k1nW1EQufjN_pUL1f6Ypq3rTef5nxp6H_HnXKFDiyD5y762HS-baqRpQe5FdA376lTfq1sRyPr8ypd74ecbaLyA-tGmuJ-97W",
+                    type = "banner"
+                },
+                new
+                {
+                    type = "header",
+                    content = "💥💥Ưu đãi thành viên Platinum💥💥"
+                },
+                new
+                {
+                    type = "text",
+                    align = "left",
+                    content = "Ưu đãi dành riêng cho khách hàng Nguyen Van A hạng thẻ Platinum<br>Voucher trị giá 150$"
+                },
+                new
+                {
+                    type = "table",
+                    content = new object[]
+                    {
+                        new
+                        {
+                            value = "VC09279222",
+                            key = "Voucher"
+                        },
+                        new
+                        {
+                            value = "30/12/2023",
+                            key = "Hạn sử dụng"
+                        }
+                    }
+                },
+                new
+                {
+                    type = "text",
+                    align = "center",
+                    content = "Áp dụng tất cả cửa hàng trên toàn quốc"
+                }
+            },
+                buttons = new object[]
+            {
+                new
+                {
+                    title = "Tham khảo chương trình",
+                    image_icon = "",
+                    type = "oa.open.url",
+                    payload = new
+                    {
+                        url = "https://oa.zalo.me/home"
+                    }
+                },
+                new
+                {
+                    title = "Liên hệ chăm sóc viên",
+                    image_icon = "aeqg9SYn3nIUYYeWohGI1fYRF3V9f0GHceig8Ckq4WQVcpmWb-9SL8JLPt-6gX0QbTCfSuQv40UEst1imAm53CwFPsQ1jq9MsOnlQe6rIrZOYcrlWBTAKy_UQsV9vnfGozCuOvFfIbN5rcXddFKM4sSYVM0D50I9eWy3",
+                    type = "oa.query.hide",
+                    payload = "#tuvan"
+                }
+            }
+            };
+
+            var message = new
+            {
+                attachment = new
+                {
+                    type = "template",
+                    payload
+                }
+            };
+
+            var requestData = new
+            {
+                recipient,
+                message
+            };
+
+            // Chuyển đổi thành chuỗi JSON
+            string jsonData = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
+            {
+                WriteIndented = true // Để định dạng dữ liệu JSON
+            });
+
+            // Chuyển đối tượng JSON dynamic thành chuỗi JSON và thực hiện gửi tin nhắn
+            string jsonString = JsonSerializer.Serialize(jsonData);
+
+            HttpClient client = new();
+            const string url = "https://openapi.zalo.me/v3.0/oa/message/promotion";
+            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.PostAsync(url, stringContent);
+            string htmltext = await response.Content.ReadAsStringAsync();
+            return htmltext;
+        }
+
+        public async Task<string> SendMessageToUser(string accessToken)
+        {
+            dynamic objJson = new ExpandoObject();
+            objJson.recipient = new ExpandoObject();
+            objJson.recipient.user_id = "6441788310775550433";
+
+            objJson.message = new ExpandoObject();
+            objJson.message.text = "tét ábc";
+
+            var json = JsonSerializer.Serialize(objJson);
+
+            HttpClient client = new();
+            const string url = "https://openapi.zalo.me/v3.0/oa/message/cs";
+            StringContent content = new(json, Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.PostAsync(url, content);
+
+            string htmltext = await response.Content.ReadAsStringAsync();
+            return htmltext;
+        }
+
         /// <summary>
         /// mỗi refreshToken chỉ dùng 1 lần, sau đó sẽ không dùng dc nữa
         /// </summary>
@@ -141,45 +366,6 @@ namespace BanHangBeautify.Zalo.KetNoi_XacThuc
             catch (Exception ex)
             {
                 return null;
-            }
-        }
-        public async Task<HttpResponseMessage> SendMessageToUser(string accessToken)
-        {
-            try
-            {
-                string appId = _config["Zalo:AppId"];
-                string appSecret = _config["Zalo:AppSecret"];
-
-                dynamic objJson = new ExpandoObject();
-                objJson.recipient = new ExpandoObject();
-                objJson.recipient.user_id = "6441788310775550433";
-
-                objJson.message = new ExpandoObject();
-                objJson.message.text = "send from c# nhuongdt";
-
-                var json = JsonSerializer.Serialize(objJson);
-
-
-                HttpClient client = new();
-                const string url = "https://openapi.zalo.me/v3.0/oa/message/cs";
-                var stringContent = new StringContent(json, Encoding.UTF8);
-                stringContent.Headers.Add("Content-Type", "application/json");
-                stringContent.Headers.Add("access_token", accessToken);
-                HttpResponseMessage response = await client.PostAsync(url, stringContent);
-
-                string htmltext = await response.Content.ReadAsStringAsync();
-                foreach (var header in response.Headers)
-                {
-                    foreach (var value in header.Value)
-                    {
-                        Console.WriteLine($"{header.Key,25} : {value}");
-                    }
-                }
-                return response;
-            }
-            catch (Exception ex)
-            {
-                return new HttpResponseMessage();
             }
         }
 

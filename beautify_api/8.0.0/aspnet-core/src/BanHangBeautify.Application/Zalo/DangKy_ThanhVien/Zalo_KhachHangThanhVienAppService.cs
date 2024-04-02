@@ -54,11 +54,10 @@ namespace BanHangBeautify.Zalo.DangKy_ThanhVien
                 return new Zalo_KhachHangThanhVienDto();
             }
             Zalo_KhachHangThanhVien objNew = ObjectMapper.Map<Zalo_KhachHangThanhVien>(dto);
-            objUpdate.TenDangKy = dto.TenDangKy;
-            objUpdate.SoDienThoaiDK = dto.SoDienThoaiDK;
-            objUpdate.DiaChi = dto.DiaChi;
-            objUpdate.TenTinhThanh = dto.TenTinhThanh;
-            objUpdate.TenQuanHuyen = dto.TenQuanHuyen;
+            objUpdate.DisplayName = dto.DisplayName;
+            objUpdate.UserIdByApp = dto.UserIdByApp;
+            objUpdate.UserIsFollower = dto.UserIsFollower;
+            objUpdate.Avatar = dto.Avatar;
             objUpdate.LastModificationTime = DateTime.Now;
             objUpdate.LastModifierUserId = AbpSession.UserId;
             objUpdate.IsDeleted = false;
@@ -67,17 +66,18 @@ namespace BanHangBeautify.Zalo.DangKy_ThanhVien
             return result;
         }
 
-        public bool CheckExistZaloUserId(string zaloUserId)
+        [HttpGet]
+        public Guid? GetId_fromZOAUserId(string zaloUserId)
         {
             try
             {
                 var objFind = _zaloKhachHangThanhVien.GetAllList().Where(x => x.ZOAUserId == zaloUserId);
-                if (objFind != null && objFind.Count() > 0) return true;
-                return false;
+                if (objFind != null && objFind.Any()) return objFind.FirstOrDefault().Id;
+                return null;
             }
             catch (Exception)
             {
-                return false;
+                return null;
             }
         }
     }

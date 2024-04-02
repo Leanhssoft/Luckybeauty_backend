@@ -13,14 +13,13 @@ namespace BanHangBeautify.Entities
     public class Zalo_KhachHangThanhVien : FullAuditedEntity<Guid>, IMustHaveTenant
     {
         public int TenantId { get; set; }
-        public DM_KhachHang DM_KhachHang { get; set; }
-        [MaxLength(500)]
-        public string TenDangKy { get; set; }
-        [MaxLength(100)]
-        public string SoDienThoaiDK { get; set; }
-        public string DiaChi { get; set; }
-        public string TenTinhThanh { get; set; }
-        public string TenQuanHuyen { get; set; }
+        [MaxLength(50)]
         public string ZOAUserId { get; set; }
+        [MaxLength(100)]
+        public string DisplayName { get; set; }// tên hiển thị trên tk zalo
+        [MaxLength(50)]
+        public string UserIdByApp { get; set; }
+        public bool? UserIsFollower { get; set; }// khách hàng quan tâm/chưa quan tâm OA
+        public string Avatar { get; set; }
     }
 }

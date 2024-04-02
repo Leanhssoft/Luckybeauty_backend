@@ -1,4 +1,5 @@
 ﻿using BanHangBeautify.AppWebhook.Dto;
+using BanHangBeautify.Zalo.DangKyThanhVien;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ namespace BanHangBeautify.AppWebhook
 {
     public interface IAppWebhookPublisher
     {
-        Task UserSendMessage(ZOA_InforUserSubmit userInfor, string zaloUserId);
+        Task<Guid?> AddUpdate_ZaloKhachHangThanhVien(string zaloUserId);
+        Task AddNewCustomer_ShareInfor(Guid idKhachHangThanhVien, ZaloUserShareInforDto inforShare);
         Task UserRecieveMessage(int tenantId);
     }
 }
