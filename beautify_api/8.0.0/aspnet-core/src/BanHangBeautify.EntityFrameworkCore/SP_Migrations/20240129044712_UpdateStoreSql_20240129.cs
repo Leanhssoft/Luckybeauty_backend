@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -205,7 +205,7 @@ BEGIN
 	FETCH NEXT @PageSize ROWS ONLY
 
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_lichSuDatLich]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_lichSuDatLich]
 	@TenantId INT = 1,
 	@IdKhachHang UNIQUEIDENTIFIER ='66a7c340-8a01-4766-8791-4e071f9d884f',
 	@SortBy nvarchar(50)='',
@@ -308,12 +308,12 @@ BEGIN
 	SELECT COUNT(Id) as TotalCount FROM #tempBook
 	drop table #tempBook
 END;");
-		}
+        }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
+
         }
     }
 }

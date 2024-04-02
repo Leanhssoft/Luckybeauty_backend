@@ -22,15 +22,15 @@ namespace BanHangBeautify.EntityFrameworkCore
             {
                 Configuration.Modules.AbpEfCore().AddDbContext<SPADbContext>(options =>
               {
-                    if (options.ExistingConnection != null)
-                    {
-                        SPADbContextConfigurer.Configure(options.DbContextOptions, options.ExistingConnection);
-                    }
-                    else
-                    {
-                        SPADbContextConfigurer.Configure(options.DbContextOptions, options.ConnectionString);
-                    }
-                });
+                  if (options.ExistingConnection != null)
+                  {
+                      SPADbContextConfigurer.Configure(options.DbContextOptions, options.ExistingConnection);
+                  }
+                  else
+                  {
+                      SPADbContextConfigurer.Configure(options.DbContextOptions, options.ConnectionString);
+                  }
+              });
             }
         }
 

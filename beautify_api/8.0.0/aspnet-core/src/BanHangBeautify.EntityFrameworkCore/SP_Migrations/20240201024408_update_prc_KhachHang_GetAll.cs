@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -158,7 +158,7 @@ namespace BanHangBeautify.SPMigrations
 					SELECT COUNT(Id) as TotalCount
 					FROM #tblCus 
 					END;"
-			);
+            );
         }
 
         /// <inheritdoc />

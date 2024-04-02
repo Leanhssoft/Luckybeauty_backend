@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -187,7 +187,7 @@ BEGIN
 			OR LOWER(CONVERT(NVARCHAR(MAX), GiaTriChietKhau)) LIKE N'%' + LOWER(@Filter) + N'%'
 		)
 END;");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_chiNhanh_getAll]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_chiNhanh_getAll]
 	@TenantId INT,
 	@Filter NVARCHAR(200),
 	@SortBy NVARCHAR(20),
@@ -261,7 +261,7 @@ BEGIN
 			OR LOWER(CONVERT(NVARCHAR(16), NgayHetHan)) LIKE N'%' + LOWER(@Filter) + N'%'
 		)
 END;");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_lichLamViec_getAll_Week]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_lichLamViec_getAll_Week]
 	@TenantId INT,
 	@IdChiNhanh uniqueidentifier,
     @IdNhanVien uniqueidentifier = null,
@@ -396,7 +396,7 @@ BEGIN
     FROM @ListItems
 	Group by Id,Avatar, IdNhanVien, TenNhanVien,IdCaLamViec) AS DataTable;
 END;");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_nghiLe_getAll] 
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_nghiLe_getAll] 
 	@TenantId INT,
 	@Filter NVARCHAR(200),
 	@SortBy NVARCHAR(20),
@@ -442,7 +442,7 @@ BEGIN
 		)
 END;
 ");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_nhanVien_getAll]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[prc_nhanVien_getAll]
 				@TenantId INT,
 				@IdChiNhanh UNIQUEIDENTIFIER = NULL,
 				@IdChucVu UNIQUEIDENTIFIER = NULL,

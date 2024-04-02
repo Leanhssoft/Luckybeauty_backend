@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.SMS.SMSTemplate
 {
     [AbpAuthorize]
-    public class SMSTemplateAppService: SPAAppServiceBase
+    public class SMSTemplateAppService : SPAAppServiceBase
     {
-        IRepository<SMS_Template,Guid> _repository;
+        IRepository<SMS_Template, Guid> _repository;
         public SMSTemplateAppService(IRepository<SMS_Template, Guid> repository)
         {
             _repository = repository;
@@ -28,7 +28,7 @@ namespace BanHangBeautify.SMS.SMSTemplate
             var checkExist = await _repository.FirstOrDefaultAsync(x => x.Id == input.Id);
             if (checkExist != null)
             {
-                return await Update(checkExist,input);
+                return await Update(checkExist, input);
             }
             return await Create(input);
         }
@@ -59,7 +59,7 @@ namespace BanHangBeautify.SMS.SMSTemplate
             }
             return result;
         }
-        public async Task<ExecuteResultDto> Update(SMS_Template oldData,CreateOrEditSMSTemplateDto input)
+        public async Task<ExecuteResultDto> Update(SMS_Template oldData, CreateOrEditSMSTemplateDto input)
         {
             ExecuteResultDto result = new ExecuteResultDto();
             try
@@ -85,8 +85,8 @@ namespace BanHangBeautify.SMS.SMSTemplate
         public async Task<CreateOrEditSMSTemplateDto> GetForEdit(Guid id)
         {
             CreateOrEditSMSTemplateDto result = new CreateOrEditSMSTemplateDto();
-            var data =await _repository.FirstOrDefaultAsync(x => x.Id == id);
-            if (data!=null)
+            var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
+            if (data != null)
             {
                 result.Id = id;
                 result.TenMauTin = data.TenMauTin;
@@ -100,12 +100,12 @@ namespace BanHangBeautify.SMS.SMSTemplate
         [HttpPost]
         public async Task<ExecuteResultDto> Delete(Guid id)
         {
-            
+
             ExecuteResultDto result = new ExecuteResultDto();
             try
             {
                 var data = await _repository.FirstOrDefaultAsync(x => x.Id == id);
-                if (data!=null)
+                if (data != null)
                 {
                     await _repository.DeleteAsync(data);
                     result.Status = "success";
@@ -131,7 +131,7 @@ namespace BanHangBeautify.SMS.SMSTemplate
             try
             {
                 input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
-                input.SkipCount = input.SkipCount >1 ? (input.SkipCount -1) * input.MaxResultCount : 0;
+                input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
                 var listData = _repository.GetAll().OrderByDescending(x => x.CreationTime).ToList();
                 result.TotalCount = listData.Count();
                 listData = listData.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
@@ -142,11 +142,11 @@ namespace BanHangBeautify.SMS.SMSTemplate
                     rdo.Id = item.Id;
                     rdo.TenMauTin = item.TenMauTin;
                     rdo.NoiDungTinMau = item.NoiDungTinMau;
-                    rdo.IdLoaiTin = int.Parse(item.IdLoaiTin.Value.ToString()??"0");
+                    rdo.IdLoaiTin = int.Parse(item.IdLoaiTin.Value.ToString() ?? "0");
                     items.Add(rdo);
                 }
                 result.Items = items;
-                
+
             }
             catch (Exception)
             {

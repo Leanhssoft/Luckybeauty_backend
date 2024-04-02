@@ -57,7 +57,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto
         public double? SumTienChi { get; set; }
         public double? SumTongThuChi { get; set; }
     }
-    public class BaoCaoChiTietCongNoDto 
+    public class BaoCaoChiTietCongNoDto
     {
         public int? IdLoaiKhach { get; set; }
         public int? IdLoaiChungTu { get; set; }
@@ -74,7 +74,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto
         public double? SoLuong { get; set; }
         public double? DonGiaSauVAT { get; set; }
         public double? ThanhTienSauVAT { get; set; }
-      
+
         public double? SumTongThanhToan { get; set; }
         public double? SumKhachDaTra { get; set; }
         public double? SumConNo { get; set; }

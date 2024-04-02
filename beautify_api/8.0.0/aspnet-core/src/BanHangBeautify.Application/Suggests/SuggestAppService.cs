@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Suggests
 {
     [Authorize]
-    public class SuggestAppService : SPAAppServiceBase,ISuggestAppService
+    public class SuggestAppService : SPAAppServiceBase, ISuggestAppService
     {
         private readonly IRepository<NS_NhanVien, Guid> _nhanVienRepository;//
         private readonly IRepository<DichVu_NhanVien, Guid> _dichVuNhanVienRespository;
@@ -34,8 +34,8 @@ namespace BanHangBeautify.Suggests
         private readonly IRepository<NS_CaLamViec, Guid> _caLamViecRepository;//
         private readonly IRepository<DM_PhongBan, Guid> _phongBanRepository;
         private readonly IRepository<DM_NhomHangHoa, Guid> _nhomHangHoaRepository;
-        private readonly IRepository<DM_LoaiChungTu,int> _loaiChungTuRepository;
-        private readonly IRepository<DM_NganHang,Guid> _nganHangRepository;
+        private readonly IRepository<DM_LoaiChungTu, int> _loaiChungTuRepository;
+        private readonly IRepository<DM_NganHang, Guid> _nganHangRepository;
         private readonly IRepository<DM_TaiKhoanNganHang, Guid> _taiKhoanNganHangRepository;
         private readonly ISuggestRepository _suggestRepository;
         public SuggestAppService(
@@ -52,9 +52,9 @@ namespace BanHangBeautify.Suggests
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<NS_CaLamViec, Guid> caLamViecRepository,
             IRepository<DM_PhongBan, Guid> phongBanRepository,
-            IRepository<DM_NhomHangHoa,Guid> nhomHangHoaRepository,
+            IRepository<DM_NhomHangHoa, Guid> nhomHangHoaRepository,
             IRepository<DM_LoaiChungTu, int> loaiChungTuRepository,
-            IRepository<DM_NganHang,Guid> nganHangRespository,
+            IRepository<DM_NganHang, Guid> nganHangRespository,
             IRepository<DM_TaiKhoanNganHang, Guid> taiKhoanNganHangRepository,
             ISuggestRepository suggestRepository
             )
@@ -124,7 +124,7 @@ namespace BanHangBeautify.Suggests
                 {
                     continue;
                 }
-                var trangThaiNhanVien = _nhanVienRepository.FirstOrDefault(x=>x.Id== item.Id).TrangThai;
+                var trangThaiNhanVien = _nhanVienRepository.FirstOrDefault(x => x.Id == item.Id).TrangThai;
                 item.TrangThai = trangThaiNhanVien;
                 result.Add(item);
             }
@@ -256,7 +256,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestNhomHangHoa>> SuggestNhomHangHoas()
         {
             List<SuggestNhomHangHoa> result = new List<SuggestNhomHangHoa>();
-            var lst = await _nhomHangHoaRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId==(AbpSession.TenantId??1) && x.LaNhomHangHoa ==false).ToListAsync();
+            var lst = await _nhomHangHoaRepository.GetAll().Where(x => x.IsDeleted == false && x.TenantId == (AbpSession.TenantId ?? 1) && x.LaNhomHangHoa == false).ToListAsync();
             if (lst != null || lst.Count > 0)
             {
                 foreach (var item in lst)
@@ -291,7 +291,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestDichVuDto>> SuggestDichVu(Guid? idNhanVien)
         {
             List<SuggestDichVuDto> result = new List<SuggestDichVuDto>();
-            if (idNhanVien.HasValue==false)
+            if (idNhanVien.HasValue == false)
             {
                 var lst = await _donViQuiDoiRepository
                 .GetAll()
@@ -337,7 +337,7 @@ namespace BanHangBeautify.Suggests
                     }
                 }
             }
-            
+
             return result;
 
         }
@@ -433,7 +433,7 @@ namespace BanHangBeautify.Suggests
                     }
                 }
             }
-                
+
 
             return result;
         }
@@ -441,7 +441,7 @@ namespace BanHangBeautify.Suggests
         public async Task<List<SuggestTaiKhoanNganHangQRDto>> SuggestTaiKhoanNganHangQr(Guid idChiNhanh)
         {
             List<SuggestTaiKhoanNganHangQRDto> result = new List<SuggestTaiKhoanNganHangQRDto>();
-            var tknh = _taiKhoanNganHangRepository.GetAll().Where(x=>x.IdChiNhanh== idChiNhanh).ToList();
+            var tknh = _taiKhoanNganHangRepository.GetAll().Where(x => x.IdChiNhanh == idChiNhanh).ToList();
             foreach (var item in tknh)
             {
                 SuggestTaiKhoanNganHangQRDto rdo = new SuggestTaiKhoanNganHangQRDto();
@@ -450,8 +450,8 @@ namespace BanHangBeautify.Suggests
                 rdo.IsDefault = item.IsDefault;
                 using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
                 {
-                    var nganHang =await _nganHangRepository.FirstOrDefaultAsync(x=>x.Id==item.IdNganHang);
-                    if (nganHang!=null)
+                    var nganHang = await _nganHangRepository.FirstOrDefaultAsync(x => x.Id == item.IdNganHang);
+                    if (nganHang != null)
                     {
                         rdo.bin = nganHang.BIN;
                         rdo.TenRutGon = nganHang.TenRutGon;

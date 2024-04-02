@@ -62,7 +62,7 @@ namespace BanHangBeautify.Roles
                 var tenantId = AbpSession.TenantId;
                 foreach (var item in lst)
                 {
-                    var userRoleNew = new UserRoleChiNhanh(item.TenantId?? tenantId, userId, item.RoleId, item.IdChiNhanh);
+                    var userRoleNew = new UserRoleChiNhanh(item.TenantId ?? tenantId, userId, item.RoleId, item.IdChiNhanh);
                     await _userRole.InsertAsync(userRoleNew);
                 }
             }
@@ -71,7 +71,7 @@ namespace BanHangBeautify.Roles
 
         public async Task<List<UserRole>> GetRolebyChiNhanh_ofUser(long userId)
         {
-            var data = _userRole.GetAll().Where(x=>x.UserId==userId).ToList();
+            var data = _userRole.GetAll().Where(x => x.UserId == userId).ToList();
             return data;
         }
     }

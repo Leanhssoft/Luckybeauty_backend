@@ -23,6 +23,6 @@ namespace BanHangBeautify.Entities
         // 2. Đã check in - đã chọn dịch vụ (Đang thực hiện)
         // 2. Đã check in & làm xong dịch vụ - Hoàn thành
         // 3. Khách đến check in nhưng đợi lâu quá (Cancel)
-        public int TrangThai { get; set; } = 1; 
+        public int TrangThai { get; set; } = 1;
     }
 }

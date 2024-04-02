@@ -15,7 +15,7 @@ namespace BanHangBeautify.ChietKhau.ChietKhauDichVu.Dto
         public double GiaDichVu { get; set; }
         public string TenNhanVien { get; set; }
     }
-    
+
     public class ChietKhauDichVuItemDto_TachRiengCot
     {
         public Guid? IdNhanVien { get; set; }

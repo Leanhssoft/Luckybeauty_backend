@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Url
 {
-    public class NullAppUrlService : IAppUrlService,ITransientDependency
+    public class NullAppUrlService : IAppUrlService, ITransientDependency
     {
         public string EmailActivationRoute { get; }
 

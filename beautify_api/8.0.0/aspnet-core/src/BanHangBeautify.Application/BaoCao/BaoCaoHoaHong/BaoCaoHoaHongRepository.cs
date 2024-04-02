@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.EntityFrameworkCore;
 using BanHangBeautify.AppCommon;
+using BanHangBeautify.BaoCao.BaoCaoHoaHong;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using Microsoft.Data.SqlClient;
@@ -10,7 +11,6 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BanHangBeautify.BaoCao.BaoCaoHoaHong;
 
 namespace BanHangBeautify.BaoCao.BaoCaoHoaHong
 {

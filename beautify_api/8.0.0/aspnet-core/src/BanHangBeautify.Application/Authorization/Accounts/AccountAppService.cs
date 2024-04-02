@@ -1,11 +1,13 @@
-﻿using Abp.Configuration;
+﻿using Abp.Authorization;
+using Abp.Configuration;
 using Abp.Dependency;
 using Abp.Domain.Uow;
-using Abp.Net.Mail;
 using Abp.Runtime.Session;
 using Abp.UI;
 using Abp.Zero.Configuration;
 using BanHangBeautify.Authorization.Accounts.Dto;
+using BanHangBeautify.Authorization.Impersonation;
+using BanHangBeautify.Authorization.Impersonation.Dto;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.MultiTenancy;
@@ -19,7 +21,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Threading.Tasks;
-using static Asd.AbpZeroTemplate.Configuration.AppSettings.ExternalLoginProvider;
 
 namespace BanHangBeautify.Authorization.Accounts
 {
@@ -36,6 +37,7 @@ namespace BanHangBeautify.Authorization.Accounts
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly AbpZeroDbMigrator _migrator;
         private readonly ISeedDataAppService _seedDataEntities;
+        private readonly IImpersonationManager _impersonationManager;
 
         public AccountAppService(
             UserRegistrationManager userRegistrationManager,
@@ -44,7 +46,8 @@ namespace BanHangBeautify.Authorization.Accounts
             IAppUrlService appUrlService,
             IUnitOfWorkManager unitOfWorkManager,
             AbpZeroDbMigrator migrator,
-            ISeedDataAppService seedDataEntities
+            ISeedDataAppService seedDataEntities,
+            IImpersonationManager impersonationManager
             )
         {
             _userRegistrationManager = userRegistrationManager;
@@ -54,6 +57,7 @@ namespace BanHangBeautify.Authorization.Accounts
             _unitOfWorkManager = unitOfWorkManager;
             _migrator = migrator;
             _seedDataEntities = seedDataEntities;
+            _impersonationManager = impersonationManager;
         }
 
         public async Task<IsTenantAvailableOutput> IsTenantAvailable(IsTenantAvailableInput input)
@@ -68,7 +72,7 @@ namespace BanHangBeautify.Authorization.Accounts
                 return new IsTenantAvailableOutput(TenantAvailabilityState.NotFound);
             }
 
-            if (!tenant.IsActive || (tenant.SubscriptionEndDate!=null && tenant.SubscriptionEndDate<DateTime.Now))
+            if (!tenant.IsActive || (tenant.SubscriptionEndDate != null && tenant.SubscriptionEndDate < DateTime.Now))
             {
                 return new IsTenantAvailableOutput(TenantAvailabilityState.InActive);
             }
@@ -203,6 +207,40 @@ namespace BanHangBeautify.Authorization.Accounts
 
             await UserManager.UpdateAsync(user);
         }
+
+
+        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Impersonation)]
+        public virtual async Task<ImpersonateOutput> Impersonate(ImpersonateInput input)
+        {
+            return new ImpersonateOutput
+            {
+                ImpersonationToken = await _impersonationManager.GetImpersonationToken(input.UserId, input.TenantId),
+                TenancyName = await GetTenancyNameOrNullAsync(input.TenantId)
+            };
+        }
+        public virtual async Task<ImpersonateOutput> BackToImpersonator() 
+        {
+            return new ImpersonateOutput
+            {
+                ImpersonationToken = await _impersonationManager.GetBackToImpersonatorToken(),
+                TenancyName = await GetTenancyNameOrNullAsync(AbpSession.ImpersonatorTenantId)
+            };
+        }
+        private async Task<Tenant> GetActiveTenantAsync(int tenantId)
+        {
+            var tenant = await TenantManager.FindByIdAsync(tenantId);
+            if (tenant == null)
+            {
+                throw new UserFriendlyException(L("UnknownTenantId{0}", tenantId));
+            }
+
+            if (!tenant.IsActive)
+            {
+                throw new UserFriendlyException(L("TenantIdIsNotActive{0}", tenantId));
+            }
+
+            return tenant;
+        }
         private async Task<User> GetUserByChecking(string inputEmailAddress)
         {
             var user = await UserManager.FindByEmailAsync(inputEmailAddress);
@@ -213,6 +251,13 @@ namespace BanHangBeautify.Authorization.Accounts
 
             return user;
         }
+
+        private async Task<string> GetTenancyNameOrNullAsync(int? tenantId)
+        {
+            return tenantId.HasValue ? (await GetActiveTenantAsync(tenantId.Value)).TenancyName : null;
+        }
+
+
         [NonAction]
         private string GenerateToken(int? id)
         {

@@ -250,7 +250,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     Color = x.Key.Color,
                     ThuTuHienThi = x.Key.ThuTuHienThi,
                     HangHoas = x.ToList()
-                }).OrderBy(x=>x.ThuTuHienThi).ToList();
+                }).OrderBy(x => x.ThuTuHienThi).ToList();
             return dataGroup;
         }
         [HttpPost]

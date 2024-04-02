@@ -23,8 +23,8 @@ namespace BanHangBeautify.HangHoa.DonViQuiDoi
         private readonly IRepository<DM_HangHoa, Guid> _hangHoaRepository;
         INhatKyThaoTacAppService _audilogService;
         public DonViQuiDoiAppService(
-            IRepository<DM_DonViQuiDoi, 
-            Guid> repository, 
+            IRepository<DM_DonViQuiDoi,
+            Guid> repository,
             IRepository<DM_HangHoa, Guid> hangHoaRepository,
             INhatKyThaoTacAppService audilogService
         )

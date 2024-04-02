@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.SignalR.Notification
 {
-    public class NotificationHub: Hub
+    public class NotificationHub : Hub
     {
         public async Task SendNotification()
         {

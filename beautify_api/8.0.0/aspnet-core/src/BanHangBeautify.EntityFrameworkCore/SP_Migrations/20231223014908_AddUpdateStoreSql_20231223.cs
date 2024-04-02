@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -164,7 +164,7 @@ BEGIN
 		OFFSET  @CurrentPage ROWS FETCH NEXT @PageSize ROWS ONLY;
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListBandname]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListBandname]
 	@TenantId int = 1,
     @Keyword nvarchar(max) ='',
     @SkipCount int = 1,
@@ -227,7 +227,7 @@ BEGIN
 	on dt.Id = tblThuChi.IdBrandname
 
 END");
-			
+
         }
 
         /// <inheritdoc />

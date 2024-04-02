@@ -16,7 +16,7 @@ namespace BanHangBeautify.NhanSu.NhanVien.Dto
         [MaxLength(50)]
         public string TenLot { set; get; }
         [MaxLength(256)]
-        [Required(ErrorMessage ="Tên nhân viên không được để trống")]
+        [Required(ErrorMessage = "Tên nhân viên không được để trống")]
         public string TenNhanVien { get; set; }
         [MaxLength(2000)]
         public string DiaChi { get; set; }

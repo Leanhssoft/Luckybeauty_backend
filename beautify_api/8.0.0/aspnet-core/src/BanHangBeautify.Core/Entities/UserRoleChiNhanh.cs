@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Entities
 {
     [Table("AbpUserRoles")]
-    public class UserRoleChiNhanh:UserRole
+    public class UserRoleChiNhanh : UserRole
     {
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
         public DM_ChiNhanh DM_ChiNhanh { get; set; }
 
-        public UserRoleChiNhanh(int? tenantId, long userId, int roleId, Guid? idChiNhanh= null) : base(tenantId, userId, roleId)
+        public UserRoleChiNhanh(int? tenantId, long userId, int roleId, Guid? idChiNhanh = null) : base(tenantId, userId, roleId)
         {
             this.IdChiNhanh = idChiNhanh;
         }

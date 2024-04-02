@@ -21,7 +21,7 @@ namespace BanHangBeautify.CauHinh.CauHinhTichDiem
     {
         private readonly IRepository<HT_CauHinh_TichDiem, Guid> _repository;
         INhatKyThaoTacAppService _audilogService;
-        public CauHinhTichDiemAppService(IRepository<HT_CauHinh_TichDiem, Guid> repository,INhatKyThaoTacAppService audilogService)
+        public CauHinhTichDiemAppService(IRepository<HT_CauHinh_TichDiem, Guid> repository, INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
             _audilogService = audilogService;

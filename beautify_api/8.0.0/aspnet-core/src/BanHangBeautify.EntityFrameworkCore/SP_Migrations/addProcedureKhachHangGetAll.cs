@@ -11,7 +11,7 @@ namespace BanHangBeautify.SP_Migrations
 
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS [dbo].[prc_khachHang_getAll]");
+            migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS [dbo].[prc_khachHang_getAll]");
             migrationBuilder.Sql(@"
                 CREATE PROCEDURE prc_khachHang_getAll
 					@TenantId INT,

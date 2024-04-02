@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -454,7 +454,7 @@ BEGIN
 
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListBandname]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListBandname]
 	@TenantId int = 1,
     @Keyword nvarchar(max) ='2',
     @SkipCount int = 1,
@@ -513,7 +513,7 @@ BEGIN
 	on dt.Id = tblThuChi.IdBrandname
 
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListCustomerChecking]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListCustomerChecking]
 	@TenantId int= 7,
 	@IdChiNhanh uniqueidentifier = null,
 	@TextSearch nvarchar(max)='',

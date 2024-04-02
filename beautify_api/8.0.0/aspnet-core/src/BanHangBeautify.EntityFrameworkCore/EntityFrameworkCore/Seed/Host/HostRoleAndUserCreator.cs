@@ -108,7 +108,7 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
                     EmailAddress = "admin@aspnetboilerplate.com",
                     IsEmailConfirmed = true,
                     IsActive = true,
-                    IsAdmin= true
+                    IsAdmin = true
                 };
 
                 user.Password = new PasswordHasher<User>(new OptionsWrapper<PasswordHasherOptions>(new PasswordHasherOptions())).HashPassword(user, "123qwe");
@@ -120,10 +120,10 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
                 // Assign Admin role to admin user
                 _context.UserRoles.Add(new UserRoleChiNhanh(null, adminUserForHost.Id, adminRoleForHost.Id, idChiNhanh));
                 _context.SaveChanges();
-                
+
                 _context.SaveChanges();
             }
-            
+
 
         }
     }

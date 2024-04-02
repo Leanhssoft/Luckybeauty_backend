@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -74,7 +74,7 @@ BEGIN
 	on dt.Id = tblThuChi.IdBrandname
 
 END");
-			migrationBuilder.Sql(@"CREATE PROCEDURE spGetInforBrandname_byId
+            migrationBuilder.Sql(@"CREATE PROCEDURE spGetInforBrandname_byId
 	@IdBrandname uniqueidentifier
 AS
 BEGIN
@@ -105,7 +105,7 @@ BEGIN
 	on br.Id = tblThuChi.IdBrandname
 	where br.Id=@IdBrandname
 END");
-			migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetAllSoQuy]
+            migrationBuilder.Sql(@"CREATE PROCEDURE [dbo].[spGetAllSoQuy]
                 @TenantId INT = 1,
                 @IdChiNhanh NVARCHAR(MAX) ='2324F320-30F3-4182-BE92-E6D11B107601',
 				@FromDate datetime = null,
@@ -262,7 +262,7 @@ END");
 				FETCH NEXT @MaxResultCount ROWS ONLY
 				
 END");
-			migrationBuilder.Sql(@"CREATE PROCEDURE GetListUser_havePermission
+            migrationBuilder.Sql(@"CREATE PROCEDURE GetListUser_havePermission
 	@TenantId int = 1,
 	@IdChiNhanh uniqueidentifier = null,
 	@PermissionsName nvarchar(128)=''

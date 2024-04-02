@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -489,7 +489,7 @@ END
                 name: "HinhThucGui",
                 table: "HeThong_SMS");
 
-            
+
         }
     }
 }

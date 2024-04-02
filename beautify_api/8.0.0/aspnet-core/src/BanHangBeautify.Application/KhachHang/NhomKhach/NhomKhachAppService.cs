@@ -21,7 +21,7 @@ namespace BanHangBeautify.KhachHang.NhomKhach
     {
         private IRepository<DM_NhomKhachHang, Guid> _repository;
         INhatKyThaoTacAppService _audilogService;
-        public NhomKhachAppService(IRepository<DM_NhomKhachHang, Guid> repository,INhatKyThaoTacAppService audilogService)
+        public NhomKhachAppService(IRepository<DM_NhomKhachHang, Guid> repository, INhatKyThaoTacAppService audilogService)
         {
             _repository = repository;
             _audilogService = audilogService;
@@ -50,7 +50,7 @@ namespace BanHangBeautify.KhachHang.NhomKhach
                 var checkMa = _repository.GetAll().Where(x => x.TenantId == (AbpSession.TenantId ?? 1)).ToList();
                 nhomKhach.MaNhomKhach = "NKH0" + (checkMa.Count + 1).ToString();
             }
-            
+
             nhomKhach.CreationTime = DateTime.Now;
             nhomKhach.CreatorUserId = AbpSession.UserId;
             nhomKhach.TenantId = AbpSession.TenantId ?? 1;

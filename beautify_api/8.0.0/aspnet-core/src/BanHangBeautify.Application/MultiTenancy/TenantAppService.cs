@@ -36,7 +36,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.MultiTenancy
 {
     [AbpAuthorize(PermissionNames.Pages_Tenants)]
-    public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int, 
+    public class TenantAppService : AsyncCrudAppService<Tenant, TenantDto, int,
         PagedTenantResultRequestDto, CreateTenantDto, TenantDto>, ITenantAppService
     {
         private readonly TenantManager _tenantManager;
@@ -47,7 +47,7 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IRepository<HT_CongTy, Guid> _congTyRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         private readonly IRepository<Setting, long> _settingRepository;
-        private readonly IRepository<FeatureSetting,long> _featureSettingRepository;
+        private readonly IRepository<FeatureSetting, long> _featureSettingRepository;
         private readonly AbpZeroDbMigrator _migrator;
         private readonly IConfiguration _configuration;
         private readonly ISeedDataAppService _seedDataEntities;
@@ -99,7 +99,7 @@ namespace BanHangBeautify.MultiTenancy
 
             // Create tenant
             var tenant = ObjectMapper.Map<Tenant>(input);
-            if(tenant.IsTrial==true)
+            if (tenant.IsTrial == true)
             {
                 tenant.SubscriptionEndDate = DateTime.Now.AddDays(7);
             }
@@ -113,7 +113,7 @@ namespace BanHangBeautify.MultiTenancy
             //    tenant.EditionId = defaultEdition.Id;
             //}
             var checkExist = await _tenantManager.FindByTenancyNameAsync(tenant.TenancyName);
-            if (checkExist!=null)
+            if (checkExist != null)
             {
                 throw new UserFriendlyException(string.Format(L("TenancyNameIsAlreadyTaken{0}"), tenant.TenancyName));
             }
@@ -128,7 +128,7 @@ namespace BanHangBeautify.MultiTenancy
                 CheckErrors(await _roleManager.CreateStaticRoles(tenant.Id));
 
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get static role ids
-                
+
                 // Grant all permissions to admin role
                 var adminRole = _roleManager.Roles.Single(r => r.Name == StaticRoleNames.Tenants.Admin);
                 await _roleManager.GrantAllPermissionsAsync(adminRole);
@@ -136,7 +136,7 @@ namespace BanHangBeautify.MultiTenancy
                 // create chinhanh truoc khi tao user
                 Guid idChiNhanh = await CreateCuaHangWithTenant(input.Name, tenant.Id);
                 // create email setting
-                await CreateSettingEmail(tenant.Id,tenant.Name);
+                await CreateSettingEmail(tenant.Id, tenant.Name);
                 // Create admin user for the tenant
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
                 await _userManager.InitializeOptionsAsync(tenant.Id);
@@ -149,7 +149,7 @@ namespace BanHangBeautify.MultiTenancy
                 {
                     CheckErrors(await _userManager.CreateAsync(adminUser, input.Password));
                 }
-                
+
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get admin user's id
 
                 // Assign admin user to role!
@@ -185,7 +185,7 @@ namespace BanHangBeautify.MultiTenancy
             return chiNhanh.Id;
         }
         [NonAction]
-        public Task CreateSettingEmail(int tenantId,string tenantName)
+        public Task CreateSettingEmail(int tenantId, string tenantName)
         {
             List<Setting> settings = new List<Setting>()
             {
@@ -284,7 +284,7 @@ namespace BanHangBeautify.MultiTenancy
             {
                 tenant.ConnectionString = SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
             }
-            var checkExist = await Repository.FirstOrDefaultAsync(x=>x.TenancyName==tenant.TenancyName&& x.Id!=tenant.Id);
+            var checkExist = await Repository.FirstOrDefaultAsync(x => x.TenancyName == tenant.TenancyName && x.Id != tenant.Id);
             if (checkExist != null)
             {
                 throw new UserFriendlyException(string.Format(L("TenancyNameIsAlreadyTaken{0}"), tenant.TenancyName));
@@ -304,19 +304,19 @@ namespace BanHangBeautify.MultiTenancy
         [AbpAuthorize(PermissionNames.Pages_Tenants_UpdateMigration)]
         public async Task UpdateMigrations()
         {
-                var hostConnStr = _configuration.GetConnectionString(SPAConsts.ConnectionStringName);
-                _migrator.CreateOrMigrateForHost(SeedHelper.SeedHostDb);
-                var migratedDatabases = new HashSet<string>();
-                var tenants = Repository.GetAllList(t => t.ConnectionString != null && t.ConnectionString != "");
-                for (var i = 0; i < tenants.Count; i++)
+            var hostConnStr = _configuration.GetConnectionString(SPAConsts.ConnectionStringName);
+            _migrator.CreateOrMigrateForHost(SeedHelper.SeedHostDb);
+            var migratedDatabases = new HashSet<string>();
+            var tenants = Repository.GetAllList(t => t.ConnectionString != null && t.ConnectionString != "");
+            for (var i = 0; i < tenants.Count; i++)
+            {
+                var tenant = tenants[i];
+                if (!migratedDatabases.Contains(tenant.ConnectionString))
                 {
-                    var tenant = tenants[i];
-                    if (!migratedDatabases.Contains(tenant.ConnectionString))
-                    {
-                        _migrator.CreateOrMigrateForTenant(tenant);
-                        migratedDatabases.Add(tenant.ConnectionString);
-                    }
+                    _migrator.CreateOrMigrateForTenant(tenant);
+                    migratedDatabases.Add(tenant.ConnectionString);
                 }
+            }
         }
 
         [HttpPost]

@@ -22,7 +22,7 @@ namespace BanHangBeautify.Url
             WebUrlService = webUrlService;
             TenantCache = tenantCache;
         }
-        
+
 
         public string CreateEmailActivationUrlFormat(int? tenantId)
         {

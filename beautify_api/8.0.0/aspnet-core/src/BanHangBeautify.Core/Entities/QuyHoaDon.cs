@@ -19,7 +19,7 @@ namespace BanHangBeautify.Entities
         public DateTime NgayLapHoaDon { get; set; } = DateTime.Now;
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
-        public DM_ChiNhanh DM_ChiNhanh { get; set; } 
+        public DM_ChiNhanh DM_ChiNhanh { get; set; }
         public Guid? IdBrandname { get; set; }// chỉ dùng cho HOST (Tenant Default): Quản lý lịch sử nạp tiền của BrandName
         [ForeignKey("IdBrandname")]
         public HT_SMSBrandname HT_SMSBrandname { get; set; }

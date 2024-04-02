@@ -6,10 +6,12 @@ using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Security;
+using Abp.Timing;
 using Abp.UI;
 using BanHangBeautify.Authentication.External;
 using BanHangBeautify.Authentication.JwtBearer;
 using BanHangBeautify.Authorization;
+using BanHangBeautify.Authorization.Impersonation;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Data.Entities;
@@ -45,6 +47,7 @@ namespace BanHangBeautify.Controllers
         private readonly IRepository<NS_NhanVien, Guid> _nhanSuRepository;
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
         private readonly IOptions<JwtBearerOptions> _jwtOptions;
+        private readonly IImpersonationManager _impersonationManager;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -58,7 +61,8 @@ namespace BanHangBeautify.Controllers
             UserRegistrationManager userRegistrationManager,
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
-            IOptions<JwtBearerOptions> jwtOptions)
+            IOptions<JwtBearerOptions> jwtOptions,
+            IImpersonationManager impersonationManager)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -72,6 +76,7 @@ namespace BanHangBeautify.Controllers
             _nhanSuRepository = nhanSuRepository;
             _claimsPrincipalFactory = claimsPrincipalFactory;
             _jwtOptions = jwtOptions;
+            _impersonationManager = impersonationManager;
         }
 
         [HttpPost]
@@ -93,16 +98,22 @@ namespace BanHangBeautify.Controllers
                 AccessToken = accessToken,
                 RefreshToken = refreshToken.token,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
-                ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds,
-                UserId = loginResult.User.Id,
-                IdNhanVien = loginResult.User.NhanSuId,
-                IdChiNhanhMacDinh = loginResult.User.IdChiNhanhMacDinh,
-                Email = loginResult.User.EmailAddress,
-                Avatar = nhanSu == null ? "" : nhanSu.Avatar,
-                FullName = loginResult.User.FullName
+                ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds
             };
         }
+        [HttpPost]
+        public async Task<ImpersonatedAuthenticateResultModel> ImpersonatedAuthenticate(string impersonationToken)
+        {
+            var result = await _impersonationManager.GetImpersonatedUserAndIdentity(impersonationToken);
+            var accessToken = CreateAccessToken(await CreateJwtClaims(result.Identity, result.User));
 
+            return new ImpersonatedAuthenticateResultModel
+            {
+                AccessToken = accessToken,
+                EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
+                ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds
+            };
+        }
         [HttpGet]
         public List<ExternalLoginProviderInfoModel> GetExternalAuthenticationProviders()
         {

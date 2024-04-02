@@ -20,8 +20,6 @@ using BanHangBeautify.NhatKyHoatDong;
 using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Storage;
 using BanHangBeautify.Suggests.Dto;
-using Google.Apis.Drive.v3.Data;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -180,7 +178,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                         var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                         nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
                         nhatKyThaoTacDto.ChucNang = "Chi nhánh";
-                        nhatKyThaoTacDto.NoiDung = "Thêm mới chi nhánh "+ chiNhanh.TenChiNhanh;
+                        nhatKyThaoTacDto.NoiDung = "Thêm mới chi nhánh " + chiNhanh.TenChiNhanh;
                         nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới chi nhánh " + chiNhanh.TenChiNhanh;
                         await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                     }
@@ -214,7 +212,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                 var checkTenChiNhanh = await _chiNhanhService.FirstOrDefaultAsync(x => x.Id == dto.Id);
                 if (checkTenChiNhanh != null)
                 {
-                    var chiNhanhExits = await _chiNhanhService.GetAll().Where(x=>x.Id!=dto.Id).Select(x=>x.TenChiNhanh).ToListAsync();
+                    var chiNhanhExits = await _chiNhanhService.GetAll().Where(x => x.Id != dto.Id).Select(x => x.TenChiNhanh).ToListAsync();
                     if (chiNhanhExits.Contains(dto.TenChiNhanh))
                     {
                         result.Message = "Tên chi nhánh đã tồn tại!";
@@ -307,7 +305,7 @@ namespace BanHangBeautify.AppDanhMuc.AppChiNhanh
                     nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                     nhatKyThaoTacDto.ChucNang = "Chi nhánh";
                     nhatKyThaoTacDto.NoiDung = "Xóa nhiều chi nhánh";
-                    nhatKyThaoTacDto.NoiDungChiTiet = "Xóa chi nhánh: " + string.Join(", ",finds.Select(x=>x.TenChiNhanh).ToList());
+                    nhatKyThaoTacDto.NoiDungChiTiet = "Xóa chi nhánh: " + string.Join(", ", finds.Select(x => x.TenChiNhanh).ToList());
                     await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 }
                 return result;

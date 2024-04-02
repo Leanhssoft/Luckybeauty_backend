@@ -11,7 +11,7 @@ namespace BanHangBeautify.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-           
+
             migrationBuilder.Sql(@"ALTER PROCEDURE spGetDMHangHoa
 			@TenantId int =1,
 			@TextSearch nvarchar(max)=null,
@@ -111,7 +111,7 @@ namespace BanHangBeautify.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-           
+
         }
     }
 }

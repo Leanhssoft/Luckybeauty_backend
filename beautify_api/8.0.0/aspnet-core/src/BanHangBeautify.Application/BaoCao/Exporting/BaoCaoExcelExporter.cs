@@ -1,21 +1,21 @@
-﻿using BanHangBeautify.BaoCao.BaoCaoBanHang.Dto;
-using BanHangBeautify.DataExporting.Excel.EpPlus;
-using BanHangBeautify.KhachHang.KhachHang.Dto;
-using BanHangBeautify.Storage;
-using OfficeOpenXml.Style;
-using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BanHangBeautify.Net.MimeTypes;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
+﻿using BanHangBeautify.AppCommon;
+using BanHangBeautify.BaoCao.BaoCaoBanHang.Dto;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
 using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
 using BanHangBeautify.Consts;
-using BanHangBeautify.AppCommon;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
+using BanHangBeautify.Net.MimeTypes;
+using BanHangBeautify.Storage;
+using Microsoft.AspNetCore.Hosting;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BanHangBeautify.BaoCao.Exporting
 {
@@ -59,7 +59,7 @@ namespace BanHangBeautify.BaoCao.Exporting
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TenKhachHang);
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.SoDienThoai);
                     ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.TenNhomHang);
-                    
+
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.TenHangHoa);
                     ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.DonGiaTruocCK);
                     ws.Cells[startRow, 9].Value = ConvertHelper.ToString(item.SoLuong);
@@ -176,7 +176,7 @@ namespace BanHangBeautify.BaoCao.Exporting
                             ws.Cells[startRow, 6].Value = ConvertHelper.ToString("");
                             break;
                     }
-                    
+
                     ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.GhiChu);
                     startRow++;
                     stt++;

@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -11,8 +11,8 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[GetAllUser]
+
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[GetAllUser]
 	@TextSearch  nvarchar(max) ='',
 	@IsActive varchar(10)= '',
 	@CurrentPage int =0,
@@ -101,7 +101,7 @@ BEGIN
 END");
 
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListBandname]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListBandname]
 	@TenantId int = 1,
     @Keyword nvarchar(max) ='',
 	@TrangThais varchar(10) ='0,1', --- 0.chuakichhoat, 1.kichhoat
@@ -186,7 +186,7 @@ BEGIN
 	OFFSET  @SkipCount ROWS FETCH NEXT @MaxResultCount ROWS ONLY;
 
 END");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListCustomer_byIdLoaiTin]	
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[spGetListCustomer_byIdLoaiTin]	
 	@IdLoaiTin int= 4,
 	@IdChiNhanhs nvarchar(max)= '3EBE69E5-AA23-48FC-9EB1-70F713E012D1',
 	@TrangThais varchar(50)='', ---- 100.thanhcong,1.nhap, 0.chuagui,else.thatbai
@@ -674,7 +674,7 @@ BEGIN
     
 END");
 
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_nhanVien_getAll]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_nhanVien_getAll]
 				@TenantId INT,
 				@IdChiNhanh UNIQUEIDENTIFIER = NULL,
 				@IdChucVu UNIQUEIDENTIFIER = NULL,
@@ -749,7 +749,7 @@ END");
 				FROM #temp
 				
 			END;");
-			migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_getBookingInfo]
+            migrationBuilder.Sql(@"ALTER PROCEDURE [dbo].[prc_getBookingInfo]
 	@IdBooking UNIQUEIDENTIFIER,
 	@TenantId INT
 AS 
@@ -795,7 +795,7 @@ end;");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
+
         }
     }
 }

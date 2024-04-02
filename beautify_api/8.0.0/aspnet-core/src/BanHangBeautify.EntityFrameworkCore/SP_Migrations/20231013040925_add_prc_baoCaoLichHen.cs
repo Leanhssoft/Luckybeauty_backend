@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
@@ -11,7 +11,7 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql(@"CREATE PROC prc_baoCao_ThongKeLichHen
+            migrationBuilder.Sql(@"CREATE PROC prc_baoCao_ThongKeLichHen
 	@TenantId int,
 	@TimeFrom datetime2,
 	@TimeTo datetime2,
@@ -85,7 +85,7 @@ END;");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            
+
         }
     }
 }

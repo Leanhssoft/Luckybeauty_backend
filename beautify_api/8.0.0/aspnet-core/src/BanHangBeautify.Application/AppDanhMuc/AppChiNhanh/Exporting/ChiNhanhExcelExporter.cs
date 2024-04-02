@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.AppDanhMuc.AppChiNhanh.Exporting
 {
-    public class ChiNhanhExcelExporter: EpPlusExcelExporterBase, IChiNhanhExcelExporter
+    public class ChiNhanhExcelExporter : EpPlusExcelExporterBase, IChiNhanhExcelExporter
     {
         private readonly IHostingEnvironment _env;
         public ChiNhanhExcelExporter(ITempFileCacheManager tempFileCacheManager, IHostingEnvironment env) : base(tempFileCacheManager)

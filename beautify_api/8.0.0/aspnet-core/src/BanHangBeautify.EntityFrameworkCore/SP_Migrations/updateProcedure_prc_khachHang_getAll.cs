@@ -127,7 +127,7 @@ namespace BanHangBeautify.SP_Migrations
         }
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-			migrationBuilder.Sql("DROP PROCEDURE prc_khachHang_getAll");
+            migrationBuilder.Sql("DROP PROCEDURE prc_khachHang_getAll");
         }
     }
 }

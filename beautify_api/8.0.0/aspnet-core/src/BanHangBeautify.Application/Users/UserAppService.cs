@@ -4,7 +4,6 @@ using Abp.Authorization;
 using Abp.Authorization.Users;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
 using Abp.EntityFrameworkCore.Repositories;
 using Abp.Extensions;
 using Abp.IdentityFramework;
@@ -24,7 +23,6 @@ using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Roles.Dto;
 using BanHangBeautify.Users.Dto;
 using BanHangBeautify.Users.Repository;
-using Google.Apis.Drive.v3.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -120,13 +118,13 @@ namespace BanHangBeautify.Users
         {
             var user = ObjectMapper.Map<User>(input);
             int maxUserCount = 0;
-            var maxUser = FeatureChecker.GetValue(AbpSession.TenantId??0, AppFeatureConst.MaxUserCount);
+            var maxUser = FeatureChecker.GetValue(AbpSession.TenantId ?? 0, AppFeatureConst.MaxUserCount);
             if (maxUser != null && !string.IsNullOrEmpty(maxUser))
             {
                 maxUserCount = int.Parse(maxUser);
             }
             var countUser = _userManager.Users.Count();
-            if(maxUserCount > countUser || maxUserCount==0)
+            if (maxUserCount > countUser || maxUserCount == 0)
             {
                 CheckCreatePermission();
                 user.TenantId = AbpSession.TenantId;
@@ -162,7 +160,7 @@ namespace BanHangBeautify.Users
                     "<p>Tên tài khoản: {0}</p>" +
                     "<p>Mật khẩu: {1}</p>" +
                     "<p>Email: {2}</p>" +
-                    "</div>",user.UserName,input.Password,user.EmailAddress);
+                    "</div>", user.UserName, input.Password, user.EmailAddress);
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return ObjectMapper.Map<UserDto>(user);
             }
@@ -283,12 +281,12 @@ namespace BanHangBeautify.Users
             nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>" +
                 "<p>Tên tài khoản: {0}</p>" +
                 "<p>Email: {1}</p>" +
-                "</div>", user.UserName,  user.EmailAddress) + string.Format("<br/><div>" +
-                "<h4>Thông tin cũ</h4>"+
+                "</div>", user.UserName, user.EmailAddress) + string.Format("<br/><div>" +
+                "<h4>Thông tin cũ</h4>" +
                 "<p>Tên tài khoản: {0}</p>" +
                 "<p>Email: {1}</p>" +
                 "<p>Mật khẩu mới: {2}</p>" +
-                "</div>",user.UserName,user.EmailAddress,input.Password);
+                "</div>", user.UserName, user.EmailAddress, input.Password);
             return await GetAsync(input);
         }
         [HttpPost]
@@ -410,7 +408,7 @@ namespace BanHangBeautify.Users
                 var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Người dùng";
-                nhatKyThaoTacDto.NoiDung = "Xóa người dùng: " + string.Join(", ", checkExists.Select(x=>x.UserName).ToList());
+                nhatKyThaoTacDto.NoiDung = "Xóa người dùng: " + string.Join(", ", checkExists.Select(x => x.UserName).ToList());
                 nhatKyThaoTacDto.NoiDungChiTiet = "Xóa người dùng: " + string.Join(", ", checkExists.Select(x => x.UserName).ToList());
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
 
@@ -425,13 +423,13 @@ namespace BanHangBeautify.Users
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Người dùng";
             nhatKyThaoTacDto.NoiDung = "Kích hoạt người dùng";
-           
+
             await Repository.UpdateAsync(user.Id, async (entity) =>
             {
                 entity.IsActive = true;
                 nhatKyThaoTacDto.NoiDungChiTiet = "Kích hoạt người dùng :" + entity.UserName;
             });
-            
+
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
         }
 
@@ -447,7 +445,7 @@ namespace BanHangBeautify.Users
                 entity.IsActive = false;
                 nhatKyThaoTacDto.NoiDungChiTiet = "Hủy kích hoạt người dùng: " + entity.UserName;
             });
-            
+
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
         }
 
@@ -590,7 +588,7 @@ namespace BanHangBeautify.Users
             nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
             nhatKyThaoTacDto.ChucNang = "Người dùng";
             nhatKyThaoTacDto.NoiDung = "Đặt lại mật khẩu";
-            nhatKyThaoTacDto.NoiDungChiTiet = "Đặt lại mật khẩu cho người dùng: "+ user.UserName;
+            nhatKyThaoTacDto.NoiDungChiTiet = "Đặt lại mật khẩu cho người dùng: " + user.UserName;
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return true;
         }

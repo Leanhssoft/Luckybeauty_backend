@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Editions
 {
-    public class EditionAppService:SPAAppServiceBase
+    public class EditionAppService : SPAAppServiceBase
     {
         private readonly EditionManager _editionManager;
         private readonly IRepository<SubscribableEdition> _editionRepository;
@@ -45,7 +45,7 @@ namespace BanHangBeautify.Editions
             EditionDto editionEditDto;
             List<NameValue> featureValues;
 
-            if (input.Id.HasValue && input.Id.Value>0) //Editing existing edition?
+            if (input.Id.HasValue && input.Id.Value > 0) //Editing existing edition?
             {
                 var edition = (SubscribableEdition)await _editionManager.FindByIdAsync(input.Id.Value);
                 featureValues = (await _editionManager.GetFeatureValuesAsync(input.Id.Value)).ToList();
@@ -72,9 +72,9 @@ namespace BanHangBeautify.Editions
         [HttpPost]
         public async Task CreateOrEditEdition(CreateOrEditEditionDto input)
         {
-            if(input.Edition.Id.HasValue==false|| input.Edition.Id.Value<=0)
+            if (input.Edition.Id.HasValue == false || input.Edition.Id.Value <= 0)
             {
-               await CreateEditionAsync(input);
+                await CreateEditionAsync(input);
             }
             else
             {

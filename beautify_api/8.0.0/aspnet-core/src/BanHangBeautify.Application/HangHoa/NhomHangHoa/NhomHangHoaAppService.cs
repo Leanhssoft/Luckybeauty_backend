@@ -23,7 +23,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
         private readonly IRepository<DM_NhomHangHoa, Guid> _dmNhomHangHoa;
         private readonly IRepository<DM_HangHoa, Guid> _dmHangHoa;
         INhatKyThaoTacAppService _audilogService;
-        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa, 
+        public NhomHangHoaAppService(IRepository<DM_NhomHangHoa, Guid> dmNhomHangHoa,
             IRepository<DM_HangHoa, Guid> dmHangHoa,
             INhatKyThaoTacAppService audilogService)
         {

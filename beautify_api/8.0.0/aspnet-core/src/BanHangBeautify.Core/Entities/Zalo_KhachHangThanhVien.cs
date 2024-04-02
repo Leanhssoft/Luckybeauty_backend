@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Entities
 {
-    public class Zalo_KhachHangThanhVien: FullAuditedEntity<Guid>, IMustHaveTenant
+    public class Zalo_KhachHangThanhVien : FullAuditedEntity<Guid>, IMustHaveTenant
     {
         public int TenantId { get; set; }
         [MaxLength(50)]

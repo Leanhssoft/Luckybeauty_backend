@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.Localization.Dto
 {
-    public class LanguageMapProfile: Profile
+    public class LanguageMapProfile : Profile
     {
         public LanguageMapProfile()
         {
-            CreateMap<ApplicationLanguageListDto,ApplicationLanguage>().ReverseMap();
+            CreateMap<ApplicationLanguageListDto, ApplicationLanguage>().ReverseMap();
         }
     }
 }

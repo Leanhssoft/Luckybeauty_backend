@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.BaoCao.BaoCaoLichHen.Respository
 {
-    public class BaoCaoLichHenRepository : SPARepositoryBase<Booking, Guid>,IBaoCaoLichHenRepository
+    public class BaoCaoLichHenRepository : SPARepositoryBase<Booking, Guid>, IBaoCaoLichHenRepository
     {
         public BaoCaoLichHenRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
