@@ -315,6 +315,7 @@
         public const string Pages_Tenants_ChangeFeatures = "Pages.Tenants.ChangeFeatures";
         public const string Pages_Tenants_UpdateMigration = "Pages.Tenants.UpdateMigration";
         public const string Pages_Tenants_Delete = "Pages.Tenants.Delete";
+        public const string Pages_Tenants_Impersonation_To_Tenant = "Pages.Tenants.Impersonation";
 
 
         public const string Pages_Editions = "Pages.Editions";

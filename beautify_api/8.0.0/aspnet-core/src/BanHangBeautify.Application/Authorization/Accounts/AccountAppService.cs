@@ -38,7 +38,6 @@ namespace BanHangBeautify.Authorization.Accounts
         private readonly AbpZeroDbMigrator _migrator;
         private readonly ISeedDataAppService _seedDataEntities;
         private readonly IImpersonationManager _impersonationManager;
-
         public AccountAppService(
             UserRegistrationManager userRegistrationManager,
             IAbpSession session,
@@ -209,7 +208,7 @@ namespace BanHangBeautify.Authorization.Accounts
         }
 
 
-        [AbpAuthorize(PermissionNames.Pages_Administration_Users_Impersonation)]
+        [AbpAuthorize(PermissionNames.Pages_Tenants_Impersonation_To_Tenant)]
         public virtual async Task<ImpersonateOutput> Impersonate(ImpersonateInput input)
         {
             return new ImpersonateOutput
@@ -218,7 +217,8 @@ namespace BanHangBeautify.Authorization.Accounts
                 TenancyName = await GetTenancyNameOrNullAsync(input.TenantId)
             };
         }
-        public virtual async Task<ImpersonateOutput> BackToImpersonator() 
+        [AbpAuthorize]
+        public virtual async Task<ImpersonateOutput> BackToImpersonator()
         {
             return new ImpersonateOutput
             {
@@ -226,6 +226,73 @@ namespace BanHangBeautify.Authorization.Accounts
                 TenancyName = await GetTenancyNameOrNullAsync(AbpSession.ImpersonatorTenantId)
             };
         }
+
+        //public virtual async Task<ImpersonateOutput> Impersonate(ImpersonateInput model)
+        //{
+        //    if (AbpSession.ImpersonatorUserId.HasValue)
+        //    {
+        //        throw new UserFriendlyException(L("CascadeImpersonationErrorMessage"));
+        //    }
+
+        //    if (AbpSession.TenantId.HasValue)
+        //    {
+        //        if (!model.TenantId.HasValue)
+        //        {
+        //            throw new UserFriendlyException(L("FromTenantToHostImpersonationErrorMessage"));
+        //        }
+
+        //        if (model.TenantId.Value != AbpSession.TenantId.Value)
+        //        {
+        //            throw new UserFriendlyException(L("DifferentTenantImpersonationErrorMessage"));
+        //        }
+        //    }
+
+        //    return await SaveImpersonationTokenAndGetTargetUrl(model.TenantId, model.UserId, false);
+        //}
+        //public virtual async Task<ImpersonateOutput> BackToImpersonator()
+        //{
+        //    if (!AbpSession.ImpersonatorUserId.HasValue)
+        //    {
+        //        throw new UserFriendlyException(L("NotImpersonatedLoginErrorMessage"));
+        //    }
+
+        //    return await SaveImpersonationTokenAndGetTargetUrl(AbpSession.ImpersonatorTenantId, AbpSession.ImpersonatorUserId.Value, true);
+        //}
+
+        //private async Task<ImpersonateOutput> SaveImpersonationTokenAndGetTargetUrl(int? tenantId, long userId, bool isBackToImpersonator)
+        //{
+        //    //Create a cache item
+        //    var cacheItem = new ImpersonationCacheItem(
+        //        tenantId,
+        //        userId,
+        //        isBackToImpersonator
+        //        );
+
+        //    if (!isBackToImpersonator)
+        //    {
+        //        cacheItem.ImpersonatorTenantId = AbpSession.TenantId;
+        //        cacheItem.ImpersonatorUserId = AbpSession.GetUserId();
+        //    }
+
+        //    //Create a random token and save to the cache
+        //    var tokenId = Guid.NewGuid().ToString();
+        //    await _cacheManager
+        //        .GetImpersonationCache()
+        //        .SetAsync(tokenId, cacheItem, TimeSpan.FromMinutes(1));
+
+        //    //Find tenancy name
+        //    string tenancyName = null;
+        //    if (tenantId.HasValue)
+        //    {
+        //        tenancyName = (await _tenantManager.GetByIdAsync(tenantId.Value)).TenancyName;
+        //    }
+        //    return new ImpersonateOutput()
+        //    {
+        //        TenancyName = tenancyName,
+        //        ImpersonationToken = tokenId
+        //    };
+           
+        //}
         private async Task<Tenant> GetActiveTenantAsync(int tenantId)
         {
             var tenant = await TenantManager.FindByIdAsync(tenantId);

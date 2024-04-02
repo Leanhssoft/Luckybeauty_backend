@@ -331,6 +331,7 @@ namespace BanHangBeautify.Authorization
             tenants.CreateChildPermission(PermissionNames.Pages_Tenants_Edit, L("EditingTenant"), multiTenancySides: MultiTenancySides.Host);
             tenants.CreateChildPermission(PermissionNames.Pages_Tenants_ChangeFeatures, L("ChangingFeatures"), multiTenancySides: MultiTenancySides.Host);
             tenants.CreateChildPermission(PermissionNames.Pages_Tenants_Delete, L("DeletingTenant"), multiTenancySides: MultiTenancySides.Host);
+            tenants.CreateChildPermission(PermissionNames.Pages_Tenants_Impersonation_To_Tenant, L("ImpersonationToTenant"));
             tenants.CreateChildPermission(PermissionNames.Pages_Tenants_UpdateMigration, L("UpdateMigration"), multiTenancySides: MultiTenancySides.Host);
         }
 

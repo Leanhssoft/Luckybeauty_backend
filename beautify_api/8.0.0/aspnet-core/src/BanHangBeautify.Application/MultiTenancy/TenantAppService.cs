@@ -136,7 +136,7 @@ namespace BanHangBeautify.MultiTenancy
                 // create chinhanh truoc khi tao user
                 Guid idChiNhanh = await CreateCuaHangWithTenant(input.Name, tenant.Id);
                 // create email setting
-                await CreateSettingEmail(tenant.Id, tenant.Name);
+                //await CreateSettingEmail(tenant.Id, tenant.Name);
                 // Create admin user for the tenant
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
                 await _userManager.InitializeOptionsAsync(tenant.Id);
