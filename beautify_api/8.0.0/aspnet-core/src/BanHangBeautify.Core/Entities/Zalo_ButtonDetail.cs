@@ -12,9 +12,9 @@ namespace BanHangBeautify.Entities
 {
     public class Zalo_ButtonDetail : FullAuditedEntity<Guid>
     {
-        public Guid IdElement { get; set; }
-        [ForeignKey("IdElement")]
-        public Zalo_Element Zalo_Element { get; set; }
+        public Guid IdTemplate { get; set; }
+        [ForeignKey("IdTemplate")]
+        public Zalo_Template Zalo_Template { get; set; }
         [MaxLength(50)]
         public string Type { get; set; }
         [MaxLength(100)]

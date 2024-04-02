@@ -32,6 +32,9 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
+                TenMauTin ="Chúc mừng sinh nhật",
+                //MoTaChiTiet = "Gửi lời chúc mừng đến khách hàng sinh nhật",
+                IsDefault = true,
                 IdLoaiTin = ConstSMS.LoaiTin.SinhNhat,
                 TemplateType = ZaloTemplateType.PROMOTION,
                 Language = "VI"
@@ -68,6 +71,9 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
+                TenMauTin = "Xác nhận giao dịch",
+                //MoTaChiTiet = "Gửi lời chúc mừng đến khách hàng sinh nhật",
+                IsDefault = true,
                 IdLoaiTin = ConstSMS.LoaiTin.GiaoDich,
                 TemplateType = ZaloTemplateType.TRANSACTION,
                 Language = "VI"
@@ -91,7 +97,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     IdElement = zaloIdElement,
                     Key = "Ngày mua hàng",
                     Value = "<NgayLapHoaDon>",
-                    ThuTuSapXep= 1,
+                    ThuTuSapXep= 2,
                 },
                 new Zalo_TableDetailDto
                 {
@@ -148,7 +154,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 new Zalo_ButtonDetailDto
                 {
                     Id = Guid.NewGuid(),
-                    IdElement = zaloIdElement,
+                    IdTemplate = zaloIdTemp,
                     Type = ZaloButtonType.URL,
                     Title = "Xem chi tiết đơn hàng",
                     Payload = "https://login.luckybeauty.vn/giao-dich-thanh-toan",
@@ -166,6 +172,8 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
+                TenMauTin = "Xác nhận lịch hẹn",
+                IsDefault = true,
                 IdLoaiTin = ConstSMS.LoaiTin.LichHen,
                 TemplateType = ZaloTemplateType.BOOKING,
                 Language = "VI"
@@ -262,7 +270,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 new Zalo_ButtonDetailDto
                 {
                     Id = Guid.NewGuid(),
-                    IdElement = zaloIdElement,
+                    IdTemplate = zaloIdTemp,
                     Type = ZaloButtonType.PHONE,
                     Title = "Liên hệ CSKH",
                     Payload = "02473039333", //todo sdt cuahang

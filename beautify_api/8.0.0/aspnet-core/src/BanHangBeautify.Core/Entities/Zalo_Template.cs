@@ -14,6 +14,8 @@ namespace BanHangBeautify.Entities
     {
         public int TenantId { get; set; } = 1;
         public byte IdLoaiTin { get; set; }
+        [MaxLength(200)]
+        public string TenMauTin { get; set; }
         [MaxLength(50)]
         public string TemplateType { get; set; }
         [MaxLength(10)]

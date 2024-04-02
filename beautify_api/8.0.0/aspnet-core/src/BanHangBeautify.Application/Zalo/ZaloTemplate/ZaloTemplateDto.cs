@@ -10,6 +10,9 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
     public class Zalo_TemplateDto
     {
         public Guid Id { get; set; }
+        public string TenMauTin { get; set; }
+        //public string MoTaChiTiet { get; set; }
+        public bool? IsDefault { get; set; }
         public byte IdLoaiTin { get; set; }
         [JsonProperty("template_type")]
         public string TemplateType { get; set; }
@@ -43,7 +46,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
     public class Zalo_ButtonDetailDto
     {
         public Guid Id { get; set; }
-        public Guid IdElement { get; set; }
+        public Guid IdTemplate { get; set; }
         [JsonProperty("type")]
         public string Type { get; set; }
         [JsonProperty("title")]
