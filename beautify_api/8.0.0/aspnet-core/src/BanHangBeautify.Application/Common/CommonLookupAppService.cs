@@ -24,9 +24,10 @@ namespace BanHangBeautify.Common
         public CommonLookupAppService(EditionManager editionManager)
         {
             _editionManager = editionManager;
-        }
+          }
         public async Task<PagedResultDto<NameValueDto>> FindUsers(FindUsersInput input)
         {
+            input.SkipCount = input.SkipCount>1 ? (input.SkipCount-1)* input.MaxResultCount : 0;
             if (AbpSession.TenantId != null)
             {
                 //Prevent tenants to get other tenant's users.
