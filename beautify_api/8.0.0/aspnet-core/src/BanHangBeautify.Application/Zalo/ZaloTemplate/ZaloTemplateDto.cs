@@ -11,7 +11,6 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
     {
         public Guid Id { get; set; }
         public string TenMauTin { get; set; }
-        //public string MoTaChiTiet { get; set; }
         public bool? IsDefault { get; set; }
         public byte IdLoaiTin { get; set; }
         [JsonProperty("template_type")]
@@ -20,6 +19,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
         public string Language { get; set; }
         public List<Zalo_ElementDto> elements { get; set; }
         public List<Zalo_ButtonDetailDto> buttons { get; set; }
+        public bool? IsSystem { get; set; }// là mẫu mặc định của hệ thống
     }
 
     public class Zalo_ElementDto
