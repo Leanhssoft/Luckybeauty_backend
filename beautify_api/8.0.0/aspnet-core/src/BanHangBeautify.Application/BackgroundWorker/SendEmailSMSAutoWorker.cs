@@ -20,6 +20,7 @@ using BanHangBeautify.SMS.ESMS;
 using BanHangBeautify.SMS.GuiTinNhan.Repository;
 using BanHangBeautify.Zalo.GuiTinNhan;
 using BanHangBeautify.Zalo.ZaloTemplate;
+using BanHangBeautify.ZaloSMS_Common;
 
 namespace BanHangBeautify.BackgroundWorker
 {
@@ -39,6 +40,7 @@ namespace BanHangBeautify.BackgroundWorker
         private readonly IBrandnameRepository _repoBrandname;
         public readonly IZalo_TemplateRepository _zaloTemplateRepo;
         public readonly IZaloSendMes _zaloApi;
+        public readonly ICommonZaloSMS _commonZaloSMS;
         public readonly IRepository<ZaloAuthorization, Guid> _zaloAuthorization;
         readonly DateTime _dtNow = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, 0);
 
@@ -57,8 +59,8 @@ namespace BanHangBeautify.BackgroundWorker
             IBrandnameRepository repoBrandname,
             IZalo_TemplateRepository zaloTemplateRepo,
             IRepository<ZaloAuthorization, Guid> zaloAuthorization,
-              IZaloSendMes zaloApi
-
+              IZaloSendMes zaloApi,
+              ICommonZaloSMS commonZaloSMS
             ) : base(timer)
         {
             Timer.Period = 10000;
@@ -77,6 +79,7 @@ namespace BanHangBeautify.BackgroundWorker
             _zaloTemplateRepo = zaloTemplateRepo;
             _zaloApi = zaloApi;
             _zaloAuthorization = zaloAuthorization;
+            _commonZaloSMS = commonZaloSMS;
         }
 
         protected async override void DoWork()
@@ -112,7 +115,7 @@ namespace BanHangBeautify.BackgroundWorker
                             InforAutoWorker inforCommon = new()
                             {
                                 TenantId = tenantId,
-                                UserId = userAdmin,
+                                UserId = userAdmin
                             };
                             if (chiNhanh != null && chiNhanh.Count > 0)
                             {
@@ -232,23 +235,6 @@ namespace BanHangBeautify.BackgroundWorker
             }
             unitOfWork.Complete();
         }
-
-        protected string ReplaceContent(PageKhachHangSMSDto cutomer, string noiDungTin)
-        {
-            if (noiDungTin == null) return string.Empty;
-            var ss = noiDungTin.Replace("{TenKhachHang}", cutomer.TenKhachHang);
-            ss = ss.Replace("{NgaySinh}", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
-            ss = ss.Replace("{BookingDate}", cutomer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
-            ss = ss.Replace("{ThoiGianHen}", cutomer.ThoiGianHen);
-            ss = ss.Replace("{TenHangHoa}", cutomer.TenHangHoa);// dichvuhen
-            ss = ss.Replace("{MaGiaoDich}", cutomer.MaHoaDon);
-            ss = ss.Replace("{NgayGiaoDich}", cutomer.NgayLapHoaDon?.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
-            ss = ss.Replace("{TenChiNhanh}", cutomer.TenChiNhanh);
-            ss = ss.Replace("{SoDienThoaiChiNhanh}", cutomer.SoDienThoaiChiNhanh);
-            ss = ss.Replace("{DiaChiChiNhanh}", cutomer.DiaChiChiNhanh);
-            return ss;
-        }
-
         protected async Task SendSMS(byte? idLoaiTin, ParamSearchSMS paramSearch, InforAutoWorker inforCommon, float? totalTime = 0)
         {
             try
@@ -273,7 +259,7 @@ namespace BanHangBeautify.BackgroundWorker
 
                     foreach (var customer in lstCustomer)
                     {
-                        var noidung = ReplaceContent(customer, inforCommon.NoiDungTinNhan);
+                        var noidung = _commonZaloSMS.ReplaceContent(customer, inforCommon.NoiDungTinNhan);
                         ESMSDto obj = new()
                         {
                             Phone = customer.SoDienThoai,
@@ -375,12 +361,12 @@ namespace BanHangBeautify.BackgroundWorker
                                         noidung = $@"Xác nhận lịch hẹn dịch vụ: {customer.TenHangHoa}<br/> Số điện thoại đặt lịch: {customer.SoDienThoai}<br/> Ngày đặt lịch: {customer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
                                         break;
                                     default:
-                                        noidung = ReplaceContent(customer, inforCommon.NoiDungTinNhan);
+                                        noidung = _commonZaloSMS.ReplaceContent(customer, inforCommon.NoiDungTinNhan);
                                         break;
                                 }
 
                                 // send mes zalo
-                                var smsResult = await _zaloApi.GuiTinGiaoDich_fromDataDB(customer, zaloToken.AccessToken, objFind);
+                                var smsResult = await _zaloApi.GuiTinTruyenThongorGiaoDich_fromDataDB(customer, zaloToken.AccessToken, objFind.Id);
                                 if (smsResult != null && smsResult.data != null)
                                 {
                                     HeThong_SMS hethongSMS = new()
@@ -442,7 +428,7 @@ namespace BanHangBeautify.BackgroundWorker
                     foreach (var customer in lstCustomer)
                     {
                         int sendStatus = 99;
-                        var noidung = ReplaceContent(customer, inforCommon.NoiDungTinNhan);
+                        var noidung = _commonZaloSMS.ReplaceContent(customer, inforCommon.NoiDungTinNhan);
 
                         try
                         {
@@ -507,10 +493,5 @@ namespace BanHangBeautify.BackgroundWorker
         public Guid? IdChiNhanhFirst { get; set; }
         public string BrandNameFirst { get; set; }
         public string NoiDungTinNhan { get; set; }
-
-        public string TenChiNhanh { get; set; }
-        public string SoDienThoaiChiNhanh { get; set; }
-        public string DiaChiChiNhanh { get; set; }
-        public string LogoChiNhanh { get; set; }
     }
 }
