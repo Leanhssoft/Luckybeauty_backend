@@ -9,8 +9,12 @@ namespace BanHangBeautify.Consts
     public class ZaloTemplateType
     {
         public const string PROMOTION = "promotion";
+        public const string EVENT = "transaction_event";
         public const string TRANSACTION = "transaction_transaction";
         public const string BOOKING = "transaction_booking";
+        public const string PARTNERSHIP = "transaction_partnership";
+        public const string MEMBERSHIP = "transaction_membership";
+        public const string MEDIA = "media";
     }
     public class ZaloElementType
     {
@@ -18,6 +22,7 @@ namespace BanHangBeautify.Consts
         public const string HEADER = "header";
         public const string TABLE = "table";
         public const string TEXT = "text";
+        public const string IMAGE = "image";
     }
     public class ZaloButtonType
     {
