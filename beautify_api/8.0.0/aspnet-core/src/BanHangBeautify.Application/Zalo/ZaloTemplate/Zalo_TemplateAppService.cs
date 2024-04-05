@@ -43,37 +43,57 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             return data;
         }
 
-        public async Task<Zalo_TemplateDto> GetZaloTemplate_byId(Guid id)
+        public Zalo_TemplateDto GetZaloTemplate_byId(Guid id)
         {
-            var objFind = await _zaloTemplate.GetAsync(id);
-            if (objFind != null)
+           return _zaloTemplateRepo.GetZaloTemplate_byId(id);
+        }
+        public async Task<List<Zalo_TemplateDto>> GetAllZaloTemplate_fromDB()
+        {
+            var data = _zaloTemplate.GetAllList().Select(x => new Zalo_TemplateDto
             {
-                var zaloTemp = ObjectMapper.Map<Zalo_TemplateDto>(objFind);
-                var lstBtn = _zaloButton.GetAllList().Where(x => x.IdTemplate == id);
-
-                var lstElm = _zaloElement.GetAllList().Where(x => x.IdTemplate == id);
-                var lstElm_withTbl = ObjectMapper.Map<List<Zalo_ElementDto>>(lstElm).Select(x => new Zalo_ElementDto
+                Id = x.Id,
+                TenMauTin = x.TenMauTin,
+                IsDefault = x.IsDefault,
+                IdLoaiTin = x.IdLoaiTin,
+                TemplateType = x.TemplateType,
+                Language = x.Language,
+                IsSystem = false,
+                elements = _zaloElement.GetAllList().Where(o => o.IdTemplate == x.Id)
+                .Select(o => new Zalo_ElementDto
                 {
-                    Id = x.Id,
-                    IdTemplate = x.IdTemplate,
-                    ElementType = x.ElementType,
-                    Content = x.Content,
-                    ThuTuSapXep = x.ThuTuSapXep,
-                    tables = ObjectMapper.Map<List<Zalo_TableDetailDto>>(_zaloTable.GetAllList().Where(o => o.IdElement == x.Id)),
-                }).OrderBy(x => x.ThuTuSapXep);
-
-                zaloTemp.buttons = ObjectMapper.Map<List<Zalo_ButtonDetailDto>>(lstBtn);
-                zaloTemp.elements = ObjectMapper.Map<List<Zalo_ElementDto>>(lstElm_withTbl);
-                return zaloTemp;
-            }
-            return null;
+                    Id = o.Id,
+                    IdTemplate = o.IdTemplate,
+                    ElementType = o.ElementType,
+                    ThuTuSapXep = o.ThuTuSapXep,
+                    IsImage = o.IsImage,
+                    Content = o.Content,
+                    tables = _zaloTable.GetAllList().Where(y => y.IdElement == o.Id).Select(y => new Zalo_TableDetailDto
+                    {
+                        Id = y.Id,
+                        IdElement = y.IdElement,
+                        Key = y.Key,
+                        Value = y.Value,
+                        ThuTuSapXep = y.ThuTuSapXep,
+                    }).OrderBy(x => x.ThuTuSapXep).ToList()
+                }).OrderBy(x => x.ThuTuSapXep).ToList(),
+                buttons = _zaloButton.GetAllList().Where(z => z.IdTemplate == x.Id).Select(z => new Zalo_ButtonDetailDto
+                {
+                    Id = z.Id,
+                    IdTemplate = z.IdTemplate,
+                    Type = z.Type,
+                    Title = z.Title,
+                    Payload = z.Payload,
+                    ImageIcon = z.ImageIcon,
+                    ThuTuSapXep = z.ThuTuSapXep,
+                }).OrderBy(x => x.ThuTuSapXep).ToList()
+            }).ToList();
+            return data;
         }
         public async Task<Zalo_TemplateDto> GetZaloTemplate_Default(byte idLoaiTin)
         {
             return await _zaloTemplateRepo.FindTempDefault_ByIdLoaiTin(idLoaiTin);
         }
-
-        public async Task AddListElement(Guid idTemp, List<Zalo_ElementDto> lstElm)
+        private async Task AddListElement(Guid idTemp, List<Zalo_ElementDto> lstElm)
         {
             if (lstElm != null)
             {
@@ -104,7 +124,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 }
             }
         }
-        public async Task AddListButton(Guid idTemp, List<Zalo_ButtonDetailDto> lstButton)
+        private async Task AddListButton(Guid idTemp, List<Zalo_ButtonDetailDto> lstButton)
         {
             if (lstButton != null)
             {
@@ -121,6 +141,12 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 await _zaloButton.InsertRangeAsync(lstBtn);
             }
         }
+        [HttpGet]
+        /// <summary>
+        /// xóa hẳn khỏi database
+        /// </summary>
+        /// <param name="idTemp"></param>
+        /// <returns></returns>
         public async Task<bool> RemoveBtn_andElm(Guid idTemp)
         {
             var lstBtn = _zaloButton.GetAllList().Where(x => x.IdTemplate == idTemp);
@@ -195,6 +221,49 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
 
             var result = ObjectMapper.Map<Zalo_TemplateDto>(objUp);
             return result;
+        }
+
+        [HttpGet]
+        /// <summary>
+        /// xóa mềm: chỉ update trạng thái
+        /// </summary>
+        /// <param name="idTemp"></param>
+        /// <returns></returns>
+        public async Task<bool> XoaMauTinZalo(Guid idTemp)
+        {
+            Zalo_Template objUp = await _zaloTemplate.FirstOrDefaultAsync(idTemp);
+            if (objUp != null)
+            {
+                objUp.IsDeleted = true;
+                objUp.DeletionTime = DateTime.Now;
+                objUp.DeleterUserId = AbpSession.UserId;
+
+                _zaloButton.GetAllList().Where(x => x.IdTemplate == idTemp).ToList().ForEach(x =>
+                { x.IsDeleted = true; x.DeletionTime = DateTime.Now; x.DeleterUserId = AbpSession.UserId; });
+
+                var lstElm = _zaloElement.GetAllList().Where(x => x.IdTemplate == idTemp);
+                foreach (var item in lstElm)
+                {
+                    switch (item.ElementType)
+                    {
+                        case ZaloElementType.TABLE:
+                            {
+                                var tblDetails = _zaloTable.GetAllList().Where(x => x.IdElement == item.Id);
+                                foreach (var tbl in tblDetails)
+                                {
+                                    await _zaloTable.DeleteAsync(tbl.Id);
+                                }
+                                await _zaloElement.DeleteAsync(item.Id);
+                            }
+                            break;
+                        default:
+                            await _zaloElement.DeleteAsync(item.Id);
+                            break;
+                    }
+                }
+                await _zaloTemplate.UpdateAsync(objUp);
+            }
+            return true;
         }
     }
 }
