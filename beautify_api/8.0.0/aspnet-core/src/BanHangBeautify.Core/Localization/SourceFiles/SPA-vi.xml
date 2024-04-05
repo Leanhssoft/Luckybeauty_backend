@@ -79,6 +79,7 @@
     <text name="DifferentTenantImpersonationErrorMessage">Không thể mạo danh người dùng của thuê bao khác nhau!</text>
     <text name="ImpersonationTokenErrorMessage">Mã thông báo mạo danh không hợp lệ hoặc đã hết hạn!</text>
     <text name="NotImpersonatedLoginErrorMessage">Đây không phải là thông tin đăng nhập mạo danh!</text>
+    <text name="ImpersonationToTenant">Đang nhập mạo danh đến Tenant</text>
     <text name="ThisFieldIsRequired">Trường này là bắt buộc</text>
     <text name="PleaseWait">Vui lòng đợi...</text>
     <text name="Administration">Quản trị</text>

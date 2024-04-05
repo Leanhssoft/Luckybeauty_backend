@@ -8,5 +8,7 @@ namespace BanHangBeautify.Models.TokenAuth
         public string EncryptedAccessToken { get; set; }
 
         public int ExpireInSeconds { get; set; }
+
+        public string RefreshToken  { get; set; }
     }
 }

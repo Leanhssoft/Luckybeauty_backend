@@ -1,13 +1,16 @@
 ﻿using Abp;
 using Abp.Authorization;
 using Abp.Authorization.Users;
+using Abp.Configuration;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.MultiTenancy;
 using Abp.Runtime.Caching;
 using Abp.Runtime.Security;
+using Abp.Runtime.Session;
 using Abp.Timing;
 using Abp.UI;
+using Asd.AbpZeroTemplate.Configuration;
 using BanHangBeautify.Authentication.External;
 using BanHangBeautify.Authentication.JwtBearer;
 using BanHangBeautify.Authorization;
@@ -48,6 +51,8 @@ namespace BanHangBeautify.Controllers
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
         private readonly IOptions<JwtBearerOptions> _jwtOptions;
         private readonly IImpersonationManager _impersonationManager;
+        private readonly ISettingManager _settingManager;
+        private readonly IJwtSecurityStampHandler _securityStampHandler;
 
         public TokenAuthController(
             LogInManager logInManager,
@@ -62,6 +67,8 @@ namespace BanHangBeautify.Controllers
             IRepository<NS_NhanVien, Guid> nhanSuRepository,
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
             IOptions<JwtBearerOptions> jwtOptions,
+            ISettingManager settingManager,
+            IJwtSecurityStampHandler securityStampHandler,
             IImpersonationManager impersonationManager)
         {
             _logInManager = logInManager;
@@ -76,6 +83,8 @@ namespace BanHangBeautify.Controllers
             _nhanSuRepository = nhanSuRepository;
             _claimsPrincipalFactory = claimsPrincipalFactory;
             _jwtOptions = jwtOptions;
+            _settingManager = settingManager;
+            _securityStampHandler = securityStampHandler;
             _impersonationManager = impersonationManager;
         }
 
@@ -106,14 +115,52 @@ namespace BanHangBeautify.Controllers
         {
             var result = await _impersonationManager.GetImpersonatedUserAndIdentity(impersonationToken);
             var accessToken = CreateAccessToken(await CreateJwtClaims(result.Identity, result.User));
-
+            var refreshToken = CreateRefreshToken(await CreateJwtClaims(result.Identity,
+                                                                       result.User,
+                                                                       tokenType: Authentication.JwtBearer.TokenType.RefreshToken,
+                                                                       refreshTokenKey: SPAConsts.RefreshTokenValidityKey));
             return new ImpersonatedAuthenticateResultModel
             {
                 AccessToken = accessToken,
+                RefreshToken = refreshToken.token,
                 EncryptedAccessToken = GetEncryptedAccessToken(accessToken),
                 ExpireInSeconds = (int)_configuration.AccessTokenExpiration.TotalSeconds
             };
         }
+        [HttpGet]
+        public async Task LogOut()
+        {
+            if (AbpSession.UserId != null)
+            {
+                var tokenValidityKeyInClaims = User.Claims.First(c => c.Type == SPAConsts.TokenValidityKey);
+                await RemoveTokenAsync(tokenValidityKeyInClaims.Value);
+
+                var refreshTokenValidityKeyInClaims =
+                    User.Claims.FirstOrDefault(c => c.Type == SPAConsts.RefreshTokenValidityKey);
+                if (refreshTokenValidityKeyInClaims != null)
+                {
+                    await RemoveTokenAsync(refreshTokenValidityKeyInClaims.Value);
+                }
+
+                //if (AllowOneConcurrentLoginPerUser())
+                //{
+                    await _securityStampHandler.RemoveSecurityStampCacheItem(
+                        AbpSession.TenantId,
+                        AbpSession.GetUserId()
+                    );
+                //}
+            }
+        }
+
+        private async Task RemoveTokenAsync(string tokenKey)
+        {
+            await _userManager.RemoveTokenValidityKeyAsync(
+                await _userManager.GetUserByIdAsync(AbpSession.UserId??0), tokenKey
+            );
+
+            await _cacheManager.GetCache(SPAConsts.TokenValidityKey).RemoveAsync(tokenKey);
+        }
+
         [HttpGet]
         public List<ExternalLoginProviderInfoModel> GetExternalAuthenticationProviders()
         {
@@ -355,11 +402,11 @@ namespace BanHangBeautify.Controllers
                 .GetCache(SPAConsts.TokenValidityKey)
                 .SetAsync(tokenValidityKey, "", absoluteExpireTime: new DateTimeOffset(expirationDate));
 
-            await _userManager.AddTokenValidityKeyAsync(
-                user,
-                tokenValidityKey,
-                expirationDate
-            );
+            //await _userManager.AddTokenValidityKeyAsync(
+            //    user,
+            //    tokenValidityKey,
+            //    expirationDate
+            //);
             return claims;
         }
         private bool IsRefreshTokenValid(string refreshToken, out ClaimsPrincipal principal)
@@ -408,6 +455,10 @@ namespace BanHangBeautify.Controllers
         private string GetEncryptedAccessToken(string accessToken)
         {
             return SimpleStringCipher.Instance.Encrypt(accessToken);
+        }
+        private bool AllowOneConcurrentLoginPerUser()
+        {
+            return _settingManager.GetSettingValue<bool>(AppSettings.UserManagement.AllowOneConcurrentLoginPerUser);
         }
     }
 }

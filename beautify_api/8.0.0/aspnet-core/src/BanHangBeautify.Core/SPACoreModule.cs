@@ -5,6 +5,7 @@ using Abp.Runtime.Security;
 using Abp.Timing;
 using Abp.Zero;
 using Abp.Zero.Configuration;
+using BanHangBeautify.Authorization.Delegation;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Configuration;
@@ -58,6 +59,7 @@ namespace BanHangBeautify
         public override void PostInitialize()
         {
             IocManager.Resolve<AppTimes>().StartupTime = Clock.Now;
+            IocManager.Register<IUserDelegationConfiguration, UserDelegationConfiguration>();
         }
     }
 }
