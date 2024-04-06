@@ -5,6 +5,7 @@ using BanHangBeautify.AppDanhMuc.AppCuaHang.Dto;
 using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
+using BanHangBeautify.ZaloSMS_Common;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
         public Zalo_TemplateAppService(IRepository<Zalo_Template, Guid> zaloTemplate, IZalo_TemplateRepository zaloTemplateRepo,
             IRepository<Zalo_ButtonDetail, Guid> zaloButton,
             IRepository<Zalo_Element, Guid> zaloElement,
-            IRepository<Zalo_TableDetail, Guid> zaloTable)
+            IRepository<Zalo_TableDetail, Guid> zaloTable
+            )
         {
             _zaloTemplate = zaloTemplate;
             _zaloTemplateRepo = zaloTemplateRepo;
@@ -45,7 +47,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
 
         public Zalo_TemplateDto GetZaloTemplate_byId(Guid id)
         {
-           return _zaloTemplateRepo.GetZaloTemplate_byId(id);
+            return _zaloTemplateRepo.GetZaloTemplate_byId(id);
         }
         public async Task<List<Zalo_TemplateDto>> GetAllZaloTemplate_fromDB()
         {
@@ -88,6 +90,40 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 }).OrderBy(x => x.ThuTuSapXep).ToList()
             }).ToList();
             return data;
+        }
+
+        [HttpGet]
+        public List<ZaloTemPlate_GroupLoaiTinDto> GetAllMauTinZalo_groupLoaiTin()
+        {
+            var data = _zaloTemplate.GetAllList().Select(x => new Zalo_TemplateDto
+            {
+                Id = x.Id,
+                TenMauTin = x.TenMauTin,
+                IsDefault = x.IsDefault,
+                IdLoaiTin = x.IdLoaiTin,
+                TemplateType = x.TemplateType,
+                Language = x.Language,
+                IsSystem = false,
+                elements = _zaloElement.GetAllList().Where(o => o.IdTemplate == x.Id)
+                .Select(o => new Zalo_ElementDto
+                {
+                    Id = o.Id,
+                    IdTemplate = o.IdTemplate,
+                    ElementType = o.ElementType,
+                    ThuTuSapXep = o.ThuTuSapXep,
+                    IsImage = o.IsImage,
+                    Content = o.Content
+                }).OrderBy(x => x.ThuTuSapXep).ToList()
+            }).ToList();
+
+            var dtGr = data.GroupBy(x => new { x.IdLoaiTinZalo, x.TenLoaiTinZalo }).Select(x => new ZaloTemPlate_GroupLoaiTinDto
+            {
+                IdLoaiTinZalo = x.Key.IdLoaiTinZalo,
+                TenLoaiTinZalo = x.Key.TenLoaiTinZalo,
+                LstDetail = x.ToList()
+            }).OrderBy(x => x.IdLoaiTinZalo).ToList();
+
+            return dtGr;
         }
         public async Task<Zalo_TemplateDto> GetZaloTemplate_Default(byte idLoaiTin)
         {

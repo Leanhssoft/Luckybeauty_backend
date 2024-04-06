@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BanHangBeautify.Consts;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,49 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
         public List<Zalo_ElementDto> elements { get; set; }
         public List<Zalo_ButtonDetailDto> buttons { get; set; }
         public bool? IsSystem { get; set; }// là mẫu mặc định của hệ thống
+        public byte? IdLoaiTinZalo
+        {
+            get
+            {
+                byte? loaiTinZalo;
+                switch (TemplateType)
+                {
+                    case ZaloTemplateType.MEDIA:
+                    case ZaloTemplateType.MESSAGE:
+                        loaiTinZalo = 1;
+                        break;
+                    case ZaloTemplateType.PROMOTION:
+                        loaiTinZalo = 2;
+                        break;
+                    default:
+                        loaiTinZalo = 3;
+                        break;
+                }
+                return loaiTinZalo;
+            }
+        }
+        public string TenLoaiTinZalo
+        {
+            get
+            {
+                switch (IdLoaiTinZalo)
+                {
+                    case 1:
+                        return "Tin tư vấn";
+                    case 2:
+                        return "Tin truyền thông";
+                    default:
+                        return "Tin giao dịch";
+                }
+            }
+        }
+    }
+
+    public class ZaloTemPlate_GroupLoaiTinDto
+    {
+        public byte? IdLoaiTinZalo { get; set; }
+        public string TenLoaiTinZalo { get; set; }
+        public List<Zalo_TemplateDto> LstDetail { get; set; }
     }
 
     public class Zalo_ElementDto

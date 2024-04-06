@@ -283,7 +283,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             zalotemp.buttons = buttons;
 
             return zalotemp;
-        } 
+        }
         private Zalo_TemplateDto InitData_NhacLichHen()
         {
             Guid zaloIdTemp = new("E4868CDE-4979-49E8-82B7-5151FCF79B84");
@@ -395,58 +395,65 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
 
         public Zalo_TemplateDto GetZaloTemplate_byId(Guid id)
         {
-            var dbContext = GetDbContext();
-            var objFind = dbContext.Set<Zalo_Template>().Where(x => x.Id == id).Select(x => new Zalo_TemplateDto
+            try
             {
-                Id = x.Id,
-                TenMauTin = x.TenMauTin,
-                IdLoaiTin = x.IdLoaiTin,
-                IsDefault = x.IsDefault,
-                TemplateType = x.TemplateType,
-                Language = x.Language,
-                IsSystem = false
-            }).ToList();
+                var dbContext = GetDbContext();
+                var objFind = dbContext.Set<Zalo_Template>().Where(x => x.Id == id).Select(x => new Zalo_TemplateDto
+                {
+                    Id = x.Id,
+                    TenMauTin = x.TenMauTin,
+                    IdLoaiTin = x.IdLoaiTin,
+                    IsDefault = x.IsDefault,
+                    TemplateType = x.TemplateType,
+                    Language = x.Language,
+                    IsSystem = false
+                }).ToList();
 
-            if (objFind != null && objFind.Count > 0)
-            {
-                var zaloTemp = objFind.FirstOrDefault();
-                var lstBtn = dbContext.Set<Zalo_ButtonDetail>().Where(x => x.IdTemplate == id)
-                    .Select(x => new Zalo_ButtonDetailDto
-                    {
-                        Id = x.Id,
-                        IdTemplate = x.IdTemplate,
-                        Type = x.Type,
-                        Title = x.Title,
-                        Payload = x.Payload,
-                        ImageIcon = x.ImageIcon,
-                        ThuTuSapXep = x.ThuTuSapXep
-                    }).OrderBy(x => x.ThuTuSapXep).ToList();
-
-                var lstElm = dbContext.Set<Zalo_Element>().Where(x => x.IdTemplate == id)
-                    .Select(x => new Zalo_ElementDto
-                    {
-                        Id = x.Id,
-                        IdTemplate = x.IdTemplate,
-                        ElementType = x.ElementType,
-                        IsImage = x.IsImage,
-                        Content = x.Content,
-                        ThuTuSapXep = x.ThuTuSapXep,
-                        tables = dbContext.Set<Zalo_TableDetail>().Where(o => o.IdElement == x.Id)
-                        .Select(o => new Zalo_TableDetailDto
+                if (objFind != null && objFind.Count > 0)
+                {
+                    var zaloTemp = objFind.FirstOrDefault();
+                    var lstBtn = dbContext.Set<Zalo_ButtonDetail>().Where(x => x.IdTemplate == id)
+                        .Select(x => new Zalo_ButtonDetailDto
                         {
-                            Id = o.Id,
-                            IdElement = o.IdElement,
-                            Key = o.Key,
-                            Value = o.Value,
-                            ThuTuSapXep = o.ThuTuSapXep,
-                        }).OrderBy(o => o.ThuTuSapXep).ToList(),
-                    }).OrderBy(x => x.ThuTuSapXep).ToList();
+                            Id = x.Id,
+                            IdTemplate = x.IdTemplate,
+                            Type = x.Type,
+                            Title = x.Title,
+                            Payload = x.Payload,
+                            ImageIcon = x.ImageIcon,
+                            ThuTuSapXep = x.ThuTuSapXep
+                        }).OrderBy(x => x.ThuTuSapXep).ToList();
 
-                zaloTemp.buttons = lstBtn;
-                zaloTemp.elements = lstElm;
-                return zaloTemp;
+                    var lstElm = dbContext.Set<Zalo_Element>().Where(x => x.IdTemplate == id)
+                        .Select(x => new Zalo_ElementDto
+                        {
+                            Id = x.Id,
+                            IdTemplate = x.IdTemplate,
+                            ElementType = x.ElementType,
+                            IsImage = x.IsImage,
+                            Content = x.Content,
+                            ThuTuSapXep = x.ThuTuSapXep,
+                            tables = dbContext.Set<Zalo_TableDetail>().Where(o => o.IdElement == x.Id)
+                            .Select(o => new Zalo_TableDetailDto
+                            {
+                                Id = o.Id,
+                                IdElement = o.IdElement,
+                                Key = o.Key,
+                                Value = o.Value,
+                                ThuTuSapXep = o.ThuTuSapXep,
+                            }).OrderBy(o => o.ThuTuSapXep).ToList(),
+                        }).OrderBy(x => x.ThuTuSapXep).ToList();
+
+                    zaloTemp.buttons = lstBtn;
+                    zaloTemp.elements = lstElm;
+                    return zaloTemp;
+                }
+                return null;
             }
-            return null;
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

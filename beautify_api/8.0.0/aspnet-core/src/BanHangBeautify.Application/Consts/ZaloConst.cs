@@ -15,6 +15,7 @@ namespace BanHangBeautify.Consts
         public const string PARTNERSHIP = "transaction_partnership";
         public const string MEMBERSHIP = "transaction_membership";
         public const string MEDIA = "media";
+        public const string MESSAGE = "message";
     }
     public class ZaloElementType
     {
