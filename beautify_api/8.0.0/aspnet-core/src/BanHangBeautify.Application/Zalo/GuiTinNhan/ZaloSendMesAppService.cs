@@ -8,91 +8,26 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using System.Net.Http;
 using BanHangBeautify.Consts;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using BanHangBeautify.Zalo.DangKyThanhVien;
+using System;
+using BanHangBeautify.ZaloSMS_Common;
 
 namespace BanHangBeautify.Zalo.GuiTinNhan
 {
     public class ZaloSendMesAppService : SPAAppServiceBase, IZaloSendMes
     {
         private readonly IZalo_TemplateRepository _zaloTemplateRepo;
-        public ZaloSendMesAppService(IZalo_TemplateRepository zaloTemplateRepo)
+        private readonly ICommonZaloSMS _commonZaloSMS;
+        public ZaloSendMesAppService(IZalo_TemplateRepository zaloTemplateRepo, ICommonZaloSMS commonZaloSMS)
         {
             _zaloTemplateRepo = zaloTemplateRepo;
+            _commonZaloSMS = commonZaloSMS;
         }
 
-        protected string ReplaceContent_Withkey(PageKhachHangSMSDto cutomer, string key)
-        {
-            string txt = string.Empty;
-            Regex regex = new(@"^<.*>$");
-            if (regex.IsMatch(key))
-            {
-                switch (key)
-                {
-                    case "<TenKhachHang>":
-                        txt = cutomer.TenKhachHang;
-                        break;
-                    case "<SoDienThoai>":
-                        txt = cutomer.SoDienThoai;
-                        break;
-                    case "<NgaySinh>":
-                        txt = cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
-                        break;
-                    case "<BookingDate>":
-                        txt = cutomer.StartTime?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture);
-                        break;
-                    case "<ThoiGianHen>":
-                        txt = cutomer.ThoiGianHen;
-                        break;
-                    case "<TenDichVu>":
-                        txt = cutomer.TenHangHoa;
-                        break;
-                    case "<MaHoaDon>":
-                        txt = cutomer.MaHoaDon;
-                        break;
-                    case "<NgayLapHoaDon>":
-                        txt = cutomer.NgayLapHoaDon?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture);
-                        break;
-                    case "<TongTienHang>":
-                        {
-                            double number = cutomer.TongThanhToan ?? 0;
-                            txt = number.ToString("N0", new CultureInfo("vi-VN"));
-                        }
-                        break;
-                    case "<TenChiNhanh>":
-                        txt = cutomer.TenChiNhanh;
-                        break;
-                    case "<SoDienThoaiChiNhanh>":
-                        txt = cutomer.SoDienThoaiChiNhanh;
-                        break;
-                    case "<DiaChiChiNhanh>":
-                        txt = cutomer.DiaChiChiNhanh;
-                        break;
-                }
-            }
-            return txt;
-        }
-        protected string ReplaceContent(PageKhachHangSMSDto cutomer, string noiDungTin)
-        {
-            var ss = noiDungTin.Replace("<TenKhachHang>", cutomer.TenKhachHang);
-            ss = ss.Replace("<NgaySinh>", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
-            ss = ss.Replace("<SoDienThoai>", cutomer.SoDienThoai);
-            ss = ss.Replace("<BookingDate>", cutomer.StartTime?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture));
-            ss = ss.Replace("<ThoiGianHen>", cutomer.ThoiGianHen);
-            ss = ss.Replace("<TenHangHoa>", cutomer.TenHangHoa);// dichvuhen
-            ss = ss.Replace("<MaGiaoDich>", cutomer.MaHoaDon);
-            ss = ss.Replace("<NgayGiaoDich>", cutomer.NgayLapHoaDon?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture));
-            ss = ss.Replace("<TongTienHang>", (cutomer.TongThanhToan ?? 0).ToString("N0", new CultureInfo("vi-VN")));
-            ss = ss.Replace("<TenChiNhanh>", cutomer.TenChiNhanh);
-            ss = ss.Replace("<SoDienThoaiChiNhanh>", cutomer.SoDienThoaiChiNhanh);
-            ss = ss.Replace("<DiaChiChiNhanh>", cutomer.DiaChiChiNhanh);
-            return ss;
-        }
 
         [HttpPost]
-        public async Task<ResultMessageZaloDto> GuiTinGiaoDich_fromDataDB(PageKhachHangSMSDto dataSend, string accessToken, Zalo_TemplateDto tempItem)
+        public async Task<ResultMessageZaloDto> GuiTinTruyenThongorGiaoDich_fromDataDB(PageKhachHangSMSDto dataSend, string accessToken, Guid zaloTempId)
         {
+            var tempItem = _zaloTemplateRepo.GetZaloTemplate_byId(zaloTempId);
             ZaloRequestData requestData = new();
             requestData.recipient = new ZaloRecipient { user_id = dataSend.ZOAUserId };
 
@@ -118,7 +53,7 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
                         case ZaloElementType.HEADER:
                         case ZaloElementType.TEXT:
                             {
-                                lstElem.Add(new { type = item.ElementType, content = ReplaceContent(dataSend, item.Content) });
+                                lstElem.Add(new { type = item.ElementType, content = _commonZaloSMS.ReplaceContent(dataSend, item.Content) });
                             }
                             break;
                         case ZaloElementType.TABLE:
@@ -126,14 +61,22 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
                                 List<ZaloPayloadContent> lstContentTbl = new();
                                 foreach (var itemTbl in item.tables)
                                 {
-                                    ZaloPayloadContent objNew = new ZaloPayloadContent { key = itemTbl.Key, value = ReplaceContent_Withkey(dataSend, itemTbl.Value) };
+                                    ZaloPayloadContent objNew = new ZaloPayloadContent { key = itemTbl.Key, value = _commonZaloSMS.ReplaceContent_Withkey(dataSend, itemTbl.Value) };
                                     lstContentTbl.Add(objNew);
                                 }
                                 // chỉ get key có giá trị != empty
                                 lstContentTbl = lstContentTbl.Where(x => !string.IsNullOrEmpty(x.value)).ToList();
-                                lstElem.Add(new { type = item.ElementType, content = lstContentTbl });
+                                if(lstContentTbl.Count > 0)
+                                {
+                                    lstElem.Add(new { type = item.ElementType, content = lstContentTbl });
+                                }
                             }
                             break;
+                        //case ZaloElementType.IMAGE:// tin tư vấn kèm ảnh
+                        //    {
+                        //        lstElem.Add(new { media_type = item.ElementType, url = item.Content });
+                        //    }
+                            //break;
                     }
                 }
             }
@@ -164,7 +107,7 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
                             break;
                         case ZaloButtonType.SHOW:
                             {
-                                newBtn.payload = item.Payload;
+                                newBtn.payload = item.Title;
                             }
                             break;
                     }
@@ -213,11 +156,14 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
             string url = string.Empty;
             switch (tempItem.TemplateType)
             {
-                case ZaloTemplateType.PROMOTION:
+                case ZaloTemplateType.PROMOTION:// tin truyền thông
                     url = "https://openapi.zalo.me/v3.0/oa/message/promotion";
                     break;
-                case ZaloTemplateType.TRANSACTION:
+                case ZaloTemplateType.TRANSACTION:// tin giao dịch
                 case ZaloTemplateType.BOOKING:
+                case ZaloTemplateType.PARTNERSHIP:
+                case ZaloTemplateType.MEMBERSHIP:
+                case ZaloTemplateType.EVENT:
                     url = "https://openapi.zalo.me/v3.0/oa/message/transaction";
                     break;
             }

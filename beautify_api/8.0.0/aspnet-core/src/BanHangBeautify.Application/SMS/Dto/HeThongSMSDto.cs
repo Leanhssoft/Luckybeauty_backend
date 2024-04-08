@@ -27,7 +27,10 @@ namespace BanHangBeautify.SMS.Dto
         public Guid? IdChiNhanh { get; set; }
         public string TenChiNhanh { get; set; }
         public string SoDienThoaiChiNhanh { get; set; }
-        public string DiaChiChiNhanh { get; set; }
+        public string DiaChiChiNhanh { get; set; } 
+        public string TenCuaHang { get; set; }
+        public string DienThoaiCuaHang { get; set; }
+        public string DiaChiCuaHang { get; set; }
     }
 
     public class CustomerWithZOA : CustomerBasicDto

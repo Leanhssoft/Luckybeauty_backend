@@ -11,6 +11,6 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
 {
     public interface IZaloSendMes
     {
-        Task<ResultMessageZaloDto> GuiTinGiaoDich_fromDataDB(PageKhachHangSMSDto dataSend, string accessToken, Zalo_TemplateDto tempItem);
+        Task<ResultMessageZaloDto> GuiTinTruyenThongorGiaoDich_fromDataDB(PageKhachHangSMSDto dataSend, string accessToken, Guid zaloTempId);
     }
 }

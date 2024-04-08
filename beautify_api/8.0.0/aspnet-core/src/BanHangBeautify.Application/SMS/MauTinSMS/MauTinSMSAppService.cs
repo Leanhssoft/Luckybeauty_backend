@@ -79,7 +79,7 @@ namespace BanHangBeautify.SMS.MauTinSMS
                 case 2: return "Lời chúc mừng sinh nhật";
                 case 3: return "Nhắc nhở cuộc hẹn";
                 case 4: return "Tin giao dịch";
-                default: return "other";
+                default: return "Loại tin khác";
             }
         };
 
@@ -91,7 +91,7 @@ namespace BanHangBeautify.SMS.MauTinSMS
                 2 => "Lời chúc mừng sinh nhật",
                 3 => "Nhắc nhở cuộc hẹn",
                 4 => "Tin giao dịch",
-                _ => "other",
+                _ => "Loại tin khác",
             };
         }
         [HttpGet]
@@ -103,7 +103,7 @@ namespace BanHangBeautify.SMS.MauTinSMS
                 IdLoaiTin = x.Key.IdLoaiTin,
                 LoaiTin = GetLoaiTin(x.Key.IdLoaiTin),
                 LstDetail = ObjectMapper.Map<List<MauTinSMSDto>>(x)
-            }).ToList();
+            }).OrderBy(x=>x.IdLoaiTin).ToList();
             return data;
         }
     }

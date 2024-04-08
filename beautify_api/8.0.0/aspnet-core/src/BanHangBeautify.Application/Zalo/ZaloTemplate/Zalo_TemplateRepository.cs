@@ -1,10 +1,12 @@
 ﻿using Abp.EntityFrameworkCore;
+using Abp.ObjectMapping;
 using AutoMapper.Internal.Mappers;
 using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.SMS.Dto;
+using BanHangBeautify.Zalo.GuiTinNhan;
 using Microsoft.EntityFrameworkCore;
 using Nito.AsyncEx;
 using System;
@@ -20,7 +22,6 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
 {
     public class Zalo_TemplateRepository : SPARepositoryBase<Zalo_Template, Guid>, IZalo_TemplateRepository
     {
-        List<Zalo_TemplateDto> _lstAllTemp;
         public Zalo_TemplateRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
             InnitData_TempZalo();
@@ -32,12 +33,12 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
-                TenMauTin ="Chúc mừng sinh nhật",
-                //MoTaChiTiet = "Gửi lời chúc mừng đến khách hàng sinh nhật",
+                TenMauTin = "Chúc mừng sinh nhật",
                 IsDefault = true,
                 IdLoaiTin = ConstSMS.LoaiTin.SinhNhat,
                 TemplateType = ZaloTemplateType.PROMOTION,
-                Language = "VI"
+                Language = "VI",
+                IsSystem = true,
             };
 
             Guid zaloIdElement = new("E6041AC0-806E-4835-8F21-DBD69CC6A170");
@@ -57,7 +58,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     Id = zaloIdElement,
                     IdTemplate = zaloIdTemp,
                     ElementType =ZaloElementType.TEXT,
-                    Content = @"<TenChiNhanh> kính chúc <TenKhachHang> có một ngày sinh nhật ý nghĩa bên người thân và gia đình",
+                    Content = @"{TenChiNhanh} kính chúc {TenKhachHang} có một ngày sinh nhật ý nghĩa bên người thân và gia đình",
                     IsImage = false,
                     ThuTuSapXep = 2,
                 }
@@ -72,11 +73,11 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             {
                 Id = zaloIdTemp,
                 TenMauTin = "Xác nhận giao dịch",
-                //MoTaChiTiet = "Gửi lời chúc mừng đến khách hàng sinh nhật",
                 IsDefault = true,
                 IdLoaiTin = ConstSMS.LoaiTin.GiaoDich,
                 TemplateType = ZaloTemplateType.TRANSACTION,
-                Language = "VI"
+                Language = "VI",
+                IsSystem = true
             };
 
             Guid zaloIdElement = new("F8A61D16-801F-4B31-8A60-EAAE3BE72CC7");
@@ -88,7 +89,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Mã hóa đơn",
-                    Value = "<MaHoaDon>",
+                    Value = "{MaHoaDon}",
                     ThuTuSapXep= 1,
                 },
                 new Zalo_TableDetailDto
@@ -96,7 +97,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                      Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Ngày mua hàng",
-                    Value = "<NgayLapHoaDon>",
+                    Value = "{NgayLapHoaDon}",
                     ThuTuSapXep= 2,
                 },
                 new Zalo_TableDetailDto
@@ -104,7 +105,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                      Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Tổng tiền",
-                    Value = "<TongTienHang>",
+                    Value = "{TongTienHang}",
                     ThuTuSapXep= 3,
                 }
             };
@@ -134,7 +135,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     Id = zaloIdElement,
                     IdTemplate = zaloIdTemp,
                     ElementType = ZaloElementType.TEXT,
-                    Content = @"Xin chào <TenKhachHang>, cảm ơn bạn đã mua hàng tại cửa hàng. Chúng tôi đã ghi nhận thanh toán của bạn với chi tiết như sau:",
+                    Content = @"Xin chào {TenKhachHang}, cảm ơn bạn đã mua hàng tại cửa hàng. Chúng tôi đã ghi nhận thanh toán của bạn với chi tiết như sau:",
                     IsImage = false,
                     ThuTuSapXep = 3,
                 },
@@ -175,8 +176,9 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 TenMauTin = "Xác nhận lịch hẹn",
                 IsDefault = true,
                 IdLoaiTin = ConstSMS.LoaiTin.LichHen,
-                TemplateType = ZaloTemplateType.BOOKING,
-                Language = "VI"
+                TemplateType = ZaloTemplateType.TRANSACTION,
+                Language = "VI",
+                IsSystem = true
             };
 
             Guid zaloIdElement = new("0C469F21-DBC6-41D0-B7F0-5F4AB46E95AB");
@@ -188,7 +190,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Mã đặt lịch",
-                    Value = "<SoDienThoai>",
+                    Value = "{SoDienThoai}",
                     ThuTuSapXep= 1,
                 },
                 new Zalo_TableDetailDto
@@ -196,7 +198,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Tên khách hàng",
-                    Value = "<TenKhachHang>",
+                    Value = "{TenKhachHang}",
                     ThuTuSapXep= 1,
                 },
                 new Zalo_TableDetailDto
@@ -204,7 +206,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Ngày đặt",
-                    Value = "<BookingDate>",
+                    Value = "{BookingDate}",
                     ThuTuSapXep= 3,
                 },
                 new Zalo_TableDetailDto
@@ -212,7 +214,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                      Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Tên dịch vụ",
-                    Value = "<TenDichVu>",
+                    Value = "{TenDichVu}",
                     ThuTuSapXep= 4,
                 },
                 new Zalo_TableDetailDto
@@ -220,7 +222,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                      Id = Guid.NewGuid(),
                     IdElement = zaloIdElement,
                     Key = "Địa chỉ cơ sở",
-                    Value = "<DiaChiChiNhanh>",
+                    Value = "{DiaChiChiNhanh}",
                     ThuTuSapXep= 5
                 }
             };
@@ -273,7 +275,80 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                     IdTemplate = zaloIdTemp,
                     Type = ZaloButtonType.PHONE,
                     Title = "Liên hệ CSKH",
-                    Payload = "02473039333", //todo sdt cuahang
+                    Payload = "02437919191",// todo sdt cửa hàng
+                    ThuTuSapXep= 1,
+                },
+            };
+            zalotemp.elements = lstElm;
+            zalotemp.buttons = buttons;
+
+            return zalotemp;
+        }
+        private Zalo_TemplateDto InitData_NhacLichHen()
+        {
+            Guid zaloIdTemp = new("E4868CDE-4979-49E8-82B7-5151FCF79B84");
+            Zalo_TemplateDto zalotemp = new()
+            {
+                Id = zaloIdTemp,
+                TenMauTin = "Nhắc lịch hẹn",
+                IsDefault = true,
+                IdLoaiTin = ConstSMS.LoaiTin.LichHen,
+                TemplateType = ZaloTemplateType.PROMOTION,
+                Language = "VI",
+                IsSystem = true
+            };
+
+            Guid zaloIdElement = new("F39BA811-9386-4186-993D-DFF191E62DEC");
+
+            List<Zalo_ElementDto> lstElm = new()
+            {
+                new Zalo_ElementDto
+                {
+                    Id = zaloIdElement,
+                    IdTemplate = zaloIdTemp,
+                    ElementType = ZaloElementType.BANNER,
+                    Content = @"https://lh3.googleusercontent.com/d/1TDXeqE458lvu9DJXFg85FtBEuC_1OHUw",// todo logo banner
+                    IsImage = true,
+                    ThuTuSapXep = 1,
+                },
+                new Zalo_ElementDto
+                {
+                    Id = zaloIdElement,
+                    IdTemplate = zaloIdTemp,
+                    ElementType = ZaloElementType.HEADER,
+                    Content = "Xác nhận lịch hẹn",
+                    IsImage = false,
+                    ThuTuSapXep = 2,
+                },
+                new Zalo_ElementDto
+                {
+                    Id = zaloIdElement,
+                    IdTemplate = zaloIdTemp,
+                    ElementType = ZaloElementType.TEXT,
+                    Content = @"Quý khách {TenKhachHang} có lịch hẹn vào lúc {BookingDate} tại {DiaChiChiNhanh} với mã đặt lịch {SoDienThoai}",
+                    IsImage = false,
+                    ThuTuSapXep = 3,
+                },
+                //new Zalo_ElementDto
+                //{
+                //    Id = zaloIdElement,
+                //    IdTemplate = zaloIdTemp,
+                //    ElementType = ZaloElementType.TEXT,
+                //    Content = @"Vui lòng đến đúng giờ hẹn để được phục vụ tốt nhất. Hẹn gặp quý khách tại cơ sở của chúng tôi!",
+                //    IsImage = false,
+                //    ThuTuSapXep = 4,
+                //}
+            };
+
+            List<Zalo_ButtonDetailDto> buttons = new()
+            {
+                new Zalo_ButtonDetailDto
+                {
+                    Id = Guid.NewGuid(),
+                    IdTemplate = zaloIdTemp,
+                    Type = ZaloButtonType.PHONE,
+                    Title = "Liên hệ CSKH",
+                    Payload = "02437919191",// todo sdt cửa hàng
                     ThuTuSapXep= 1,
                 },
             };
@@ -287,25 +362,98 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
             var obj1 = InitData_TempSinhNhat();
             var obj2 = InitData_TempGiaoDich();
             var obj3 = InitData_TempXacNhanLichHen();
+            var obj4 = InitData_NhacLichHen();
             List<Zalo_TemplateDto> lst = new()
             {
                 obj1,
                 obj2,
-                obj3
+                obj3,
+                obj4
             };
-            _lstAllTemp = lst;
             return lst;
         }
         public async Task<Zalo_TemplateDto> FindTempDefault_ByIdLoaiTin(byte idLoaiTin)
         {
-            // todo get from DB (with Sp sql)
-            if (_lstAllTemp == null) return null;
-            var data = _lstAllTemp.Where(x => x.IdLoaiTin == idLoaiTin);
-            if (data != null && data.Any())
+            var dbContext = GetDbContext();
+            var objFind = dbContext.Set<Zalo_Template>().Where(x => x.IdLoaiTin == idLoaiTin && (x.IsDefault ?? false))
+                .Select(x => new Zalo_TemplateDto
+                {
+                    Id = x.Id,
+                    TenMauTin = x.TenMauTin,
+                    IdLoaiTin = x.IdLoaiTin,
+                    IsDefault = x.IsDefault,
+                    TemplateType = x.TemplateType,
+                    Language = x.Language,
+                    IsSystem = false
+                }).ToList();
+            if (objFind != null && objFind.Count > 0)
             {
-                return data.FirstOrDefault();
+                return GetZaloTemplate_byId(objFind.FirstOrDefault().Id);
             }
             return null;
+        }
+
+        public Zalo_TemplateDto GetZaloTemplate_byId(Guid id)
+        {
+            try
+            {
+                var dbContext = GetDbContext();
+                var objFind = dbContext.Set<Zalo_Template>().Where(x => x.Id == id).Select(x => new Zalo_TemplateDto
+                {
+                    Id = x.Id,
+                    TenMauTin = x.TenMauTin,
+                    IdLoaiTin = x.IdLoaiTin,
+                    IsDefault = x.IsDefault,
+                    TemplateType = x.TemplateType,
+                    Language = x.Language,
+                    IsSystem = false
+                }).ToList();
+
+                if (objFind != null && objFind.Count > 0)
+                {
+                    var zaloTemp = objFind.FirstOrDefault();
+                    var lstBtn = dbContext.Set<Zalo_ButtonDetail>().Where(x => x.IdTemplate == id)
+                        .Select(x => new Zalo_ButtonDetailDto
+                        {
+                            Id = x.Id,
+                            IdTemplate = x.IdTemplate,
+                            Type = x.Type,
+                            Title = x.Title,
+                            Payload = x.Payload,
+                            ImageIcon = x.ImageIcon,
+                            ThuTuSapXep = x.ThuTuSapXep
+                        }).OrderBy(x => x.ThuTuSapXep).ToList();
+
+                    var lstElm = dbContext.Set<Zalo_Element>().Where(x => x.IdTemplate == id)
+                        .Select(x => new Zalo_ElementDto
+                        {
+                            Id = x.Id,
+                            IdTemplate = x.IdTemplate,
+                            ElementType = x.ElementType,
+                            IsImage = x.IsImage,
+                            Content = x.Content,
+                            ThuTuSapXep = x.ThuTuSapXep,
+                            tables = dbContext.Set<Zalo_TableDetail>().Where(o => o.IdElement == x.Id)
+                            .Select(o => new Zalo_TableDetailDto
+                            {
+                                Id = o.Id,
+                                IdElement = o.IdElement,
+                                Key = o.Key,
+                                Value = o.Value,
+                                ThuTuSapXep = o.ThuTuSapXep,
+                            }).OrderBy(o => o.ThuTuSapXep).ToList(),
+                        }).OrderBy(x => x.ThuTuSapXep).ToList();
+
+                    zaloTemp.buttons = lstBtn;
+                    zaloTemp.elements = lstElm;
+                    return zaloTemp;
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

@@ -11,5 +11,6 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
     {
         List<Zalo_TemplateDto> InnitData_TempZalo();
         Task<Zalo_TemplateDto> FindTempDefault_ByIdLoaiTin(byte idLoaiTin);
+        Zalo_TemplateDto GetZaloTemplate_byId(Guid id);
     }
 }
