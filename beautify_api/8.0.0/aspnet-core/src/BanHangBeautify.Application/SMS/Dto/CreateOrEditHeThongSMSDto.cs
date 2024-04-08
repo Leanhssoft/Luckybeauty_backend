@@ -22,5 +22,6 @@ namespace BanHangBeautify.SMS.Dto
         public string STrangThaiGuiTinNhan { set; get; }
         public string LoaiTin { set; get; }
         public string TenKhachHang { set; get; }
+        public string TxtHinhThucGuiTin { set; get; }
     }
 }
