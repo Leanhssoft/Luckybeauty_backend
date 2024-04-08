@@ -15,9 +15,11 @@ using BanHangBeautify.Consts;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
 using BanHangBeautify.SMS.Brandname.Repository;
+using BanHangBeautify.SMS.CaiDatNhacNho;
 using BanHangBeautify.SMS.Dto;
 using BanHangBeautify.SMS.ESMS;
 using BanHangBeautify.SMS.GuiTinNhan.Repository;
+using BanHangBeautify.SMS.MauTinSMS;
 using BanHangBeautify.Zalo.GuiTinNhan;
 using BanHangBeautify.Zalo.ZaloTemplate;
 using BanHangBeautify.ZaloSMS_Common;
@@ -27,8 +29,8 @@ namespace BanHangBeautify.BackgroundWorker
     public class SendEmailSMSAutoWorker : PeriodicBackgroundWorkerBase, ISingletonDependency
     {
         public readonly IESMS _eSMS;
-        public readonly IRepository<SMS_CaiDat_NhacNho, Guid> _caiDatNhacNho;
-        public readonly IRepository<CaiDat_NhacNho_ChiTiet, Guid> _caiDatNhacNhoChiTiet;
+        public readonly ICaiDatNhacNhoRepository _repoCaiDatNhacNho;
+        public readonly IMauTinSMSRepository _repoMauTinSMS;
         public readonly IRepository<DM_ChiNhanh, Guid> _dmChiNhanh;
         public readonly IRepository<HeThong_SMS, Guid> _hethongSMS;
         public readonly IRepository<SMS_NhatKy_GuiTin, Guid> _smsNhatKyGuiTin;
@@ -46,8 +48,8 @@ namespace BanHangBeautify.BackgroundWorker
 
         public SendEmailSMSAutoWorker(AbpTimer timer,
             IESMS eSMS,
-            IRepository<SMS_CaiDat_NhacNho, Guid> caiDatNhacNho,
-            IRepository<CaiDat_NhacNho_ChiTiet, Guid> caiDatNhacNhoChiTiet,
+            ICaiDatNhacNhoRepository repoCaiDatNhacNho,
+            IMauTinSMSRepository repoMauTinSMS,
             IRepository<DM_ChiNhanh, Guid> dmChiNhanh,
            IRepository<HeThong_SMS, Guid> hethongSMS,
              IRepository<SMS_NhatKy_GuiTin, Guid> smsNhatKyGuiTin,
@@ -65,8 +67,8 @@ namespace BanHangBeautify.BackgroundWorker
         {
             Timer.Period = 10000;
             _eSMS = eSMS;
-            _caiDatNhacNho = caiDatNhacNho;
-            _caiDatNhacNhoChiTiet = caiDatNhacNhoChiTiet;
+            _repoCaiDatNhacNho = repoCaiDatNhacNho;
+            _repoMauTinSMS = repoMauTinSMS;
             _dmChiNhanh = dmChiNhanh;
             _hethongSMS = hethongSMS;
             _smsNhatKyGuiTin = smsNhatKyGuiTin;
@@ -99,13 +101,9 @@ namespace BanHangBeautify.BackgroundWorker
                     try // phải try catch: vì khi tạo tenant mới, bảng _caiDatNhacNho chưa dc tạo, background chạy liên tục --> lỗi
                     {
                         // check has settup
-                        var lstSetup = _caiDatNhacNho.GetAllList(x => x.TrangThai == 1 &&
-                           (x.IdLoaiTin == ConstSMS.LoaiTin.SinhNhat
-                           || x.IdLoaiTin == ConstSMS.LoaiTin.GiaoDich
-                           || x.IdLoaiTin == ConstSMS.LoaiTin.LichHen)
-                           ).Select(x => new { x.Id, x.IdLoaiTin, x.NoiDungTin, x.NhacTruocKhoangThoiGian, x.LoaiThoiGian });
+                        List<CaiDatNhacNhoDto> lstSetup = await _repoCaiDatNhacNho.GetAllCaiDatNhacNho();
 
-                        if (lstSetup.Any())
+                        if (lstSetup != null && lstSetup.Count > 0)
                         {
                             var chiNhanh = _dmChiNhanh.GetAll().Select(x => x.Id.ToString()).ToList();
                             var userAdmin = _user.GetAllList(x => x.IsAdmin).Select(x => x.Id).FirstOrDefault();
@@ -132,21 +130,6 @@ namespace BanHangBeautify.BackgroundWorker
                                 PageSize = 10000,
                             };
 
-                            var lstSetupDetail = _caiDatNhacNhoChiTiet.GetAllList(x => lstIdSetup.Contains(x.IdCaiDatNhacNho) && x.TrangThai == 1)
-                            .Select(x => new { x.IdCaiDatNhacNho, x.HinhThucGui });
-
-                            var tblJoin = (from setup in lstSetup
-                                           join setupDetail in lstSetupDetail on setup.Id equals setupDetail.IdCaiDatNhacNho
-                                           select new
-                                           {
-                                               setupDetail.IdCaiDatNhacNho,
-                                               setupDetail.HinhThucGui,
-                                               setup.IdLoaiTin,
-                                               setup.NoiDungTin,
-                                               setup.NhacTruocKhoangThoiGian,
-                                               setup.LoaiThoiGian
-                                           }).ToList();
-
                             if (brandName_ofTenant.Any())
                             {
                                 inforCommon.BrandNameFirst = brandName_ofTenant.FirstOrDefault().Brandname;
@@ -154,74 +137,81 @@ namespace BanHangBeautify.BackgroundWorker
                                 var oclock = DateTime.Now.Hour;
                                 var minutes = DateTime.Now.Minute;
 
-                                var turnOnSMS = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.SMS).Select(x => x);
-                                foreach (var item in turnOnSMS)
+                                var turnOnSMS = lstSetup.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.SMS).Select(x => x);
+
+                                var sms_OnBirthday = turnOnSMS.Where(x => x.IdLoaiTin == ConstSMS.LoaiTin.SinhNhat).FirstOrDefault();
+                                if (sms_OnBirthday != null)
                                 {
-                                    if (!string.IsNullOrEmpty(item.NoiDungTin))
+                                    var itemMauTin = await _repoMauTinSMS.GetMauTinSMS_byId(sms_OnBirthday.Id);
+                                    if (itemMauTin != null)
                                     {
-                                        inforCommon.NoiDungTinNhan = item.NoiDungTin;
-                                        switch (item.IdLoaiTin)
+                                        inforCommon.NoiDungTinNhan = itemMauTin.NoiDungTinMau;
+
+                                        if (oclock > 7)
                                         {
-                                            case ConstSMS.LoaiTin.SinhNhat:
-                                                {
-                                                    if (oclock > 7)
-                                                    {
-                                                        // tin sinhnhat: chi gui từ 7h sáng
-                                                        await SendSMS(item.IdLoaiTin, param, inforCommon);
-                                                    }
-                                                }
-                                                break;
-                                            case ConstSMS.LoaiTin.LichHen:
-                                                {
-                                                    float? totalTime = 0;
-                                                    switch (item.LoaiThoiGian)
-                                                    {
-                                                        case LoaiThoiGian.SECOND:
-                                                            totalTime = item.NhacTruocKhoangThoiGian;
-                                                            break;
-                                                        case LoaiThoiGian.MiNUTE:
-                                                            totalTime = item.NhacTruocKhoangThoiGian * 60;
-                                                            break;
-                                                        case LoaiThoiGian.HOUR:
-                                                            totalTime = item.NhacTruocKhoangThoiGian * 3600;
-                                                            break;
-                                                        case LoaiThoiGian.DAY:
-                                                            totalTime = item.NhacTruocKhoangThoiGian * 3600 * 24;
-                                                            break;
-                                                        case LoaiThoiGian.MONTH:
-                                                            totalTime = item.NhacTruocKhoangThoiGian * 3600 * 24 * 30;
-                                                            break;
-                                                        default:
-                                                            break;
-                                                    }
-                                                    if (oclock > 7)
-                                                    {
-                                                        await SendSMS(item.IdLoaiTin, param, inforCommon, totalTime);
-                                                    }
-                                                }
-                                                break;
-                                            default:// giaodich: luon gui
-                                                await SendSMS(item.IdLoaiTin, param, inforCommon, 0);
-                                                break;
+                                            // tin sinhnhat: chi gui từ 7h sáng
+                                            await SendSMS(ConstSMS.LoaiTin.SinhNhat, param, inforCommon);
                                         }
                                     }
                                 }
+
+                                var sms_OnLichHen = turnOnSMS.Where(x => x.IdLoaiTin == ConstSMS.LoaiTin.LichHen).FirstOrDefault();
+                                if (sms_OnLichHen != null)
+                                {
+                                    var itemMauTin = await _repoMauTinSMS.GetMauTinSMS_byId(sms_OnLichHen.Id);
+                                    if (itemMauTin != null)
+                                    {
+                                        inforCommon.NoiDungTinNhan = itemMauTin.NoiDungTinMau;
+
+                                        float? totalTime = 0;
+                                        switch (sms_OnLichHen.LoaiThoiGian)
+                                        {
+                                            case LoaiThoiGian.SECOND:
+                                                totalTime = sms_OnLichHen.NhacTruocKhoangThoiGian;
+                                                break;
+                                            case LoaiThoiGian.MiNUTE:
+                                                totalTime = sms_OnLichHen.NhacTruocKhoangThoiGian * 60;
+                                                break;
+                                            case LoaiThoiGian.HOUR:
+                                                totalTime = sms_OnLichHen.NhacTruocKhoangThoiGian * 3600;
+                                                break;
+                                            case LoaiThoiGian.DAY:
+                                                totalTime = sms_OnLichHen.NhacTruocKhoangThoiGian * 3600 * 24;
+                                                break;
+                                            case LoaiThoiGian.MONTH:
+                                                totalTime = sms_OnLichHen.NhacTruocKhoangThoiGian * 3600 * 24 * 30;
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        if (oclock > 7)
+                                        {
+                                            await SendSMS(ConstSMS.LoaiTin.LichHen, param, inforCommon, totalTime);
+                                        }
+                                    }
+                                }
+
+                                var sms_OnGiaoDich = turnOnSMS.Where(x => x.IdLoaiTin == ConstSMS.LoaiTin.GiaoDich).FirstOrDefault();
+                                if (sms_OnGiaoDich != null)
+                                {
+                                    await SendSMS(ConstSMS.LoaiTin.GiaoDich, param, inforCommon, 0);
+                                }
                             }
 
-                            var turnOnZalo = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Zalo).Select(x => x);
+                            var turnOnZalo = lstSetup.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Zalo).Select(x => x);
                             foreach (var item in turnOnZalo)
                             {
                                 await Zalo_SendMes(item.IdLoaiTin, param, inforCommon);
                             }
 
-                            var turnOnEmail = tblJoin.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Gmail).Select(x => x);
+                            var turnOnEmail = lstSetup.Where(x => x.HinhThucGui == ConstSMS.HinhThucGuiTin.Gmail).Select(x => x);
                             foreach (var item in turnOnEmail)
                             {
-                                if (!string.IsNullOrEmpty(item.NoiDungTin))
-                                {
-                                    inforCommon.NoiDungTinNhan = item.NoiDungTin;
-                                    await SendEmail(item.IdLoaiTin, param, inforCommon);
-                                }
+                                //if (!string.IsNullOrEmpty(item.NoiDungTin))
+                                //{
+                                //    inforCommon.NoiDungTinNhan = item.NoiDungTin;
+                                //    await SendEmail(item.IdLoaiTin, param, inforCommon);
+                                //}
                             }
                             CurrentUnitOfWork.SaveChanges();
                         }

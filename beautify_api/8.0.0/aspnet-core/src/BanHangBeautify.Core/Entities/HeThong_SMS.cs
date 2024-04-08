@@ -21,9 +21,6 @@ namespace BanHangBeautify.Entities
         public Guid? IdKhachHang { set; get; }
         [ForeignKey(nameof(IdKhachHang))]
         public DM_KhachHang DM_KhachHang { get; set; }
-        public Guid? IdHoaDon { set; get; }
-        [ForeignKey(nameof(IdHoaDon))]
-        public BH_HoaDon BH_HoaDon { get; set; }
         public string IdTinNhan { set; get; }// dc trả về = ESMS API (vd: a4e3472e-5ff8-4a03-beb6-38b3393a42b5186 (gần giống Guid nhưng không phải - vì chuỗi cuối cùng gồm 15 kí tự))
         public string SoDienThoai { set; get; }
         public int SoTinGui { set; get; }

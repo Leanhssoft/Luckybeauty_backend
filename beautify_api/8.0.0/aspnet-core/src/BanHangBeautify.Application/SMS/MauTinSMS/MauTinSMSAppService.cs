@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using BanHangBeautify.Entities;
 using BanHangBeautify.SMS.Dto;
+using BanHangBeautify.SMS.LichSuNap_ChuyenTien.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,11 @@ namespace BanHangBeautify.SMS.MauTinSMS
     public class MauTinSMSAppService : SPAAppServiceBase
     {
         public readonly IRepository<SMS_Template, Guid> _smsMauTin;
-        public MauTinSMSAppService(IRepository<SMS_Template, Guid> smsMauTin)
+        public readonly IMauTinSMSRepository _repoMauTinSMS;
+        public MauTinSMSAppService(IRepository<SMS_Template, Guid> smsMauTin, IMauTinSMSRepository repoMauTinSMS)
         {
             _smsMauTin = smsMauTin;
+            _repoMauTinSMS = repoMauTinSMS;
         }
 
         [HttpPost]
@@ -65,6 +68,12 @@ namespace BanHangBeautify.SMS.MauTinSMS
             }
         }
         [HttpGet]
+        public async Task<MauTinSMSDto> GetMauTinSMS_byId(Guid id)
+        {
+            var objUp = await _repoMauTinSMS.GetMauTinSMS_byId(id);
+            return objUp;
+        }
+        [HttpGet]
         public async Task<List<MauTinSMSDto>> GetAllMauTinSMS()
         {
             var objUp = await _smsMauTin.GetAllListAsync();
@@ -88,8 +97,8 @@ namespace BanHangBeautify.SMS.MauTinSMS
 
             return idLoaiTin switch
             {
-                2 => "Lời chúc mừng sinh nhật",
-                3 => "Nhắc nhở cuộc hẹn",
+                2 => "Tin sinh nhật",
+                3 => "Tin lịch hẹn",
                 4 => "Tin giao dịch",
                 _ => "Loại tin khác",
             };

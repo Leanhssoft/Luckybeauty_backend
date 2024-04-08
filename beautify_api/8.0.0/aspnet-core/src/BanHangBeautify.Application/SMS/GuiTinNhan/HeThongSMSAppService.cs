@@ -77,7 +77,6 @@ namespace BanHangBeautify.SMS.GuiTinNhan
             {
                 data.IdKhachHang = input.IdKhachHang;
             }
-            data.IdHoaDon = input.IdHoaDon;
             data.IdTinNhan = input.IdTinNhan;
             data.SoDienThoai = input.SoDienThoai;
             data.NoiDungTin = input.NoiDungTin;
