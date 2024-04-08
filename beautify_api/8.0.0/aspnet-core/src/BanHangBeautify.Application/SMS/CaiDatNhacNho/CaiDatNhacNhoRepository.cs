@@ -32,8 +32,8 @@ namespace BanHangBeautify.SMS.CaiDatNhacNho
                     IdLoaiTin = x.IdLoaiTin ?? 1,
                     IdMauTin = x.IdMauTin,
                     HinhThucGui = x.HinhThucGui,
-                    LoaiThoiGian = x.HinhThucGui,
-                    NhacTruocKhoangThoiGian = x.HinhThucGui,
+                    LoaiThoiGian = x.LoaiThoiGian,
+                    NhacTruocKhoangThoiGian = x.NhacTruocKhoangThoiGian,
                     TrangThai = x.TrangThai
                 }).ToList();
                 return data;
