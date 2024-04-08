@@ -11,7 +11,9 @@ namespace BanHangBeautify.SMS.Dto
         public DateTime? NgaySinh { set; get; } = null;
         public string MaHoaDon { get; set; }
         public DateTime? NgayLapHoaDon { set; get; } = null;
-        public double? TongThanhToan { set; get; } = null;
+        public double? TongThanhToan { set; get; } = 0;
+        public double? DaThanhToan { set; get; } = 0;
+        public string PTThanhToan { set; get; }
         public string TenHangHoa { get; set; }
         public DateTime? BookingDate { set; get; } = null;
         public DateTime? StartTime { set; get; } = null;
@@ -31,6 +33,7 @@ namespace BanHangBeautify.SMS.Dto
         public string TenCuaHang { get; set; }
         public string DienThoaiCuaHang { get; set; }
         public string DiaChiCuaHang { get; set; }
+        public string XungHo { get; set; }// xưng hô khách hàng
     }
 
     public class CustomerWithZOA : CustomerBasicDto
