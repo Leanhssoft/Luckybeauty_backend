@@ -1,5 +1,7 @@
 ﻿using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
+using Abp.Hangfire;
+using Abp.Hangfire.Configuration;
 using Abp.Modules;
 using Abp.Reflection.Extensions;
 using Abp.Zero.Configuration;
@@ -18,7 +20,8 @@ namespace BanHangBeautify
     [DependsOn(
          typeof(SPAApplicationModule),
          typeof(SPAEntityFrameworkModule),
-         typeof(AbpAspNetCoreModule)
+         typeof(AbpAspNetCoreModule),
+         typeof(AbpHangfireAspNetCoreModule)
      )]
     public class SPAWebCoreModule : AbpModule
     {
@@ -46,6 +49,8 @@ namespace BanHangBeautify
                  );
 
             ConfigureTokenAuth();
+
+            Configuration.BackgroundJobs.UseHangfire();
         }
 
         private void ConfigureTokenAuth()

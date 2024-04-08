@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BanHangBeautify.Entities;
+using BanHangBeautify.MultiTenancy.Dto;
 
 namespace BanHangBeautify.NhatKyHoatDong.Dto
 {
@@ -13,6 +14,7 @@ namespace BanHangBeautify.NhatKyHoatDong.Dto
             CreateMap<CreateNhatKyThaoTacDto, NhatKyThaoTacItemDto>().ReverseMap();
             CreateMap<CreateNhatKyThaoTacDto, NhatKyThaoTacDto>().ReverseMap();
             CreateMap<NhatKyThaoTacDto, NhatKyThaoTacItemDto>().ReverseMap();
+            CreateMap<HT_NhatKyThaoTac, TenantHistoryActivityDto>().ReverseMap();
         }
     }
 }

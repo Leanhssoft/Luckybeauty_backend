@@ -13,7 +13,9 @@ namespace BanHangBeautify
 {
     [DependsOn(
         typeof(SPACoreModule),
-        typeof(AbpAutoMapperModule), typeof(AbpMailKitModule))]
+        typeof(AbpAutoMapperModule),
+        typeof(AbpMailKitModule)
+    )]
 
     public class SPAApplicationModule : AbpModule
     {

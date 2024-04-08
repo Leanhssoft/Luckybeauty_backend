@@ -23,6 +23,8 @@
     <ProjectReference Include="..\BanHangBeautify.EntityFrameworkCore\BanHangBeautify.EntityFrameworkCore.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Abp.HangFire.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Hangfire" Version="1.8.12" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.Storage" Version="4.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />

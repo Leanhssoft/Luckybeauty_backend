@@ -3,16 +3,18 @@ using Abp.AspNetCore.Mvc.Antiforgery;
 using Abp.Castle.Logging.Log4Net;
 using Abp.Dependency;
 using Abp.Extensions;
+using Abp.Hangfire;
 using Abp.Json;
-using BanHangBeautify.Bookings.Bookings;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.Configuration;
 using BanHangBeautify.Identity;
 using BanHangBeautify.SignalR.Bookings;
 using BanHangBeautify.SignalR.Notification;
+using BanHangBeautify.Web.Common;
 using Castle.Facilities.Logging;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -93,6 +95,9 @@ namespace BanHangBeautify.Web.Host.Startup
             // Swagger - Enable this line and the related lines in Configure method to enable swagger UI
             ConfigureSwagger(services);
 
+            // Configure Abp Hangfire
+            ConfigureHangfire(services);
+
             // Configure Abp and Dependency Injection
             services.AddAbpWithoutCreatingServiceProvider<SPAWebHostModule>(
                 // Configure Log4Net logging
@@ -125,6 +130,7 @@ namespace BanHangBeautify.Web.Host.Startup
                 endpoints.MapHub<NotificationHub>("notifications");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHangfireDashboard();
             });
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
@@ -139,6 +145,19 @@ namespace BanHangBeautify.Web.Host.Startup
                     .GetManifestResourceStream("BanHangBeautify.Web.Host.wwwroot.swagger.ui.index.html");
                 options.DisplayRequestDuration(); // Controls the display of the request duration (in milliseconds) for "Try it out" requests.  
             }); // URL: /swagger
+
+            // Enable hangfire 
+            if (WebConsts.HangfireDashboardEnabled)
+            {
+
+                app.UseHangfireDashboard(WebConsts.HangfireDashboardEndPoint, new DashboardOptions
+                {
+                    Authorization = new[]
+                        {new AbpHangfireAuthorizationFilter(PermissionNames.Pages_HangFire)}
+                });
+                app.UseHangfireServer();
+            }
+            
         }
 
         private void ConfigureSwagger(IServiceCollection services)
@@ -192,6 +211,14 @@ namespace BanHangBeautify.Web.Host.Startup
                     options.IncludeXmlComments(webCoreXmlPath);
                 }
             });
+        }
+
+        private void ConfigureHangfire(IServiceCollection services) {
+            services.AddHangfire(config =>
+            {
+                config.UseSqlServerStorage(_appConfiguration.GetConnectionString("Default"));
+            });
+            services.AddHangfireServer();
         }
     }
 }
