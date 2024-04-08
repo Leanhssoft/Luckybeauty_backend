@@ -323,6 +323,8 @@
         public const string Pages_Editions_Edit = "Pages.Editions.Edit";
         public const string Pages_Editions_Delete = "Pages.Editions.Delete";
 
+        public const string Pages_HangFire = "Pages.HangFire";
+
         //END COMMON PERMISSIONS (FOR HOST)
 
         public const string Pages_Administration = "Pages.Administration";

@@ -22,6 +22,7 @@ using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Seed;
 using BanHangBeautify.Features;
 using BanHangBeautify.MultiTenancy.Dto;
+using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.SeedData;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +49,7 @@ namespace BanHangBeautify.MultiTenancy
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
         private readonly IRepository<Setting, long> _settingRepository;
         private readonly IRepository<FeatureSetting, long> _featureSettingRepository;
+        private readonly IRepository<HT_NhatKyThaoTac, Guid> _nhatKyThaoTacRepository;
         private readonly AbpZeroDbMigrator _migrator;
         private readonly IConfiguration _configuration;
         private readonly ISeedDataAppService _seedDataEntities;
@@ -62,6 +64,7 @@ namespace BanHangBeautify.MultiTenancy
             IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
             IRepository<Setting, long> settingRepository,
             IRepository<FeatureSetting, long> featureSettingRepository,
+            IRepository<HT_NhatKyThaoTac, Guid> nhatKyThaoTacRepository,
             IConfiguration configuration,
             ISeedDataAppService seedDataEntities,
             AbpZeroDbMigrator migration
@@ -78,6 +81,7 @@ namespace BanHangBeautify.MultiTenancy
             LocalizationSourceName = SPAConsts.LocalizationSourceName;
             _settingRepository = settingRepository;
             _featureSettingRepository = featureSettingRepository;
+            _nhatKyThaoTacRepository = nhatKyThaoTacRepository;
             _migrator = migration;
             _configuration = configuration;
             _seedDataEntities = seedDataEntities;
@@ -85,7 +89,7 @@ namespace BanHangBeautify.MultiTenancy
         [AbpAuthorize(PermissionNames.Pages_Tenants_Create)]
         public override async Task<TenantDto> CreateAsync(CreateTenantDto input)
         {
-            string dbName = input.TenancyName;
+            string dbName = "SSOFT_"+  input.TenancyName;
             string dataSource = _configuration["SqlServer:DataSource"];
             string userId = _configuration["SqlServer:UserId"];
             string password = _configuration["SqlServer:Password"];
@@ -364,6 +368,67 @@ namespace BanHangBeautify.MultiTenancy
         private void CheckErrors(IdentityResult identityResult)
         {
             identityResult.CheckErrors(LocalizationManager);
+        }
+
+        [HttpPost]
+        public async Task<PagedResultDto<TenantInfoActivityDto>> GetTenantStatusActivity(PagedTenantResultRequestDto input)
+        {
+            PagedResultDto<TenantInfoActivityDto> result = new PagedResultDto<TenantInfoActivityDto>();
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            var tenants = Repository.GetAll()
+                .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.TenancyName.Contains(input.Keyword) || x.Name.Contains(input.Keyword)).ToList();
+            result.TotalCount = tenants.Count;
+            var items = new List<TenantInfoActivityDto>();
+            if(tenants!=null&& tenants.Count>0)
+            {
+                foreach( var tenant in tenants)
+                {
+                    var edition = await _editionManager.GetByIdAsync(tenant.EditionId??0);
+                    using (UnitOfWorkManager.Current.SetTenantId(tenant.Id))
+                    {
+                        TenantInfoActivityDto rdo = new TenantInfoActivityDto();
+                        rdo.Id = tenant.Id;
+                        rdo.TenancyName = tenant.TenancyName;
+                        rdo.Name = tenant.Name;
+                        rdo.CreationTime = tenant.CreationTime;
+                        rdo.SubscriptionEndDate = tenant.SubscriptionEndDate;
+                        rdo.EditionName = edition != null ? edition.DisplayName : "";
+                        var nhatKyThaoTac = _nhatKyThaoTacRepository.GetAll().OrderByDescending(x=>x.CreationTime).Take(1).FirstOrDefault();
+                        rdo.LastActivityTime = nhatKyThaoTac != null ? nhatKyThaoTac.CreationTime : tenant.CreationTime;
+                        rdo.Status = tenant.SubscriptionEndDate.HasValue==false ? "": (tenant.SubscriptionEndDate.Value < DateTime.Now?"Quá hạn":"Còn hạn");
+                        items.Add(rdo);
+                    }
+                }
+            }
+            result.Items = items;
+            return result;
+        }
+
+        public async Task<PagedResultDto<TenantHistoryActivityDto>> GetTenantHistoryActivity(PagedRequestDto input, int tenantId)
+        {
+            PagedResultDto<TenantHistoryActivityDto> result = new PagedResultDto<TenantHistoryActivityDto>();
+            input.Keyword = string.IsNullOrEmpty(input.Keyword) ? "" : input.Keyword;
+            input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
+            var checkTenant =await _tenantManager.FindByIdAsync(tenantId);
+            if (checkTenant != null) {
+                using (UnitOfWorkManager.Current.SetTenantId(tenantId))
+                {
+                    var data = await _nhatKyThaoTacRepository.GetAllIncluding().Where(x => x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+                    result.TotalCount = data.Count;
+                    if (!string.IsNullOrEmpty(input.Keyword))
+                    {
+                        data = data.Where(x => x.NoiDung.Contains(input.Keyword) || x.ChucNang.Contains(input.Keyword) || x.NoiDungChiTiet.Contains(input.Keyword)).ToList();
+                    }
+                    var nhatKyThaoTac = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
+                    result.Items = ObjectMapper.Map<List<TenantHistoryActivityDto>>(nhatKyThaoTac);
+                    foreach (var item in result.Items)
+                    {
+                        var nhanSuId = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == item.CreatorUserId);
+                        item.TenNguoiThaoTac = nhanSuId != null ? nhanSuId.FullName:"Admin";
+                    }
+                }
+            }
+            return result;
         }
     }
 }

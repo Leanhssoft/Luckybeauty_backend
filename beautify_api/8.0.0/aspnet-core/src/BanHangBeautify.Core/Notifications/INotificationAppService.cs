@@ -28,5 +28,6 @@ namespace BanHangBeautify.Notifications
         Task DeleteAllUserNotifications(DeleteAllUserNotificationsInput input);
         Task SendMessageAsync(string notificationName, LocalizableMessageNotificationData notificationData, List<UserIdentifier> user,
             NotificationSeverity severity = NotificationSeverity.Info);
+        LocalizableMessageNotificationData SetLocalizableMessageNotificationData(string mess);
     }
 }

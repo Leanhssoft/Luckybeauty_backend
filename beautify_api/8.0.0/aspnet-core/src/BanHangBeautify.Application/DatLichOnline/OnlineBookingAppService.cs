@@ -19,6 +19,7 @@ using BanHangBeautify.Suggests.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -49,6 +50,7 @@ namespace BanHangBeautify.DatLichOnline
         private readonly IAppNotifier _appNotifier;
         INotificationAppService _notificationAppService;
         IUserRoleRepository _userRoleRepository;
+        private readonly IConfiguration _configuration;
 
         public OnlineBookingAppService(
             IRepository<Tenant, int> tenantRepository,
@@ -68,7 +70,8 @@ namespace BanHangBeautify.DatLichOnline
             IRepository<DM_KhachHang, Guid> khachHangRepository,
             INhanSuRepository nhanSuService,
             IRepository<NS_NhanVien, Guid> nhanVienResponsitory,
-              IUserRoleRepository userRoleRepository
+              IUserRoleRepository userRoleRepository,
+              IConfiguration configuration
             )
         {
             _tenantRepository = tenantRepository;
@@ -89,6 +92,7 @@ namespace BanHangBeautify.DatLichOnline
             _nhanSuService = nhanSuService;
             _nhanVienResponsitory = nhanVienResponsitory;
             _userRoleRepository = userRoleRepository;
+            _configuration = configuration;
         }
         public List<string> GetAllTenant()
         {
@@ -121,7 +125,7 @@ namespace BanHangBeautify.DatLichOnline
         {
             List<SuggestEmpolyeeExecuteServiceDto> result = new List<SuggestEmpolyeeExecuteServiceDto>();
             input.TenNhanVien = string.IsNullOrEmpty(input.TenNhanVien) ? "" : input.TenNhanVien;
-            string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
+            string connecStringInServer = _configuration.GetConnectionString("Default");
             var tenant = await TenantManager.Tenants.FirstOrDefaultAsync(x => x.TenancyName.ToLower() == input.TenantName.ToLower());
             if (tenant == null)
             {
@@ -184,7 +188,7 @@ namespace BanHangBeautify.DatLichOnline
                 return null;
             }
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
-            string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
+            string connecStringInServer = _configuration.GetConnectionString("Default");
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = connecStringInServer;
@@ -266,7 +270,7 @@ namespace BanHangBeautify.DatLichOnline
                 return null;
             }
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
-            string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
+            string connecStringInServer = _configuration.GetConnectionString("Default");
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = connecStringInServer;
@@ -325,7 +329,7 @@ namespace BanHangBeautify.DatLichOnline
                 return null;
             }
             string connectionString = SimpleStringCipher.Instance.Decrypt(tenant.ConnectionString);
-            string connecStringInServer = $"data source=DESKTOP-8D36GBJ;initial catalog=SPADb;persist security info=True;user id=sa;password=123;multipleactiveresultsets=True;application name=EntityFramework;Encrypt=False";
+            string connecStringInServer = _configuration.GetConnectionString("Default");
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = connecStringInServer;
