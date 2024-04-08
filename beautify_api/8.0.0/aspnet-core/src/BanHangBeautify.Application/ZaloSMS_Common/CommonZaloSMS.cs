@@ -32,6 +32,9 @@ namespace BanHangBeautify.ZaloSMS_Common
                 case "{SoDienThoai}":
                     txt = cutomer.SoDienThoai;
                     break;
+                case "{XungHo}":
+                    txt = cutomer.XungHo;
+                    break;
                 case "{NgaySinh}":
                     txt = cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
                     break;
@@ -55,6 +58,15 @@ namespace BanHangBeautify.ZaloSMS_Common
                         double number = cutomer.TongThanhToan ?? 0;
                         txt = number.ToString("N0", new CultureInfo("vi-VN"));
                     }
+                    break;  
+                case "{DaThanhToan}":
+                    {
+                        double number = cutomer.DaThanhToan ?? 0;
+                        txt = number.ToString("N0", new CultureInfo("vi-VN"));
+                    }
+                    break;
+                case "{PTThanhToan}":
+                    txt = cutomer.PTThanhToan;
                     break;
                 case "{TenChiNhanh}":
                     txt = cutomer.TenChiNhanh;
@@ -84,12 +96,15 @@ namespace BanHangBeautify.ZaloSMS_Common
             var ss = noiDungTin.Replace("{TenKhachHang}", cutomer.TenKhachHang);
             ss = ss.Replace("{NgaySinh}", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
             ss = ss.Replace("{SoDienThoai}", cutomer.SoDienThoai);
+            ss = ss.Replace("{XungHo}", cutomer.XungHo);
             ss = ss.Replace("{BookingDate}", cutomer.StartTime?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture));
             ss = ss.Replace("{ThoiGianHen}", cutomer.ThoiGianHen);
             ss = ss.Replace("{TenDichVu}", cutomer.TenHangHoa);// dichvuhen
             ss = ss.Replace("{MaHoaDon}", cutomer.MaHoaDon);
             ss = ss.Replace("{NgayLapHoaDon}", cutomer.NgayLapHoaDon?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture));
             ss = ss.Replace("{TongTienHang}", (cutomer.TongThanhToan ?? 0).ToString("N0", new CultureInfo("vi-VN")));
+            ss = ss.Replace("{DaThanhToan}", (cutomer.DaThanhToan ?? 0).ToString("N0", new CultureInfo("vi-VN")));
+            ss = ss.Replace("{PTThanhToan}", cutomer.PTThanhToan);
             ss = ss.Replace("{TenChiNhanh}", cutomer.TenChiNhanh);
             ss = ss.Replace("{DienThoaiChiNhanh}", cutomer.SoDienThoaiChiNhanh);
             ss = ss.Replace("{DiaChiChiNhanh}", cutomer.DiaChiChiNhanh);

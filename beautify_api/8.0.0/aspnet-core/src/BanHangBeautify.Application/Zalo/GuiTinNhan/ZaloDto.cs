@@ -67,6 +67,7 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
 
     public class ZaloMessage
     {
+        public string text { get; set; }
         public ZaloAttachment attachment { get; set; }
     }
 

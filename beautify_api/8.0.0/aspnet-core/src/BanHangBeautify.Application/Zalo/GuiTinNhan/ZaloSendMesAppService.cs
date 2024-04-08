@@ -10,6 +10,7 @@ using System.Net.Http;
 using BanHangBeautify.Consts;
 using System;
 using BanHangBeautify.ZaloSMS_Common;
+using System.Security.Policy;
 
 namespace BanHangBeautify.Zalo.GuiTinNhan
 {
@@ -23,6 +24,53 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
             _commonZaloSMS = commonZaloSMS;
         }
 
+        public async Task<ResultMessageZaloDto> GuiTinTuVan(PageKhachHangSMSDto dataSend, string accessToken, Guid zaloTempId)
+        {
+            var noiDungTinNhan = string.Empty;
+            var tempItem = _zaloTemplateRepo.GetZaloTemplate_byId(zaloTempId);
+
+            if (tempItem.elements.Count > 0)
+            {
+                foreach (var item in tempItem.elements)
+                {
+                    switch (item.ElementType)
+                    {
+                        case ZaloElementType.TEXT:
+                            {
+                                noiDungTinNhan = _commonZaloSMS.ReplaceContent(dataSend, item.Content);
+                            }
+                            break;
+                    }
+                }
+            }
+
+            var recipient = new
+            {
+                user_id = dataSend.ZOAUserId
+            };
+            var message = new
+            {
+                text = noiDungTinNhan
+            };
+
+            var jsonData = new
+            {
+                recipient,
+                message
+            };
+            string jsonString = JsonSerializer.Serialize(jsonData);
+
+            HttpClient client = new();
+            const string url = "https://openapi.zalo.me/v3.0/oa/message/cs";
+            var stringContent = new StringContent(jsonString, Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.PostAsync(url, stringContent);
+            string htmltext = await response.Content.ReadAsStringAsync();
+
+            var dataMes = JsonSerializer.Deserialize<ResultMessageZaloDto>(htmltext);
+            return dataMes;
+        }
+
 
         [HttpPost]
         public async Task<ResultMessageZaloDto> GuiTinTruyenThongorGiaoDich_fromDataDB(PageKhachHangSMSDto dataSend, string accessToken, Guid zaloTempId)
@@ -30,6 +78,13 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
             var tempItem = _zaloTemplateRepo.GetZaloTemplate_byId(zaloTempId);
             ZaloRequestData requestData = new();
             requestData.recipient = new ZaloRecipient { user_id = dataSend.ZOAUserId };
+
+            if (tempItem.TemplateType == ZaloTemplateType.MESSAGE)
+            {
+               return await GuiTinTuVan(dataSend, accessToken, zaloTempId);
+            }
+
+            var noiDungTinNhan = string.Empty;
 
             List<object> lstElem = new List<object>();
             if (tempItem.elements.Count > 0)
@@ -53,7 +108,15 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
                         case ZaloElementType.HEADER:
                         case ZaloElementType.TEXT:
                             {
-                                lstElem.Add(new { type = item.ElementType, content = _commonZaloSMS.ReplaceContent(dataSend, item.Content) });
+
+                                if (tempItem.TemplateType == ZaloTemplateType.MEDIA)
+                                {
+                                    noiDungTinNhan = _commonZaloSMS.ReplaceContent(dataSend, item.Content);
+                                }
+                                else
+                                {
+                                    lstElem.Add(new { type = item.ElementType, content = _commonZaloSMS.ReplaceContent(dataSend, item.Content) });
+                                }
                             }
                             break;
                         case ZaloElementType.TABLE:
@@ -66,22 +129,22 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
                                 }
                                 // chỉ get key có giá trị != empty
                                 lstContentTbl = lstContentTbl.Where(x => !string.IsNullOrEmpty(x.value)).ToList();
-                                if(lstContentTbl.Count > 0)
+                                if (lstContentTbl.Count > 0)
                                 {
                                     lstElem.Add(new { type = item.ElementType, content = lstContentTbl });
                                 }
                             }
                             break;
-                        //case ZaloElementType.IMAGE:// tin tư vấn kèm ảnh
-                        //    {
-                        //        lstElem.Add(new { media_type = item.ElementType, url = item.Content });
-                        //    }
-                            //break;
+                        case ZaloElementType.IMAGE:// tin tư vấn kèm ảnh
+                            {
+                                lstElem.Add(new { media_type = item.ElementType, url = item.Content });
+                            }
+                            break;
                     }
                 }
             }
 
-            if (tempItem.buttons != null)
+            if (tempItem.buttons != null && tempItem.buttons.Count > 0)
             {
                 List<ZaloButton> lstBtn = new();
                 foreach (var item in tempItem.buttons)
@@ -131,19 +194,44 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
             }
             else
             {
-                requestData.message = new()
+                switch (tempItem.TemplateType)
                 {
-                    attachment = new ZaloAttachment()
-                    {
-                        type = "template",
-                        payload = new ZaloPayload()
+                    case ZaloTemplateType.MEDIA:// tư vấn kèm ảnh
                         {
-                            template_type = tempItem.TemplateType,
-                            language = tempItem.Language,
-                            elements = lstElem,
+                            requestData.message = new()
+                            {
+                                text = noiDungTinNhan,
+                                attachment = new ZaloAttachment()
+                                {
+                                    type = "template",
+                                    payload = new ZaloPayload()
+                                    {
+                                        template_type = tempItem.TemplateType,
+                                        language = tempItem.Language,
+                                        elements = lstElem,
+                                    }
+                                }
+                            };
                         }
-                    }
-                };
+                        break;
+                    default:
+                        {
+                            requestData.message = new()
+                            {
+                                attachment = new ZaloAttachment()
+                                {
+                                    type = "template",
+                                    payload = new ZaloPayload()
+                                    {
+                                        template_type = tempItem.TemplateType,
+                                        language = tempItem.Language,
+                                        elements = lstElem,
+                                    }
+                                }
+                            };
+                        }
+                        break;
+                }
             }
 
             // Chuyển đổi thành chuỗi JSON
@@ -165,6 +253,9 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
                 case ZaloTemplateType.MEMBERSHIP:
                 case ZaloTemplateType.EVENT:
                     url = "https://openapi.zalo.me/v3.0/oa/message/transaction";
+                    break;
+                case ZaloTemplateType.MEDIA:
+                    url = "https://openapi.zalo.me/v3.0/oa/message/cs";
                     break;
             }
             var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
