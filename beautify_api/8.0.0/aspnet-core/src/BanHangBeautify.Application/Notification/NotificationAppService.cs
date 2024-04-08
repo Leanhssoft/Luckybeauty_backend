@@ -4,6 +4,7 @@ using Abp.Auditing;
 using Abp.Authorization;
 using Abp.Configuration;
 using Abp.Json;
+using Abp.Localization;
 using Abp.Notifications;
 using Abp.Runtime.Session;
 using Abp.UI;
@@ -180,6 +181,16 @@ namespace BanHangBeautify.Notification
                      severity: severity,
                      userIds: user.ToArray()
                  );
+        }
+
+        public LocalizableMessageNotificationData SetLocalizableMessageNotificationData(string message)
+        {
+            return new LocalizableMessageNotificationData(
+                       new LocalizableString(
+                           message,
+                           "LuckyBeauty"
+                       )
+                   );
         }
     }
 }

@@ -8,6 +8,7 @@ namespace BanHangBeautify.MultiTenancy.Dto
 {
     public class TenantInfoActivityDto
     {
+        public int Id { get; set; }
         public string TenancyName { get; set; }
         public string Name { get; set; }
         public string EditionName { get; set; }

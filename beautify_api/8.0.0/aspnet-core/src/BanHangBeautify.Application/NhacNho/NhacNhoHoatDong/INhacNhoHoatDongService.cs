@@ -10,5 +10,7 @@ namespace BanHangBeautify.NhacNho.NhacNhoHoatDong
     public interface INhacNhoHoatDongService: ITransientDependency
     {
         public Task SendEmailRemindActivity();
+
+        public Task SendNotoficationContractExpired();
     }
 }

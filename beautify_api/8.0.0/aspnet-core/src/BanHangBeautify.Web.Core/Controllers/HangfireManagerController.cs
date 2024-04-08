@@ -1,6 +1,7 @@
 ﻿using Abp.AspNetCore.Mvc.Authorization;
 using Abp.Authorization;
 using Abp.Dependency;
+using BanHangBeautify.Authorization;
 using BanHangBeautify.NhacNho.NhacNhoHoatDong;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.Controllers
 {
     [Route("api/[controller]/[action]")]
-    [AbpAuthorize]
+    [AbpAuthorize(PermissionNames.Pages_HangFire)]
     public class HangfireManagerController: SPAControllerBase
     {
         private readonly INhacNhoHoatDongService _nhacNhoHoatDongService;
@@ -35,6 +36,14 @@ namespace BanHangBeautify.Controllers
                 x=> x.SendEmailRemindActivity(), // Chỉ định phương thức cụ thể
                 Cron.Daily);
         }
-        
+
+        [HttpPost]
+        public async Task RemindContractExtension()
+        {
+            _recurringJobManager.AddOrUpdate<INhacNhoHoatDongService>("SendDailyReminderContractExtension",
+                x => x.SendNotoficationContractExpired(), // Chỉ định phương thức cụ thể
+                Cron.Daily);
+        }
+
     }
 }

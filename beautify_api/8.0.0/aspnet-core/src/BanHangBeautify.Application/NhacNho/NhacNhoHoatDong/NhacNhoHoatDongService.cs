@@ -1,12 +1,16 @@
-﻿using Abp.Authorization;
+﻿using Abp;
+using Abp.Authorization;
 using Abp.BackgroundJobs;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Abp.Net.Mail;
+using Abp.Notifications;
 using Abp.Runtime.Session;
+using AutoMapper.Internal.Mappers;
 using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Entities;
 using BanHangBeautify.MultiTenancy;
+using BanHangBeautify.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace BanHangBeautify.NhacNho.NhacNhoHoatDong
 {
-    public class NhacNhoHoatDongService : INhacNhoHoatDongService
+    public class NhacNhoHoatDongService :SPAAppServiceBase, INhacNhoHoatDongService
     {
 
         private IRepository<Tenant> _tenantRepository;
@@ -24,12 +28,14 @@ namespace BanHangBeautify.NhacNho.NhacNhoHoatDong
         private IRepository<User, long> _userRepository;
         private readonly IRepository<HT_NhatKyThaoTac, Guid> _nhatKyThaoTacRepository;
         private readonly IEmailSender _emailSender;
+        private readonly INotificationAppService _notificationAppService;
         public NhacNhoHoatDongService(
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Tenant> tenantRepository,
             IRepository<User, long> userRepository,
             IRepository<HT_NhatKyThaoTac, Guid> nhatKyThaoTacRepository,
-            IEmailSender emailSender
+            IEmailSender emailSender,
+            INotificationAppService notificationAppService
             )
         {
             _unitOfWorkManager = unitOfWorkManager;
@@ -37,6 +43,7 @@ namespace BanHangBeautify.NhacNho.NhacNhoHoatDong
             _nhatKyThaoTacRepository = nhatKyThaoTacRepository;
             _tenantRepository = tenantRepository;
             _emailSender = emailSender;
+            _notificationAppService = notificationAppService;
         }
 
         public async Task SendEmailRemindActivity()
@@ -85,6 +92,40 @@ namespace BanHangBeautify.NhacNho.NhacNhoHoatDong
                             }
                         }
 
+                    }
+                }
+            }
+        }
+
+        public async Task SendNotoficationContractExpired()
+        {
+            using var unitOfWork = _unitOfWorkManager.Begin();
+            var tenants = _tenantRepository.GetAll().ToList();
+            if (tenants != null && tenants.Count() > 0)
+            {
+
+                foreach (var tenant in tenants)
+                {
+                    using (_unitOfWorkManager.Current.SetTenantId(tenant.Id))
+                    {
+                        var now = DateTime.Now;
+                        if (tenant.SubscriptionEndDate.HasValue)
+                        {
+                            if (tenant.SubscriptionEndDate.Value.Subtract(now).TotalDays <= 7 && tenant.SubscriptionEndDate.Value.Subtract(now).TotalDays>=1)
+                            {
+                                var users = _userRepository.GetAll().Where(x => x.IsDeleted == false && x.IsActive == true).ToList();
+                                var listUser =new  List<UserIdentifier>();
+                                foreach (var user in users)
+                                {
+                                    UserIdentifier rdo = new UserIdentifier(tenantId:user.TenantId,userId: user.Id);
+                                    listUser.Add(rdo);
+                                }
+                                string mess = string.Format("Hợp đồng sử dụng của quý khách sắp hết hạn vào ngày {0}! " +
+                                    "Vui lòng liên hệ cho quản trị viên hoặc qua số điện thoại 0247.303.9333/0936.363.069 để tiếp tục gia hạn sử dụng phần mềm. SSOFT hân hạnh hỗ trợ.",tenant.SubscriptionEndDate.Value.ToString("dd-MM-yyyy HH:mm"));
+                                var messageNotiData = _notificationAppService.SetLocalizableMessageNotificationData(mess);
+                                await _notificationAppService.SendMessageAsync("Cảnh báo gia hạn hợp đồng!", messageNotiData,listUser, NotificationSeverity.Warn);
+                            }
+                        }
                     }
                 }
             }
