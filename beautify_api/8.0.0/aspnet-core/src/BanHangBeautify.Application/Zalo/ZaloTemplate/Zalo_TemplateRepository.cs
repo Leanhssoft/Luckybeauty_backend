@@ -176,7 +176,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 TenMauTin = "Xác nhận lịch hẹn",
                 IsDefault = true,
                 IdLoaiTin = ConstSMS.LoaiTin.LichHen,
-                TemplateType = ZaloTemplateType.TRANSACTION,
+                TemplateType = ZaloTemplateType.BOOKING,
                 Language = "VI",
                 IsSystem = true
             };
