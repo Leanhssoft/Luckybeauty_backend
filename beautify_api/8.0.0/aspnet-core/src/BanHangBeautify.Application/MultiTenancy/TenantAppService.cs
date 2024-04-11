@@ -143,6 +143,7 @@ namespace BanHangBeautify.MultiTenancy
                 //await CreateSettingEmail(tenant.Id, tenant.Name);
                 // Create admin user for the tenant
                 var adminUser = User.CreateTenantAdminUser(tenant.Id, input.AdminEmailAddress);
+                adminUser.IdChiNhanhMacDinh = idChiNhanh;
                 await _userManager.InitializeOptionsAsync(tenant.Id);
 
                 if (input.IsDefaultPassword == true || string.IsNullOrEmpty(input.Password))
@@ -370,7 +371,7 @@ namespace BanHangBeautify.MultiTenancy
             identityResult.CheckErrors(LocalizationManager);
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<PagedResultDto<TenantInfoActivityDto>> GetTenantStatusActivity(PagedTenantResultRequestDto input)
         {
             PagedResultDto<TenantInfoActivityDto> result = new PagedResultDto<TenantInfoActivityDto>();
@@ -414,17 +415,24 @@ namespace BanHangBeautify.MultiTenancy
                 using (UnitOfWorkManager.Current.SetTenantId(tenantId))
                 {
                     var data = await _nhatKyThaoTacRepository.GetAllIncluding().Where(x => x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
-                    result.TotalCount = data.Count;
+                    
                     if (!string.IsNullOrEmpty(input.Keyword))
                     {
                         data = data.Where(x => x.NoiDung.Contains(input.Keyword) || x.ChucNang.Contains(input.Keyword) || x.NoiDungChiTiet.Contains(input.Keyword)).ToList();
                     }
+                    result.TotalCount = data.Count;
                     var nhatKyThaoTac = data.Skip(input.SkipCount).Take(input.MaxResultCount).ToList();
                     result.Items = ObjectMapper.Map<List<TenantHistoryActivityDto>>(nhatKyThaoTac);
                     foreach (var item in result.Items)
                     {
-                        var nhanSuId = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == item.CreatorUserId);
-                        item.TenNguoiThaoTac = nhanSuId != null ? nhanSuId.FullName:"Admin";
+                        var userId = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == item.CreatorUserId);
+                        item.TenNguoiThaoTac = userId != null ? userId.FullName:"Admin";
+                        if (userId != null&& userId.IdChiNhanhMacDinh.HasValue)
+                        {
+                            var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == userId.IdChiNhanhMacDinh.Value);
+                            item.ChiNhanh = chinhanh!=null? chinhanh.TenChiNhanh:"";
+                        }
+                       
                     }
                 }
             }

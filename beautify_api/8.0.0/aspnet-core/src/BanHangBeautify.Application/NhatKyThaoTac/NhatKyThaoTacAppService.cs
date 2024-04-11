@@ -6,6 +6,7 @@ using BanHangBeautify.Authorization.Users;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.NhatKyThaoTac.Dto;
+using Google.Apis.Drive.v3.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,13 +20,17 @@ namespace BanHangBeautify.NhatKyHoatDong
     {
         private readonly IRepository<HT_NhatKyThaoTac, Guid> _repository;
         private readonly IRepository<Authorization.Users.User, long> _userRepository;
+        private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
+
         public NhatKyThaoTacAppService(
             IRepository<HT_NhatKyThaoTac, Guid> repository,
-            IRepository<User, long> userRepository
+            IRepository<Authorization.Users.User, long> userRepository,
+            IRepository<DM_ChiNhanh, Guid> chiNhanhRepository
         )
         {
             _repository = repository;
             _userRepository = userRepository;
+            _chiNhanhRepository = chiNhanhRepository;
         }
 
         public async Task<NhatKyThaoTacDto> CreateNhatKyHoatDong(CreateNhatKyThaoTacDto input)
@@ -75,6 +80,12 @@ namespace BanHangBeautify.NhatKyHoatDong
             {
                 var nhanSuId = await _userRepository.FirstOrDefaultAsync(x => x.Id == (AbpSession.UserId ?? 1));
                 item.TenNguoiThaoTac = nhanSuId.FullName;
+                if(nhanSuId != null&& nhanSuId.IdChiNhanhMacDinh.HasValue)
+                {
+                    var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == nhanSuId.IdChiNhanhMacDinh.Value);
+                    item.ChiNhanh = chinhanh != null ? chinhanh.TenChiNhanh : "";
+                }
+               
             }
             return result;
         }

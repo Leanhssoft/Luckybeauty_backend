@@ -10,5 +10,6 @@ namespace BanHangBeautify.NhatKyHoatDong.Dto
         public string NoiDungChiTiet { get; set; }
         public DateTime CreationTime { get; set; }
         public string TenNguoiThaoTac { get; set; }
+        public string ChiNhanh { get; set; }
     }
 }
