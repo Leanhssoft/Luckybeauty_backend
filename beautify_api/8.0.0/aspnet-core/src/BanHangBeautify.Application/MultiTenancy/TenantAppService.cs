@@ -376,7 +376,7 @@ namespace BanHangBeautify.MultiTenancy
         {
             PagedResultDto<TenantInfoActivityDto> result = new PagedResultDto<TenantInfoActivityDto>();
             input.SkipCount = input.SkipCount > 1 ? (input.SkipCount - 1) * input.MaxResultCount : 0;
-            var tenants = Repository.GetAll()
+            var tenants = Repository.GetAll().OrderByDescending(x =>x.CreationTime)
                 .WhereIf(!input.Keyword.IsNullOrWhiteSpace(), x => x.TenancyName.Contains(input.Keyword) || x.Name.Contains(input.Keyword)).ToList();
             result.TotalCount = tenants.Count;
             var items = new List<TenantInfoActivityDto>();
