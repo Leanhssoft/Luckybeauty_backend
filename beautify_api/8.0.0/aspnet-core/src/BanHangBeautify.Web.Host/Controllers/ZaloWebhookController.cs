@@ -80,7 +80,17 @@ namespace BanHangBeautify.Web.Host.Controllers
 
                 if (!IsSignatureCompatible(body, zaloEventData.Timestamp))
                 {
-                    return StatusCode(500, "Unexpected Signature");
+                    string string_body = JsonConvert.SerializeObject(body);
+                    string raw_verify = $"{_zaloAppId}{string_body}{zaloEventData.Timestamp}{_zaloAppSecret}";
+
+                    // mac = sha256(appId + data + timeStamp + OAsecretKey)
+                    string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
+                    var receivedSignature = secret.ToString().Split("=");
+                    if (receivedSignature.Length > 1)
+                    {
+                        return StatusCode(500, receivedSignature[0] + receivedSignature[1]);
+                    }
+                    return StatusCode(500, string_body);
                 }
 
                 // Xử lý sự kiện cụ thể
@@ -90,6 +100,8 @@ namespace BanHangBeautify.Web.Host.Controllers
                         {
                             // Xử lý tin nhắn từ người dùng
                             var message = zaloEventData.Message;
+                            // check exists userid
+                            // if not exists: insert to zalo_khachang thanhvien + khachhang
                         }
                         break;
                     case "user_submit_info":
