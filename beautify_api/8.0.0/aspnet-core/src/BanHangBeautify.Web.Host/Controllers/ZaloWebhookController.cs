@@ -25,7 +25,7 @@ namespace BanHangBeautify.Web.Host.Controllers
         private readonly IWebhookSubscriptionManager _webHookSubscriptionManager;
         private readonly IConfiguration _config;
         private readonly string _zaloAppId;
-        private readonly string _zaloAppSecret;
+        private readonly string _zaloOASecret;
         private readonly IAppWebhookPublisher _webhookPublisher;
         public ZaloWebhookController(IWebhookSubscriptionManager webHookSubscriptionManager, IConfiguration config,
             IAppWebhookPublisher webhookPublisher)
@@ -34,7 +34,7 @@ namespace BanHangBeautify.Web.Host.Controllers
             _webhookPublisher = webhookPublisher;
             _config = config;
             _zaloAppId = _config["Zalo:AppId"];
-            _zaloAppSecret = _config["Zalo:AppSecret"];
+            _zaloOASecret = _config["Zalo:OASecret"];
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace BanHangBeautify.Web.Host.Controllers
          {
              { "Content-Type", "application/json" },
              { "appId", _zaloAppId},
-             { "OAsecretKey", _zaloAppSecret },
+             { "OAsecretKey", _zaloOASecret },
          }
             };
             await _webHookSubscriptionManager.AddOrUpdateSubscriptionAsync(webhookSubscription);
@@ -81,7 +81,7 @@ namespace BanHangBeautify.Web.Host.Controllers
                 if (!IsSignatureCompatible(body, zaloEventData.Timestamp))
                 {
                     string string_body = JsonConvert.SerializeObject(body);
-                    string raw_verify = $"{_zaloAppId}{string_body}{zaloEventData.Timestamp}{_zaloAppSecret}";
+                    string raw_verify = $"{_zaloAppId}{string_body}{zaloEventData.Timestamp}{_zaloOASecret}";
 
                     // mac = sha256(appId + data + timeStamp + OAsecretKey)
                     string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
@@ -160,7 +160,7 @@ namespace BanHangBeautify.Web.Host.Controllers
             //long timeStamp = ((DateTimeOffset)currentTime).ToUnixTimeSeconds();
 
             string string_body = JsonConvert.SerializeObject(body);
-            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloAppSecret}";
+            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloOASecret}";
 
             // mac = sha256(appId + data + timeStamp + OAsecretKey)
             string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
@@ -189,7 +189,7 @@ namespace BanHangBeautify.Web.Host.Controllers
             }
 
             string string_body = JsonConvert.SerializeObject(body);
-            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloAppSecret}";
+            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloOASecret}";
 
             // mac = sha256(appId + data + timeStamp + OAsecretKey)
             string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
