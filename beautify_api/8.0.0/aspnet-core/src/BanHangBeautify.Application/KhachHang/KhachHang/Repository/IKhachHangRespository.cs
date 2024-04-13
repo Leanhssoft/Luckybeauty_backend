@@ -13,7 +13,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
     {
         Task<string> FnGetMaKhachHang(Guid? idChiNhanh, int idLoaiDoiTuong);
         Task ImportDanhMucKhachHang(int? tenantId, long? userId, ImportExcelKhachHangDto data);
-        Task<List<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId);
+        Task<PagedResultDto<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId);
         Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input, int tenantId);
         Task<List<KhachHangView>> JqAutoCustomer(PagedKhachHangResultRequestDto input, int? tenantId);
         Task<PagedResultDto<LichSuHoaDonDto>> LichSuGiaoDich(Guid idKhachHang, int tenantId, PagedRequestDto input);
