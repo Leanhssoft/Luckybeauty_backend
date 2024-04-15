@@ -25,7 +25,7 @@ namespace BanHangBeautify.Web.Host.Controllers
         private readonly IWebhookSubscriptionManager _webHookSubscriptionManager;
         private readonly IConfiguration _config;
         private readonly string _zaloAppId;
-        private readonly string _zaloAppSecret;
+        private readonly string _zaloOASecret;
         private readonly IAppWebhookPublisher _webhookPublisher;
         public ZaloWebhookController(IWebhookSubscriptionManager webHookSubscriptionManager, IConfiguration config,
             IAppWebhookPublisher webhookPublisher)
@@ -34,7 +34,7 @@ namespace BanHangBeautify.Web.Host.Controllers
             _webhookPublisher = webhookPublisher;
             _config = config;
             _zaloAppId = _config["Zalo:AppId"];
-            _zaloAppSecret = _config["Zalo:AppSecret"];
+            _zaloOASecret = _config["Zalo:OASecret"];
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace BanHangBeautify.Web.Host.Controllers
          {
              { "Content-Type", "application/json" },
              { "appId", _zaloAppId},
-             { "OAsecretKey", _zaloAppSecret },
+             { "OAsecretKey", _zaloOASecret },
          }
             };
             await _webHookSubscriptionManager.AddOrUpdateSubscriptionAsync(webhookSubscription);
@@ -78,9 +78,19 @@ namespace BanHangBeautify.Web.Host.Controllers
                 // Xử lý dữ liệu từ Zalo sau khi xác thực chữ ký
                 var zaloEventData = JsonConvert.DeserializeObject<ZaloWebhookPayload>(body);
 
-                if (!IsSignatureCompatible(body, zaloEventData.Timestamp))
+                if (!IsSignatureCompatible(zaloEventData))
                 {
-                    return StatusCode(500, "Unexpected Signature");
+                    string string_body = JsonConvert.SerializeObject(body);
+                    string raw_verify = $"{_zaloAppId}{string_body}{zaloEventData.Timestamp}{_zaloOASecret}";
+
+                    // mac = sha256(appId + data + timeStamp + OAsecretKey)
+                    string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
+                    var receivedSignature = secret.ToString().Split("=");
+                    if (receivedSignature.Length > 1)
+                    {
+                        return StatusCode(500, receivedSignature[0] + receivedSignature[1]);
+                    }
+                    return StatusCode(500, string_body);
                 }
 
                 // Xử lý sự kiện cụ thể
@@ -90,6 +100,8 @@ namespace BanHangBeautify.Web.Host.Controllers
                         {
                             // Xử lý tin nhắn từ người dùng
                             var message = zaloEventData.Message;
+                            // check exists userid
+                            // if not exists: insert to zalo_khachang thanhvien + khachhang
                         }
                         break;
                     case "user_submit_info":
@@ -137,39 +149,7 @@ namespace BanHangBeautify.Web.Host.Controllers
             //}
         }
 
-        private bool IsSignatureCompatible2(string body, long timeStamp)
-        {
-            if (!HttpContext.Request.Headers.ContainsKey("X-ZEvent-Signature"))
-            {
-                return false;
-            }
-
-            //DateTime currentTime = DateTime.Now;
-            //long timeStamp = ((DateTimeOffset)currentTime).ToUnixTimeSeconds();
-
-            string string_body = JsonConvert.SerializeObject(body);
-            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloAppSecret}";
-
-            // mac = sha256(appId + data + timeStamp + OAsecretKey)
-            string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];
-            var receivedSignature = secret.ToString().Split("=");
-            string computedSignature;
-            switch (receivedSignature[0])
-            {
-                case "mac":
-                    // Chuyển đổi chuỗi thành mảng byte
-                    byte[] bytes = Encoding.UTF8.GetBytes(raw_verify);
-                    // Tạo đối tượng SHA256
-                    byte[] hash = SHA256.HashData(bytes);
-                    // Chuyển đổi mảng byte thành chuỗi hex
-                    computedSignature = BitConverter.ToString(hash).Replace("-", "");
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-            return computedSignature == receivedSignature[1];
-        }
-        private bool IsSignatureCompatible(string body, long timeStamp)
+        private bool IsSignatureCompatible(ZaloWebhookPayload body)
         {
             if (!HttpContext.Request.Headers.ContainsKey("X-ZEvent-Signature"))
             {
@@ -177,7 +157,7 @@ namespace BanHangBeautify.Web.Host.Controllers
             }
 
             string string_body = JsonConvert.SerializeObject(body);
-            string raw_verify = $"{_zaloAppId}{string_body.Trim()}{timeStamp}{_zaloAppSecret}";
+            string raw_verify = $"{body.AppId}{string_body.Trim()}{body.Timestamp}{_zaloOASecret}";
 
             // mac = sha256(appId + data + timeStamp + OAsecretKey)
             string secret = HttpContext.Request.Headers["X-ZEvent-Signature"];

@@ -29,7 +29,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
 
         private Zalo_TemplateDto InitData_TempSinhNhat()
         {
-            Guid zaloIdTemp = new("583D011C-78F5-48D4-A284-898441E00987");
+            Guid zaloIdTemp = Guid.NewGuid();
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
@@ -41,7 +41,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 IsSystem = true,
             };
 
-            Guid zaloIdElement = new("E6041AC0-806E-4835-8F21-DBD69CC6A170");
+            Guid zaloIdElement = Guid.NewGuid();
             List<Zalo_ElementDto> lstElm = new()
             {
                 new Zalo_ElementDto
@@ -68,7 +68,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
         }
         private Zalo_TemplateDto InitData_TempGiaoDich()
         {
-            Guid zaloIdTemp = new("3ABE0F1B-D70E-4A1A-B5DE-2BC8CCD71514");
+            Guid zaloIdTemp = Guid.NewGuid();
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
@@ -80,7 +80,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 IsSystem = true
             };
 
-            Guid zaloIdElement = new("F8A61D16-801F-4B31-8A60-EAAE3BE72CC7");
+            Guid zaloIdElement = Guid.NewGuid();
 
             List<Zalo_TableDetailDto> tables = new()
             {
@@ -169,7 +169,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
         }
         private Zalo_TemplateDto InitData_TempXacNhanLichHen()
         {
-            Guid zaloIdTemp = new("6967F1E7-A5B3-46C4-8E26-4955C4F4801C");
+            Guid zaloIdTemp = Guid.NewGuid();
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
@@ -181,7 +181,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 IsSystem = true
             };
 
-            Guid zaloIdElement = new("0C469F21-DBC6-41D0-B7F0-5F4AB46E95AB");
+            Guid zaloIdElement = Guid.NewGuid();
 
             List<Zalo_TableDetailDto> tables = new()
             {
@@ -286,7 +286,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
         }
         private Zalo_TemplateDto InitData_NhacLichHen()
         {
-            Guid zaloIdTemp = new("E4868CDE-4979-49E8-82B7-5151FCF79B84");
+            Guid zaloIdTemp = Guid.NewGuid();
             Zalo_TemplateDto zalotemp = new()
             {
                 Id = zaloIdTemp,
@@ -298,7 +298,7 @@ namespace BanHangBeautify.Zalo.ZaloTemplate
                 IsSystem = true
             };
 
-            Guid zaloIdElement = new("F39BA811-9386-4186-993D-DFF191E62DEC");
+            Guid zaloIdElement = Guid.NewGuid();
 
             List<Zalo_ElementDto> lstElm = new()
             {

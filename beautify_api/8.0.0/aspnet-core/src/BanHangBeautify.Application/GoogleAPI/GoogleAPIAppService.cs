@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using static Google.Apis.Drive.v3.FilesResource;
 
@@ -349,6 +350,23 @@ namespace BanHangBeautify.UploadFile
                 Console.WriteLine($"Error uploading file: {e.Message}");
                 return string.Empty;
             }
+        }
+
+        public async Task Imgur_UploadImage()
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.imgur.com/3/image");
+            request.Headers.Add("Authorization", "Client-ID {{clientId}}");
+            var content = new MultipartFormDataContent();
+            content.Add(new StreamContent(File.OpenRead("/home/flakrim/Downloads/GHJQTpX.jpeg")), "image", "/home/flakrim/Downloads/GHJQTpX.jpeg");
+            content.Add(new StringContent("image"), "type");
+            content.Add(new StringContent("Simple upload"), "title");
+            content.Add(new StringContent("This is a simple image upload in Imgur"), "description");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+
         }
     }
 }

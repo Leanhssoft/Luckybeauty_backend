@@ -15,7 +15,10 @@ namespace BanHangBeautify.Consts
         public const string PARTNERSHIP = "transaction_partnership";
         public const string MEMBERSHIP = "transaction_membership";
         public const string MEDIA = "media";
-        public const string MESSAGE = "message";
+        // loại tự định nghĩa (không có trong zalo template_type)
+        public const string MESSAGE = "message"; // tin tư vấn = văn bản
+        public const string ADS = "ads";// quảng cáo
+        public const string INVITE_FOLLOW = "invite_follow";// mời quan tâm cửa hàng
     }
     public class ZaloElementType
     {

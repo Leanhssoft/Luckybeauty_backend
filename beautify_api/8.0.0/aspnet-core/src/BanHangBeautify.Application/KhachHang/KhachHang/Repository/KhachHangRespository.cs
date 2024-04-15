@@ -31,7 +31,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
             return code;
         }
 
-        public async Task<List<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId)
+        public async Task<PagedResultDto<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId)
         {
             using (var command = CreateCommand("prc_getKhachHang_noBooking"))
             {
@@ -48,10 +48,15 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
 
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
-                        return ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
+                        var data = ObjectHelper.FillCollection<KhachHangView>(ds.Tables[0]);
+                        return new PagedResultDto<KhachHangView>()
+                        {
+                            TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalRow"].ToString()),
+                            Items = data
+                        };
                     }
                 }
-                return new List<KhachHangView>();
+                return new PagedResultDto<KhachHangView>();
             }
         }
         public async Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input, int tenantId)
