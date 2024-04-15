@@ -14,6 +14,7 @@ namespace BanHangBeautify.MultiTenancy.Dto
         public string NoiDungChiTiet { get; set; }
         public DateTime CreationTime { get; set; }
         public string TenNguoiThaoTac { get; set; }
+        public Guid? IdChiNhanh { get; set; }
         public string ChiNhanh { get; set; }
         public int CreatorUserId { get; set; }
     }

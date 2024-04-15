@@ -16,6 +16,7 @@ using Abp.UI;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Roles;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Editions;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
@@ -414,7 +415,7 @@ namespace BanHangBeautify.MultiTenancy
             if (checkTenant != null) {
                 using (UnitOfWorkManager.Current.SetTenantId(tenantId))
                 {
-                    var data = await _nhatKyThaoTacRepository.GetAllIncluding().Where(x => x.IsDeleted == false).OrderByDescending(x => x.CreationTime).ToListAsync();
+                    var data = await _nhatKyThaoTacRepository.GetAllIncluding().Where(x => x.IsDeleted == false&& x.LoaiNhatKy!=LoaiThaoTacConst.Login).OrderByDescending(x => x.CreationTime).ToListAsync();
                     
                     if (!string.IsNullOrEmpty(input.Keyword))
                     {
@@ -427,12 +428,18 @@ namespace BanHangBeautify.MultiTenancy
                     {
                         var userId = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == item.CreatorUserId);
                         item.TenNguoiThaoTac = userId != null ? userId.FullName:"Admin";
-                        if (userId != null&& userId.IdChiNhanhMacDinh.HasValue)
-                        {
-                            var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == userId.IdChiNhanhMacDinh.Value);
-                            item.ChiNhanh = chinhanh!=null? chinhanh.TenChiNhanh:"";
+                        if (item.IdChiNhanh.HasValue) {
+                            var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == item.IdChiNhanh.Value);
+                            item.ChiNhanh = chinhanh != null ? chinhanh.TenChiNhanh : "";
                         }
-                       
+                        else
+                        {
+                            if (userId != null && userId.IdChiNhanhMacDinh.HasValue)
+                            {
+                                var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == userId.IdChiNhanhMacDinh.Value);
+                                item.ChiNhanh = chinhanh != null ? chinhanh.TenChiNhanh : "";
+                            }
+                        }
                     }
                 }
             }

@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Authorization.Users;
+using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.NhatKyThaoTac.Dto;
@@ -21,25 +22,37 @@ namespace BanHangBeautify.NhatKyHoatDong
         private readonly IRepository<HT_NhatKyThaoTac, Guid> _repository;
         private readonly IRepository<Authorization.Users.User, long> _userRepository;
         private readonly IRepository<DM_ChiNhanh, Guid> _chiNhanhRepository;
+        private readonly IRepository<NS_QuaTrinh_CongTac, Guid> _quaTrinhCongTacRepository;
 
         public NhatKyThaoTacAppService(
             IRepository<HT_NhatKyThaoTac, Guid> repository,
             IRepository<Authorization.Users.User, long> userRepository,
-            IRepository<DM_ChiNhanh, Guid> chiNhanhRepository
+            IRepository<DM_ChiNhanh, Guid> chiNhanhRepository,
+            IRepository<NS_QuaTrinh_CongTac, Guid> quaTrinhCongTacRepository
         )
         {
             _repository = repository;
             _userRepository = userRepository;
             _chiNhanhRepository = chiNhanhRepository;
+            _quaTrinhCongTacRepository = quaTrinhCongTacRepository;
         }
 
         public async Task<NhatKyThaoTacDto> CreateNhatKyHoatDong(CreateNhatKyThaoTacDto input)
         {
             HT_NhatKyThaoTac data = new HT_NhatKyThaoTac();
             NhatKyThaoTacDto result = new NhatKyThaoTacDto();
+            var nhanVienId = _userRepository.FirstOrDefault(x => x.Id == AbpSession.UserId);
+            if ( nhanVienId != null )
+            {
+               var chiNhanh = _quaTrinhCongTacRepository.GetAll().OrderByDescending(x=>x.CreationTime).Take(0).FirstOrDefault(x => x.IdNhanVien == nhanVienId.NhanSuId);
+                if (chiNhanh != null)
+                {
+                    data.IdChiNhanh = chiNhanh.IdChiNhanh;
+                }
+               
+            }
             data = ObjectMapper.Map<HT_NhatKyThaoTac>(input);
             data.Id = Guid.NewGuid();
-            data.IdChiNhanh = input.IdChiNhanh;
             data.TenantId = AbpSession.TenantId ?? 1;
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
@@ -80,12 +93,20 @@ namespace BanHangBeautify.NhatKyHoatDong
             {
                 var nhanSuId = await _userRepository.FirstOrDefaultAsync(x => x.Id == (AbpSession.UserId ?? 1));
                 item.TenNguoiThaoTac = nhanSuId.FullName;
-                if(nhanSuId != null&& nhanSuId.IdChiNhanhMacDinh.HasValue)
+                if (item.IdChiNhanh.HasValue)
                 {
-                    var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == nhanSuId.IdChiNhanhMacDinh.Value);
+                    var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == item.IdChiNhanh.Value);
                     item.ChiNhanh = chinhanh != null ? chinhanh.TenChiNhanh : "";
                 }
-               
+                else
+                {
+                    if (nhanSuId != null && nhanSuId.IdChiNhanhMacDinh.HasValue)
+                    {
+                        var chinhanh = await _chiNhanhRepository.FirstOrDefaultAsync(x => x.Id == nhanSuId.IdChiNhanhMacDinh.Value);
+                        item.ChiNhanh = chinhanh != null ? chinhanh.TenChiNhanh : "";
+                    }
+                }
+
             }
             return result;
         }
