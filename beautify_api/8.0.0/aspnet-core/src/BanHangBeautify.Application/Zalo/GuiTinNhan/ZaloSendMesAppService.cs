@@ -11,6 +11,8 @@ using BanHangBeautify.Consts;
 using System;
 using BanHangBeautify.ZaloSMS_Common;
 using System.Security.Policy;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using BanHangBeautify.Zalo.DangKyThanhVien;
 
 namespace BanHangBeautify.Zalo.GuiTinNhan
 {
@@ -22,6 +24,54 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
         {
             _zaloTemplateRepo = zaloTemplateRepo;
             _commonZaloSMS = commonZaloSMS;
+        }
+
+        public async Task<ZNSTempleteDetailDto> GetZNSTemplateDetails_byId(string accessToken, string znsTempId)
+        {
+            HttpClient client = new();
+            string url = $"https://business.openapi.zalo.me/template/info?template_id={znsTempId}";
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.GetAsync(url);
+            string htmltext = await response.Content.ReadAsStringAsync();
+            var dataReturn = JsonSerializer.Deserialize<ResultDataZaloCommon<ZNSTempleteDetailDto>>(htmltext);
+            if (dataReturn.error == 0)
+            {
+                return dataReturn.data;
+            }
+            return null;
+        }
+
+        public async Task<ResultMessageZaloDto> GuiTinZalo_UseZNS(PageKhachHangSMSDto dataSend, string accessToken, ZNSTempleteDetailDto znsTemp)
+        {
+            Dictionary<string, object> template_data = new();
+            foreach (var item in znsTemp.ListParams)
+            {
+                template_data[item.Name] = _commonZaloSMS.ReplaceContent_Withkey(dataSend, item.Name);
+            }
+
+            var cusPhone = dataSend.SoDienThoai.Substring(1, dataSend.SoDienThoai.Length);
+            var requestData = new
+            {
+                phone = $"84${cusPhone}",// chuyển sdt về mã vùng VietNam
+                template_id = znsTemp.TemplateId,
+                template_data = new { template_data }
+            };
+
+            string jsonData = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
+            {
+                WriteIndented = true,// Để định dạng dữ liệu JSON
+                IgnoreNullValues = true // xóa thuộc tính nếu giá trị = null
+            });
+
+            HttpClient client = new();
+            string url = "https://business.openapi.zalo.me/message/template";
+            var stringContent = new StringContent(jsonData, Encoding.UTF8, "application/json");
+            client.DefaultRequestHeaders.Add("access_token", accessToken);
+            HttpResponseMessage response = await client.PostAsync(url, stringContent);
+            string htmltext = await response.Content.ReadAsStringAsync();
+
+            var dataMes = JsonSerializer.Deserialize<ResultMessageZaloDto>(htmltext);
+            return dataMes;
         }
 
         public async Task<ResultMessageZaloDto> GuiTinTuVan(PageKhachHangSMSDto dataSend, string accessToken, Guid zaloTempId)
@@ -81,7 +131,7 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
 
             if (tempItem.TemplateType == ZaloTemplateType.MESSAGE)
             {
-               return await GuiTinTuVan(dataSend, accessToken, zaloTempId);
+                return await GuiTinTuVan(dataSend, accessToken, zaloTempId);
             }
 
             var noiDungTinNhan = string.Empty;

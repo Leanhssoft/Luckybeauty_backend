@@ -11,6 +11,8 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
 {
     public interface IZaloSendMes
     {
+        Task<ZNSTempleteDetailDto> GetZNSTemplateDetails_byId(string accessToken, string znsTempId);
+        Task<ResultMessageZaloDto> GuiTinZalo_UseZNS(PageKhachHangSMSDto dataSend, string accessToken, ZNSTempleteDetailDto znsTemp);
         Task<ResultMessageZaloDto> GuiTinTruyenThongorGiaoDich_fromDataDB(PageKhachHangSMSDto dataSend, string accessToken, Guid zaloTempId);
     }
 }

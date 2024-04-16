@@ -51,5 +51,6 @@ namespace BanHangBeautify.Zalo.DangKyThanhVien
         public string address { get; set; }
         public string city { get; set; }
         public string district { get; set; }
+        public string ward { get; set; }
     }
 }
