@@ -15,5 +15,6 @@ namespace BanHangBeautify.Consts
         public const int Import = 4;
         public const int Export = 5;
         public const int Login = 6;
+        public const int Cancel = 7;
     }
 }

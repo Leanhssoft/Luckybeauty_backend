@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BanHangBeautify.Zalo.GuiTinNhan;
+using BanHangBeautify.NhatKyHoatDong.Dto;
+using BanHangBeautify.NhatKyHoatDong;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -34,6 +36,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IHoaDonRepository _repoHoaDon;
         private readonly NhanVienThucHienAppService _nvthService;
         private readonly IExcelBase _excelBase;
+        private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
+        INhatKyThaoTacAppService _audilogService;
 
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
@@ -41,7 +45,9 @@ namespace BanHangBeautify.HoaDon.HoaDon
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             NhanVienThucHienAppService nvthService,
-            IHoaDonRepository repoHoaDon, IExcelBase excelBase
+            IHoaDonRepository repoHoaDon, IExcelBase excelBase,
+             IRepository<DM_KhachHang, Guid> khachHangRepository,
+             INhatKyThaoTacAppService audilogService
         )
         {
             _hoaDonRepository = hoaDonRepository;
@@ -51,6 +57,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
             _excelBase = excelBase;
+            _khachHangRepository = khachHangRepository;
+            _audilogService = audilogService;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
@@ -106,6 +114,16 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
+            var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objHD.IdKhachHang);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
+            nhatKyThaoTacDto.IdChiNhanh = objHD.IdChiNhanh;
+            nhatKyThaoTacDto.ChucNang = "Hóa đơn";
+            nhatKyThaoTacDto.NoiDung = "Thêm hóa đơn: " + objHD.MaHoaDon;
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Thêm hóa đơn {0}" +
+                "<p>Tên khách hàng: {1}</p>" +
+                "<p>Tổng tiền : {2}</p>" +
+            "</div>", objHD.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objHD.TongThanhToan);
             return result;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
@@ -143,6 +161,16 @@ namespace BanHangBeautify.HoaDon.HoaDon
             //objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
+            var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objHD.IdKhachHang);
+            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+            nhatKyThaoTacDto.IdChiNhanh = objHD.IdChiNhanh;
+            nhatKyThaoTacDto.ChucNang = "Hóa đơn";
+            nhatKyThaoTacDto.NoiDung = "Thêm hóa đơn: " + objHD.MaHoaDon;
+            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Thêm hóa đơn {0}" +
+                "<p>Tên khách hàng: {1}</p>" +
+                "<p>Tổng tiền : {2}</p>" +
+            "</div>", objHD.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objHD.TongThanhToan);
             return result;
         }
         [HttpPost]
@@ -194,6 +222,17 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
                 var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objUp);
                 dataHD.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
+                var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objUp.IdKhachHang);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.IdChiNhanh = objUp.IdChiNhanh;
+                nhatKyThaoTacDto.ChucNang = "Hóa đơn";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật hóa đơn: " + objOld.MaHoaDon;
+                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật hóa đơn {0}" +
+                    "<p>Tên khách hàng: {1}</p>" +
+                    "<p>Tổng tiền : {2}</p>" +
+                "</div>", objOld.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objUp.TongThanhToan);
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return dataHD;
 
             }
@@ -250,6 +289,17 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
                 await _hoaDonRepository.UpdateAsync(objOld);
                 var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objOld);
+                var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objUp.IdKhachHang);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                nhatKyThaoTacDto.IdChiNhanh = objUp.IdChiNhanh;
+                nhatKyThaoTacDto.ChucNang = "Hóa đơn";
+                nhatKyThaoTacDto.NoiDung = "Cập nhật hóa đơn: " + objOld.MaHoaDon;
+                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật hóa đơn {0}" +
+                    "<p>Tên khách hàng: {1}</p>" +
+                    "<p>Tổng tiền : {2}</p>" +
+                "</div>", objOld.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objUp.TongThanhToan);
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return dataHD;
             }
             return new CreateHoaDonDto();
@@ -390,6 +440,17 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 hoaDon.DeleterUserId = AbpSession.UserId;
                 hoaDon.DeletionTime = DateTime.Now;
                 hoaDon.TrangThai = TrangThaiHoaDonConst.DA_HUY;
+                var khachHang = _khachHangRepository.FirstOrDefault(x=>x.Id==hoaDon.IdKhachHang);
+                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                nhatKyThaoTacDto.IdChiNhanh = nhatKyThaoTacDto.IdChiNhanh;
+                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
+                nhatKyThaoTacDto.ChucNang = "Hóa đơn";
+                nhatKyThaoTacDto.NoiDung = "Xóa hóa đơn: " + hoaDon.MaHoaDon;
+                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Xóa hóa đơn {0}" +
+                    "<p>Tên khách hàng: {1}</p>"+
+                    "<p>Tổng tiền : {2}</p>" +
+                "</div>", hoaDon.MaHoaDon,khachHang!=null?khachHang.TenKhachHang:"",hoaDon.TongThanhToan);
+                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 await _hoaDonRepository.UpdateAsync(hoaDon);
             }
         }
@@ -434,6 +495,14 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     hoaDon.LastModificationTime = DateTime.Now;
                     hoaDon.TrangThai = TrangThaiHoaDonConst.HOAN_THANH;
                     await _hoaDonRepository.UpdateAsync(hoaDon);
+                    var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == hoaDon.IdKhachHang);
+                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                    nhatKyThaoTacDto.IdChiNhanh = hoaDon.IdChiNhanh;
+                    nhatKyThaoTacDto.ChucNang = "Hóa đơn";
+                    nhatKyThaoTacDto.NoiDung = "Khôi phục hóa đơn: " + hoaDon.MaHoaDon;
+                    nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Khôi phục hóa đơn {0}" +"</div>", hoaDon.MaHoaDon);
+                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                     return true;
                 }
                 return false;

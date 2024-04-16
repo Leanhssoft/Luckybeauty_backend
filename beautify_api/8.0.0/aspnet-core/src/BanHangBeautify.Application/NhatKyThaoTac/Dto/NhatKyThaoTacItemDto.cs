@@ -11,5 +11,6 @@ namespace BanHangBeautify.NhatKyHoatDong.Dto
         public DateTime CreationTime { get; set; }
         public string TenNguoiThaoTac { get; set; }
         public string ChiNhanh { get; set; }
+        public Guid? IdChiNhanh { get; set; }
     }
 }
