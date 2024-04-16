@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Abp.Application.Services.Dto;
 using Abp.Dependency;
@@ -24,6 +26,8 @@ using BanHangBeautify.SMS.MauTinSMS;
 using BanHangBeautify.Zalo.GuiTinNhan;
 using BanHangBeautify.Zalo.ZaloTemplate;
 using BanHangBeautify.ZaloSMS_Common;
+using Castle.Core.Resource;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BanHangBeautify.BackgroundWorker
 {
@@ -249,44 +253,8 @@ namespace BanHangBeautify.BackgroundWorker
                         };
                         // send SMS
                         var smsResult = await _eSMS.SendSMS_Json(obj);
-
-                        // save to hethong sms
-                        HeThong_SMS hethongSMS = new()
-                        {
-                            Id = Guid.NewGuid(),
-                            TenantId = inforCommon.TenantId,
-                            IdLoaiTin = idLoaiTin ?? 0,
-                            IdChiNhanh = customer.IdChiNhanh ?? (Guid)inforCommon.IdChiNhanhFirst,
-                            IdKhachHang = customer.IdKhachHang,
-                            SoDienThoai = customer.SoDienThoai,
-                            SoTinGui = (int)Math.Ceiling(noidung.Length / 160.0),
-                            IdTinNhan = smsResult.MessageId,
-                            GiaTienMoiTinNhan = 950,
-                            TrangThai = smsResult.MessageStatus,
-                            NoiDungTin = noidung,
-                            IdNguoiGui = inforCommon.UserId,
-                            CreatorUserId = inforCommon.UserId,
-                            ThoiGianGui = DateTime.Now,
-                            CreationTime = DateTime.Now,
-                            IsDeleted = false,
-                            HinhThucGui = ConstSMS.HinhThucGuiTin.SMS,
-                        };
-                        await _hethongSMS.InsertAsync(hethongSMS);
-
-                        SMS_NhatKy_GuiTin nkyGuiSMS = new()
-                        {
-                            Id = Guid.NewGuid(),
-                            TenantId = inforCommon.TenantId,
-                            IdHeThongSMS = hethongSMS.Id,
-                            ThoiGianTu = _dtNow,
-                            ThoiGianDen = _dtNow,
-                            IdBooking = idLoaiTinFilter == ConstSMS.LoaiTin.LichHen ? customer.Id : null,
-                            IdHoaDon = idLoaiTinFilter == ConstSMS.LoaiTin.GiaoDich ? customer.Id : null,
-                            CreationTime = DateTime.Now,
-                            CreatorUserId = inforCommon.UserId,
-                            IsDeleted = false,
-                        };
-                        await _smsNhatKyGuiTin.InsertAsync(nkyGuiSMS);
+                        await SaveNhatKyGuiTin(idLoaiTin, customer, inforCommon, smsResult.MessageId, smsResult.MessageStatus,
+                            ConstSMS.HinhThucGuiTin.SMS, 950, noidung);
                     }
                 }
             }
@@ -316,7 +284,7 @@ namespace BanHangBeautify.BackgroundWorker
                 {
                     IReadOnlyCollection<PageKhachHangSMSDto> lstCustomer = null;
                     float totalTime = 0;
-                    if (itemSetup.LoaiThoiGian!=0 && itemSetup.NhacTruocKhoangThoiGian != 0)
+                    if (itemSetup.LoaiThoiGian != 0 && itemSetup.NhacTruocKhoangThoiGian != 0)
                     {
                         totalTime = GetTotalTime(itemSetup.LoaiThoiGian, itemSetup.NhacTruocKhoangThoiGian);
                     }
@@ -334,76 +302,64 @@ namespace BanHangBeautify.BackgroundWorker
 
                     //// get token zalo
                     var zaloToken = _zaloAuthorization.GetAllList().OrderByDescending(x => x.CreationTime).FirstOrDefault();
-                    // get temp default: todo get from db
-                    var objFind =  _zaloTemplateRepo.GetZaloTemplate_byId(new Guid(itemSetup.IdMauTin));
-                    if (objFind != null)
+                    if (itemSetup.IdMauTin.Length < 36)
                     {
-                        foreach (var customer in lstCustomer)
+                        // mẫu tin là mẫu ZNS của zalo (gửi tin qua SĐT)
+                        var znsTemp = await _zaloApi.GetZNSTemplateDetails_byId(zaloToken.AccessToken, itemSetup.IdMauTin);
+                        if (znsTemp != null)
                         {
-                            // chỉ gửi tin nếu khách hàng chia sẻ thông tin cho OA
-                            if (!string.IsNullOrEmpty(customer.ZOAUserId))
+                            foreach (var customer in lstCustomer)
                             {
-                                var noidung = string.Empty;
-
-                                switch (idLoaiTin)
+                                if (!string.IsNullOrEmpty(customer.SoDienThoai))
                                 {
-                                    case ConstSMS.LoaiTin.SinhNhat:
-                                        noidung = $@"Chúc mừng sinh nhật khách hàng {customer.TenKhachHang},ngày sinh {customer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
-                                        break;
-                                    case ConstSMS.LoaiTin.GiaoDich:
-                                        noidung = $@"Xác nhận thanh toán Hóa đơn: {customer.MaHoaDon}<br/> Ngày lập: {customer.NgayLapHoaDon?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)} <br/> Tổng tiền: {customer.TongThanhToan}";
-                                        break;
-                                    case ConstSMS.LoaiTin.XacNhanLichHen:
-                                        noidung = $@"Xác nhận lịch hẹn dịch vụ: {customer.TenHangHoa}<br/> Số điện thoại đặt lịch: {customer.SoDienThoai}<br/> Ngày đặt lịch: {customer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
-                                        break;
-                                    case ConstSMS.LoaiTin.NhacLichHen:
-                                        noidung = $@"Nhắc lịch hẹn khách hàng {customer.TenKhachHang} <br/> Thời gian hẹn: {customer.StartTime} tại {customer.DiaChiChiNhanh} <br/> Sdt đặt lịch: {customer.SoDienThoai}";
-                                        break;
-                                    default:// todo noidung
-                                        noidung = _commonZaloSMS.ReplaceContent(customer, inforCommon.NoiDungTinNhan);
-                                        break;
+                                    var dataMes = await _zaloApi.GuiTinZalo_UseZNS(customer, zaloToken.AccessToken, znsTemp);
+                                    var statusMes = dataMes.error == 0 ? 200 : dataMes.error;
+                                    var price = 0;
+                                    try
+                                    {
+                                        price = Int32.Parse(znsTemp.Price);
+                                    }
+                                    catch (Exception)
+                                    {
+                                    }
+                                    await SaveNhatKyGuiTin(idLoaiTinFilter, customer, inforCommon, dataMes.data.message_id, statusMes, ConstSMS.HinhThucGuiTin.Zalo, price);
                                 }
-
-                                // send mes zalo
-                                var smsResult = await _zaloApi.GuiTinTruyenThongorGiaoDich_fromDataDB(customer, zaloToken.AccessToken, objFind.Id);
-                                if (smsResult != null && smsResult.data != null)
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // mẫu tin là mẫu từ Database
+                        var objFind = _zaloTemplateRepo.GetZaloTemplate_byId(new Guid(itemSetup.IdMauTin));
+                        if (objFind != null)
+                        {
+                            foreach (var customer in lstCustomer)
+                            {
+                                // chỉ gửi tin nếu khách hàng chia sẻ thông tin cho OA
+                                if (!string.IsNullOrEmpty(customer.ZOAUserId))
                                 {
-                                    HeThong_SMS hethongSMS = new()
+                                    var dataMes = await _zaloApi.GuiTinTruyenThongorGiaoDich_fromDataDB(customer, zaloToken.AccessToken, objFind.Id);
+                                    if (dataMes != null && dataMes.data != null)
                                     {
-                                        Id = Guid.NewGuid(),
-                                        TenantId = inforCommon.TenantId,
-                                        IdLoaiTin = idLoaiTin ?? 0,
-                                        IdChiNhanh = customer.IdChiNhanh ?? (Guid)inforCommon.IdChiNhanhFirst,
-                                        IdKhachHang = customer.IdKhachHang,
-                                        SoDienThoai = customer.SoDienThoai,
-                                        SoTinGui = 1,
-                                        IdTinNhan = smsResult.data.message_id,
-                                        GiaTienMoiTinNhan = 200,
-                                        TrangThai = 200,
-                                        NoiDungTin = noidung,
-                                        IdNguoiGui = inforCommon.UserId,
-                                        CreatorUserId = inforCommon.UserId,
-                                        ThoiGianGui = DateTime.Now,
-                                        CreationTime = DateTime.Now,
-                                        IsDeleted = false,
-                                        HinhThucGui = ConstSMS.HinhThucGuiTin.Zalo,
-                                    };
-                                    await _hethongSMS.InsertAsync(hethongSMS);
-
-                                    SMS_NhatKy_GuiTin nkyGuiSMS = new()
-                                    {
-                                        Id = Guid.NewGuid(),
-                                        TenantId = inforCommon.TenantId,
-                                        IdHeThongSMS = hethongSMS.Id,
-                                        ThoiGianTu = _dtNow,
-                                        ThoiGianDen = _dtNow,
-                                        IdBooking = idLoaiTinFilter == ConstSMS.LoaiTin.LichHen ? customer.IdBooking : null,
-                                        IdHoaDon = idLoaiTinFilter == ConstSMS.LoaiTin.GiaoDich ? customer.IdHoaDon : null,
-                                        CreationTime = DateTime.Now,
-                                        CreatorUserId = inforCommon.UserId,
-                                        IsDeleted = false,
-                                    };
-                                    await _smsNhatKyGuiTin.InsertAsync(nkyGuiSMS);
+                                        var statusMes = dataMes.error == 0 ? 200 : dataMes.error;
+                                        var price = 0;
+                                        switch (objFind.TemplateType)
+                                        {
+                                            case ZaloTemplateType.TRANSACTION:
+                                            case ZaloTemplateType.BOOKING:
+                                                {
+                                                    price = 165;
+                                                }
+                                                break; 
+                                            case ZaloTemplateType.MESSAGE:
+                                            case ZaloTemplateType.MEDIA:
+                                                {
+                                                    price = 55;
+                                                }
+                                                break;
+                                        }
+                                        await SaveNhatKyGuiTin(idLoaiTinFilter, customer, inforCommon, dataMes.data.message_id, statusMes, ConstSMS.HinhThucGuiTin.Zalo, price);
+                                    }
                                 }
                             }
                         }
@@ -413,6 +369,75 @@ namespace BanHangBeautify.BackgroundWorker
             catch (Exception ex)
             {
 
+            }
+        }
+
+        private async Task SaveNhatKyGuiTin(byte? idLoaiTin, PageKhachHangSMSDto customer, InforAutoWorker inforCommon,
+            string messageId, int messageStatus, byte? hinhThucGuiTin = 0, int messagePrice = 950,  string noidungTin = null)
+        {
+            try
+            {
+                string noidung = noidungTin;
+                if (string.IsNullOrEmpty(noidung))
+                {
+                    switch (idLoaiTin)
+                    {
+                        case ConstSMS.LoaiTin.SinhNhat:
+                            noidung = $@"Chúc mừng sinh nhật khách hàng {customer.TenKhachHang},ngày sinh {customer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
+                            break;
+                        case ConstSMS.LoaiTin.GiaoDich:
+                            noidung = $@"Xác nhận thanh toán Hóa đơn: {customer.MaHoaDon}<br/> Ngày lập: {customer.NgayLapHoaDon?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)} <br/> Tổng tiền: {customer.TongThanhToan}";
+                            break;
+                        case ConstSMS.LoaiTin.XacNhanLichHen:
+                            noidung = $@"Xác nhận lịch hẹn dịch vụ: {customer.TenHangHoa}<br/> Số điện thoại đặt lịch: {customer.SoDienThoai}<br/> Ngày đặt lịch: {customer.BookingDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}";
+                            break;
+                        case ConstSMS.LoaiTin.NhacLichHen:
+                            noidung = $@"Nhắc lịch hẹn khách hàng {customer.TenKhachHang} <br/> Thời gian hẹn: {customer.StartTime} tại {customer.DiaChiChiNhanh} <br/> Sdt đặt lịch: {customer.SoDienThoai}";
+                            break;
+                        default:// todo noidung
+                            noidung = _commonZaloSMS.ReplaceContent(customer, noidung);
+                            break;
+                    }
+                }
+                HeThong_SMS hethongSMS = new()
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = inforCommon.TenantId,
+                    IdLoaiTin = idLoaiTin ?? 0,
+                    IdChiNhanh = customer.IdChiNhanh ?? (Guid)inforCommon.IdChiNhanhFirst,
+                    IdKhachHang = customer.IdKhachHang,
+                    SoDienThoai = customer.SoDienThoai,
+                    SoTinGui = 1,
+                    IdTinNhan = messageId,
+                    GiaTienMoiTinNhan = messagePrice,
+                    TrangThai = messageStatus,
+                    NoiDungTin = noidung,
+                    IdNguoiGui = inforCommon.UserId,
+                    CreatorUserId = inforCommon.UserId,
+                    ThoiGianGui = DateTime.Now,
+                    CreationTime = DateTime.Now,
+                    IsDeleted = false,
+                    HinhThucGui = hinhThucGuiTin,
+                };
+                await _hethongSMS.InsertAsync(hethongSMS);
+
+                SMS_NhatKy_GuiTin nkyGuiSMS = new()
+                {
+                    Id = Guid.NewGuid(),
+                    TenantId = inforCommon.TenantId,
+                    IdHeThongSMS = hethongSMS.Id,
+                    ThoiGianTu = _dtNow,
+                    ThoiGianDen = _dtNow,
+                    IdBooking = idLoaiTin == ConstSMS.LoaiTin.LichHen ? customer.IdBooking : null,
+                    IdHoaDon = idLoaiTin == ConstSMS.LoaiTin.GiaoDich ? customer.IdHoaDon : null,
+                    CreationTime = DateTime.Now,
+                    CreatorUserId = inforCommon.UserId,
+                    IsDeleted = false,
+                };
+                await _smsNhatKyGuiTin.InsertAsync(nkyGuiSMS);
+            }
+            catch (Exception)
+            {
             }
         }
         protected async Task SendEmail(byte? idLoaiTin, ParamSearchSMS paramSearch, InforAutoWorker inforCommon)
