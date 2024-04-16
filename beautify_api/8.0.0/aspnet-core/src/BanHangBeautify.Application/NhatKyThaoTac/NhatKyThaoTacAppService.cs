@@ -54,6 +54,10 @@ namespace BanHangBeautify.NhatKyHoatDong
             data = ObjectMapper.Map<HT_NhatKyThaoTac>(input);
             data.Id = Guid.NewGuid();
             data.TenantId = AbpSession.TenantId ?? 1;
+            if (string.IsNullOrEmpty(data.NoiDungChiTiet))
+            {
+                data.NoiDungChiTiet = data.NoiDung;
+            }
             data.CreatorUserId = AbpSession.UserId;
             data.CreationTime = DateTime.Now;
             data.IsDeleted = false;
