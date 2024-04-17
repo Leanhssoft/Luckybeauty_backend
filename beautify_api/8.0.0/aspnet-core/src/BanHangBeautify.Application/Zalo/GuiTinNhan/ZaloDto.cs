@@ -76,25 +76,23 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
         public ZaloRecipient recipient { get; set; }
         public ZaloMessage message { get; set; }
     }
-
     public class ZNSTempleteDetailDto
     {
-        public string TemplateId { get; set; }
-        public string TemplateName { get; set; }
-        public string Status { get; set; }
-        public List<ZNSTempleteDetail_ParamsDto> ListParams { get; set; }
-        public string PreviewUrl { get; set; }
-        public string TemplateTag { get; set; }
-        public string Price { get; set; }
+        public int templateId { get; set; }
+        public string templateName { get; set; }
+        public string status { get; set; }
+        public List<ZNSTempleteDetail_ParamsDto> listParams { get; set; }
+        public string previewUrl { get; set; }
+        public string templateTag { get; set; }
+        public string price { get; set; }
     }
     public class ZNSTempleteDetail_ParamsDto
     {
-        public string Name { get; set; }
-        public bool Require { get; set; }
-        public string Type { get; set; }
-        public int MaxLength { get; set; }
-        public int MinLength { get; set; }
-        public bool AcceptNull { get; set; }
+        public string name { get; set; }
+        public bool require { get; set; }
+        public string type { get; set; }
+        public int maxLength { get; set; }
+        public int minLength { get; set; }
+        public bool acceptNull { get; set; }
     }
-
 }

@@ -314,15 +314,19 @@ namespace BanHangBeautify.BackgroundWorker
                                 {
                                     var dataMes = await _zaloApi.GuiTinZalo_UseZNS(customer, zaloToken.AccessToken, znsTemp);
                                     var statusMes = dataMes.error == 0 ? 200 : dataMes.error;
-                                    var price = 0;
+                                    int priceInt = 0;
                                     try
                                     {
-                                        price = Int32.Parse(znsTemp.Price);
+                                        float.TryParse(znsTemp.price, out float price);
+                                        priceInt = (int)price;
                                     }
                                     catch (Exception)
                                     {
                                     }
-                                    await SaveNhatKyGuiTin(idLoaiTinFilter, customer, inforCommon, dataMes.data.message_id, statusMes, ConstSMS.HinhThucGuiTin.Zalo, price);
+                                    if (dataMes.error == 0 && dataMes.data != null)
+                                    {
+                                        await SaveNhatKyGuiTin(idLoaiTin, customer, inforCommon, dataMes.data.message_id, statusMes, ConstSMS.HinhThucGuiTin.Zalo, priceInt);
+                                    }
                                 }
                             }
                         }
@@ -350,7 +354,7 @@ namespace BanHangBeautify.BackgroundWorker
                                                 {
                                                     price = 165;
                                                 }
-                                                break; 
+                                                break;
                                             case ZaloTemplateType.MESSAGE:
                                             case ZaloTemplateType.MEDIA:
                                                 {
@@ -358,7 +362,7 @@ namespace BanHangBeautify.BackgroundWorker
                                                 }
                                                 break;
                                         }
-                                        await SaveNhatKyGuiTin(idLoaiTinFilter, customer, inforCommon, dataMes.data.message_id, statusMes, ConstSMS.HinhThucGuiTin.Zalo, price);
+                                        await SaveNhatKyGuiTin(idLoaiTin, customer, inforCommon, dataMes.data.message_id, statusMes, ConstSMS.HinhThucGuiTin.Zalo, price);
                                     }
                                 }
                             }
@@ -373,7 +377,7 @@ namespace BanHangBeautify.BackgroundWorker
         }
 
         private async Task SaveNhatKyGuiTin(byte? idLoaiTin, PageKhachHangSMSDto customer, InforAutoWorker inforCommon,
-            string messageId, int messageStatus, byte? hinhThucGuiTin = 0, int messagePrice = 950,  string noidungTin = null)
+            string messageId, int messageStatus, byte? hinhThucGuiTin = 0, int messagePrice = 950, string noidungTin = null)
         {
             try
             {
@@ -403,7 +407,7 @@ namespace BanHangBeautify.BackgroundWorker
                 {
                     Id = Guid.NewGuid(),
                     TenantId = inforCommon.TenantId,
-                    IdLoaiTin = idLoaiTin ?? 0,
+                    IdLoaiTin = (idLoaiTin == ConstSMS.LoaiTin.XacNhanLichHen || idLoaiTin == ConstSMS.LoaiTin.XacNhanLichHen) ? ConstSMS.LoaiTin.LichHen : idLoaiTin ?? 0,
                     IdChiNhanh = customer.IdChiNhanh ?? (Guid)inforCommon.IdChiNhanhFirst,
                     IdKhachHang = customer.IdKhachHang,
                     SoDienThoai = customer.SoDienThoai,

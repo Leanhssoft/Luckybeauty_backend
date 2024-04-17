@@ -29,7 +29,7 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
         public async Task<ZNSTempleteDetailDto> GetZNSTemplateDetails_byId(string accessToken, string znsTempId)
         {
             HttpClient client = new();
-            string url = $"https://business.openapi.zalo.me/template/info?template_id={znsTempId}";
+            string url = $"https://business.openapi.zalo.me/template/info/v2?template_id={znsTempId}";
             client.DefaultRequestHeaders.Add("access_token", accessToken);
             HttpResponseMessage response = await client.GetAsync(url);
             string htmltext = await response.Content.ReadAsStringAsync();
@@ -44,17 +44,18 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
         public async Task<ResultMessageZaloDto> GuiTinZalo_UseZNS(PageKhachHangSMSDto dataSend, string accessToken, ZNSTempleteDetailDto znsTemp)
         {
             Dictionary<string, object> template_data = new();
-            foreach (var item in znsTemp.ListParams)
+            foreach (var item in znsTemp.listParams)
             {
-                template_data[item.Name] = _commonZaloSMS.ReplaceContent_Withkey(dataSend, item.Name);
+                template_data[item.name] = _commonZaloSMS.ReplaceContent_Withkey(dataSend, item.name);
             }
 
-            var cusPhone = dataSend.SoDienThoai.Substring(1, dataSend.SoDienThoai.Length);
+            var cusPhone = dataSend.SoDienThoai.Substring(1, dataSend.SoDienThoai.Length - 1);
             var requestData = new
             {
-                phone = $"84${cusPhone}",// chuyển sdt về mã vùng VietNam
-                template_id = znsTemp.TemplateId,
-                template_data = new { template_data }
+                mode = "development",
+                phone = $"84{cusPhone}",// chuyển sdt về mã vùng VietNam
+                template_id = znsTemp.templateId,
+                template_data = template_data
             };
 
             string jsonData = JsonSerializer.Serialize(requestData, new JsonSerializerOptions

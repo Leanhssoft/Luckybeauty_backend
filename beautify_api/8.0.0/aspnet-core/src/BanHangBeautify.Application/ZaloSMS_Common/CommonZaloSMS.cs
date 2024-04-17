@@ -27,63 +27,81 @@ namespace BanHangBeautify.ZaloSMS_Common
             switch (key)
             {
                 case "{TenKhachHang}":
+                case "TenKhachHang":
                     txt = cutomer.TenKhachHang;
                     break;
                 case "{SoDienThoai}":
+                case "SoDienThoai":
                     txt = cutomer.SoDienThoai;
                     break;
                 case "{XungHo}":
+                case "XungHo":
                     txt = cutomer.XungHo;
                     break;
                 case "{NgaySinh}":
+                case "NgaySinh":
                     txt = cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
                     break;
                 case "{BookingDate}":
+                case "BookingDate":
                     txt = cutomer.StartTime?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture);
                     break;
                 case "{ThoiGianHen}":
+                case "ThoiGianHen":
                     txt = cutomer.ThoiGianHen;
                     break;
                 case "{TenDichVu}":
+                case "TenDichVu":
                     txt = cutomer.TenHangHoa;
                     break;
                 case "{MaHoaDon}":
+                case "MaHoaDon":
                     txt = cutomer.MaHoaDon;
                     break;
                 case "{NgayLapHoaDon}":
+                case "NgayLapHoaDon":
                     txt = cutomer.NgayLapHoaDon?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture);
                     break;
                 case "{TongTienHang}":
+                case "TongTienHang":
                     {
                         double number = cutomer.TongThanhToan ?? 0;
                         txt = number.ToString("N0", new CultureInfo("vi-VN"));
                     }
-                    break;  
+                    break;
                 case "{DaThanhToan}":
+                case "DaThanhToan":
                     {
                         double number = cutomer.DaThanhToan ?? 0;
                         txt = number.ToString("N0", new CultureInfo("vi-VN"));
                     }
                     break;
                 case "{PTThanhToan}":
+                case "PTThanhToan":
                     txt = cutomer.PTThanhToan;
                     break;
                 case "{TenChiNhanh}":
+                case "TenChiNhanh":
                     txt = cutomer.TenChiNhanh;
                     break;
                 case "{DienThoaiChiNhanh}":
+                case "DienThoaiChiNhanh":
                     txt = cutomer.SoDienThoaiChiNhanh;
                     break;
                 case "{DiaChiChiNhanh}":
+                case "DiaChiChiNhanh":
                     txt = cutomer.DiaChiChiNhanh;
                     break;
                 case "{TenCuaHang}":
+                case "TenCuaHang":
                     txt = cutomer?.TenCuaHang ?? "";
                     break;
                 case "{DiaChiCuaHang}":
+                case "DiaChiCuaHang":
                     txt = cutomer?.DiaChiCuaHang ?? "";
                     break;
                 case "{DienThoaiCuaHang}":
+                case "DienThoaiCuaHang":
                     txt = cutomer?.DienThoaiCuaHang ?? "";
                     break;
             }
