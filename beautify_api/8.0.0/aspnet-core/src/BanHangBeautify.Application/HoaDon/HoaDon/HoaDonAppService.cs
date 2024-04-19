@@ -114,16 +114,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
-            var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objHD.IdKhachHang);
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
-            nhatKyThaoTacDto.IdChiNhanh = objHD.IdChiNhanh;
-            nhatKyThaoTacDto.ChucNang = "Hóa đơn";
-            nhatKyThaoTacDto.NoiDung = "Thêm hóa đơn: " + objHD.MaHoaDon;
-            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Thêm hóa đơn {0}" +
-                "<p>Tên khách hàng: {1}</p>" +
-                "<p>Tổng tiền : {2}</p>" +
-            "</div>", objHD.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objHD.TongThanhToan);
             return result;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
@@ -222,17 +212,17 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
                 var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objUp);
                 dataHD.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
-                var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objUp.IdKhachHang);
-                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-                nhatKyThaoTacDto.IdChiNhanh = objUp.IdChiNhanh;
-                nhatKyThaoTacDto.ChucNang = "Hóa đơn";
-                nhatKyThaoTacDto.NoiDung = "Cập nhật hóa đơn: " + objOld.MaHoaDon;
-                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật hóa đơn {0}" +
-                    "<p>Tên khách hàng: {1}</p>" +
-                    "<p>Tổng tiền : {2}</p>" +
-                "</div>", objOld.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objUp.TongThanhToan);
-                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
+                //var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objUp.IdKhachHang);
+                //var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
+                //nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
+                //nhatKyThaoTacDto.IdChiNhanh = objUp.IdChiNhanh;
+                //nhatKyThaoTacDto.ChucNang = "Hóa đơn";
+                //nhatKyThaoTacDto.NoiDung = "Cập nhật hóa đơn: " + objOld.MaHoaDon;
+                //nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật hóa đơn {0}" +
+                //    "<p>Tên khách hàng: {1}</p>" +
+                //    "<p>Tổng tiền : {2}</p>" +
+                //"</div>", objOld.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objUp.TongThanhToan);
+                //await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return dataHD;
 
             }
