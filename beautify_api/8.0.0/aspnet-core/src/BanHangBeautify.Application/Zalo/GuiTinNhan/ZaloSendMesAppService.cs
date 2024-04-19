@@ -52,10 +52,11 @@ namespace BanHangBeautify.Zalo.GuiTinNhan
             var cusPhone = dataSend.SoDienThoai.Substring(1, dataSend.SoDienThoai.Length - 1);
             var requestData = new
             {
-                mode = "development",
+                //mode = "development",
                 phone = $"84{cusPhone}",// chuyển sdt về mã vùng VietNam
                 template_id = znsTemp.templateId,
-                template_data = template_data
+                template_data,
+                tracking_id = dataSend?.IdKhachHang,
             };
 
             string jsonData = JsonSerializer.Serialize(requestData, new JsonSerializerOptions
