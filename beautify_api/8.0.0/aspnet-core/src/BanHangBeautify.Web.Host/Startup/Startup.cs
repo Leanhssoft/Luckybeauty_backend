@@ -8,6 +8,7 @@ using Abp.Json;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Configuration;
 using BanHangBeautify.Identity;
+using BanHangBeautify.SignalR;
 using BanHangBeautify.SignalR.Bookings;
 using BanHangBeautify.SignalR.Notification;
 using BanHangBeautify.Web.Common;
@@ -128,6 +129,7 @@ namespace BanHangBeautify.Web.Host.Startup
                 //endpoints.MapHub<AbpCommonHub>("/signalr");
                 endpoints.MapHub<BookingHub>("bookingHub");
                 endpoints.MapHub<NotificationHub>("notifications");
+                endpoints.MapHub<InvoiceHub>("invoiceHub");
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapControllerRoute("defaultWithArea", "{area}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHangfireDashboard();
