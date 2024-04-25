@@ -23,6 +23,8 @@ using System.Threading.Tasks;
 using BanHangBeautify.Zalo.GuiTinNhan;
 using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.NhatKyHoatDong;
+using Microsoft.AspNetCore.SignalR;
+using BanHangBeautify.SignalR;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -38,6 +40,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IExcelBase _excelBase;
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
         INhatKyThaoTacAppService _audilogService;
+        private readonly IHubContext<InvoiceHub> _invoiceHubContext;
 
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
@@ -47,7 +50,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
             NhanVienThucHienAppService nvthService,
             IHoaDonRepository repoHoaDon, IExcelBase excelBase,
              IRepository<DM_KhachHang, Guid> khachHangRepository,
-             INhatKyThaoTacAppService audilogService
+             INhatKyThaoTacAppService audilogService,
+             IHubContext<InvoiceHub> invoiceHubContext
         )
         {
             _hoaDonRepository = hoaDonRepository;
@@ -59,6 +63,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _excelBase = excelBase;
             _khachHangRepository = khachHangRepository;
             _audilogService = audilogService;
+            _invoiceHubContext = invoiceHubContext;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
@@ -114,6 +119,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
             var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
             result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
+            await _invoiceHubContext.Clients.All.SendAsync("ReceiveInvoiceListReload", AbpSession.TenantId.HasValue ? AbpSession.TenantId.Value.ToString() : "null");
             return result;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
