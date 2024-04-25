@@ -67,6 +67,11 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 return string.Concat(firstChar, maxVal);
             }
         }
+        public string GetInforImage_OfAnyHangHoa()
+        {
+            return _repository.GetInforImage_OfAnyHangHoa();
+        }
+
         [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Create, PermissionNames.Pages_DM_HangHoa_Edit)]
         public async Task<CreateOrEditHangHoaDto> CreateOrEdit(CreateOrEditHangHoaDto dto)
         {
@@ -130,12 +135,6 @@ namespace BanHangBeautify.HangHoa.HangHoa
             await _dmHangHoa.InsertAsync(hangHoa);
             await _dmDonViQuiDoi.InsertRangeAsync(lstDVT);
             hangHoa.DonViQuiDois = lstDVT;
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
-            nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
-            nhatKyThaoTacDto.NoiDung = "Thêm mới Hàng hóa - Dịch vụ";
-            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới Hàng hóa - Dịch vụ" + hangHoa.TenHangHoa;
-            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
         }
@@ -203,12 +202,6 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     hangHoa.DonViQuiDois.Add(dvtNew);// used to return
                 }
             }
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-            nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
-            nhatKyThaoTacDto.NoiDung = "Sửa thông tin Hàng hóa - Dịch vụ";
-            nhatKyThaoTacDto.NoiDungChiTiet = "Sửa thông tin Hàng hóa - Dịch vụ" + hangHoa.TenHangHoa;
-            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             // only return dvt not delete (todo)
             var result = ObjectMapper.Map<CreateOrEditHangHoaDto>(hangHoa);
             return result;
@@ -216,6 +209,36 @@ namespace BanHangBeautify.HangHoa.HangHoa
         public async Task<HangHoaDto> GetDetailProduct(Guid idDonViQuyDoi)
         {
             return await _repository.GetDetailProduct(idDonViQuyDoi, AbpSession.TenantId ?? 1);
+        }
+        [HttpPost]
+        public List<dynamic> GetInforBasic_OfListHangHoa(List<Guid> arrIdHangHoa)
+        {
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var hanghoa = _dmHangHoa.GetAllList().Where(x => arrIdHangHoa.Contains(x.Id)).Select(x => new
+                {
+                    x.Id,
+                    x.TenHangHoa,
+                }).ToList();
+                var quydoi = _dmDonViQuiDoi.GetAllList().Where(x => arrIdHangHoa.Contains(x.IdHangHoa)).Select(x => new
+                {
+                    x.Id,
+                    x.IdHangHoa,
+                    x.MaHangHoa,
+                }).ToList();
+
+                var data = (from hh in hanghoa
+                            join qd in quydoi on hh.Id equals qd.IdHangHoa
+                            select new
+                            {
+                                qd.Id,
+                                qd.IdHangHoa,
+                                qd.MaHangHoa,
+                                hh.TenHangHoa,
+                                Ma_TenHangHoa = string.Concat(hh.TenHangHoa, " (", qd.MaHangHoa, ")")
+                            }).ToList<dynamic>();
+                return data;
+            }
         }
         public async Task<PagedResultDto<DM_HangHoa>> GetAll(HangHoaRequestDto input)
         {
@@ -266,14 +289,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 findHangHoa.DeletionTime = DateTime.Now;
                 findHangHoa.DeleterUserId = AbpSession.UserId;
                 _dmHangHoa.Update(findHangHoa);
-
                 _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == id).ForEach(x => x.IsDeleted = true);
-                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
-                nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
-                nhatKyThaoTacDto.NoiDung = "Xóa Hàng hóa - Dịch vụ";
-                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa Hàng hóa - Dịch vụ" + findHangHoa.TenHangHoa;
-                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
             }
             return result;
@@ -296,13 +312,6 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 x.DeleterUserId = AbpSession.UserId;
                 x.DeletionTime = DateTime.Now;
             });
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
-            nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
-            nhatKyThaoTacDto.NoiDung = "Xóa Hàng hóa - Dịch vụ";
-            nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhiều Hàng hóa - Dịch vụ";
-            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
-            // todo remove image in google api
         }
         [HttpPost]
         public async Task ChuyenNhomHang(List<Guid> lstIdHangHoa, Guid idNhomHang)
@@ -318,20 +327,22 @@ namespace BanHangBeautify.HangHoa.HangHoa
         public async Task<CreateOrEditHangHoaDto> RestoreProduct(Guid idHangHoa)
         {
             CreateOrEditHangHoaDto result = new();
-            var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == idHangHoa);
-            if (findHangHoa != null)
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
             {
-                findHangHoa.IsDeleted = false;
-                findHangHoa.TrangThai = 1;
-                findHangHoa.LastModificationTime = null;
-                findHangHoa.LastModifierUserId = AbpSession.UserId;
-                _dmHangHoa.Update(findHangHoa);
+                var findHangHoa = await _dmHangHoa.FirstOrDefaultAsync(h => h.Id == idHangHoa);
+                if (findHangHoa != null)
+                {
+                    findHangHoa.IsDeleted = false;
+                    findHangHoa.TrangThai = 1;
+                    findHangHoa.LastModificationTime = null;
+                    findHangHoa.LastModifierUserId = AbpSession.UserId;
+                    _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == idHangHoa).ForEach(x => x.IsDeleted = false);
+                    await _dmHangHoa.UpdateAsync(findHangHoa);
 
-                _dmDonViQuiDoi.GetAllList(x => x.IdHangHoa == idHangHoa).ForEach(x => x.IsDeleted = false);
-
-                result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
+                    result = ObjectMapper.Map<CreateOrEditHangHoaDto>(findHangHoa);
+                }
+                return result;
             }
-            return result;
         }
 
         [HttpGet]

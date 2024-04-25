@@ -6,7 +6,6 @@ using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
 using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic;
 using System;
 using System.Data;
 using System.Linq;
@@ -125,6 +124,22 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
             command.Parameters.Add(new SqlParameter("@SoPhutThucHien", dataHangHoa.SoPhutThucHien ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@GhiChu", dataHangHoa.GhiChu ?? (object)DBNull.Value));
             await command.ExecuteNonQueryAsync();
+        }
+        /// <summary>
+        /// lấy thông tin đường dẫn ảnh bất kỳ của hàng hóa (sử dụng cho Imgur)
+        /// data Image được lưu dưới dạng: imageId-deleteHashImage/albumId-deleteHashAlbum
+        /// Ảnh trên Imgur được lưu theo cấu trúc: tennantName_HangHoa/image1,image2,...; tennantName_KhachHang/... (vì imgur không có API tạo subFoder)
+        /// </summary>
+        /// <returns></returns>
+        public string GetInforImage_OfAnyHangHoa()
+        {
+            var dbContext = GetDbContext();
+            var data = dbContext.Set<DM_HangHoa>().Where(x => !string.IsNullOrEmpty(x.Image) && x.TrangThai == 1).FirstOrDefault();
+            if (data != null)
+            {
+                return data.Image;
+            }
+            return string.Empty;
         }
     }
 }

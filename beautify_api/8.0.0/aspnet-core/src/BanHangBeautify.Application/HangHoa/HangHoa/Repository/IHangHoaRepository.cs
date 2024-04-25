@@ -13,5 +13,6 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
         Task<string> GetProductCode(int? loaiHangHoa, int? tenantId);
         Task<MaxCodeDto> SpGetProductCode(int? loaiHangHoa, int? tenantId);
         Task ImportDanhMucHangHoa(int? tenantId, long? userId, ImportExcelHangHoaDto data);
+        string GetInforImage_OfAnyHangHoa();
     }
 }

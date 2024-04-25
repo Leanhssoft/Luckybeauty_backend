@@ -116,12 +116,6 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
             objNew.CreationTime = DateTime.Now;
             await _dmNhomHangHoa.InsertAsync(objNew);
             var result = ObjectMapper.Map<NhomHangHoaDto>(objNew);
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Create;
-            nhatKyThaoTacDto.ChucNang = "Nhóm hàng hóa";
-            nhatKyThaoTacDto.NoiDung = "Thêm mới nhóm hàng hóa";
-            nhatKyThaoTacDto.NoiDungChiTiet = "Thêm mới loại hàng hóa: " + objNew.TenNhomHang;
-            await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
         /// <summary>
@@ -159,12 +153,6 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                     _dmHangHoa.GetAllList(x => x.IdNhomHangHoa == dto.Id).ForEach(x => x.IdLoaiHangHoa = (dto.LaNhomHangHoa ?? false) ? 1 : 2);
                 }
                 await _dmNhomHangHoa.UpdateAsync(objUp);
-                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-                nhatKyThaoTacDto.ChucNang = "Nhóm hàng hóa";
-                nhatKyThaoTacDto.NoiDung = "Cập nhật nhóm hàng hóa";
-                nhatKyThaoTacDto.NoiDungChiTiet = "Cập nhật loại hàng hóa: " + objUp.TenNhomHang;
-                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return string.Empty;
             }
             catch (Exception ex)
@@ -190,7 +178,7 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
                 nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
                 nhatKyThaoTacDto.ChucNang = "Nhóm hàng hóa";
                 nhatKyThaoTacDto.NoiDung = "Xóa nhóm hàng hóa";
-                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa loại hàng hóa: " + objUp.TenNhomHang;
+                nhatKyThaoTacDto.NoiDungChiTiet = "Xóa nhóm hàng hóa: " + objUp.TenNhomHang;
                 await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return string.Empty;
             }
