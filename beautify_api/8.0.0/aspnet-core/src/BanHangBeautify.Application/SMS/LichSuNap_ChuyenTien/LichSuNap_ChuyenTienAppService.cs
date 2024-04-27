@@ -1,6 +1,7 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
+using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.DatLichOnline.Dto;
 using BanHangBeautify.Entities;
@@ -172,7 +173,7 @@ namespace BanHangBeautify.SMS.LichSuNap_ChuyenTien
                 double? tongGui = lstGuiTien_otherUser.Sum(x => x.SoTienChuyen_Nhan);
 
                 // tonggui SMS thanh cong
-                var lstGuiTinSMS = await _hethongSMS.GetAllListAsync(x => x.IdNguoiGui == userId && x.TrangThai == 100);
+                var lstGuiTinSMS = await _hethongSMS.GetAllListAsync(x => x.IdNguoiGui == userId && x.TrangThai == 100 && x.HinhThucGui == ConstSMS.HinhThucGuiTin.SMS);
                 double? tongGuiSMS = lstGuiTinSMS.Sum(x => x.SoTinGui * x.GiaTienMoiTinNhan);
 
                 double? sodu = tongNap - tongGui - tongGuiSMS;
