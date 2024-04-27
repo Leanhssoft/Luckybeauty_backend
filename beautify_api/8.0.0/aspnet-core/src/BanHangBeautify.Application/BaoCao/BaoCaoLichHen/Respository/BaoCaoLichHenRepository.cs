@@ -59,5 +59,51 @@ namespace BanHangBeautify.BaoCao.BaoCaoLichHen.Respository
                 return new PagedResultDto<BaoCaoLichHenDto>();
             }
         }
+        public async Task<PagedResultDto<BaoCaoKhachHangCheckInDto>> GetBaoCaoKhachHang_CheckIn(ParamSearchBaoCaoCheckin input)
+        {
+            using var command = CreateCommand("BaoCaoKhachHang_CheckIn");
+            string idChiNhanhs = string.Empty, idNhomKhachs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
+            if (input.IdNhomKhachs != null && input.IdNhomKhachs.Count > 0)
+            {
+                idNhomKhachs = string.Join(",", input.IdNhomKhachs);
+            }
+            command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+            command.Parameters.Add(new SqlParameter("@NgayCheckIn_FromDate", input.FromDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@NgayCheckIn_ToDate", input.ToDate ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdNhomKhachs", idNhomKhachs));
+            command.Parameters.Add(new SqlParameter("@SoNgayChuaCheckIn_From", input.SoNgayChuaCheckIn_From ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoNgayChuaCheckIn_To", input.SoNgayChuaCheckIn_To ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoLanCheckIn_From", input.SoLanCheckIn_From ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoLanCheckIn_To", input.SoLanCheckIn_To ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoLanDatHen_From", input.SoLanDatHen_From ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@SoLanDatHen_To", input.SoLanDatHen_To ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@ColumnSort", input.ColumnSort ?? "TenKhachHang"));
+            command.Parameters.Add(new SqlParameter("@TypeSort", input.TypeSort ?? "ASC"));
+            command.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage ?? 0));
+            command.Parameters.Add(new SqlParameter("@PageSize", input.PageSize ?? 10));
+
+            using (var dataReader = await command.ExecuteReaderAsync())
+            {
+                string[] array = { "Data" };
+                var ds = new DataSet();
+                ds.Load(dataReader, LoadOption.OverwriteChanges, array);
+
+                if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    var data = ObjectHelper.FillCollection<BaoCaoKhachHangCheckInDto>(ds.Tables[0]);
+                    return new PagedResultDto<BaoCaoKhachHangCheckInDto>()
+                    {
+                        TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalCount"].ToString()),
+                        Items = data
+                    };
+                }
+            }
+            return new PagedResultDto<BaoCaoKhachHangCheckInDto>();
+        }
     }
 }

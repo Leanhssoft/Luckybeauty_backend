@@ -17,6 +17,7 @@ using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -153,6 +154,47 @@ namespace BanHangBeautify.BaoCao
             List<BaoCaoLichHenDto> model = new List<BaoCaoLichHenDto>();
             model = (List<BaoCaoLichHenDto>)data.Items;
             return _baoCaoExcelExporter.ExportBaoCaoLichHen(model);
+        }
+        [HttpPost]
+        public async Task<PagedResultDto<BaoCaoKhachHangCheckInDto>> GetBaoCaoKhachHang_CheckIn(ParamSearchBaoCaoCheckin input)
+        {
+            return await _baoCaoLichHenRepository.GetBaoCaoKhachHang_CheckIn(input);
+        }
+        [HttpPost]
+        public async Task<FileDto> ExportToExcel_BaoCaoKhachHang_CheckIn(ParamSearchBaoCaoCheckin input)
+        {
+            var data = await _baoCaoLichHenRepository.GetBaoCaoKhachHang_CheckIn(input);
+            var dataExcel = ObjectMapper.Map<List<BaoCaoKhachHangCheckInDto>>(data.Items);
+            string dateFromTo = string.Empty;
+
+            if (input.SoNgayChuaCheckIn_From != null)
+            {
+                if (input.SoNgayChuaCheckIn_To != null)
+                {
+                    if (input.SoNgayChuaCheckIn_From == input.SoNgayChuaCheckIn_To)
+                    {
+                        dateFromTo = $"Thời gian: {input.SoNgayChuaCheckIn_From} ngày";
+                    }
+                    else
+                    {
+                        dateFromTo = $"Thời gian: từ {input.SoNgayChuaCheckIn_From} - {input.SoNgayChuaCheckIn_To} ngày";
+                    }
+                }
+            }
+            List<Excel_CellData> lst = new()
+            {
+                new Excel_CellData { RowIndex = 2, ColumnIndex = 1, CellValue = dateFromTo }
+            };
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.MaKhachHang,
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.SoLanCheckIn,
+                x.NgayCheckInGanNhat,
+                x.SoNgayChuaCheckIn,
+            }).ToList();
+            return _excelBase.WriteToExcel("BaoCaoKhachHang_CheckIn", @"BaoCao\BaoCaoKhachHang_CheckIn_Template.xlsx", dataNew, 4, lst);
         }
         #endregion
 

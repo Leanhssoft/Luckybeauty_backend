@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BanHangBeautify.AppCommon;
+using BanHangBeautify.SMS.Dto;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,5 +21,15 @@ namespace BanHangBeautify.BaoCao.BaoCaoLichHen.Dto
         public int MaxResultCount { get; set; } = 10;
         public DateTime TimeFrom { get; set; }
         public DateTime TimeTo { get; set; }
+    }
+    public class ParamSearchBaoCaoCheckin : CommonClass.ParamSearch
+    {
+        public List<string> IdNhomKhachs { get; set; }
+        public int? SoNgayChuaCheckIn_From { get; set; }
+        public int? SoNgayChuaCheckIn_To { get; set; }
+        public int? SoLanCheckIn_From { get; set; }
+        public int? SoLanCheckIn_To { get; set; }
+        public int? SoLanDatHen_From { get; set; }
+        public int? SoLanDatHen_To { get; set; }
     }
 }
