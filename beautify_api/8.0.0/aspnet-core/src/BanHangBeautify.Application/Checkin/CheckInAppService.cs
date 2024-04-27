@@ -1,4 +1,5 @@
 ﻿using Abp.Domain.Repositories;
+using Abp.Domain.Uow;
 using BanHangBeautify.AppCommon;
 using BanHangBeautify.Checkin.Dto;
 using BanHangBeautify.Checkin.Repository;
@@ -169,6 +170,8 @@ namespace BanHangBeautify.Checkin
             objNew.CreatorUserId = AbpSession.UserId;
             objNew.CreationTime = DateTime.Now;
             await _checkInHoaDon.InsertAsync(objNew);
+
+            // update trangthai booking = checkin
             var booking = await _bookingRespository.FirstOrDefaultAsync(x => x.Id == dto.IdBooking);
             if (booking != null)
             {
@@ -177,6 +180,30 @@ namespace BanHangBeautify.Checkin
             }
             var result = ObjectMapper.Map<CheckInHoaDonDto>(objNew);
             return result;
+        }
+
+        [HttpGet]
+        public async Task<bool> UpdateTrangThaiBooking_byIdCheckIn(Guid idCheckIn, int trangThaiBooking)
+        {
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
+            {
+                var listUp = await _checkInHoaDon.GetAll().Where(x => x.IdCheckIn == idCheckIn).ToListAsync();
+                if (listUp != null && listUp.Count > 0)
+                {
+                    Guid? idBooing = listUp.FirstOrDefault().IdBooking;
+                    if (idBooing != null)
+                    {
+                        var booking = await _bookingRespository.FirstOrDefaultAsync(x => x.Id == idBooing);
+                        if (booking != null)
+                        {
+                            booking.TrangThai = trangThaiBooking;
+                            await _bookingRespository.UpdateAsync(booking);
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
         }
         /// <summary>
         ///  used to save hoadon
