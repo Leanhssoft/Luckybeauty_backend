@@ -26,6 +26,7 @@ namespace BanHangBeautify.Users.Dto
     {
         public string TenNhanVien { get; set; }// tennhanvien có thể # name, surname trong bang User (vi NV co the bi cap nhat)
         public string TenChiNhanh { get; set; }// chi nhanh mac dinh
+        public Guid? IdChiNhanhMacDinh { get; set; }
         public bool? IsActive { get; set; }
         public bool? IsAdmin { get; set; }
         public DateTime CreationTime { get; set; }
