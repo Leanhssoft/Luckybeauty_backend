@@ -93,6 +93,9 @@ namespace BanHangBeautify.EntityFrameworkCore
         public DbSet<BH_HoaDon> BH_HoaDon { set; get; }
         public DbSet<BH_HoaDon_ChiTiet> BH_HoaDon_ChiTiet { set; get; }
         public DbSet<BH_HoaDon_Anh> BH_HoaDon_Anh { set; get; }
+        // thay BH_HoaDon_Anh bằng 2 bảng này 
+        public DbSet<KhachHang_Anh_LieuTrinh> KhachHang_Anh_LieuTrinh { set; get; }
+        public DbSet<KhachHang_Anh_LieuTrinh_ChiTiet> KhachHang_Anh_LieuTrinh_ChiTiet { set; get; }
 
         public DbSet<QuyHoaDon> QuyHoaDon { set; get; }
         public DbSet<QuyHoaDon_ChiTiet> QuyHoaDon_ChiTiet { set; get; }
