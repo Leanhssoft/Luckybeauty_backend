@@ -15,6 +15,7 @@ namespace BanHangBeautify.SMS.Dto
         public double? DaThanhToan { set; get; } = 0;
         public string PTThanhToan { set; get; }
         public string TenHangHoa { get; set; }
+        public string BookingCode { get; set; }
         public DateTime? BookingDate { set; get; } = null;
         public DateTime? StartTime { set; get; } = null;
         public int? ChenhLech { get; set; } // check gưi trước ? tiếng/phút/giây
