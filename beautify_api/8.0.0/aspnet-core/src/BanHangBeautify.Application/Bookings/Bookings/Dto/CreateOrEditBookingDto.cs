@@ -6,6 +6,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
     {
         public Guid Id { get; set; }
         public Guid? IdChiNhanh { get; set; }
+        public string BookingCode { get; set; }
         public string StartTime { get; set; }
         public string StartHours { get; set; }
         public int TrangThai { get; set; }

@@ -20,6 +20,7 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
     public class BookingInfoDto
     {
         public Guid Id { get; set; }
+        public string BookingCode { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public string AvatarKhachHang { set; get; }

@@ -17,7 +17,14 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
         public BookingRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
         }
-
+        public async Task<string> FnGetBookingCode(Guid? idChiNhanh, int idLoaiChungTu)
+        {
+            using var command = CreateCommand("select dbo.fnGetBookingCode(@IdChiNhanh,@IdLoaiChungTu) ", System.Data.CommandType.Text);
+            command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdLoaiChungTu", idLoaiChungTu));
+            var code = (await command.ExecuteScalarAsync()).ToString();
+            return code;
+        }
         public async Task<List<BookingGetAllItemDto>> GetAllBooking(PagedBookingResultRequestDto input, int tenantId, DateTime timeFrom, DateTime timeTo)
         {
             using (var cmd = CreateCommand("prc_booking_getAll"))

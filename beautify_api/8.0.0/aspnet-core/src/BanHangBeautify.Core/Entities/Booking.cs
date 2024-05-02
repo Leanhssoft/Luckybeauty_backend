@@ -1,6 +1,7 @@
 ﻿using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BanHangBeautify.Entities
@@ -14,6 +15,8 @@ namespace BanHangBeautify.Entities
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey(nameof(IdChiNhanh))]
         public DM_ChiNhanh DM_ChiNhanh { set; get; }
+        [MaxLength(100)]
+        public string BookingCode { get; set; }
         public string TenKhachHang { get; set; }
         public string SoDienThoai { set; get; }
         public DateTime StartTime { set; get; }

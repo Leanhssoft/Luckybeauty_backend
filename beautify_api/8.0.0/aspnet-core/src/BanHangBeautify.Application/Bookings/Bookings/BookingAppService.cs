@@ -119,6 +119,7 @@ namespace BanHangBeautify.Bookings.Bookings
                 booking.TenKhachHang = khachHang.TenKhachHang;
                 booking.SoDienThoai = khachHang.SoDienThoai;
             }
+            booking.BookingCode = await _bookingRepository.FnGetBookingCode(dto.IdChiNhanh, LoaiChungTuConst.Booking);
             booking.IdChiNhanh = dto.IdChiNhanh;
             booking.StartTime = DateTime.Parse(startTime);
             booking.BookingDate = DateTime.Parse(dto.StartTime);
@@ -206,6 +207,15 @@ namespace BanHangBeautify.Bookings.Bookings
             {
                 findBooking.TenKhachHang = khachHang.TenKhachHang;
                 findBooking.SoDienThoai = khachHang.SoDienThoai;
+            }
+
+            if (string.IsNullOrEmpty(dto.BookingCode))
+            {
+                findBooking.BookingCode = await _bookingRepository.FnGetBookingCode(dto.IdChiNhanh, LoaiChungTuConst.Booking);
+            }
+            else
+            {
+                findBooking.BookingCode = dto.BookingCode;
             }
             findBooking.StartTime = DateTime.Parse(startTime);
             findBooking.BookingDate = DateTime.Parse(dto.StartTime);

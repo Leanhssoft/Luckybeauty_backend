@@ -46,6 +46,10 @@ namespace BanHangBeautify.ZaloSMS_Common
                 case "BookingDate":
                     txt = cutomer.StartTime?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture);
                     break;
+                case "{BookingCode}":
+                case "BookingCode":
+                    txt = cutomer.BookingCode;
+                    break;
                 case "{ThoiGianHen}":
                 case "ThoiGianHen":
                     txt = cutomer.ThoiGianHen;
@@ -115,6 +119,7 @@ namespace BanHangBeautify.ZaloSMS_Common
             ss = ss.Replace("{NgaySinh}", cutomer.NgaySinh?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
             ss = ss.Replace("{SoDienThoai}", cutomer.SoDienThoai);
             ss = ss.Replace("{XungHo}", cutomer.XungHo);
+            ss = ss.Replace("{BookingCode}", cutomer.BookingCode);
             ss = ss.Replace("{BookingDate}", cutomer.StartTime?.ToString("HH:mm dd/MM/yyyy", CultureInfo.InvariantCulture));
             ss = ss.Replace("{ThoiGianHen}", cutomer.ThoiGianHen);
             ss = ss.Replace("{TenDichVu}", cutomer.TenHangHoa);// dichvuhen

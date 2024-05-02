@@ -11,5 +11,6 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
         Task<List<BookingDetailDto>> GetKhachHang_Booking(BookingRequestDto input);
         Task<List<BookingDetailDto>> GetInforBooking_byID(List<Guid> arrIdBooking);
         Task<BookingInfoDto> GetBookingInfo(Guid id, int tenantId);
+        Task<string> FnGetBookingCode(Guid? idChiNhanh, int idLoaiChungTu);
     }
 }
