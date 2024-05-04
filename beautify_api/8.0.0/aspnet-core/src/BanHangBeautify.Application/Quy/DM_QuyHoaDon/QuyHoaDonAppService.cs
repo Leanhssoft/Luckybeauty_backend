@@ -15,6 +15,7 @@ using BanHangBeautify.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using NPOI.HPSF;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +53,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                 var maChungTu = await _repoQuyHD.FnGetMaPhieuThuChi(AbpSession.TenantId ?? 1, input.IdChiNhanh, input.IdLoaiChungTu, input.NgayLapHoaDon);
                 input.MaHoaDon = maChungTu;
             }
+            input.NgayLapHoaDon = ObjectHelper.AddTimeNow_forDate(input.NgayLapHoaDon);
             QuyHoaDon data = ObjectMapper.Map<QuyHoaDon>(input);
             data.Id = Guid.NewGuid();
             data.CreationTime = DateTime.Now;
@@ -94,7 +96,7 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             }
             oldData.MaHoaDon = input.MaHoaDon;
             oldData.IdLoaiChungTu = input.IdLoaiChungTu;
-            oldData.NgayLapHoaDon = input.NgayLapHoaDon;
+            oldData.NgayLapHoaDon = ObjectHelper.AddTimeNow_forDate(input.NgayLapHoaDon); ;
             oldData.IdChiNhanh = input.IdChiNhanh;
             oldData.IdBrandname = input.IdBrandname;
             oldData.TongTienThu = input.TongTienThu;
@@ -235,6 +237,19 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
                 }
                 return new QuyHoaDonDto();
             }
+        }
+
+        [HttpGet]
+        public bool UpdateCustomer_toQuyChiTiet(Guid idHoaDonLienQuan, Guid? idKhachHangNew = null)
+        {
+            idKhachHangNew = idKhachHangNew == Guid.Empty ? null : idKhachHangNew;
+            _quyHoaDonChiTiet.GetAll().Where(x => x.IdHoaDonLienQuan == idHoaDonLienQuan).ToList().ForEach(x =>
+            {
+                x.IdKhachHang = idKhachHangNew;
+                x.LastModifierUserId = AbpSession.UserId;
+                x.LastModificationTime = DateTime.Now;
+            });
+            return true;
         }
 
         [HttpPost]
