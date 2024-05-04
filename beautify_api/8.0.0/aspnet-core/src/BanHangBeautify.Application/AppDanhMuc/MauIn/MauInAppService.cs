@@ -163,41 +163,41 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
             using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant)) // tắt bộ lọc tenantId
             {
                 loaiChungTu = await _dmLoaiChungTu.FirstOrDefaultAsync(x => x.Id == idLoaiChungTu);
-            }
 
-            if (loaiChungTu != null)
-            {
-                tenMauIn = loaiChungTu.MaLoaiChungTu;
+                if (loaiChungTu != null)
+                {
+                    tenMauIn = loaiChungTu.MaLoaiChungTu;
 
-                // find temp default from DB
-                var lstMauIn_byLoaiChungTu = _dmMauInRepository.GetAll().Where(x => x.LoaiChungTu == idLoaiChungTu && x.LaMacDinh && !x.IsDeleted).ToList();
-                if (lstMauIn_byLoaiChungTu != null && lstMauIn_byLoaiChungTu.Count > 0)
-                {
-                    contents = lstMauIn_byLoaiChungTu.FirstOrDefault().NoiDungMauIn;
-                }
-                else
-                {
-                    // mau k80
-                    if (type == 1)
+                    // find temp default from DB
+                    var lstMauIn_byLoaiChungTu = _dmMauInRepository.GetAll().Where(x => x.LoaiChungTu == idLoaiChungTu && x.LaMacDinh && !x.IsDeleted).ToList();
+                    if (lstMauIn_byLoaiChungTu != null && lstMauIn_byLoaiChungTu.Count > 0)
                     {
-                        var data = Dictionary.DanhSachMauInK80.Where(x => x.Key == tenMauIn);
-                        if (data != null && data.Count() > 0)
-                        {
-                            contents = GetFileMauIn(data.FirstOrDefault().Value);
-                        }
+                        contents = lstMauIn_byLoaiChungTu.FirstOrDefault().NoiDungMauIn;
                     }
                     else
                     {
-                        // mau a4
-                        var data = Dictionary.DanhSachMauInA4.Where(x => x.Key == tenMauIn);
-                        if (data != null && data.Count() > 0)
+                        // mau k80
+                        if (type == 1)
                         {
-                            contents = GetFileMauIn(data.FirstOrDefault().Value);
+                            var data = Dictionary.DanhSachMauInK80.Where(x => x.Key == tenMauIn);
+                            if (data != null && data.Count() > 0)
+                            {
+                                contents = GetFileMauIn(data.FirstOrDefault().Value);
+                            }
+                        }
+                        else
+                        {
+                            // mau a4
+                            var data = Dictionary.DanhSachMauInA4.Where(x => x.Key == tenMauIn);
+                            if (data != null && data.Count() > 0)
+                            {
+                                contents = GetFileMauIn(data.FirstOrDefault().Value);
+                            }
                         }
                     }
                 }
+                return contents;
             }
-            return contents;
         }
     }
 }
