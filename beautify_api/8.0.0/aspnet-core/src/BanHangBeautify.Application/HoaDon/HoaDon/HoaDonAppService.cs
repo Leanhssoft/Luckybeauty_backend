@@ -39,7 +39,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly NhanVienThucHienAppService _nvthService;
         private readonly IExcelBase _excelBase;
         private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
-        INhatKyThaoTacAppService _audilogService;
         private readonly IHubContext<InvoiceHub> _invoiceHubContext;
 
         public HoaDonAppService(
@@ -50,7 +49,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
             NhanVienThucHienAppService nvthService,
             IHoaDonRepository repoHoaDon, IExcelBase excelBase,
              IRepository<DM_KhachHang, Guid> khachHangRepository,
-             INhatKyThaoTacAppService audilogService,
              IHubContext<InvoiceHub> invoiceHubContext
         )
         {
@@ -62,7 +60,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _repoHoaDon = repoHoaDon;
             _excelBase = excelBase;
             _khachHangRepository = khachHangRepository;
-            _audilogService = audilogService;
             _invoiceHubContext = invoiceHubContext;
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
@@ -218,17 +215,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
                 var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objUp);
                 dataHD.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
-                //var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objUp.IdKhachHang);
-                //var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                //nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-                //nhatKyThaoTacDto.IdChiNhanh = objUp.IdChiNhanh;
-                //nhatKyThaoTacDto.ChucNang = "Hóa đơn";
-                //nhatKyThaoTacDto.NoiDung = "Cập nhật hóa đơn: " + objOld.MaHoaDon;
-                //nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật hóa đơn {0}" +
-                //    "<p>Tên khách hàng: {1}</p>" +
-                //    "<p>Tổng tiền : {2}</p>" +
-                //"</div>", objOld.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objUp.TongThanhToan);
-                //await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return dataHD;
 
             }
@@ -282,20 +268,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 objOld.TrangThai = objUp.TrangThai;
                 objOld.LastModifierUserId = AbpSession.UserId;
                 objOld.LastModificationTime = DateTime.Now;
-
                 await _hoaDonRepository.UpdateAsync(objOld);
                 var dataHD = ObjectMapper.Map<CreateHoaDonDto>(objOld);
-                var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objUp.IdKhachHang);
-                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-                nhatKyThaoTacDto.IdChiNhanh = objUp.IdChiNhanh;
-                nhatKyThaoTacDto.ChucNang = "Hóa đơn";
-                nhatKyThaoTacDto.NoiDung = "Cập nhật hóa đơn: " + objOld.MaHoaDon;
-                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Cập nhật hóa đơn {0}" +
-                    "<p>Tên khách hàng: {1}</p>" +
-                    "<p>Tổng tiền : {2}</p>" +
-                "</div>", objOld.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objUp.TongThanhToan);
-                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 return dataHD;
             }
             return new CreateHoaDonDto();
@@ -436,17 +410,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 hoaDon.DeleterUserId = AbpSession.UserId;
                 hoaDon.DeletionTime = DateTime.Now;
                 hoaDon.TrangThai = TrangThaiHoaDonConst.DA_HUY;
-                var khachHang = _khachHangRepository.FirstOrDefault(x=>x.Id==hoaDon.IdKhachHang);
-                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                nhatKyThaoTacDto.IdChiNhanh = nhatKyThaoTacDto.IdChiNhanh;
-                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Delete;
-                nhatKyThaoTacDto.ChucNang = "Hóa đơn";
-                nhatKyThaoTacDto.NoiDung = "Xóa hóa đơn: " + hoaDon.MaHoaDon;
-                nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Xóa hóa đơn {0}" +
-                    "<p>Tên khách hàng: {1}</p>"+
-                    "<p>Tổng tiền : {2}</p>" +
-                "</div>", hoaDon.MaHoaDon,khachHang!=null?khachHang.TenKhachHang:"",hoaDon.TongThanhToan);
-                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                 await _hoaDonRepository.UpdateAsync(hoaDon);
             }
         }
@@ -491,18 +454,22 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     hoaDon.LastModificationTime = DateTime.Now;
                     hoaDon.TrangThai = TrangThaiHoaDonConst.HOAN_THANH;
                     await _hoaDonRepository.UpdateAsync(hoaDon);
-                    var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == hoaDon.IdKhachHang);
-                    var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                    nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-                    nhatKyThaoTacDto.IdChiNhanh = hoaDon.IdChiNhanh;
-                    nhatKyThaoTacDto.ChucNang = "Hóa đơn";
-                    nhatKyThaoTacDto.NoiDung = "Khôi phục hóa đơn: " + hoaDon.MaHoaDon;
-                    nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Khôi phục hóa đơn {0}" +"</div>", hoaDon.MaHoaDon);
-                    await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
                     return true;
                 }
                 return false;
             }
+        }
+        [HttpGet]
+        public async Task<bool> UpdateCustomer_toHoaDon(Guid idHoaDon, Guid? idKhachHangNew = null)
+        {
+            var hoaDon = _hoaDonRepository.FirstOrDefault(x => x.Id == idHoaDon);
+            if (hoaDon != null)
+            {
+                hoaDon.IdKhachHang = idKhachHangNew == Guid.Empty ? null : idKhachHangNew;
+                await _hoaDonRepository.UpdateAsync(hoaDon);
+                return true;
+            }
+            return false;
         }
 
         [HttpPost]
