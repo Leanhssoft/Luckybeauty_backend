@@ -33,7 +33,7 @@ namespace BanHangBeautify.Checkin
             _repository = checkInRepo;
             _bookingRespository = bookingRespository;
         }
-
+        [HttpGet]
         public async Task<bool> CheckExistCusCheckin(Guid idCus, Guid? idCheckIn = null)
         {
             if (idCheckIn != null && idCheckIn != Guid.Empty)
