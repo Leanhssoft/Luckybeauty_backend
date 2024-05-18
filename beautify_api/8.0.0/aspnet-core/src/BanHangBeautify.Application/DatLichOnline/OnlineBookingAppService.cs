@@ -437,15 +437,6 @@ namespace BanHangBeautify.DatLichOnline
                     var dichVu = _dichVuRepository.FirstOrDefault(x => x.Id == idDichVu);
                     var bookingService = CreateBookingService(bk.Id, data.IdDichVu);
                     var bookingNhanVien = CreateBookingNhanVien(bk.Id, data.IdNhanVien);
-                    if (data.IdNhanVien != null && data.IdNhanVien != Guid.Empty)
-                    {
-                        var nhanVien = _nhanVienResponsitory.FirstOrDefault(x => x.Id == data.IdNhanVien && x.IsDeleted == false && x.TrangThai == TrangThaiNhanVienConst.Ranh);
-                        if (nhanVien != null)
-                        {
-                            nhanVien.TrangThai = TrangThaiNhanVienConst.Ban;
-                            _nhanVienResponsitory.Update(nhanVien);
-                        }
-                    }
                     _bookingNhanVienRepository.Insert(bookingNhanVien);
                     _bookingServiceRepository.Insert(bookingService);
                     await CurrentUnitOfWork.SaveChangesAsync();

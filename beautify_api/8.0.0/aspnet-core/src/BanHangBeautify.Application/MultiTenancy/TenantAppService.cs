@@ -111,12 +111,7 @@ namespace BanHangBeautify.MultiTenancy
             tenant.ConnectionString = input.ConnectionString.IsNullOrEmpty()
                 ? null
                 : SimpleStringCipher.Instance.Encrypt(input.ConnectionString);
-
-            //var defaultEdition = await _editionManager.FindByNameAsync(EditionManager.DefaultEditionName);
-            //if (defaultEdition != null)
-            //{
-            //    tenant.EditionId = defaultEdition.Id;
-            //}
+           
             var checkExist = await _tenantManager.FindByTenancyNameAsync(tenant.TenancyName);
             if (checkExist != null)
             {
@@ -129,6 +124,7 @@ namespace BanHangBeautify.MultiTenancy
             {
                 // Create tenant database
                 _abpZeroDbMigrator.CreateOrMigrateForTenant(tenant);
+                _migrator.CreateOrMigrateForTenant(tenant);
                 // Create static roles for new tenant
                 CheckErrors(await _roleManager.CreateStaticRoles(tenant.Id));
 
