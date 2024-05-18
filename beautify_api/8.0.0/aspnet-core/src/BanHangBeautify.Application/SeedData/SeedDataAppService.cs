@@ -1,6 +1,8 @@
-﻿using Abp.Dependency;
+﻿using Abp.Configuration;
+using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.EntityFrameworkCore.Repositories;
+using Abp.Localization;
 using BanHangBeautify.Data.Entities;
 using BanHangBeautify.Entities;
 using System;
@@ -14,9 +16,13 @@ namespace BanHangBeautify.SeedData
     public class SeedDataAppService : SPAAppServiceBase, ISeedDataAppService
     {
         private readonly IRepository<DM_NganHang, Guid> _dmNganHang;
-        public SeedDataAppService(IRepository<DM_NganHang, Guid> dmNganHang)
+        private readonly IRepository<Setting, long> _setting;
+        public SeedDataAppService(IRepository<DM_NganHang, Guid> dmNganHang, 
+            IRepository<Setting, long> setting
+        )
         {
             _dmNganHang = dmNganHang;
+            _setting = setting;
         }
         /// <summary>
         /// khởi tạo all dm dùng chung
@@ -26,6 +32,7 @@ namespace BanHangBeautify.SeedData
             using (CurrentUnitOfWork.SetTenantId(tenantId))
             {
                 Innit_DMNganHang(tenantId);
+                AddSettingIfNotExists(LocalizationSettingNames.DefaultLanguage, "vi", tenantId);
             }
         }
 
@@ -100,6 +107,15 @@ namespace BanHangBeautify.SeedData
                 lstBank.Add(new DM_NganHang { Id = Guid.NewGuid(), TenantId = tenantId, MaNganHang = "WVN", TenNganHang = "Ngân hàng TNHH MTV Woori Việt Nam", TenRutGon = "Woori", BIN = "970457", Logo = "https://api.vietqr.io/img/WVN.png" });
                 _dmNganHang.InsertRangeAsync(lstBank);
             }
+        }
+
+        private void AddSettingIfNotExists(string name, string value, int? tenantId = null)
+        {
+            if (_setting.GetAll().Any(s => s.Name == name && s.TenantId == tenantId && s.UserId == null))
+            {
+                return;
+            }
+            _setting.Insert(new Setting(tenantId, null, name, value));
         }
     }
 }
