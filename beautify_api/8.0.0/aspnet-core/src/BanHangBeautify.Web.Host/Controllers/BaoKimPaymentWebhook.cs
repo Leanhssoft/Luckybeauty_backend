@@ -22,23 +22,23 @@ namespace BanHangBeautify.Web.Host.Controllers
         {
             _baokimPaymentAppService = baokimPaymentAppService;
         }
-        [HttpPost]
+        [HttpGet]
         [Route("transaction-notification")]
-        public async Task<bool> ThongBaoGiaoDich()
+        public async Task<ResponseThongBaoGiaoDich> ThongBaoGiaoDich()
         {
             using (StreamReader reader = new StreamReader(HttpContext.Request.Body, Encoding.UTF8))
             {
                 var body = await reader.ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<ResponseThongBaoGiaoDich>(body);
                 var dataSign = $@"{data.RequestId}|{data.RequestTime}|{data.PartnerCode}|{data.AccNo}|{data.ClientIdNo}{data.TransId}|{data.TransAmount}|{data.TransTime}|{data.BefTransDebt}|{data.AffTransDebt}|{data.AccountType}|{data.OrderId}";
-                //var sign = _baokimPaymentAppService.CreateSignature(dataSign);
+                var sign = _baokimPaymentAppService.CreateSignature(dataSign);
 
-                if (!_baokimPaymentAppService.VerifySignature(dataSign, data.Signature))
+                if (!_baokimPaymentAppService.VerifySignature(dataSign, sign))
                 {
-                    return false;
+                    return null;
                 }
+                return data;
             }
-            return true;
         }
     }
 }

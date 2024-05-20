@@ -2,6 +2,7 @@
 using BanHangBeautify.BaoKimPayment;
 using BanHangBeautify.CryptographyHelper;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -207,10 +208,12 @@ namespace BanHangBeautify.BaoKim
         /// nếu thanh toan baokim ok: return idHoadon để lưu hóa đơn
         /// </summary>
         /// <param name="data"></param>
+        /// <param name="idHoaDon"></param>
         /// <returns></returns>
-        public async Task<string> GuiLaiThongTinGiaoDich_BaoKim(ResponseThongBaoGiaoDich data)
+
+        [HttpPost]
+        public async Task<bool> GuiLaiThongTinGiaoDich_BaoKim(ResponseThongBaoGiaoDich data, Guid idHoaDon)
         {
-            string idHoaDon = Guid.NewGuid().ToString();
             string dataSign = $@"200|Yêu cầu thành công|{idHoaDon}|{data.AccNo}|{data.AffTransDebt}";
             var sign = CreateSignature(dataSign);
 
@@ -218,7 +221,7 @@ namespace BanHangBeautify.BaoKim
             {
                 ResponseCode = 200,
                 ResponseMessage = "Yêu cầu thành công",
-                ReferenceId = idHoaDon,
+                ReferenceId = idHoaDon.ToString(),
                 AccNo = data.AccNo,
                 Signature = sign,
             };
@@ -235,13 +238,13 @@ namespace BanHangBeautify.BaoKim
 
                 if (!string.IsNullOrEmpty(result))
                 {
-                    return idHoaDon;
+                    return true;
                 }
-                return string.Empty;
+                return false;
             }
             catch (Exception ex)
             {
-                return string.Empty;
+                return false;
             }
         }
     }

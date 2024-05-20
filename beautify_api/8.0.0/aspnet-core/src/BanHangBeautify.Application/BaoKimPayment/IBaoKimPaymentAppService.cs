@@ -11,6 +11,6 @@ namespace BanHangBeautify.BaoKimPayment
     {
         string CreateSignature(string data);
         bool VerifySignature(string content, string signature);
-        Task<string> GuiLaiThongTinGiaoDich_BaoKim(ResponseThongBaoGiaoDich data);
+        Task<bool> GuiLaiThongTinGiaoDich_BaoKim(ResponseThongBaoGiaoDich data, Guid idHoaDon);
     }
 }
