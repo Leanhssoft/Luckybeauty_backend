@@ -51,7 +51,7 @@ namespace BanHangBeautify.BaoKim
             request.PartnerCode = PARTNER_CODE;
             request.Operation = "9001";
             request.CreateType = 2;
-            request.AccName = "Nguyen Van A";
+            request.AccName = "SSOFT";
             request.OrderId = dtNow;
 
             string url = "https://devtest.baokim.vn/Sandbox/Collection/V2";
@@ -204,6 +204,26 @@ namespace BanHangBeautify.BaoKim
                 return null;
             }
         }
+        [HttpGet]
+        public async Task<string> TaoGiaoDich (string accNo, string amount)
+        {
+            HttpClient client = new();
+            string url = $@"https://devtest.baokim.vn/collection/core/Sandbox/Collection/createTrans?accNo={accNo}&partnerCode={PARTNER_CODE}&transAmount={amount}";
+            HttpResponseMessage response = await client.GetAsync(url);
+            string htmltext = await response.Content.ReadAsStringAsync();
+            var dataMes = JsonConvert.DeserializeObject<MessageResponse>(htmltext);
+            return dataMes.message;
+        }
+        [HttpGet]
+        public async Task<string> ThongBaoGiaoDich()
+        {
+            HttpClient client = new();
+            string url = $@"https://devtest.baokim.vn/collection/woori_send/Sandbox/Collection/partner";
+            HttpResponseMessage response = await client.GetAsync(url);
+            string htmltext = await response.Content.ReadAsStringAsync();
+            //var dataMes = JsonConvert.DeserializeObject<MessageResponse>(htmltext);
+            return htmltext;
+        }
         /// <summary>
         /// nếu thanh toan baokim ok: return idHoadon để lưu hóa đơn
         /// </summary>
@@ -226,7 +246,8 @@ namespace BanHangBeautify.BaoKim
                 Signature = sign,
             };
 
-            string url = "https://devtest.baokim.vn/Sandbox/Collection/V2";
+            //string url = "https://devtest.baokim.vn/Sandbox/Collection/V2";
+            string url = "https://devtest.baokim.vn/collection/woori_send/Sandbox/Collection/partner";
             var body = JsonConvert.SerializeObject(request);
             StringContent dataPost = new(body, Encoding.UTF8, "application/json");
 

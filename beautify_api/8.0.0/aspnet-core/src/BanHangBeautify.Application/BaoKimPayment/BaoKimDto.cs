@@ -14,6 +14,11 @@ namespace BanHangBeautify.BaoKim
         public const long AMOUNT_MAX = 100000000;
     }
 
+    public class MessageResponse
+    {
+        public string message { get; set; }
+    }
+
     public class BankInfor
     {
         public string BankName { get; set; }
@@ -117,6 +122,23 @@ namespace BanHangBeautify.BaoKim
         public int AccountType { get; set; }
         public string OrderId { get; set; }
         public string Signature { get; set; }
+    }
+    public class CassoResponseThongBaoGiaoDich
+    {
+        public long privateId { get; set; }
+        public string reference { get; set; }
+        public string bookingDate { get; set; }
+        public string transactionDate { get; set; }
+        public long amount { get; set; }
+        public string description { get; set; }
+        public long runningBalance { get; set; }
+        public string virtualAccountNumber { get; set; }
+        public string virtualAccountName { get; set; }
+        public string paymentChannel { get; set; }
+        public string counterAccountNumber { get; set; }
+        public string counterAccountName { get; set; }
+        public string counterAccountBankId { get; set; }
+        public string counterAccountBankName { get; set; }
     }
 
     public class RequestThongBaoGiaoDich
