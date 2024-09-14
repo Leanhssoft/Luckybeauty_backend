@@ -1,9 +1,11 @@
-﻿using Abp.EntityFrameworkCore;
+﻿using Abp.Application.Services.Dto;
+using Abp.EntityFrameworkCore;
 using BanHangBeautify.AppCommon;
 using BanHangBeautify.Bookings.Bookings.Dto;
 using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -51,7 +53,7 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
             }
             return new List<BookingGetAllItemDto>();
         }
-        public async Task<List<BookingDetailDto>> GetKhachHang_Booking(BookingRequestDto input)
+        public async Task<PagedResultDto<BookingDetailDto>> GetKhachHang_Booking(BookingRequestDto input)
         {
             using (var cmd = CreateCommand("prc_getKhachHang_Booking"))
             {
@@ -63,9 +65,11 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
                 cmd.Parameters.Add(new SqlParameter("@TenantId", input.TenantId));
                 cmd.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs ?? (object)DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? (object)DBNull.Value));
-                cmd.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
-                cmd.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
-                cmd.Parameters.Add(new SqlParameter("@TrangThaiBook", input.TrangThaiBook));
+                cmd.Parameters.Add(new SqlParameter("@FromDate", input.FromDate ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@ToDate", input.ToDate ?? (object)DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@CurrentPage", input?.CurrentPage ?? 0));
+                cmd.Parameters.Add(new SqlParameter("@PageSize", input?.PageSize ?? 20));
+                cmd.Parameters.Add(new SqlParameter("@TrangThaiBook", input?.TrangThaiBook ?? 3));
                 using (var dataReader = await cmd.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -75,11 +79,15 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillCollection<BookingDetailDto>(ds.Tables[0]);
-                        return data;
+                        return new PagedResultDto<BookingDetailDto>()
+                        {
+                            TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalRow"].ToString()),
+                            Items = data
+                        };
                     }
                 }
             }
-            return new List<BookingDetailDto>();
+            return new PagedResultDto<BookingDetailDto>();
         }
 
         public async Task<List<BookingDetailDto>> GetInforBooking_byID(List<Guid> arrIdBooking)

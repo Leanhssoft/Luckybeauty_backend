@@ -1,4 +1,5 @@
 ﻿using Abp;
+using Abp.Application.Services.Dto;
 using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Localization;
@@ -398,11 +399,11 @@ namespace BanHangBeautify.Bookings.Bookings
             return result;
         }
 
-        public async Task<List<BookingDetailOfCustometDto>> GetKhachHang_Booking(BookingRequestDto input)
+        public async Task<PagedResultDto<BookingDetailOfCustometDto>> GetKhachHang_Booking(BookingRequestDto input)
         {
             input.TenantId = AbpSession.TenantId ?? 1;
-            List<BookingDetailDto> data = await _bookingRepository.GetKhachHang_Booking(input);
-            var dtGr = data.GroupBy(x => new
+            PagedResultDto<BookingDetailDto> data = await _bookingRepository.GetKhachHang_Booking(input);
+            var dtGr = data.Items.GroupBy(x => new
             {
                 x.IdBooking,
                 x.IdKhachHang,
@@ -430,7 +431,8 @@ namespace BanHangBeautify.Bookings.Bookings
                 TxtTrangThaiBook = x.Key.TxtTrangThaiBook,
                 Details = x.ToList(),
             }).ToList();
-            return dtGr;
+            PagedResultDto<BookingDetailOfCustometDto> dtReturn = new(data.TotalCount, dtGr);
+            return dtReturn;
         }
         [HttpPost]
         public async Task<List<BookingDetailOfCustometDto>> GetInforBooking_byID(List<Guid> arrIdBooking)
