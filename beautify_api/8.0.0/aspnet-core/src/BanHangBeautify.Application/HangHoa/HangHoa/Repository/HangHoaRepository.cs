@@ -45,9 +45,14 @@ namespace BanHangBeautify.HangHoa.HangHoa.Repository
         {
             using (var command = CreateCommand("spGetDMHangHoa"))
             {
+                string idNhomHangs = string.Empty;
+                if (input?.IdNhomHangHoas != null && input?.IdNhomHangHoas?.Count > 0)
+                {
+                    idNhomHangs = string.Join(",", input.IdNhomHangHoas);
+                }
                 command.Parameters.Add(new SqlParameter("@TenantId", tenantId ?? 1));
                 command.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch ?? (object)DBNull.Value));
-                command.Parameters.Add(new SqlParameter("@IdNhomHangHoas", input.IdNhomHangHoas ?? (object)DBNull.Value));
+                command.Parameters.Add(new SqlParameter("@IdNhomHangHoas", idNhomHangs ?? (object)DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@IdLoaiHangHoa", input.IdLoaiHangHoa ?? 0));
                 command.Parameters.Add(new SqlParameter("@Where", DBNull.Value));
                 command.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
