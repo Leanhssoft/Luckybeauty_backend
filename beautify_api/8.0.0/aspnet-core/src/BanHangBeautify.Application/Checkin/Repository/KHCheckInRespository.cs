@@ -31,8 +31,6 @@ namespace BanHangBeautify.Checkin.Repository
 
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
-                    List<PageKhachHangCheckingDto> xx = new();
-
                     string[] array = { "Data" };
                     var ds = new DataSet();
                     ds.Load(dataReader, LoadOption.OverwriteChanges, array);
