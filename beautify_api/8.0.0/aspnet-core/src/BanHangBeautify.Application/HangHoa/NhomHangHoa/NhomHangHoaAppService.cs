@@ -37,6 +37,18 @@ namespace BanHangBeautify.HangHoa.NhomHangHoa
             var result = ObjectMapper.Map<NhomHangHoaDto>(data);
             return result;
         }
+
+        [HttpPost]
+        public List<NhomHangHoaDto> GetListNhomHangHoa_byId(List<Guid> arrIdNhomHang)
+        {
+            if (arrIdNhomHang != null && arrIdNhomHang.Count > 0)
+            {
+                var data = _dmNhomHangHoa.GetAllList().Where(x => arrIdNhomHang.Contains(x.Id));
+                var result = ObjectMapper.Map<List<NhomHangHoaDto>>(data);
+                return result;
+            }
+            return new List<NhomHangHoaDto>(); 
+        }
         /// <summary>
         /// 
         /// </summary>
