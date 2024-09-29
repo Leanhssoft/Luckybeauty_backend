@@ -251,6 +251,24 @@ namespace BanHangBeautify.Quy.DM_QuyHoaDon
             });
             return true;
         }
+        /// <summary>
+        /// only update quyHD create first
+        /// </summary>
+        /// <param name="idHoaDonLienQuan"></param>
+        /// <param name="ngayLapHDNew"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<bool> UpdateNgayLapQuyHD_ifChangeNgayLapHD(Guid idHoaDonLienQuan, DateTime ngayLapHDNew)
+        {
+            var arrIDQuyHD = _quyHoaDonChiTiet.GetAll().Where(x => x.IdHoaDonLienQuan == idHoaDonLienQuan).Select(x => x.IdQuyHoaDon).ToList();
+            var firstQuyHD = _quyHoaDon.GetAll().Where(x => arrIDQuyHD.Contains(x.Id)).OrderBy(x => x.NgayLapHoaDon).FirstOrDefault();
+            if (firstQuyHD != null)
+            {
+                firstQuyHD.NgayLapHoaDon = ngayLapHDNew;
+                await  _quyHoaDon.UpdateAsync(firstQuyHD);
+            }
+            return true;
+        }
 
         [HttpPost]
         public async Task DeleteMultiple_QuyHoaDon(List<Guid> lstId)
