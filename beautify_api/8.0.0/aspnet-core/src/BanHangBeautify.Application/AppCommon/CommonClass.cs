@@ -41,6 +41,8 @@ namespace BanHangBeautify.AppCommon
             public int RowIndex { get; set; }
             public int ColumnIndex { get; set; }
             public string CellValue { get; set; }// tiêu đề Data của file xuất ra (mặc định ghi ở dòng Cell[1,1]
+            public bool? IsNumber { get; set; }// nếu số, định dạng 000.000  "#,##0.00"
+            public bool? IsBold { get; set; }// nếu = true, tô đậm ô
         }
     }
 }

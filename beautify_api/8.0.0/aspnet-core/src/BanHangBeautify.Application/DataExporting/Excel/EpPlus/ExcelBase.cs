@@ -69,7 +69,19 @@ namespace BanHangBeautify.DataExporting.Excel.EpPlus
                 {
                     foreach (var item in lstDataCell)
                     {
-                        ws.Cells[item.RowIndex, item.ColumnIndex].Value = item.CellValue;
+                        if (item?.IsNumber ?? false)
+                        {
+                            ws.Cells[item.RowIndex, item.ColumnIndex].Value = Convert.ToDouble(item.CellValue);
+                            ws.Cells[item.RowIndex, item.ColumnIndex].Style.Numberformat.Format = "#,##0";
+                        }
+                        else
+                        {
+                            ws.Cells[item.RowIndex, item.ColumnIndex].Value = item.CellValue;
+                        }
+                        if (item?.IsBold ?? false)
+                        {
+                            ws.Cells[item.RowIndex, item.ColumnIndex].Style.Font.Bold = true;
+                        }
                     }
                 }
                 ws.Cells[startRow, 1].LoadFromCollection(listData);
