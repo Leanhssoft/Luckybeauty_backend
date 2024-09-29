@@ -12,5 +12,6 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien.Repository
         Task<List<CreateOrEditNhanVienThucHienDto>> GetNhanVienThucHien_byIdHoaDon(Guid idHoaDon, Guid? idQuyHoaDon = null);
         Task<List<CreateOrEditNhanVienThucHienDto>> GetNhanVienThucHien_byIdHoaDonChiTiet(Guid idHoaDonChiTiet);
         Task<bool> UpdateNhanVienThucHien_byIdHoaDon(int? tenantId, Guid idHoaDon, List<CreateOrEditNhanVienThucHienDto> lstNV = null);
+        Task<bool> UpdateTienChietKhau_forNhanVien_whenUpdateCTHD(Guid idHoaDonChiTiet, double soLuongCu);
     }
 }

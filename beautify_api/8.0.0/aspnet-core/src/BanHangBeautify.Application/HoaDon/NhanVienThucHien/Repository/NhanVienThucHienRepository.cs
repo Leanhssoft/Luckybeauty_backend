@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Z.EntityFramework.Plus;
 
 namespace BanHangBeautify.HoaDon.NhanVienThucHien.Repository
 {
@@ -182,6 +183,68 @@ namespace BanHangBeautify.HoaDon.NhanVienThucHien.Repository
                 return true;
             }
             catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateTienChietKhau_forNhanVien_whenUpdateCTHD(Guid idHoaDonChiTiet, double soLuongCu)
+        {
+            try
+            {
+                var db = GetDbContext();
+                // get infor of cthd after update
+                var itemCTHD = (from ct in db.Set<BH_HoaDon_ChiTiet>()
+                                where ct.Id == idHoaDonChiTiet && ct.IsDeleted == false
+                                select new
+                                {
+                                    ct.Id,
+                                    ct.SoLuong,
+                                    ct.DonGiaTruocCK,
+                                    ct.DonGiaSauCK
+                                }).ToList().FirstOrDefault();
+                if (itemCTHD != null)
+                {
+                    var gtriTinh_truocCK = itemCTHD.SoLuong * itemCTHD.DonGiaTruocCK;
+                    var gtriTinh_sauCK = itemCTHD.SoLuong * itemCTHD.DonGiaSauCK;
+                    var lstNVTH = (from nv in db.Set<BH_NhanVienThucHien>()
+                                   where nv.IdHoaDonChiTiet == idHoaDonChiTiet
+                                   && nv.IsDeleted == false
+                                   select nv).ToList();
+
+                    foreach (var item in lstNVTH)
+                    {
+                        if (item.TinhHoaHongTruocCK ?? false)
+                        {
+                            if (item.PTChietKhau > 0)
+                            {
+                                item.TienChietKhau = (item.PTChietKhau ?? 0) * gtriTinh_truocCK / 100;
+                            }
+                            else
+                            {
+                                item.TienChietKhau = (item.TienChietKhau / soLuongCu) * itemCTHD.SoLuong;
+                            }
+                        }
+                        else
+                        {
+                            if (item.PTChietKhau > 0)
+                            {
+                                item.TienChietKhau = (item.PTChietKhau ?? 0) * gtriTinh_sauCK / 100;
+                            }
+                            else
+                            {
+                                item.TienChietKhau = (item.TienChietKhau / soLuongCu) * itemCTHD.SoLuong;
+                            }
+                        }
+                        item.LastModificationTime = DateTime.Now;
+                        db.Entry(item).State = EntityState.Modified;
+                    }
+                    await db.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
             {
                 return false;
             }
