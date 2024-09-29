@@ -25,6 +25,10 @@ using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.NhatKyHoatDong;
 using Microsoft.AspNetCore.SignalR;
 using BanHangBeautify.SignalR;
+using NPOI.OpenXmlFormats.Shared;
+using NPOI.OpenXmlFormats.Wordprocessing;
+using static BanHangBeautify.AppCommon.CommonClass;
+using NPOI.HPSF;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -274,6 +278,39 @@ namespace BanHangBeautify.HoaDon.HoaDon
             }
             return new CreateHoaDonDto();
         }
+
+        [HttpGet]
+        public async Task<CreateHoaDonDto> UpdateTongTienHoaDon_ifChangeCTHD(Guid idHoaDon)
+        {
+            var lstCTHD = _hoaDonChiTietRepository.GetAll().Where(x => x.IdHoaDon == idHoaDon).ToList();
+            if (lstCTHD.Any())
+            {
+                double tongTienHangChuaCK = 0, tongChietKhauHang = 0, tongTienHang = 0, tongTienThue = 0, tongTienHDSauVAT = 0;
+                foreach (var item in lstCTHD)
+                {
+                    tongTienHangChuaCK += item?.ThanhTienTruocCK ?? 0;
+                    tongChietKhauHang += (item?.SoLuong ?? 0) * (item?.TienChietKhau ?? 0);
+                    tongTienHang += item?.ThanhTienSauCK ?? 0;
+                    tongTienThue += (item?.SoLuong ?? 0) * (item?.TienThue ?? 0);
+                    tongTienHDSauVAT += item?.ThanhTienSauVAT ?? 0;
+                }
+                BH_HoaDon hoadon = _hoaDonRepository.Get(idHoaDon);
+                if (hoadon != null)
+                {
+                    hoadon.TongTienHangChuaChietKhau = tongTienHangChuaCK;
+                    hoadon.TongChietKhauHangHoa = tongChietKhauHang;
+                    hoadon.TongTienHang = tongTienHang;
+                    hoadon.TongTienThue = tongTienThue;
+                    hoadon.TongTienHDSauVAT = tongTienHDSauVAT;
+                    hoadon.TongThanhToan = tongTienHDSauVAT - hoadon.TongGiamGiaHD;
+                    await _hoaDonRepository.UpdateAsync(hoadon);
+
+                    var dataHD = ObjectMapper.Map<CreateHoaDonDto>(hoadon);
+                    return dataHD;
+                }
+            }
+            return null;
+        }
         /// <summary>
         /// chỉ cập nhật chi tiết hóa đơn
         /// </summary>
@@ -301,12 +338,13 @@ namespace BanHangBeautify.HoaDon.HoaDon
             { x.TrangThai = TrangThaiHoaDonConst.DA_HUY; x.IsDeleted = true; x.DeleterUserId = userID; x.DeletionTime = DateTime.Now; });
             #endregion
 
+            // keep ctOld & add ctNew
             foreach (var item in lstCT)
             {
                 BH_HoaDon_ChiTiet ctUpdate = await _hoaDonChiTietRepository.FirstOrDefaultAsync(item.Id);
                 if (ctUpdate != null)
                 {
-                    ctUpdate.STT = item.STT;
+                    ctUpdate.STT = item?.STT ?? 0;
                     ctUpdate.SoLuong = item.SoLuong;
                     ctUpdate.IdDonViQuyDoi = item.IdDonViQuyDoi;
                     ctUpdate.IdChiTietHoaDon = item.IdChiTietHoaDon;
@@ -374,6 +412,45 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 await _nvThucHien.InsertRangeAsync(lstNVTH);
             }
             return ObjectMapper.Map<List<HoaDonChiTietDto>>(ctAfter);
+        }
+
+        [HttpPost]
+        public async Task<HoaDonChiTietDto> CreateOrUpdateCTHD_byIdChiTiet(HoaDonChiTietDto cthd)
+        {
+            var ctUpdate = await _hoaDonChiTietRepository.FirstOrDefaultAsync(cthd.Id);
+            if (ctUpdate != null)
+            {
+                ctUpdate.STT = cthd.STT ?? 0;
+                ctUpdate.IdDonViQuyDoi = cthd.IdDonViQuyDoi;
+                ctUpdate.IdChiTietHoaDon = cthd.IdChiTietHoaDon;
+                ctUpdate.SoLuong = cthd.SoLuong;
+                ctUpdate.PTChietKhau = cthd.PTChietKhau;
+                ctUpdate.TienChietKhau = cthd.TienChietKhau;
+                ctUpdate.PTThue = cthd.PTThue;
+                ctUpdate.TienThue = cthd.TienThue;
+                ctUpdate.DonGiaTruocCK = cthd.DonGiaTruocCK;
+                ctUpdate.DonGiaSauCK = cthd.DonGiaSauCK;
+                ctUpdate.DonGiaSauVAT = cthd.DonGiaSauVAT;
+                ctUpdate.ThanhTienTruocCK = cthd.ThanhTienTruocCK;
+                ctUpdate.ThanhTienSauCK = cthd.ThanhTienSauCK;
+                ctUpdate.ThanhTienSauVAT = cthd.ThanhTienSauVAT;
+                ctUpdate.GhiChu = cthd.GhiChu;
+                ctUpdate.LastModificationTime = DateTime.Now;
+                ctUpdate.LastModifierUserId = AbpSession.UserId;
+                await _hoaDonChiTietRepository.UpdateAsync(ctUpdate);
+                return cthd;
+            }
+            else
+            {
+                BH_HoaDon_ChiTiet ctNew = ObjectMapper.Map<BH_HoaDon_ChiTiet>(cthd);
+                ctNew.Id = Guid.NewGuid();
+                ctNew.TenantId = AbpSession.TenantId ?? 1;
+                ctNew.CreationTime = DateTime.Now;
+                ctNew.CreatorUserId = AbpSession.UserId;
+                await _hoaDonChiTietRepository.InsertAsync(ctNew);
+                var result = ObjectMapper.Map<HoaDonChiTietDto>(ctNew);
+                return result;
+            }
         }
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Delete)]
         [HttpGet]
@@ -496,6 +573,25 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 x.DeletionTime = DateTime.Now;
             });
         }
+        [HttpPost]
+        public async Task<bool> DeleteMultipleCTHD(List<Guid> lstId)
+        {
+            try
+            {
+                _hoaDonChiTietRepository.GetAll().Where(x => lstId.Contains(x.Id)).ToList().ForEach(x =>
+                {
+                    x.IsDeleted = true;
+                    x.DeleterUserId = AbpSession.UserId;
+                    x.DeletionTime = DateTime.Now;
+                    x.TrangThai = TrangThaiHoaDonConst.DA_HUY;
+                });
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
         public async Task<List<PageHoaDonDto>> GetInforHoaDon_byId(Guid id)
         {
             return await _repoHoaDon.GetInforHoaDon_byId(id);
@@ -503,6 +599,11 @@ namespace BanHangBeautify.HoaDon.HoaDon
         public async Task<List<PageHoaDonChiTietDto>> GetChiTietHoaDon_byIdHoaDon(Guid idHoaDon)
         {
             return await _repoHoaDon.GetChiTietHoaDon_byIdHoaDon(idHoaDon);
+        }
+        [HttpGet]
+        public PageHoaDonChiTietDto GetChiTietHoaDon_byIdChiTiet(Guid idChiTiet)
+        {
+            return _repoHoaDon.GetChiTietHoaDon_byIdChiTiet(idChiTiet);
         }
 
         [HttpPost]
@@ -514,6 +615,43 @@ namespace BanHangBeautify.HoaDon.HoaDon
             }
             return await _repoHoaDon.GetListHoaDon(param, AbpSession.TenantId ?? 1);
         }
+        [HttpPost]
+        public async Task<dynamic> GetChiTiet_SuDungGDV_ofCustomer(ParamSearchNhatKyGDV param)
+        {
+            List<ChiTietSuDungGDV> lst = await _repoHoaDon.GetChiTiet_SuDungGDV_ofCustomer(param);
+            var data = lst.GroupBy(x => new { x.MaHoaDon, x.IdHoaDon, x.NgayLapHoaDon }).Select(x => new
+            {
+                x.Key.IdHoaDon,
+                x.Key.MaHoaDon,
+                x.Key.NgayLapHoaDon,
+                chitiets = x.ToList()
+            }).ToList();
+            return data;
+        }
+        [HttpPost]
+        public async Task<PagedResultDto<ChiTietNhatKySuDungGDVDto>> GetNhatKySuDungGDV_ofKhachHang(ParamSearchNhatKyGDV param)
+        {
+            PagedResultDto<ChiTietNhatKySuDungGDVDto> lst = await _repoHoaDon.GetNhatKySuDungGDV_ofKhachHang(param);
+            return lst;
+        }
+        [HttpGet]
+        public bool CheckCustomer_hasGDV(Guid customerId)
+        {
+            var data = _hoaDonRepository.GetAllList().Where(x => x.IdLoaiChungTu == LoaiChungTuConst.GDV
+            && x.TrangThai == TrangThaiHoaDonConst.HOAN_THANH && x.IdKhachHang == customerId).Count();
+            return data > 0;
+        }
+        [HttpGet]
+        public async Task<bool> CheckGDV_DaSuDung(Guid idGoiDV)
+        {
+            return await _repoHoaDon.CheckGDV_DaSuDung(idGoiDV);
+        }
+        [HttpGet]
+        public async Task<bool> CheckChiTietGDV_DaSuDung(Guid idChiTietGDV)
+        {
+            return await _repoHoaDon.CheckChiTietGDV_DaSuDung(idChiTietGDV);
+        }
+
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Export)]
         public async Task<FileDto> ExportDanhSach(HoaDonRequestDto input)
         {
@@ -539,6 +677,38 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 x.TxtTrangThaiHD
             }).ToList();
             return _excelBase.WriteToExcel(@"DanhSachHoaDon_", @"GiaoDichThanhToan_Export_Template.xlsx", dtNew, 4, null, 10);
+        }
+        [HttpGet]
+        public async Task<FileDto> ExportHoaDon_byId(Guid idHoaDon)
+        {
+            var hd = await _repoHoaDon.GetInforHoaDon_byId(idHoaDon);
+            var itemHD = hd.FirstOrDefault();
+            var cthd = await _repoHoaDon.GetChiTietHoaDon_byIdHoaDon(idHoaDon);
+            var totalRow = cthd.Count + 6;
+            List<Excel_CellData> lst = new()
+            {
+                new Excel_CellData { RowIndex = 1, ColumnIndex = 1, CellValue = "CHI TIẾT GÓI DỊCH VỤ" },
+                new Excel_CellData { RowIndex = 2, ColumnIndex = 2, CellValue = itemHD.MaHoaDon },
+                new Excel_CellData { RowIndex = 3, ColumnIndex = 2, CellValue = ConvertHelper.ConverDateTimeToString(itemHD.NgayLapHoaDon,"dd/MM/yyyy HH:mm:ss") },
+                new Excel_CellData { RowIndex = 2, ColumnIndex = 5, CellValue = itemHD.TenKhachHang },
+                new Excel_CellData { RowIndex = 3, ColumnIndex = 5, CellValue = itemHD.SoDienThoai },
+                new Excel_CellData { RowIndex = totalRow, ColumnIndex = 5, CellValue = "Tổng phải trả", IsBold = true  },
+                new Excel_CellData { RowIndex = totalRow, ColumnIndex = 6, CellValue = itemHD.TongThanhToan.ToString(), IsNumber = true, IsBold = true },
+                new Excel_CellData { RowIndex = totalRow + 1, ColumnIndex = 5, CellValue =  "Khách đã trả", IsBold = true  },
+                new Excel_CellData { RowIndex = totalRow + 1, ColumnIndex = 6, CellValue = itemHD.DaThanhToan.ToString(),  IsNumber = true, IsBold = true },
+            };
+            var dtNew = cthd.Select(x =>
+            new
+            {
+                x.MaHangHoa,
+                x.TenHangHoa,
+                x.SoLuong,
+                x.DonGiaTruocCK,
+                x.TienChietKhau,
+                x.DonGiaSauVAT,
+            }).ToList();
+
+            return _excelBase.WriteToExcel(@"ChiTietHoaDon_", @"GiaoDich\Template_ChiTietHoaDon.xlsx", dtNew, 6, lst, -1);
         }
 
         #region hoadon used to zalo 

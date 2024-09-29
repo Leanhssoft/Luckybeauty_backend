@@ -15,5 +15,10 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
         Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param, int? tenantId = 1);
         Task<List<PageHoaDonDto>> GetInforHoaDon_byId(Guid id);
         Task<List<PageHoaDonChiTietDto>> GetChiTietHoaDon_byIdHoaDon(Guid id);
+        PageHoaDonChiTietDto GetChiTietHoaDon_byIdChiTiet(Guid idChiTiet);
+        Task<List<ChiTietSuDungGDV>> GetChiTiet_SuDungGDV_ofCustomer(ParamSearchNhatKyGDV param);
+        Task<PagedResultDto<ChiTietNhatKySuDungGDVDto>> GetNhatKySuDungGDV_ofKhachHang(ParamSearchNhatKyGDV param);
+        Task<bool> CheckGDV_DaSuDung(Guid idHoaDon);
+        Task<bool> CheckChiTietGDV_DaSuDung(Guid idGoiDV);
     }
 }

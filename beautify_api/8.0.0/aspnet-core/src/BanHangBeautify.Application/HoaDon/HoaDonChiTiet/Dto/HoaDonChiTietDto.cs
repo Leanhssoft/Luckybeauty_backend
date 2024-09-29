@@ -10,8 +10,7 @@ namespace BanHangBeautify.HoaDon.HoaDonChiTiet.Dto
         public int TenantId { get; set; } = 1;
         public Guid Id { get; set; }
         public Guid IdHoaDon { get; set; }
-        public BH_HoaDon BH_HoaDon { get; set; }
-        public int STT { get; set; } = 1;
+        public int? STT { get; set; } = 1;
         public Guid IdDonViQuyDoi { get; set; }
         public Guid? IdChiTietHoaDon { get; set; }// sử dụng khi trả hàng, lưu chi tiết hóa đơn gốc ban đầu
         public double? SoLuong { get; set; } = 0;
