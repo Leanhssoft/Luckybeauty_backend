@@ -47,6 +47,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\ExcelTemplate\" />
+    <Folder Include="wwwroot\ExcelTemplate\GiaoDich\" />
   </ItemGroup>
 </Project>
