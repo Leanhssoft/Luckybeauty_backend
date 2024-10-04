@@ -10,8 +10,8 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
 {
     public interface IHoaDonRepository
     {
-        Task<string> GetMaHoaDon(int tenantId, Guid? idChiNhanh, int idLoaiChungTu, DateTime ngayLapHoaDon);
         Task<string> FnGetMaHoaDon(int tenantId, Guid? idChiNhanh, int idLoaiChungTu, DateTime? ngayLapHoaDon);
+        Task<double> GetMaxNumber_ofMaHoaDon(int tenantId, Guid? idChiNhanh, int idLoaiChungTu, DateTime? ngayLapHoaDon);
         Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param, int? tenantId = 1);
         Task<List<PageHoaDonDto>> GetInforHoaDon_byId(Guid id);
         Task<List<PageHoaDonChiTietDto>> GetChiTietHoaDon_byIdHoaDon(Guid id);
@@ -20,5 +20,6 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
         Task<PagedResultDto<ChiTietNhatKySuDungGDVDto>> GetNhatKySuDungGDV_ofKhachHang(ParamSearchNhatKyGDV param);
         Task<bool> CheckGDV_DaSuDung(Guid idHoaDon);
         Task<bool> CheckChiTietGDV_DaSuDung(Guid idGoiDV);
+        Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang);
     }
 }

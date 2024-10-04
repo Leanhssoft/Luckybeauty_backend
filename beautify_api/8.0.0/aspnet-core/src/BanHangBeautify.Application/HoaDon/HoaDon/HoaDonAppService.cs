@@ -29,6 +29,11 @@ using NPOI.OpenXmlFormats.Shared;
 using NPOI.OpenXmlFormats.Wordprocessing;
 using static BanHangBeautify.AppCommon.CommonClass;
 using NPOI.HPSF;
+using BanHangBeautify.NewFolder;
+using System.IO;
+using OfficeOpenXml;
+using BanHangBeautify.HoaDon.LoaiChungTu;
+using BanHangBeautify.KhachHang.KhachHang;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -39,33 +44,64 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IRepository<BH_HoaDon_ChiTiet, Guid> _hoaDonChiTietRepository;
         private readonly IRepository<BH_HoaDon_Anh, Guid> _hoaDonAnhRepository;
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
-        private readonly IHoaDonRepository _repoHoaDon;
         private readonly NhanVienThucHienAppService _nvthService;
+        private readonly IHoaDonRepository _repoHoaDon;
+        private readonly ILoaiChungTuAppService _loaiChungTuService;
+        private readonly IKhachHangAppService _khachHangService;
         private readonly IExcelBase _excelBase;
-        private readonly IRepository<DM_KhachHang, Guid> _khachHangRepository;
         private readonly IHubContext<InvoiceHub> _invoiceHubContext;
 
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
-            IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
+            IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             NhanVienThucHienAppService nvthService,
-            IHoaDonRepository repoHoaDon, IExcelBase excelBase,
-             IRepository<DM_KhachHang, Guid> khachHangRepository,
+            IHoaDonRepository repoHoaDon,
+             ILoaiChungTuAppService loaiChungTuService,
+             IKhachHangAppService khachHangService,
+            IExcelBase excelBase,
              IHubContext<InvoiceHub> invoiceHubContext
         )
         {
             _hoaDonRepository = hoaDonRepository;
-            _nvThucHien = nvThucHien;
             _hoaDonChiTietRepository = hoaDonChiTietRepository;
             _hoaDonAnhRepository = hoaDonAnhRepository;
+            _nvThucHien = nvThucHien;
             _nvthService = nvthService;
             _repoHoaDon = repoHoaDon;
             _excelBase = excelBase;
-            _khachHangRepository = khachHangRepository;
+            _khachHangService = khachHangService;
             _invoiceHubContext = invoiceHubContext;
+            _loaiChungTuService = loaiChungTuService;
         }
+
+        [HttpPost]
+        /// <summary>
+        /// only insert to BH_HoaDon
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async Task<CreateHoaDonDto> InsertBH_HoaDon(CreateHoaDonDto dto)
+        {
+            BH_HoaDon objHD = ObjectMapper.Map<BH_HoaDon>(dto);
+
+            objHD.Id = Guid.NewGuid();
+            objHD.TenantId = AbpSession.TenantId ?? 1;
+            objHD.CreatorUserId = AbpSession.UserId;
+            objHD.CreationTime = DateTime.Now;
+            objHD.NgayLapHoaDon = ObjectHelper.AddTimeNow_forDate(objHD.NgayLapHoaDon);
+
+            if (string.IsNullOrEmpty(objHD.MaHoaDon))
+            {
+                var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, dto.IdChiNhanh, dto.IdLoaiChungTu, dto.NgayLapHoaDon);
+                objHD.MaHoaDon = maChungTu;
+            }
+            await _hoaDonRepository.InsertAsync(objHD);
+            var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
+            return result;
+        }
+
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
         public async Task<CreateHoaDonDto> CreateHoaDon(CreateHoaDonDto dto)
         {
@@ -123,53 +159,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
             await _invoiceHubContext.Clients.All.SendAsync("ReceiveInvoiceListReload", AbpSession.TenantId.HasValue ? AbpSession.TenantId.Value.ToString() : "null");
             return result;
         }
-        [AbpAuthorize(PermissionNames.Pages_HoaDon_Create)]
-        public async Task<CreateHoaDonDto> CreateHoaDon2([FromBody] JObject data)
-        {
-            List<BH_HoaDon_ChiTiet> lstCTHoaDon = new();
-            BH_HoaDon objHD = ObjectMapper.Map<BH_HoaDon>(data["hoadon"].ToObject<BH_HoaDon>());
-            List<BH_HoaDon_ChiTiet> dataChiTietHD = ObjectMapper.Map<List<BH_HoaDon_ChiTiet>>(data["hoadonChiTiet"].ToObject<List<BH_HoaDon_ChiTiet>>());
-
-            objHD.Id = Guid.NewGuid();
-            objHD.TenantId = AbpSession.TenantId ?? 1;
-            objHD.CreatorUserId = AbpSession.UserId;
-            objHD.CreationTime = DateTime.Now;
-
-            if (string.IsNullOrEmpty(objHD.MaHoaDon))
-            {
-                var maChungTu = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, objHD.IdChiNhanh ?? null,
-                    objHD.IdLoaiChungTu, objHD.NgayLapHoaDon);
-                objHD.MaHoaDon = maChungTu;
-            }
-            foreach (var item in dataChiTietHD)
-            {
-                BH_HoaDon_ChiTiet ctNew = ObjectMapper.Map<BH_HoaDon_ChiTiet>(item);
-                ctNew.Id = Guid.NewGuid();
-                ctNew.IdHoaDon = objHD.Id;
-                ctNew.TenantId = AbpSession.TenantId ?? 1;
-                ctNew.CreatorUserId = AbpSession.UserId;
-                ctNew.CreationTime = DateTime.Now;
-                lstCTHoaDon.Add(ctNew);
-                // toddo NVThucHien
-            }
-            await _hoaDonRepository.InsertAsync(objHD);
-            await _hoaDonChiTietRepository.InsertRangeAsync(lstCTHoaDon);
-
-            //objHD.BH_HoaDon_ChiTiet = lstCTHoaDon;
-            var result = ObjectMapper.Map<CreateHoaDonDto>(objHD);
-            result.HoaDonChiTiet = ObjectMapper.Map<List<HoaDonChiTietDto>>(lstCTHoaDon);
-            var khachHang = _khachHangRepository.FirstOrDefault(x => x.Id == objHD.IdKhachHang);
-            var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-            nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Update;
-            nhatKyThaoTacDto.IdChiNhanh = objHD.IdChiNhanh;
-            nhatKyThaoTacDto.ChucNang = "Hóa đơn";
-            nhatKyThaoTacDto.NoiDung = "Thêm hóa đơn: " + objHD.MaHoaDon;
-            nhatKyThaoTacDto.NoiDungChiTiet = string.Format("<div>Thêm hóa đơn {0}" +
-                "<p>Tên khách hàng: {1}</p>" +
-                "<p>Tổng tiền : {2}</p>" +
-            "</div>", objHD.MaHoaDon, khachHang != null ? khachHang.TenKhachHang : "", objHD.TongThanhToan);
-            return result;
-        }
         [HttpPost]
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Edit)]
         public async Task<CreateHoaDonDto> UpdateHoaDon(CreateHoaDonDto objUp)
@@ -182,7 +171,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
 
                 if (string.IsNullOrEmpty(objUp.MaHoaDon))
                 {
-                    objUp.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
+                    objUp.MaHoaDon = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
                 }
 
                 objOld = ObjectMapper.Map<BH_HoaDon>(objUp);
@@ -240,7 +229,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             {
                 if (string.IsNullOrEmpty(objUp.MaHoaDon))
                 {
-                    objOld.MaHoaDon = await _repoHoaDon.GetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
+                    objOld.MaHoaDon = await _repoHoaDon.FnGetMaHoaDon(AbpSession.TenantId ?? 1, objUp.IdChiNhanh, objUp.IdLoaiChungTu, objUp.NgayLapHoaDon);
                 }
                 else
                 {
@@ -592,10 +581,18 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 return false;
             }
         }
+        [HttpGet]
         public async Task<List<PageHoaDonDto>> GetInforHoaDon_byId(Guid id)
         {
             return await _repoHoaDon.GetInforHoaDon_byId(id);
         }
+        [HttpGet]
+        public bool CheckExists_MaHoaDon(string maHoaDon)
+        {
+            var data = _hoaDonRepository.GetAll().Where(x => x.MaHoaDon.Contains(maHoaDon)).Count() > 0;
+            return data;
+        }
+        [HttpGet]
         public async Task<List<PageHoaDonChiTietDto>> GetChiTietHoaDon_byIdHoaDon(Guid idHoaDon)
         {
             return await _repoHoaDon.GetChiTietHoaDon_byIdHoaDon(idHoaDon);
@@ -650,6 +647,187 @@ namespace BanHangBeautify.HoaDon.HoaDon
         public async Task<bool> CheckChiTietGDV_DaSuDung(Guid idChiTietGDV)
         {
             return await _repoHoaDon.CheckChiTietGDV_DaSuDung(idChiTietGDV);
+        }
+        [HttpGet]
+        public async Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang)
+        {
+            return await _repoHoaDon.GetSoDuTheGiaTri_ofKhachHang(idKhachHang);
+        }
+        [HttpPost]
+        public async Task<List<ExcelErrorDto>> CheckData_FileImportTonDauTGT(FileUpload file)
+        {
+            List<ExcelErrorDto> lstErr = new();
+            try
+            {
+                using MemoryStream stream = new MemoryStream(file.File);
+                using var package = new ExcelPackage();
+                package.Load(stream);
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+
+                // cột B: mã khách hàng (cột thứ 1), đọc từ dòng số 3 đến dòng rowCount
+                var errDuplicate = ObjectHelper.Excel_CheckDuplicateData(worksheet, "A", 1, 3, rowCount);
+                if (errDuplicate.Count > 0)
+                {
+                    foreach (var item in errDuplicate)
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = item.RowNumber,
+                            TenTruongDuLieu = "Mã khách hàng",
+                            GiaTriDuLieu = item.GiaTriDuLieu,
+                            DienGiai = "Mã khách hàng bị trùng lặp",
+                            LoaiErr = 1,
+                        });
+                    }
+                }
+                for (int i = 3; i <= rowCount; i++)
+                {
+                    bool rowEmpty = true;
+                    string maKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
+                    string tonDauTGT = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    string dataType_tonDauTGT = worksheet.Cells[i, 2].Value?.GetType()?.ToString();
+
+                    // nếu dòng trống: bỏ qua và nhảy sang dòng tiếp theo
+                    if (!string.IsNullOrEmpty(maKhachHang) || !string.IsNullOrEmpty(tonDauTGT))
+                    {
+                        rowEmpty = false;
+                    }
+                    if (rowEmpty) { continue; }
+
+
+                    if (string.IsNullOrEmpty(maKhachHang))
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = i,
+                            TenTruongDuLieu = "Mã khách hàng",
+                            GiaTriDuLieu = maKhachHang,
+                            DienGiai = "Mã khách hàng không được để trống",
+                            LoaiErr = 1,
+                        });
+                    }
+                    else
+                    {
+                        var checkExists = await _khachHangService.CheckExistMaKhachHang(maKhachHang);
+                        if (!checkExists)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Mã khách hàng",
+                                GiaTriDuLieu = maKhachHang,
+                                DienGiai = "Mã khách hàng chưa có trên hệ thống",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(tonDauTGT))
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = i,
+                            TenTruongDuLieu = "Tồn đầu thẻ",
+                            GiaTriDuLieu = tonDauTGT,
+                            DienGiai = "Tồn đầu thẻ không được để trống",
+                            LoaiErr = 1,
+                        });
+                    }
+                    else
+                    {
+                        bool isNumber = ObjectHelper.Excel_CheckNumber(dataType_tonDauTGT);
+                        if (!isNumber)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Tồn đầu thẻ",
+                                GiaTriDuLieu = tonDauTGT,
+                                DienGiai = "Tồn đầu thẻ không phải dạng số",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lstErr.Add(new ExcelErrorDto
+                {
+                    RowNumber = -1,
+                    TenTruongDuLieu = "Exception",
+                    GiaTriDuLieu = "",
+                    DienGiai = ex.Message.ToString(),
+                    LoaiErr = -1,
+                });
+            }
+            return lstErr;
+        }
+        public async Task<List<ExcelErrorDto>> ImportFileImportTonDauTGT(FileUpload file, Guid idChiNhanh)
+        {
+            List<ExcelErrorDto> lstErr = new();
+            try
+            {
+                using MemoryStream stream = new MemoryStream(file.File);
+                using var package = new ExcelPackage();
+                package.Load(stream);
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+
+                List<BH_HoaDon> lstHD = new List<BH_HoaDon>();
+                double maxMaHoaDon = await _repoHoaDon.GetMaxNumber_ofMaHoaDon(AbpSession.TenantId ?? 1, idChiNhanh, LoaiChungTuConst.DCTGT, DateTime.Now);
+
+                for (int i = 3; i <= rowCount; i++)
+                {
+                    bool rowEmpty = true;
+                    string maKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
+                    string tonDauTGT = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    double tonDauTGTNew = !string.IsNullOrEmpty(tonDauTGT) ? double.Parse(tonDauTGT) : 0;
+
+                    if (!string.IsNullOrEmpty(maKhachHang) || !string.IsNullOrEmpty(tonDauTGT))
+                    {
+                        rowEmpty = false;
+                    }
+                    if (rowEmpty) { continue; }
+
+                    Guid idKhachHang = await _khachHangService.GetIdKhachHang_byMaKhachHang(maKhachHang);
+                    string maHoaDon = await _loaiChungTuService.GetMaChungTuNew_fromMaxMaChungTu(maxMaHoaDon, LoaiChungTuConst.DCTGT);
+
+                    BH_HoaDon newObj = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        IdLoaiChungTu = LoaiChungTuConst.DCTGT,
+                        IdChiNhanh = idChiNhanh,
+                        IdKhachHang = idKhachHang,
+                        MaHoaDon = maHoaDon,
+                        NgayLapHoaDon = DateTime.Now,
+                        TongTienHang = tonDauTGTNew,
+                        TongTienHDSauVAT = tonDauTGTNew,
+                        TongThanhToan = tonDauTGTNew,
+                        TongTienHangChuaChietKhau = tonDauTGTNew,
+                        GhiChuHD = "Import tồn đầu thẻ giá trị",
+                        TrangThai = TrangThaiHoaDonConst.HOAN_THANH,
+                        CreatorUserId = AbpSession.UserId
+                    };
+                    lstHD.Add(newObj);
+
+                    maxMaHoaDon += 1;
+                }
+                await _hoaDonRepository.InsertRangeAsync(lstHD);
+            }
+            catch (Exception ex)
+            {
+                lstErr.Add(new ExcelErrorDto
+                {
+                    RowNumber = -1,
+                    TenTruongDuLieu = "Exception",
+                    GiaTriDuLieu = "",
+                    DienGiai = ex.Message.ToString(),
+                    LoaiErr = -1,
+                });
+            }
+            return lstErr;
         }
 
         [AbpAuthorize(PermissionNames.Pages_HoaDon_Export)]

@@ -21,31 +21,6 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
         public HoaDonRepository(IDbContextProvider<SPADbContext> dbContextProvider) : base(dbContextProvider)
         {
         }
-        public async Task<string> GetMaHoaDon(int tenantId, Guid? idChiNhanh, int idLoaiChungTu, DateTime ngayLapHoaDon)
-        {
-            using (var command = CreateCommand("spGetMaHoaDon"))
-            {
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
-                command.Parameters.Add(new SqlParameter("@IdLoaiChungTu", idLoaiChungTu));
-                command.Parameters.Add(new SqlParameter("@NgayLapHoaDon", ngayLapHoaDon));
-
-                using (var dataReader = await command.ExecuteReaderAsync())
-                {
-                    string[] array = { "Data" };
-                    var ds = new DataSet();
-                    ds.Load(dataReader, LoadOption.OverwriteChanges, array);
-                    var ddd = ds.Tables;
-
-                    if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-                    {
-                        var cxx = ObjectHelper.FillCollection<string>(ds.Tables[0]).ToString();
-                        return ObjectHelper.FillCollection<string>(ds.Tables[0]).ToString();
-                    }
-                }
-                return string.Empty;
-            }
-        }
         public async Task<string> FnGetMaHoaDon(int tenantId, Guid? idChiNhanh, int idLoaiChungTu, DateTime? ngayLapHoaDon)
         {
             using var command = CreateCommand("select dbo.fnGetMaHoaDon(@TenantId,@IdChiNhanh,@IdLoaiChungTu,@NgayLapHoaDon) ", System.Data.CommandType.Text);
@@ -55,6 +30,16 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
             command.Parameters.Add(new SqlParameter("@NgayLapHoaDon", ngayLapHoaDon ?? DateTime.Now));
             var code = (await command.ExecuteScalarAsync()).ToString();
             return code;
+        }
+        public async Task<double> GetMaxNumber_ofMaHoaDon(int tenantId, Guid? idChiNhanh, int idLoaiChungTu, DateTime? ngayLapHoaDon)
+        {
+            using var command = CreateCommand("select dbo.fnGetMaxNumber_ofMaHoaDon(@TenantId,@IdChiNhanh,@IdLoaiChungTu,@NgayLapHoaDon) ", System.Data.CommandType.Text);
+            command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
+            command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh ?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdLoaiChungTu", idLoaiChungTu));
+            command.Parameters.Add(new SqlParameter("@NgayLapHoaDon", ngayLapHoaDon ?? DateTime.Now));
+            var data = await command.ExecuteScalarAsync();
+            return Convert.ToDouble(data);
         }
         public async Task<PagedResultDto<PageHoaDonDto>> GetListHoaDon(HoaDonRequestDto param, int? tenantId = 1)
         {
@@ -261,6 +246,13 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
             command.Parameters.Add(new SqlParameter("@IdChiTietGDV", idGoiDV));
             var data = await command.ExecuteScalarAsync();
             return data != null && Convert.ToBoolean(data);
+        } 
+        public async Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang)
+        {
+            using var command = CreateCommand("select dbo.FnGetSoDuTheGiaTri_ofKhachHang (@IdKhachHang) ", System.Data.CommandType.Text);
+            command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
+            var data = await command.ExecuteScalarAsync();
+            return Convert.ToDouble(data);
         }
     }
 }
