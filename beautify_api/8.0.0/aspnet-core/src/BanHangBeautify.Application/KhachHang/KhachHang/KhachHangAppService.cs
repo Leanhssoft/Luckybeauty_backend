@@ -362,6 +362,16 @@ namespace BanHangBeautify.KhachHang.KhachHang
             }
         }
         [HttpGet]
+        public async Task<Guid> GetIdKhachHang_byMaKhachHang(string maKhachHang)
+        {
+            var lst = await _repository.GetAllListAsync(x => x.MaKhachHang == maKhachHang);
+            if (lst.Count > 0)
+            {
+                return lst.FirstOrDefault().Id;
+            }
+            return Guid.Empty;
+        }
+        [HttpGet]
         public async Task<bool> CheckExistMaKhachHang(string makhachhang, Guid? id = null)
         {
             if (id != null && id != Guid.Empty)
@@ -455,87 +465,6 @@ namespace BanHangBeautify.KhachHang.KhachHang
             model = (List<KhachHangView>)data.Items.Where(x => IdKhachHangs.Contains(x.Id)).ToList();
             return _khachHangExcelExporter.ExportDanhSachKhachHang(model);
         }
-
-        [HttpPost]
-        [AbpAuthorize(PermissionNames.Pages_KhachHang_Import)]
-        [UnitOfWork(IsolationLevel.ReadUncommitted)]
-        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
-        {
-            ExecuteResultDto result = new ExecuteResultDto();
-            try
-            {
-                int countImportData = 0;
-                int countImportLoi = 0;
-                if (file.Type == ".xlsx")
-                {
-                    using (MemoryStream stream = new MemoryStream(file.File))
-                    {
-                        using (var package = new ExcelPackage())
-                        {
-                            package.Load(stream);
-                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
-
-                            int rowCount = worksheet.Dimension.Rows;
-
-                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
-                            {
-                                CreateOrEditKhachHangDto data = new CreateOrEditKhachHangDto();
-                                data.Id = Guid.NewGuid();
-                                data.TenKhachHang = worksheet.Cells[row, 2].Value?.ToString();
-                                data.SoDienThoai = worksheet.Cells[row, 3].Value?.ToString();
-                                var checkPhoneNumber = await _repository.FirstOrDefaultAsync(x => x.SoDienThoai == data.SoDienThoai);
-                                await UnitOfWorkManager.Current.SaveChangesAsync();
-                                if (checkPhoneNumber != null || data.TenKhachHang == null || data.SoDienThoai == null)
-                                {
-                                    countImportLoi++;
-                                    continue;
-                                }
-                                if (!string.IsNullOrEmpty(worksheet.Cells[row, 4].Value?.ToString()))
-                                {
-                                    data.NgaySinh = DateTime.Parse(worksheet.Cells[row, 4].Value.ToString());
-                                }
-
-                                data.DiaChi = worksheet.Cells[row, 5].Value?.ToString();
-                                data.Email = worksheet.Cells[row, 7].Value?.ToString();
-                                if (worksheet.Cells[row, 6].Value?.ToString().ToLower() == "nam")
-                                {
-                                    data.GioiTinhNam = true;
-                                }
-                                else
-                                {
-                                    data.GioiTinhNam = false;
-                                }
-                                data.TongTichDiem = 0;
-                                data.TrangThai = 1;
-                                data.KieuNgaySinh = 1;
-                                await CreateKhachHang(data);
-                                countImportData++;
-                            }
-
-                        }
-                        if (countImportData > 0)
-                        {
-                            result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
-                            result.Status = "success";
-                        }
-                        else
-                        {
-                            result.Message = "Không có dữ liệu được nhập";
-                            result.Status = "info";
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
-                result.Status = "error";
-                result.Detail = ex.Message;
-            }
-
-            return result;
-        }
-
 
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]

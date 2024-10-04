@@ -9,7 +9,9 @@ namespace BanHangBeautify.KhachHang.KhachHang
 {
     public interface IKhachHangAppService
     {
+        Task<Guid> GetIdKhachHang_byMaKhachHang(string maKhachHang);
         Task<bool> CheckExistSoDienThoai(string phone, Guid? id = null);
+        Task<bool> CheckExistMaKhachHang(string makhachhang, Guid? id = null);
         Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto);
         Task<List<Guid>> GetListCustomerId_byPhone(string phone);
         Task<bool> Update_IdKhachHangZOA(Guid idCustomer, Guid? idKhachHangZOA);
