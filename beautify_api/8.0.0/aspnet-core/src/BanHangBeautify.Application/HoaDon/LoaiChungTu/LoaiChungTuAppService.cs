@@ -5,6 +5,7 @@ using Abp.Domain.Uow;
 using BanHangBeautify.Authorization;
 using BanHangBeautify.Entities;
 using BanHangBeautify.HoaDon.ChungTu.Dto;
+using BanHangBeautify.HoaDon.LoaiChungTu;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,14 +15,12 @@ using System.Threading.Tasks;
 namespace BanHangBeautify.HoaDon.ChungTu
 {
     [AbpAuthorize(PermissionNames.Pages_LoaiChungTu)]
-    public class LoaiChungTuAppService : SPAAppServiceBase
+    public class LoaiChungTuAppService : SPAAppServiceBase, ILoaiChungTuAppService
     {
         private readonly IRepository<DM_LoaiChungTu> _loaiChungTuRepository;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
-        public LoaiChungTuAppService(IRepository<DM_LoaiChungTu> loaiChungTuRepository, IUnitOfWorkManager unitOfWorkManager)
+        public LoaiChungTuAppService(IRepository<DM_LoaiChungTu> loaiChungTuRepository)
         {
             _loaiChungTuRepository = loaiChungTuRepository;
-            _unitOfWorkManager = unitOfWorkManager;
         }
 
         [AbpAuthorize(PermissionNames.Pages_LoaiChungTu_Create, PermissionNames.Pages_LoaiChungTu_Delete)]
@@ -88,7 +87,7 @@ namespace BanHangBeautify.HoaDon.ChungTu
         public async Task<PagedResultDto<DM_LoaiChungTu>> GetAll()
         {
             PagedResultDto<DM_LoaiChungTu> result = new PagedResultDto<DM_LoaiChungTu>();
-            using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))// tắt bộ lọc tenantId
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))// tắt bộ lọc tenantId
             {
                 var data = await _loaiChungTuRepository.GetAll().Where(x => x.IsDeleted == false).ToListAsync();
                 result.TotalCount = data.Count;
@@ -96,6 +95,29 @@ namespace BanHangBeautify.HoaDon.ChungTu
             }
             return result;
         }
-
+        public async Task<string> GetMaChungTuNew_fromMaxMaChungTu(double maxMaChungTu, byte idLoaiChungTu)
+        {
+            var data = await _loaiChungTuRepository.FirstOrDefaultAsync(x => x.Id == idLoaiChungTu);
+            if (data != null)
+            {
+                string maChungTu = data.MaLoaiChungTu;
+                if (maxMaChungTu < 10)
+                {
+                    return string.Concat(maChungTu, "00", maxMaChungTu);
+                }
+                else
+                {
+                    if (maxMaChungTu < 100)
+                    {
+                        return string.Concat(maChungTu, "0", maxMaChungTu);
+                    }
+                }
+                return string.Concat(maChungTu, maxMaChungTu);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
     }
 }
