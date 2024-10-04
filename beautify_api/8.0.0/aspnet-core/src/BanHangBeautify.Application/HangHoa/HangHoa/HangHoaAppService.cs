@@ -29,8 +29,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using BanHangBeautify.AppCommon;
 using static BanHangBeautify.AppCommon.CommonClass;
-using static BanHangBeautify.AppCommon.ObjectHelper;
 
 namespace BanHangBeautify.HangHoa.HangHoa
 {
@@ -105,7 +105,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     string maHangHoa = item.MaHangHoa;
                     if (string.IsNullOrEmpty(maHangHoa))
                     {
-                        MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                        CommonClass.MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                         max = objMax.MaxVal;
                         maHangHoa = FormatMaHangHoa(objMax.FirstStr, max);
                     }
@@ -121,7 +121,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
             }
             else
             {
-                MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                CommonClass.MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                 DM_DonViQuiDoi dvt = new()
                 {
                     Id = Guid.NewGuid(),
@@ -175,7 +175,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     string maHangHoa = item.MaHangHoa;
                     if (string.IsNullOrEmpty(maHangHoa))
                     {
-                        MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                        CommonClass.MaxCodeDto  objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                         maHangHoa = FormatMaHangHoa(objMax.FirstStr, objMax.MaxVal);
                     }
                     objDVT.MaHangHoa = maHangHoa;
@@ -190,7 +190,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     string maHangHoa = item.MaHangHoa;
                     if (string.IsNullOrEmpty(maHangHoa))
                     {
-                        MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                        CommonClass.MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                         maHangHoa = FormatMaHangHoa(objMax.FirstStr, objMax.MaxVal);
                     }
                     DM_DonViQuiDoi dvtNew = ObjectMapper.Map<DM_DonViQuiDoi>(item);
@@ -383,105 +383,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
         }
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
-        [AbpAuthorize(PermissionNames.Pages_DM_HangHoa_Import)]
-        public async Task<ExecuteResultDto> ImportExcel(FileUpload file)
-        {
-            ExecuteResultDto result = new ExecuteResultDto();
-            try
-            {
-                int countImportData = 0;
-                int countImportLoi = 0;
-                if (file.Type == ".xlsx")
-                {
-                    using (MemoryStream stream = new MemoryStream(file.File))
-                    {
-                        using (var package = new ExcelPackage())
-                        {
-                            package.Load(stream);
-                            ExcelWorksheet worksheet = package.Workbook.Worksheets[0]; // Assuming data is on the first worksheet
-                            int rowCount = worksheet.Dimension.Rows;
-
-                            for (int row = 3; row <= rowCount; row++) // Assuming the first row is the header row
-                            {
-                                CreateOrEditHangHoaDto data = new CreateOrEditHangHoaDto();
-                                data.Id = Guid.NewGuid();
-                                data.TenHangHoa = worksheet.Cells[row, 3].Value?.ToString();
-                                switch (worksheet.Cells[row, 6].Value?.ToString())
-                                {
-                                    case "HH":
-                                        data.IdLoaiHangHoa = 1;
-                                        break;
-                                    case "DV":
-                                        data.IdLoaiHangHoa = 2;
-                                        break;
-                                    case "CB":
-                                        data.IdLoaiHangHoa = 3;
-                                        break;
-                                    default:
-                                        data.IdLoaiHangHoa = 1;
-                                        break;
-                                }
-                                string maHangHoa = worksheet.Cells[row, 2].Value?.ToString();
-                                if (string.IsNullOrEmpty(maHangHoa))
-                                {
-                                    MaxCodeDto objMax = await _repository.SpGetProductCode(data.IdLoaiHangHoa, AbpSession.TenantId ?? 1);
-                                    float? max = objMax.MaxVal;
-                                    maHangHoa = FormatMaHangHoa(objMax.FirstStr, max);
-                                }
-                                data.DonViQuiDois = new List<DonViQuiDoiDto>()
-                                {
-
-                                    new DonViQuiDoiDto(){
-                                        GiaBan = float.Parse(worksheet.Cells[row,4].Value?.ToString()??"0"),
-                                        LaDonViTinhChuan = 1,
-                                        TyLeChuyenDoi = 1,
-                                        MaHangHoa = maHangHoa,
-
-                                    }
-                                };
-                                float soPhutThucHien = float.Parse(worksheet.Cells[row, 5].Value?.ToString() ?? "0");
-                                if (soPhutThucHien > 0)
-                                {
-                                    data.SoPhutThucHien = soPhutThucHien;
-                                }
-                                data.MoTa = worksheet.Cells[row, 7].Value?.ToString();
-                                await Create(data);
-                                countImportData++;
-                            }
-
-                        }
-                        if (countImportData > 0)
-                        {
-                            result.Message = "Nhập dữ liệu thành công: " + countImportData.ToString() + " bản ghi! Lỗi: " + countImportLoi.ToString();
-                            result.Status = "success";
-                        }
-                        else
-                        {
-                            result.Message = "Không có dữ liệu được nhập";
-                            result.Status = "info";
-                        }
-                        var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                        nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
-                        nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
-                        nhatKyThaoTacDto.NoiDung = "Nhập danh sách Hàng hóa - Dịch vụ";
-                        nhatKyThaoTacDto.NoiDungChiTiet = "Nhập danh sách Hàng hóa - Dịch vụ";
-                        await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result.Message = "Có lỗi xảy ra trong quá trình import dữ liệu";
-                result.Status = "error";
-                result.Detail = ex.Message;
-            }
-
-            return result;
-        }
-
-        [HttpPost]
-        [UnitOfWork(IsolationLevel.ReadUncommitted)]
-        public async Task<List<ExcelErrorDto>> ImportFile_DanhMucHangHoa(FileUpload file)
+        public async Task<List<CommonClass.ExcelErrorDto>> ImportFile_DanhMucHangHoa(FileUpload file)
         {
             List<ExcelErrorDto> lstErr = new();
             try
@@ -506,7 +408,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
 
                 #region Check dữ liệu file
                 // cột B: mã dịch vụ (cột thứ 2), đọc bắt đàu từ dòng số 3 --> rowCount
-                var errDuplicate = Excel_CheckDuplicateData(worksheet, "B", 2, 3, rowCount);
+                var errDuplicate = ObjectHelper.Excel_CheckDuplicateData(worksheet, "B", 2, 3, rowCount);
                 if (errDuplicate.Count > 0)
                 {
                     foreach (var item in errDuplicate)
@@ -606,7 +508,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
 
                     if (!string.IsNullOrEmpty(giaban))
                     {
-                        bool isNumber = Excel_CheckNumber(dataType_giaBan);
+                        bool isNumber = ObjectHelper.Excel_CheckNumber(dataType_giaBan);
                         if (!isNumber)
                         {
                             lstErr.Add(new ExcelErrorDto
@@ -621,7 +523,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     }
                     if (!string.IsNullOrEmpty(sophutThucHien))
                     {
-                        bool isNumber = Excel_CheckNumber(dataType_sophut);
+                        bool isNumber = ObjectHelper.Excel_CheckNumber(dataType_sophut);
                         if (!isNumber)
                         {
                             lstErr.Add(new ExcelErrorDto
@@ -635,15 +537,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                         }
                     }
                 }
-
                 #endregion
-
-                var nhatKyThaoTacDto = new CreateNhatKyThaoTacDto();
-                nhatKyThaoTacDto.LoaiNhatKy = LoaiThaoTacConst.Import;
-                nhatKyThaoTacDto.ChucNang = "Hàng hóa - Dịch vụ";
-                nhatKyThaoTacDto.NoiDung = "Nhập danh sách danh mục Hàng hóa - Dịch vụ";
-                nhatKyThaoTacDto.NoiDungChiTiet = "Nhập danh sách danh mục Hàng hóa - Dịch vụ";
-                await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             }
             catch (Exception ex)
             {
