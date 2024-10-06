@@ -20,6 +20,6 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
         Task<PagedResultDto<ChiTietNhatKySuDungGDVDto>> GetNhatKySuDungGDV_ofKhachHang(ParamSearchNhatKyGDV param);
         Task<bool> CheckGDV_DaSuDung(Guid idHoaDon);
         Task<bool> CheckChiTietGDV_DaSuDung(Guid idGoiDV);
-        Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang);
+        Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang, DateTime? toDate = null);
     }
 }

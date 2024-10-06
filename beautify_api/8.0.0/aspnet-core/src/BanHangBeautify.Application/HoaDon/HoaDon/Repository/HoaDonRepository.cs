@@ -8,6 +8,7 @@ using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -139,36 +140,36 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
             var db = GetDbContext();
             var thisCTHD = (db.Set<BH_HoaDon_ChiTiet>()).Where(x => x.Id == idChiTiet);
             var data = (from ct in thisCTHD
-                       join qd in db.Set<DM_DonViQuiDoi>() on ct.IdDonViQuyDoi equals qd.Id
-                       join hh in db.Set<DM_HangHoa>() on qd.IdHangHoa equals hh.Id
-                       select new PageHoaDonChiTietDto
-                       {
-                           TenantId = ct.TenantId,
-                           Id = ct.Id,
-                           IdHoaDon = ct.IdHoaDon,
-                           IdDonViQuyDoi = ct.IdDonViQuyDoi,
-                           IdChiTietHoaDon = ct.IdChiTietHoaDon,
-                           IdHangHoa = hh.Id,
-                           MaHangHoa = qd.MaHangHoa,
-                           TenHangHoa = hh.TenHangHoa,
-                           TenDonViTinh = qd.TenDonViTinh,
-                           GiaBan = qd.GiaBan,
-                           STT = ct.STT,
-                           SoLuong = ct.SoLuong,
-                           DonGiaTruocCK = ct.DonGiaTruocCK,
-                           PTChietKhau = ct.PTChietKhau,
-                           TienChietKhau = ct.TienChietKhau,
-                           DonGiaSauCK = ct.DonGiaSauCK,
-                           PTThue = ct.PTThue,
-                           TienThue = ct.TienThue,
-                           DonGiaSauVAT = ct.DonGiaSauVAT,
-                           ThanhTienTruocCK = ct.ThanhTienTruocCK,
-                           ThanhTienSauCK = ct.ThanhTienSauCK,
-                           ThanhTienSauVAT = ct.ThanhTienSauVAT,
-                           GhiChu = ct.GhiChu,
-                           TrangThai = ct.TrangThai,
-                           TonLuyKe = ct.TonLuyKe
-                       }).ToList().FirstOrDefault();
+                        join qd in db.Set<DM_DonViQuiDoi>() on ct.IdDonViQuyDoi equals qd.Id
+                        join hh in db.Set<DM_HangHoa>() on qd.IdHangHoa equals hh.Id
+                        select new PageHoaDonChiTietDto
+                        {
+                            TenantId = ct.TenantId,
+                            Id = ct.Id,
+                            IdHoaDon = ct.IdHoaDon,
+                            IdDonViQuyDoi = ct.IdDonViQuyDoi,
+                            IdChiTietHoaDon = ct.IdChiTietHoaDon,
+                            IdHangHoa = hh.Id,
+                            MaHangHoa = qd.MaHangHoa,
+                            TenHangHoa = hh.TenHangHoa,
+                            TenDonViTinh = qd.TenDonViTinh,
+                            GiaBan = qd.GiaBan,
+                            STT = ct.STT,
+                            SoLuong = ct.SoLuong,
+                            DonGiaTruocCK = ct.DonGiaTruocCK,
+                            PTChietKhau = ct.PTChietKhau,
+                            TienChietKhau = ct.TienChietKhau,
+                            DonGiaSauCK = ct.DonGiaSauCK,
+                            PTThue = ct.PTThue,
+                            TienThue = ct.TienThue,
+                            DonGiaSauVAT = ct.DonGiaSauVAT,
+                            ThanhTienTruocCK = ct.ThanhTienTruocCK,
+                            ThanhTienSauCK = ct.ThanhTienSauCK,
+                            ThanhTienSauVAT = ct.ThanhTienSauVAT,
+                            GhiChu = ct.GhiChu,
+                            TrangThai = ct.TrangThai,
+                            TonLuyKe = ct.TonLuyKe
+                        }).ToList().FirstOrDefault();
             return data;
         }
         public async Task<List<ChiTietSuDungGDV>> GetChiTiet_SuDungGDV_ofCustomer(ParamSearchNhatKyGDV param)
@@ -209,7 +210,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
         {
             using var command = CreateCommand("GetNhatKySuDungGDV_ofKhachHang");
             command.Parameters.Add(new SqlParameter("@IdCustomer", param?.IdCustomer ?? (object)DBNull.Value));
-            command.Parameters.Add(new SqlParameter("@IdGoiDichVu", param?.IdGoiDichVu?? (object)DBNull.Value));
+            command.Parameters.Add(new SqlParameter("@IdGoiDichVu", param?.IdGoiDichVu ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@TextSearch", param?.TextSearch ?? (object)DBNull.Value));
             command.Parameters.Add(new SqlParameter("@CurrentPage", param?.CurrentPage ?? 0));
             command.Parameters.Add(new SqlParameter("@PageSize", param?.PageSize ?? 10));
@@ -239,18 +240,19 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
             command.Parameters.Add(new SqlParameter("@IdGoiDV", idGoiDV));
             var data = await command.ExecuteScalarAsync();
             return data != null && Convert.ToBoolean(data);
-        } 
+        }
         public async Task<bool> CheckChiTietGDV_DaSuDung(Guid idGoiDV)
         {
             using var command = CreateCommand("select dbo.FnCheckChiTietGDV_DaSuDung (@IdChiTietGDV) ", System.Data.CommandType.Text);
             command.Parameters.Add(new SqlParameter("@IdChiTietGDV", idGoiDV));
             var data = await command.ExecuteScalarAsync();
             return data != null && Convert.ToBoolean(data);
-        } 
-        public async Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang)
+        }
+        public async Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang, DateTime? toDate = null)
         {
-            using var command = CreateCommand("select dbo.FnGetSoDuTheGiaTri_ofKhachHang (@IdKhachHang) ", System.Data.CommandType.Text);
+            using var command = CreateCommand("select dbo.FnGetSoDuTheGiaTri_ofKhachHang (@IdKhachHang, @ToDate) ", System.Data.CommandType.Text);
             command.Parameters.Add(new SqlParameter("@IdKhachHang", idKhachHang));
+            command.Parameters.Add(new SqlParameter("@ToDate", toDate ?? (object)DBNull.Value));
             var data = await command.ExecuteScalarAsync();
             return Convert.ToDouble(data);
         }
