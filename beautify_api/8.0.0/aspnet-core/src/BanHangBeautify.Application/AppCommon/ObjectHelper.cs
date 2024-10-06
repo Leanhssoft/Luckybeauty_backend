@@ -235,55 +235,6 @@ namespace BanHangBeautify.AppCommon
             return safeValue;
         }
 
-        public static List<T> FillCollection<T>(IDataReader _dr)
-        {
-            List<T> _list = new List<T>();
-            try
-            {
-                while (_dr.Read())
-                {
-                    T objTarget = Activator.CreateInstance<T>();
-                    foreach (PropertyInfo property in objTarget.GetType().GetProperties())
-                    {
-                        try
-                        {
-                            if (property != null)
-                            {
-                                if (_dr.GetOrdinal(property.Name) >= 0 && !(!property.CanWrite || Convert.IsDBNull(_dr[property.Name])))
-                                {
-                                    Type t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                                    var value = _dr[property.Name];
-                                    object safeValue = value == null ? null
-                                                                       : Convert.ChangeType(value, t);
-
-                                    property.SetValue(objTarget, safeValue, null);
-
-                                    //property.SetValue(objTarget, Convert.ChangeType(_dr[property.Name], property.PropertyType), null);
-                                }
-                            }
-                        }
-                        catch (InvalidCastException)
-                        {
-                            property.SetValue(objTarget, null, null);
-                        }
-                        catch (IndexOutOfRangeException)
-                        {
-                            //if (property.GetSetMethod() != null)
-                            //    property.SetValue(objTarget, null, null);
-                        }
-                    }
-                    if (_list.IndexOf(objTarget) < 0)
-                    {
-                        _list.Add(objTarget);
-                    }
-                }
-            }
-            finally
-            {
-                _dr.Close();
-            }
-            return _list;
-        }
 
         public static List<T> FillCollection<T>(DataSet ds, string propertyNames)
         {
@@ -630,23 +581,6 @@ namespace BanHangBeautify.AppCommon
             return type.GetProperties()
                 .Where(p => p.IsDefined(typeof(DisplayAttribute), false) && p.GetCustomAttributes(typeof(DisplayAttribute), false).Cast<DisplayAttribute>().Single().Name == attributeName)
                 .FirstOrDefault();
-        }
-
-        public static T ToObject<T>(this DataRow dataRow) where T : new()
-        {
-            T item = new T();
-
-            foreach (DataColumn column in dataRow.Table.Columns)
-            {
-                var property = GetProperty(typeof(T), column.ColumnName);
-
-                if (property != null && dataRow[column] != DBNull.Value && dataRow[column].ToString() != "NULL")
-                {
-                    property.SetValue(item, ChangeType(dataRow[column], property.PropertyType), null);
-                }
-            }
-
-            return item;
         }
 
         private static object ChangeType(object value, Type type)
