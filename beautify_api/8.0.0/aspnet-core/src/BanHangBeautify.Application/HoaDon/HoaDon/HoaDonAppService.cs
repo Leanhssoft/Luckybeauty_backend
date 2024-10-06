@@ -649,9 +649,9 @@ namespace BanHangBeautify.HoaDon.HoaDon
             return await _repoHoaDon.CheckChiTietGDV_DaSuDung(idChiTietGDV);
         }
         [HttpGet]
-        public async Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang)
+        public async Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang, DateTime? toDate = null)
         {
-            return await _repoHoaDon.GetSoDuTheGiaTri_ofKhachHang(idKhachHang);
+            return await _repoHoaDon.GetSoDuTheGiaTri_ofKhachHang(idKhachHang, toDate);
         }
         [HttpPost]
         public async Task<List<ExcelErrorDto>> CheckData_FileImportTonDauTGT(FileUpload file)
@@ -854,7 +854,79 @@ namespace BanHangBeautify.HoaDon.HoaDon
                 x.ConNo,
                 x.TxtTrangThaiHD
             }).ToList();
-            return _excelBase.WriteToExcel(@"DanhSachHoaDon_", @"GiaoDichThanhToan_Export_Template.xlsx", dtNew, 4, null, 10);
+
+            var tieuDe = "DANH SÁCH HÓA ĐƠN";
+            var fileName = @"DanhSachHoaDon_"; ;
+            if (input?.IdLoaiChungTus?.Count > 0)
+            {
+                switch (Convert.ToInt32(input?.IdLoaiChungTus[0]))
+                {
+                    case LoaiChungTuConst.GDV:
+                        {
+                            tieuDe = "DANH SÁCH GÓI DỊCH VỤ";
+                            fileName = "DanhSachGDV_";
+                        }
+                        break;
+                }
+            }
+
+            List<Excel_CellData> lst = new()
+            {
+                new Excel_CellData{RowIndex = 1, ColumnIndex = 1, CellValue= tieuDe}
+            };
+            return _excelBase.WriteToExcel(fileName, @"GiaoDichThanhToan_Export_Template.xlsx", dtNew, 4, lst, 10);
+        }
+        public async Task<FileDto> ExportDanhSach_TheGiaTri(HoaDonRequestDto input)
+        {
+            input.TextSearch = (input.TextSearch ?? string.Empty).Trim();
+            input.CurrentPage = 1;
+            input.PageSize = int.MaxValue;
+            if (input != null)
+            {
+                input.IdUserLogin = AbpSession?.UserId ?? 1;
+            }
+            var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
+            List<PageHoaDonDto> lstHD = (List<PageHoaDonDto>)data.Items;
+            var dtNew = lstHD.Select(x =>
+            new
+            {
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.TongTienHang,
+                x.TongGiamGiaHD,
+                x.TongThanhToan,
+                x.DaThanhToan,
+                x.ConNo,
+                x.GhiChuHD,
+            }).ToList();
+
+            return _excelBase.WriteToExcel(@"DanhSachTGT_", @"Giaodich\Template_DanhSachTheGiaTri.xlsx", dtNew, 4, null, 10);
+        }
+        public async Task<FileDto> ExportDanhSach_PhieuDieuChinh(HoaDonRequestDto input)
+        {
+            input.TextSearch = (input.TextSearch ?? string.Empty).Trim();
+            input.CurrentPage = 1;
+            input.PageSize = int.MaxValue;
+            if (input != null)
+            {
+                input.IdUserLogin = AbpSession?.UserId ?? 1;
+            }
+            var data = await _repoHoaDon.GetListHoaDon(input, AbpSession.TenantId ?? 1);
+            List<PageHoaDonDto> lstHD = (List<PageHoaDonDto>)data.Items;
+            var dtNew = lstHD.Select(x =>
+            new
+            {
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.TongTienHang,
+                x.GhiChuHD
+            }).ToList();
+
+            return _excelBase.WriteToExcel(@"DanhSachPhieuDieuChinh_", @"Giaodich\Template_DanhSachPhieuDieuChinh.xlsx", dtNew, 4, null, 10);
         }
         [HttpGet]
         public async Task<FileDto> ExportHoaDon_byId(Guid idHoaDon)
