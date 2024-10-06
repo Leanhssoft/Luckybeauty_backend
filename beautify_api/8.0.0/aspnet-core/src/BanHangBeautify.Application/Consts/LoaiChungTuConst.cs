@@ -17,5 +17,6 @@
         public const int DCGV = 13; //Điều chỉnh giá vốn
         public const int NH = 14;// Nhận hàng
         public const int Booking = 15;// Booking
+        public const int DCTGT = 16;// DDieu chinh so du TGT
     }
 }
