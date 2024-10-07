@@ -11,6 +11,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Dto
     } 
     public class ParamSearchNhatKyGDV : ParamSearch
     {
+        public List<string> IdLoaiChungTus { get; set; }
         public string IdCustomer { get; set; }
         public Guid? IdGoiDichVu { get; set; }
     }
