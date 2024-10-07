@@ -10,9 +10,11 @@ using BanHangBeautify.BaoCao.BaoCaoLichHen.Dto;
 using BanHangBeautify.BaoCao.BaoCaoLichHen.Respository;
 using BanHangBeautify.BaoCao.BaoCaoSoQuy.Dto;
 using BanHangBeautify.BaoCao.BaoCaoSoQuy.Repository;
+using BanHangBeautify.BaoCao.BaoCaoTheGiaTri;
 using BanHangBeautify.BaoCao.Exporting;
 using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.HangHoa.HangHoa.Dto;
+using BanHangBeautify.HoaDon.HoaDon.Dto;
 using BanHangBeautify.HoaDon.HoaDonChiTiet.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.SMS.Dto;
@@ -36,6 +38,7 @@ namespace BanHangBeautify.BaoCao
         IBaoCaoSoQuyRepository _baoCaoSoQuyRepository;
         IBaoCaoHoaHongRepository _baoCaoHoaHongRepository;
         IBaoCaoGoiDVRepository _baocaoGDVRepository;
+        IBaoCaoTGTRepository _baocaoTGTRepository;
         IBaoCaoExcelExporter _baoCaoExcelExporter;
         private readonly IExcelBase _excelBase;
         public BaoCaoAppService(
@@ -45,6 +48,7 @@ namespace BanHangBeautify.BaoCao
             IBaoCaoSoQuyRepository baoCaoSoQuyRepository,
             IBaoCaoHoaHongRepository baoCaoHoaHongRepository,
             IBaoCaoGoiDVRepository baocaoGDVRepository,
+            IBaoCaoTGTRepository baocaoTGTRepository,
             IExcelBase excelBase
         )
         {
@@ -54,6 +58,7 @@ namespace BanHangBeautify.BaoCao
             _baoCaoSoQuyRepository = baoCaoSoQuyRepository;
             _baoCaoHoaHongRepository = baoCaoHoaHongRepository;
             _baocaoGDVRepository = baocaoGDVRepository;
+            _baocaoTGTRepository = baocaoTGTRepository;
             _excelBase = excelBase;
         }
         #region Báo cáo bán hàng
@@ -494,6 +499,48 @@ namespace BanHangBeautify.BaoCao
             };
             return _excelBase.WriteToExcel("BaoCaoGDV_NhatKySuDung_", @"BaoCao\BaoCaoGDV_NhatKySuDung.xlsx", dataNew, 6, lst);
         }
+        #endregion
+
+        #region bc TGT
+        [HttpPost]
+        public async Task<dynamic> GetNhatKySuDungTGT_ChiTiet(ParamSearchNhatKyGDV input)
+        {
+            try
+            {
+                PagedResultDto<NhatKySuDungTGTDto> data = await _baocaoTGTRepository.GetNhatKySuDungTGT_ChiTiet(input);
+                return data;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+        [HttpPost]
+        public async Task<FileDto> ExportToExcel_BaoCaoSuDungTGTChiTiet(ParamSearchNhatKyGDV input)
+        {
+            PagedResultDto<NhatKySuDungTGTDto> data = await _baocaoTGTRepository.GetNhatKySuDungTGT_ChiTiet(input);
+            var dataExcel = ObjectMapper.Map<List<NhatKySuDungTGTDto>>(data.Items);
+            var dataNew = dataExcel.Select(x => new
+            {
+                x.SLoaiChungTu,
+                x.MaHoaDon,
+                x.NgayLapHoaDon,
+                x.MaKhachHang,
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.GtriDieuChinh,
+                x.PhatSinhTang,
+                x.PhatSinhGiam
+            }).ToList();
+            List<Excel_CellData> lst = new()
+            {
+                new Excel_CellData { RowIndex = 2, ColumnIndex = 1, CellValue = $"Thời gian: {input.FromDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}" +
+                    $" - {input.ToDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)}"
+             },
+            };
+            return _excelBase.WriteToExcel("BaoCaoGDV_NhatKySuDung_", @"BaoCao\BaoCaoTGT_NhatKySuDung.xlsx", dataNew, 6, lst);
+        }
+
         #endregion
     }
 }
