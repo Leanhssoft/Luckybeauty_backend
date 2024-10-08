@@ -64,6 +64,7 @@
 		<text name="Roles">Vai trò</text>
 		<text name="DisplayName">Tên hiển thị</text>
 		<text name="Edit">Chỉnh sửa</text>
+		<text name="EditDetails">Thay đổi chi tiết hóa đơn</text>
 		<text name="Delete">Xóa</text>
 		<text name="CreateNewRole">Tạo vai trò mới</text>
 		<text name="RoleName">Tên vai trò</text>
@@ -284,6 +285,14 @@
 		<text name="BaoCaoBanHang">Báo cáo bán hàng</text>
 		<text name="BaoCaoHoaHong">Báo cáo hoa hồng</text>
 		<text name="BaoCaoTaiChinh">Báo cáo tài chính</text>
+		<text name="BaoCaoGoiDichVu">Báo cáo gói dịch vụ</text>
+		<text name="BaoCaoTheGiaTri">Báo cáo thẻ giá trị</text>
+		<text name="NhatKySuDung">Nhật ký sử dụng</text>
+		<text name="GoiDichVu">Gói dịch vụ</text>
+		<text name="TheGiaTri">Thẻ giá trị</text>
+		<text name="PhieuDieuChinh">Phiếu điều chỉnh</text>
+		<text name="SoDu">Số dư</text>
+		<text name="ThanhToanCongNoHoaDon">Thanh toán công nợ hóa đơn</text>
 		<text name="TongHop">Tổng hợp</text>
 		<text name="ChiTiet">Chi tiết</text>
 		<text name="ChiTietSoQuy">Chi tiết sổ quỹ</text>

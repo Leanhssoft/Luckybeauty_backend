@@ -135,6 +135,14 @@ namespace BanHangBeautify.Authorization
             var baoCaoTaiChinh = baoCao.CreateChildPermission(PermissionNames.Pages_BaoCao_TaiChinh, L("BaoCaoTaiChinh"));
             baoCaoTaiChinh.CreateChildPermission(PermissionNames.Pages_BaoCao_TaiChinh_ChiTietCongNo, L("ChiTietCongNo"));
             baoCaoTaiChinh.CreateChildPermission(PermissionNames.Pages_BaoCao_TaiChinh_ChiTietSoQuy, L("ChiTietSoQuy"));
+            
+            var baoCaoGoiDichVu = baoCao.CreateChildPermission(PermissionNames.BaoCao_GoiDichVu, L("BaoCaoGoiDichVu"));
+            baoCaoGoiDichVu.CreateChildPermission(PermissionNames.BaoCao_GoiDichVu_NhatKySuDung, L("NhatKySuDung"));
+            baoCaoGoiDichVu.CreateChildPermission(PermissionNames.BaoCao_GoiDichVu_SoDu, L("SoDu")); 
+            
+            var baoCaoTheGiaTri = baoCao.CreateChildPermission(PermissionNames.BaoCao_TheGiaTri, L("BaoCaoTheGiaTri"));
+            baoCaoTheGiaTri.CreateChildPermission(PermissionNames.BaoCao_TheGiaTri_NhatKySuDung, L("NhatKySuDung"));
+            baoCaoTheGiaTri.CreateChildPermission(PermissionNames.BaoCao_TheGiaTri_SoDu, L("SoDu"));
 
             #endregion
 
@@ -216,6 +224,32 @@ namespace BanHangBeautify.Authorization
             hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_XemDanhSach, L("XemDanhSach"));
             hoaDon.CreateChildPermission(PermissionNames.Pages_HoaDon_Not_XemDanhSach_OtherUser, L("Not_XemDanhSach_OtherUser"));
 
+            var goiDichVu = pages.CreateChildPermission(PermissionNames.Pages_GoiDichVu, L("GoiDichVu"));
+            goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_Create, L("Create"));
+            goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_Edit, L("Edit"));
+            goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_EditChiTiet, L("EditDetails"));
+            goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_Delete, L("Delete"));
+            goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_Export, L("Export"));
+            goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_Print, L("Print"));
+            //goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_Restore, L("Restore"));
+            goiDichVu.CreateChildPermission(PermissionNames.Pages_GoiDichVu_XemDanhSach, L("XemDanhSach")); 
+            
+            var theGiatri = pages.CreateChildPermission(PermissionNames.Pages_TheGiaTri, L("TheGiaTri"));
+            theGiatri.CreateChildPermission(PermissionNames.Pages_TheGiaTri_Create, L("Create"));
+            theGiatri.CreateChildPermission(PermissionNames.Pages_TheGiaTri_Edit, L("Edit"));
+            theGiatri.CreateChildPermission(PermissionNames.Pages_TheGiaTri_Delete, L("Delete"));
+            theGiatri.CreateChildPermission(PermissionNames.Pages_TheGiaTri_Export, L("Export"));
+            theGiatri.CreateChildPermission(PermissionNames.Pages_TheGiaTri_Print, L("Print"));
+            theGiatri.CreateChildPermission(PermissionNames.Pages_TheGiaTri_XemDanhSach, L("XemDanhSach"));
+            
+            var phieuDieuChinhTGT = pages.CreateChildPermission(PermissionNames.Pages_PhieuDieuChinh, L("PhieuDieuChinh"));
+            phieuDieuChinhTGT.CreateChildPermission(PermissionNames.Pages_PhieuDieuChinh_Create, L("Create"));
+            phieuDieuChinhTGT.CreateChildPermission(PermissionNames.Pages_PhieuDieuChinh_Edit, L("Edit"));
+            phieuDieuChinhTGT.CreateChildPermission(PermissionNames.Pages_PhieuDieuChinh_Delete, L("Delete"));
+            phieuDieuChinhTGT.CreateChildPermission(PermissionNames.Pages_PhieuDieuChinh_Import, L("Import"));
+            phieuDieuChinhTGT.CreateChildPermission(PermissionNames.Pages_PhieuDieuChinh_Export, L("Export"));
+            phieuDieuChinhTGT.CreateChildPermission(PermissionNames.Pages_PhieuDieuChinh_XemDanhSach, L("XemDanhSach"));
+
             var hoaDonAnh = pages.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh, L("AnhHoaDon"));
             hoaDonAnh.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh_Create, L("Create"));
             hoaDonAnh.CreateChildPermission(PermissionNames.Pages_HoaDon_Anh_Update, L("Edit"));
@@ -287,6 +321,7 @@ namespace BanHangBeautify.Authorization
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Export, L("Export"));
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Print, L("Print"));
             quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_Restore, L("Restore"));
+            quyHoaDon.CreateChildPermission(PermissionNames.Pages_QuyHoaDon_ThanhToanCongNoHoaDon, L("ThanhToanCongNoHoaDon"));
 
             var khoanThuChi = pages.CreateChildPermission(PermissionNames.Pages_KhoanThuChi, L("ThuChi"));
             khoanThuChi.CreateChildPermission(PermissionNames.Pages_KhoanThuChi_Create, L("Create"));

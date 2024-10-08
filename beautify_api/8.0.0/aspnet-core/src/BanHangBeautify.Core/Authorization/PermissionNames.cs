@@ -49,6 +49,19 @@
         public const string Pages_BaoCao_HoaHong_TongHop = "Pages.BaoCao.HoaHong.TongHop";
         public const string Pages_BaoCao_HoaHong_ChiTiet = "Pages.BaoCao.HoaHong.ChiTiet";
         #endregion
+
+        #region BaoCao GDV
+        public const string BaoCao_GoiDichVu = "Pages.BaoCao.GoiDichVu";
+        public const string BaoCao_GoiDichVu_NhatKySuDung = "Pages.BaoCao.GoiDichVu.NhatKySuDung";
+        public const string BaoCao_GoiDichVu_SoDu = "Pages.BaoCao.GoiDichVu.SoDu";
+        #endregion
+
+        #region BaoCao TGT
+        public const string BaoCao_TheGiaTri = "Pages.BaoCao.TheGiaTri";
+        public const string BaoCao_TheGiaTri_NhatKySuDung = "Pages.BaoCao.TheGiaTri.NhatKySuDung";
+        public const string BaoCao_TheGiaTri_SoDu = "Pages.BaoCao.TheGiaTri.SoDu";
+        #endregion
+
         #endregion
         #region Dịch Vụ
         public const string Pages_DM_HangHoa = "Pages.DM_HangHoa";
@@ -233,13 +246,39 @@
         public const string Pages_HoaDon_XemDanhSach = "Pages.HoaDon.XemDanhSach";
         public const string Pages_HoaDon_Not_XemDanhSach_OtherUser = "Pages.HoaDon.Not_XemDanhSach_OtherUser";
 
+        public const string Pages_GoiDichVu = "Pages.GoiDichVu";
+        public const string Pages_GoiDichVu_Create = "Pages.GoiDichVu.Create";
+        public const string Pages_GoiDichVu_Edit = "Pages.GoiDichVu.Edit";
+        public const string Pages_GoiDichVu_EditChiTiet = "Pages.GoiDichVu.EditChiTiet";
+        public const string Pages_GoiDichVu_Delete = "Pages.GoiDichVu.Delete";
+        public const string Pages_GoiDichVu_Import = "Pages.GoiDichVu.Import";
+        public const string Pages_GoiDichVu_Export = "Pages.GoiDichVu.Export";
+        public const string Pages_GoiDichVu_Print = "Pages.GoiDichVu.Print";
+        public const string Pages_GoiDichVu_Restore = "Pages.GoiDichVu.Restore";
+        public const string Pages_GoiDichVu_XemDanhSach = "Pages.GoiDichVu.XemDanhSach"; 
+        
+        public const string Pages_TheGiaTri = "Pages.TheGiaTri";
+        public const string Pages_TheGiaTri_Create = "Pages.TheGiaTri.Create";
+        public const string Pages_TheGiaTri_Edit = "Pages.TheGiaTri.Edit";
+        public const string Pages_TheGiaTri_Delete = "Pages.TheGiaTri.Delete";
+        public const string Pages_TheGiaTri_Export = "Pages.TheGiaTri.Export";
+        public const string Pages_TheGiaTri_Print = "Pages.TheGiaTri.Print";
+        public const string Pages_TheGiaTri_XemDanhSach = "Pages.TheGiaTri.XemDanhSach";
+        
+        public const string Pages_PhieuDieuChinh = "Pages.PhieuDieuChinh";
+        public const string Pages_PhieuDieuChinh_Create = "Pages.PhieuDieuChinh.Create";
+        public const string Pages_PhieuDieuChinh_Edit = "Pages.PhieuDieuChinh.Edit";
+        public const string Pages_PhieuDieuChinh_Delete = "Pages.PhieuDieuChinh.Delete";
+        public const string Pages_PhieuDieuChinh_Import = "Pages.PhieuDieuChinh.Import";
+        public const string Pages_PhieuDieuChinh_Export = "Pages.PhieuDieuChinh.Export";
+        public const string Pages_PhieuDieuChinh_XemDanhSach = "Pages.PhieuDieuChinh.XemDanhSach";
+
         public const string Pages_LoaiChungTu = "Pages.LoaiChungTu";
         public const string Pages_LoaiChungTu_Create = "Pages.LoaiChungTu.Create";
         public const string Pages_LoaiChungTu_Edit = "Pages.LoaiChungTu.Edit";
         public const string Pages_LoaiChungTu_Delete = "Pages.LoaiChungTu.Delete";
         public const string Pages_LoaiChungTu_Import = "Pages.LoaiChungTu.Import";
         public const string Pages_LoaiChungTu_Export = "Pages.LoaiChungTu.Export";
-
 
         public const string Pages_NhanVienThucHien = "Pages.NhanVienThucHien";
         public const string Pages_NhanVienThucHien_Create = "Pages.NhanVienThucHien.Create";
@@ -292,6 +331,7 @@
 
         public const string Pages_QuyHoaDon = "Pages.QuyHoaDon";
         public const string Pages_QuyHoaDon_Create = "Pages.QuyHoaDon.Create";
+        public const string Pages_QuyHoaDon_ThanhToanCongNoHoaDon = "Pages.QuyHoaDon.ThanhToanCongNoHoaDon";
         public const string Pages_QuyHoaDon_Edit = "Pages.QuyHoaDon.Edit";
         public const string Pages_QuyHoaDon_Delete = "Pages.QuyHoaDon.Delete";
         public const string Pages_QuyHoaDon_Export = "Pages.QuyHoaDon.Export";
