@@ -18,7 +18,7 @@ namespace BanHangBeautify.Entities
         public string MaHoaDon { get; set; } = string.Empty;
         [Required]
         public DateTime NgayLapHoaDon { get; set; } = DateTime.Now;
-        public DateTime? NgayApDung { get; set; } = DateTime.Now;
+        public DateTime? NgayApDung { get; set; }
         public DateTime? NgayHetHan { get; set; }
         public Guid? IdChiNhanh { get; set; }
         [ForeignKey("IdChiNhanh")]
