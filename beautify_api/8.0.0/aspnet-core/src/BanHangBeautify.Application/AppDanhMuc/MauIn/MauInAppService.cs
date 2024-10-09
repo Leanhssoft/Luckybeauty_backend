@@ -177,22 +177,10 @@ namespace BanHangBeautify.AppDanhMuc.MauIn
                     else
                     {
                         // mau k80
-                        if (type == 1)
+                        var data = Dictionary.DanhSachMauInK80.Where(x => x.Key == tenMauIn);
+                        if (data != null && data.Count() > 0)
                         {
-                            var data = Dictionary.DanhSachMauInK80.Where(x => x.Key == tenMauIn);
-                            if (data != null && data.Count() > 0)
-                            {
-                                contents = GetFileMauIn(data.FirstOrDefault().Value);
-                            }
-                        }
-                        else
-                        {
-                            // mau a4
-                            var data = Dictionary.DanhSachMauInA4.Where(x => x.Key == tenMauIn);
-                            if (data != null && data.Count() > 0)
-                            {
-                                contents = GetFileMauIn(data.FirstOrDefault().Value);
-                            }
+                            contents = GetFileMauIn(data.FirstOrDefault().Value);
                         }
                     }
                 }
