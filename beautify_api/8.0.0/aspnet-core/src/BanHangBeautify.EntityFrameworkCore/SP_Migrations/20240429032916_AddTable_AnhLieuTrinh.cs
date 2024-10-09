@@ -92,6 +92,8 @@ namespace BanHangBeautify.SPMigrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"DELETE FROM DM_LoaiChungTu WHERE Id= 15");
+
             migrationBuilder.DropTable(
                 name: "KhachHang_Anh_LieuTrinh_ChiTiet");
 
