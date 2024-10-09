@@ -255,6 +255,13 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
             command.Parameters.Add(new SqlParameter("@ToDate", toDate ?? (object)DBNull.Value));
             var data = await command.ExecuteScalarAsync();
             return Convert.ToDouble(data);
+        } 
+        public async Task<bool> CheckTheGiaTri_DaSuDung(Guid idTheGiaTri)
+        {
+            using var command = CreateCommand("select dbo.FnCheckTheGiaTri_DaSuDung (@IdTheGiaTri) ", System.Data.CommandType.Text);
+            command.Parameters.Add(new SqlParameter("@IdTheGiaTri", idTheGiaTri));
+            var data = await command.ExecuteScalarAsync();
+            return Convert.ToBoolean(data);
         }
     }
 }

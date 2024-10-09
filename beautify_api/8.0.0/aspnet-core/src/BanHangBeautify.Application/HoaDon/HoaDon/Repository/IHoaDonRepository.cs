@@ -21,5 +21,6 @@ namespace BanHangBeautify.HoaDon.HoaDon.Repository
         Task<bool> CheckGDV_DaSuDung(Guid idHoaDon);
         Task<bool> CheckChiTietGDV_DaSuDung(Guid idGoiDV);
         Task<double> GetSoDuTheGiaTri_ofKhachHang(Guid idKhachHang, DateTime? toDate = null);
+        Task<bool> CheckTheGiaTri_DaSuDung(Guid idTheGiaTri);
     }
 }

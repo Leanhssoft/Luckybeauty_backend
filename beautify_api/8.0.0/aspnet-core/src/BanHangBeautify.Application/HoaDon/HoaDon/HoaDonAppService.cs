@@ -653,6 +653,11 @@ namespace BanHangBeautify.HoaDon.HoaDon
         {
             return await _repoHoaDon.GetSoDuTheGiaTri_ofKhachHang(idKhachHang, toDate);
         }
+        [HttpGet]
+        public async Task<bool> CheckTheGiaTri_DaSuDung(Guid idTheGiaTri)
+        {
+            return await _repoHoaDon.CheckTheGiaTri_DaSuDung(idTheGiaTri);
+        }
         [HttpPost]
         public async Task<List<ExcelErrorDto>> CheckData_FileImportTonDauTGT(FileUpload file)
         {
