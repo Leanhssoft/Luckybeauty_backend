@@ -175,7 +175,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     string maHangHoa = item.MaHangHoa;
                     if (string.IsNullOrEmpty(maHangHoa))
                     {
-                        CommonClass.MaxCodeDto  objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
+                        CommonClass.MaxCodeDto objMax = await _repository.SpGetProductCode(dto.IdLoaiHangHoa, hangHoa.TenantId);
                         maHangHoa = FormatMaHangHoa(objMax.FirstStr, objMax.MaxVal);
                     }
                     objDVT.MaHangHoa = maHangHoa;
@@ -343,6 +343,18 @@ namespace BanHangBeautify.HangHoa.HangHoa
                 }
                 return result;
             }
+        }
+
+        [HttpGet]
+        public async Task<DonViQuiDoiDto> GetDMQuyDoi_byMaHangHoa(string maHangHoa)
+        {
+            var lst = await _dmDonViQuiDoi.GetAllListAsync(x => x.MaHangHoa == maHangHoa);
+            if (lst.Count > 0)
+            {
+                var firstItem = lst.FirstOrDefault();
+                return ObjectMapper.Map<DonViQuiDoiDto>(firstItem);
+            }
+            return null;
         }
 
         [HttpGet]

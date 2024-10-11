@@ -34,6 +34,8 @@ using System.IO;
 using OfficeOpenXml;
 using BanHangBeautify.HoaDon.LoaiChungTu;
 using BanHangBeautify.KhachHang.KhachHang;
+using BanHangBeautify.HangHoa.HangHoa;
+using BanHangBeautify.Migrations;
 
 namespace BanHangBeautify.HoaDon.HoaDon
 {
@@ -48,6 +50,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         private readonly IHoaDonRepository _repoHoaDon;
         private readonly ILoaiChungTuAppService _loaiChungTuService;
         private readonly IKhachHangAppService _khachHangService;
+        private readonly IHangHoaAppService _hangHoaAppService;
         private readonly IExcelBase _excelBase;
         private readonly IHubContext<InvoiceHub> _invoiceHubContext;
 
@@ -60,6 +63,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             IHoaDonRepository repoHoaDon,
              ILoaiChungTuAppService loaiChungTuService,
              IKhachHangAppService khachHangService,
+             IHangHoaAppService hangHoaAppService,
             IExcelBase excelBase,
              IHubContext<InvoiceHub> invoiceHubContext
         )
@@ -72,6 +76,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _repoHoaDon = repoHoaDon;
             _excelBase = excelBase;
             _khachHangService = khachHangService;
+            _hangHoaAppService = hangHoaAppService;
             _invoiceHubContext = invoiceHubContext;
             _loaiChungTuService = loaiChungTuService;
         }
@@ -657,6 +662,334 @@ namespace BanHangBeautify.HoaDon.HoaDon
         public async Task<bool> CheckTheGiaTri_DaSuDung(Guid idTheGiaTri)
         {
             return await _repoHoaDon.CheckTheGiaTri_DaSuDung(idTheGiaTri);
+        }
+        public async Task<List<ExcelErrorDto>> CheckData_FileImportTonDauGDV(FileUpload file)
+        {
+            List<ExcelErrorDto> lstErr = new();
+            try
+            {
+                using MemoryStream stream = new MemoryStream(file.File);
+                using var package = new ExcelPackage();
+                package.Load(stream);
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+
+                // cột A: mã khách hàng (cột thứ 1), đọc từ dòng số 3 đến dòng rowCount
+                var errDuplicate = ObjectHelper.Excel_CheckDuplicateData(worksheet, "A", 1, 3, rowCount);
+                if (errDuplicate.Count > 0)
+                {
+                    foreach (var item in errDuplicate)
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = item.RowNumber,
+                            TenTruongDuLieu = "Mã khách hàng",
+                            GiaTriDuLieu = item.GiaTriDuLieu,
+                            DienGiai = "Mã khách hàng bị trùng lặp",
+                            LoaiErr = 1,
+                        });
+                    }
+                }
+                for (int i = 3; i <= rowCount; i++)
+                {
+                    bool rowEmpty = true;
+                    string maKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
+                    string maGDV = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    string hanSuDung = worksheet.Cells[i, 3].Value?.ToString().Trim();
+                    string maDichVu = worksheet.Cells[i, 4].Value?.ToString().Trim();
+                    string soluong = worksheet.Cells[i, 5].Value?.ToString().Trim();
+                    string dataType_soluong = worksheet.Cells[i, 5].Value?.GetType()?.ToString().Trim();
+                    string dongia = worksheet.Cells[i, 6].Value?.ToString().Trim();
+                    string dataType_dongia = worksheet.Cells[i, 6].Value?.GetType()?.ToString()?.Trim();
+                    string ghichu = worksheet.Cells[i, 7].Value?.ToString();
+
+                    // nếu dòng trống: bỏ qua và nhảy sang dòng tiếp theo
+                    if (!string.IsNullOrEmpty(maDichVu) || !string.IsNullOrEmpty(soluong))
+                    {
+                        rowEmpty = false;
+                    }
+                    if (rowEmpty) { continue; }
+
+
+                    if (!string.IsNullOrEmpty(maKhachHang))
+                    {
+                        var checkExists = await _khachHangService.CheckExistMaKhachHang(maKhachHang);
+                        if (!checkExists)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Mã khách hàng",
+                                GiaTriDuLieu = maKhachHang,
+                                DienGiai = "Mã khách hàng chưa có trên hệ thống",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(maGDV))
+                    {
+                        var checkExists = CheckExists_MaHoaDon(maGDV);
+                        if (checkExists)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Mã gói dịch vụ",
+                                GiaTriDuLieu = maGDV,
+                                DienGiai = "Mã gói dịch vụ đã tồn tại trên hệ thống",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(maDichVu))
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = i,
+                            TenTruongDuLieu = "Mã dịch vụ",
+                            GiaTriDuLieu = maDichVu,
+                            DienGiai = "Mã dịch vụ không được để trống",
+                            LoaiErr = 1,
+                        });
+                    }
+                    else
+                    {
+                        var checkExists = await _hangHoaAppService.CheckExistsMaHangHoa(maDichVu);
+                        if (!checkExists)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Mã dịch vụ",
+                                GiaTriDuLieu = maDichVu,
+                                DienGiai = "Mã dịch vụ chưa có trên hệ thống",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(soluong))
+                    {
+                        lstErr.Add(new ExcelErrorDto
+                        {
+                            RowNumber = i,
+                            TenTruongDuLieu = "Số lượng",
+                            GiaTriDuLieu = soluong,
+                            DienGiai = "Số lượng không được để trống",
+                            LoaiErr = 1,
+                        });
+                    }
+                    else
+                    {
+                        bool isNumber = ObjectHelper.Excel_CheckNumber(dataType_soluong);
+                        if (!isNumber)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Số lượng",
+                                GiaTriDuLieu = soluong,
+                                DienGiai = "Số lượng không phải dạng số",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(dongia))
+                    {
+                        bool isNumber = ObjectHelper.Excel_CheckNumber(dataType_dongia);
+                        if (!isNumber)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Đơn giá",
+                                GiaTriDuLieu = dongia,
+                                DienGiai = "Đơn giá không phải dạng số",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                lstErr.Add(new ExcelErrorDto
+                {
+                    RowNumber = -1,
+                    TenTruongDuLieu = "Exception",
+                    GiaTriDuLieu = "",
+                    DienGiai = ex.Message.ToString(),
+                    LoaiErr = -1,
+                });
+            }
+            return lstErr;
+        }
+        public async Task<List<ExcelErrorDto>> ImportFileTonDauGDV(FileUpload file, Guid idChiNhanh)
+        {
+            List<ExcelErrorDto> lstErr = new();
+            try
+            {
+                using MemoryStream stream = new MemoryStream(file.File);
+                using var package = new ExcelPackage();
+                package.Load(stream);
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+
+                List<BH_HoaDon> lstHD = new List<BH_HoaDon>();
+                List<BH_HoaDon_ChiTiet> lstCTHD = new List<BH_HoaDon_ChiTiet>();
+                double maxMaHoaDon = await _repoHoaDon.GetMaxNumber_ofMaHoaDon(AbpSession.TenantId ?? 1, idChiNhanh, LoaiChungTuConst.DCTGT, DateTime.Now);
+
+                for (int i = 3; i <= rowCount; i++)
+                {
+                    bool rowEmpty = true;
+                    string maKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
+                    string maGDV = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    string hanSuDung = worksheet.Cells[i, 3].Value?.ToString().Trim();
+                    DateTime? hanSuDungNew = !string.IsNullOrEmpty(hanSuDung) ? Convert.ToDateTime(hanSuDung) : null;
+                    string maDichVu = worksheet.Cells[i, 4].Value?.ToString().Trim();
+                    string soluong = worksheet.Cells[i, 5].Value?.ToString().Trim();
+                    double soLuongNew = double.Parse(soluong);
+                    string dongia = worksheet.Cells[i, 6].Value?.ToString().Trim();
+                    string ghichu = worksheet.Cells[i, 7].Value?.ToString();
+
+                    // nếu dòng trống: bỏ qua và nhảy sang dòng tiếp theo
+                    if (!string.IsNullOrEmpty(maDichVu) || !string.IsNullOrEmpty(soluong))
+                    {
+                        rowEmpty = false;
+                    }
+                    if (rowEmpty) { continue; }
+
+
+                    Guid? idKhachHang = null;
+                    Guid idHoaDon = Guid.NewGuid();
+                    string maHoaDon = maGDV;
+                    if (string.IsNullOrEmpty(maKhachHang))
+                    {
+                        // get gdv last
+                        var gdvLast = lstHD.OrderByDescending(x => x.NgayLapHoaDon).FirstOrDefault();
+                        if (gdvLast != null)
+                        {
+                            idKhachHang = gdvLast.IdKhachHang;
+                            if (string.IsNullOrEmpty(maGDV))
+                            {
+                                idHoaDon = gdvLast.Id;
+                                goto addChiTietHoaDon;
+                            }
+                            else
+                            {
+                                goto addHoaDon;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        idKhachHang = await _khachHangService.GetIdKhachHang_byMaKhachHang(maKhachHang);
+                        goto addHoaDon;
+                    }
+
+                addHoaDon:
+                    {
+                        if (string.IsNullOrEmpty(maHoaDon))
+                        {
+                            maHoaDon = await _loaiChungTuService.GetMaChungTuNew_fromMaxMaChungTu(maxMaHoaDon, LoaiChungTuConst.GDV);
+                            maxMaHoaDon += 1;
+                        }
+
+                        if (idKhachHang != Guid.Empty)
+                        {
+                            BH_HoaDon newObj = new()
+                            {
+                                Id = idHoaDon,
+                                TenantId = AbpSession?.TenantId ?? 1,
+                                IdLoaiChungTu = LoaiChungTuConst.GDV,
+                                IdChiNhanh = idChiNhanh,
+                                IdKhachHang = idKhachHang,
+                                MaHoaDon = maHoaDon,
+                                NgayLapHoaDon = DateTime.Now,
+                                NgayHetHan = hanSuDungNew,
+                                TongTienHang = 0,
+                                TongTienHDSauVAT = 0,
+                                TongThanhToan = 0,
+                                TongTienHangChuaChietKhau = 0,
+                                GhiChuHD = "Import tồn đầu gói dịch vụ",
+                                TrangThai = TrangThaiHoaDonConst.HOAN_THANH,
+                                CreatorUserId = AbpSession.UserId,
+                                CreationTime = DateTime.Now
+                            };
+                            lstHD.Add(newObj);
+                        }
+                        else
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Mã khách hàng",
+                                GiaTriDuLieu = maKhachHang,
+                                DienGiai = "Không tìm thấy khách hàng",
+                                LoaiErr = 1
+                            });
+                        }
+                    }
+
+                addChiTietHoaDon:
+                    {
+                        var itemQD = await _hangHoaAppService.GetDMQuyDoi_byMaHangHoa(maDichVu);
+                        if (itemQD != null)
+                        {
+                            int countCTHD = lstCTHD.Where(x => x.IdHoaDon == idHoaDon).Count();
+                            var dongiaNew = string.IsNullOrEmpty(dongia) ? itemQD.GiaBan : Convert.ToDouble(dongia);
+                            var thanhTien = soLuongNew * dongiaNew;
+                            BH_HoaDon_ChiTiet cthd = new()
+                            {
+                                Id = Guid.NewGuid(),
+                                STT = countCTHD + 1,
+                                IdHoaDon = idHoaDon,
+                                IdDonViQuyDoi = itemQD.Id,
+                                SoLuong = soLuongNew,
+                                DonGiaTruocCK = dongiaNew,
+                                DonGiaSauCK = dongiaNew,
+                                DonGiaSauVAT = dongiaNew,
+                                ThanhTienSauCK = thanhTien,
+                                ThanhTienTruocCK = thanhTien,
+                                ThanhTienSauVAT = thanhTien,
+                                TenantId = AbpSession?.TenantId ?? 1,
+                                TrangThai = TrangThaiHoaDonConst.HOAN_THANH,
+                                CreationTime = DateTime.Now,
+                                CreatorUserId = AbpSession?.UserId ?? 1,
+                            };
+                            lstCTHD.Add(cthd);
+                        }
+                        else
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Mã dịch vụ",
+                                GiaTriDuLieu = maDichVu,
+                                DienGiai = "Không tìm thấy dịch vụ",
+                                LoaiErr = 1
+                            });
+                        }
+
+                    }
+                }
+                await _hoaDonRepository.InsertRangeAsync(lstHD);
+                await _hoaDonChiTietRepository.InsertRangeAsync(lstCTHD);
+            }
+            catch (Exception ex)
+            {
+                lstErr.Add(new ExcelErrorDto
+                {
+                    RowNumber = -1,
+                    TenTruongDuLieu = "Exception",
+                    GiaTriDuLieu = "",
+                    DienGiai = ex.Message.ToString(),
+                    LoaiErr = -1,
+                });
+            }
+            return lstErr;
         }
         [HttpPost]
         public async Task<List<ExcelErrorDto>> CheckData_FileImportTonDauTGT(FileUpload file)
