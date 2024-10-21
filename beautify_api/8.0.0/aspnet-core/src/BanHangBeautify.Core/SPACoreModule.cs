@@ -44,6 +44,7 @@ namespace BanHangBeautify
 
             //Adding feature providers
             Configuration.Features.Providers.Add<AppFeatureProvider>();
+            Configuration.MultiTenancy.IgnoreFeatureCheckForHostUsers = true;// bỏ qua kiểm tra tính năng cho HOST (mặc định: HOST full tính năng)
             // Configure email
             Configuration.Settings.Providers.Add<EmailSettingProvider>();
 

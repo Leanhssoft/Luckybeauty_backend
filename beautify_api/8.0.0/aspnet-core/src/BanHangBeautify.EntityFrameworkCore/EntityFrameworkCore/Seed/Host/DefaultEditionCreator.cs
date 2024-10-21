@@ -40,6 +40,8 @@ namespace BanHangBeautify.EntityFrameworkCore.Seed.Host
             {
                 CreateFeatureIfNotExists(defaultEdition.Id, AppFeatureConst.MaxBranchCount, "1");
                 CreateFeatureIfNotExists(defaultEdition.Id, AppFeatureConst.MaxUserCount, "5");
+                CreateFeatureIfNotExists(defaultEdition.Id, AppFeatureConst.GoiDichVu, true);
+                CreateFeatureIfNotExists(defaultEdition.Id, AppFeatureConst.TheGiaTri, true);
             }
         }
 

@@ -28,6 +28,18 @@ namespace BanHangBeautify.Features
                 description: L("MaximumBranchCount_Description"),
                 inputType: new SingleLineStringInputType(new NumericValueValidator(0, int.MaxValue))
             );
+            context.Create(
+                AppFeatureConst.GoiDichVu,
+                defaultValue: "false",
+                displayName: L(AppFeatureConst.GoiDichVu),
+                inputType: new CheckboxInputType()
+            ); 
+            context.Create(
+                AppFeatureConst.TheGiaTri,
+                defaultValue: "false", //0 = unlimited
+                displayName: L(AppFeatureConst.TheGiaTri),
+                inputType: new CheckboxInputType()
+            );
             //context.Create(
             //    "App.ConnectZalo",
             //    defaultValue: "false", //0 = unlimited

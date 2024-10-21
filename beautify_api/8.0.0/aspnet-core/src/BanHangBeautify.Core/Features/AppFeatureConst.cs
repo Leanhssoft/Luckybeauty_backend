@@ -10,5 +10,7 @@ namespace BanHangBeautify.Features
     {
         public const string MaxUserCount = "App.MaxUserCount";
         public const string MaxBranchCount = "App.MaxBranchCount";
+        public const string GoiDichVu = "GoiDichVu";
+        public const string TheGiaTri = "TheGiaTri";
     }
 }
