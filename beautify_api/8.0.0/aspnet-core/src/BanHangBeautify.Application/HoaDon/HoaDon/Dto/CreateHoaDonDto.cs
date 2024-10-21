@@ -34,6 +34,7 @@ namespace BanHangBeautify.HoaDon.HoaDon.Dto
         public double? ChiPhiHD { get; set; } = 0;// Chi phí cửa hàng phải trả cho bên thứ 3 (VNĐ) (VD: chi phí vận chuyển)
         public string ChiPhi_GhiChu { get; set; } = string.Empty;
         public double? DiemGiaoDich { get; set; } = 0; // Số điểm khách hàng tích được khi mua hàng theo hóa đơn này
+        public bool? LaHoaDonDauKy { get; set; } = false;
 
         public List<HoaDonChiTietDto> HoaDonChiTiet { get; set; }
 
