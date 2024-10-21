@@ -710,7 +710,6 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     }
                     if (rowEmpty) { continue; }
 
-
                     if (!string.IsNullOrEmpty(maKhachHang))
                     {
                         var checkExists = await _khachHangService.CheckExistMaKhachHang(maKhachHang);
@@ -913,6 +912,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                                 TongTienHDSauVAT = 0,
                                 TongThanhToan = 0,
                                 TongTienHangChuaChietKhau = 0,
+                                LaHoaDonDauKy = true,
                                 GhiChuHD = "Import tồn đầu gói dịch vụ",
                                 TrangThai = TrangThaiHoaDonConst.HOAN_THANH,
                                 CreatorUserId = AbpSession.UserId,
