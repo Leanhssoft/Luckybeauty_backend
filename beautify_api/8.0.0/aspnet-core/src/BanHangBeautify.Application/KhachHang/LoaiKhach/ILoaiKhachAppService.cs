@@ -12,5 +12,6 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
         Task<LoaiKhachDto> EditLoaiKhach(CreateOrEditLoaiKhachDto dto);
         Task<PagedResultDto<DM_LoaiKhach>> GetAll(PagedLoaiKhachResultRequestDto input);
         Task<DM_LoaiKhach> GetLoaiKhachDetail(int Id);
+        Task<string> GetMaDoiTuong_fromMaxNumber(double maxNumberCode, byte idLoaiDoiTuong);
     }
 }

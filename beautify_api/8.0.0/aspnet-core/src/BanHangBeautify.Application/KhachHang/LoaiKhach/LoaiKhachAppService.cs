@@ -105,7 +105,30 @@ namespace BanHangBeautify.KhachHang.LoaiKhach
 
             return ListResultDto;
         }
-
+        public async Task<string> GetMaDoiTuong_fromMaxNumber(double maxNumberCode, byte idLoaiDoiTuong)
+        {
+            var data = await _repository.FirstOrDefaultAsync(x => x.Id == idLoaiDoiTuong);
+            if (data != null)
+            {
+                string maDoiTuong = data.MaLoaiKhachHang;
+                if (maxNumberCode < 10)
+                {
+                    return string.Concat(maDoiTuong, "00", maxNumberCode);
+                }
+                else
+                {
+                    if (maxNumberCode < 100)
+                    {
+                        return string.Concat(maDoiTuong, "0", maxNumberCode);
+                    }
+                }
+                return string.Concat(maDoiTuong, maxNumberCode);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
 
     }
 }
