@@ -22,13 +22,12 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
         {
         }
 
-        public async Task<string> FnGetMaKhachHang(Guid? idChiNhanh, int idLoaiDoiTuong)
+        public async Task<double> GetMaxNumber_ofMaKhachHang(int idLoaiDoiTuong)
         {
-            using var command = CreateCommand("select dbo.fnGetMaKhachHang(@IdChiNhanh,@IdLoaiDoiTuong) ", System.Data.CommandType.Text);
-            command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh ?? (object)DBNull.Value));
-            command.Parameters.Add(new SqlParameter("@IdLoaiChungTu", idLoaiDoiTuong));
-            var code = (await command.ExecuteScalarAsync()).ToString();
-            return code;
+            using var command = CreateCommand("select dbo.fnGetMaxNumber_ofMaKhachHang(@IdLoaiDoiTuong) ", System.Data.CommandType.Text);
+            command.Parameters.Add(new SqlParameter("@IdLoaiDoiTuong", idLoaiDoiTuong));
+            var data = await command.ExecuteScalarAsync();
+            return Convert.ToDouble(data);
         }
 
         public async Task<PagedResultDto<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId)

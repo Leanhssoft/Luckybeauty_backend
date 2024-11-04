@@ -11,6 +11,7 @@ using BanHangBeautify.HangHoa.HangHoa.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
 using BanHangBeautify.KhachHang.KhachHang.Exporting;
 using BanHangBeautify.KhachHang.KhachHang.Repository;
+using BanHangBeautify.KhachHang.LoaiKhach;
 using BanHangBeautify.NewFolder;
 using BanHangBeautify.NhatKyHoatDong;
 using BanHangBeautify.NhatKyHoatDong.Dto;
@@ -44,6 +45,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         private readonly IRepository<Zalo_KhachHangThanhVien, Guid> _zaloKhachHang;
         private readonly IKhachHangExcelExporter _khachHangExcelExporter;
         INhatKyThaoTacAppService _audilogService;
+        private readonly ILoaiKhachAppService _loaiKhachService;
         public KhachHangAppService(IRepository<DM_KhachHang, Guid> repository,
               IKhachHangRespository customerRepo,
               IRepository<DM_NhomKhachHang, Guid> nhomKhachHangRepository,
@@ -53,7 +55,8 @@ namespace BanHangBeautify.KhachHang.KhachHang
               IRepository<BH_HoaDon, Guid> hoaDonRepository,
               IRepository<Zalo_KhachHangThanhVien, Guid> zaloKhachHang,
               IKhachHangExcelExporter khachHangExcelExporter,
-              INhatKyThaoTacAppService audilogService
+              INhatKyThaoTacAppService audilogService,
+              ILoaiKhachAppService loaiKhachService
               )
         {
             _repository = repository;
@@ -66,6 +69,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
             _zaloKhachHang = zaloKhachHang;
             _khachHangExcelExporter = khachHangExcelExporter;
             _audilogService = audilogService;
+            _loaiKhachService = loaiKhachService;
         }
         [AbpAuthorize(PermissionNames.Pages_KhachHang_Create, PermissionNames.Pages_KhachHang_Edit)]
         public async Task<KhachHangDto> CreateOrEdit(CreateOrEditKhachHangDto dto)
@@ -122,7 +126,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 "<p>- Giói tính: {3}</p></br/>" +
                 "<p>- Địa chỉ: {4}</p><br/>" +
                 "<p>- Nhóm khách: {5}</p><br/>" +
-                "</div>", khachHang.TenKhachHang, khachHang.MaKhachHang, khachHang.SoDienThoai, gioiTinh, khachHang.DiaChi, nhomKhach!=null?nhomKhach.TenNhomKhach:"");
+                "</div>", khachHang.TenKhachHang, khachHang.MaKhachHang, khachHang.SoDienThoai, gioiTinh, khachHang.DiaChi, nhomKhach != null ? nhomKhach.TenNhomKhach : "");
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
         }
@@ -468,7 +472,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
 
         [HttpPost]
         [UnitOfWork(IsolationLevel.ReadUncommitted)]
-        public async Task<List<ExcelErrorDto>> ImportFile_DanhMucKhachHang(FileUpload file)
+        public async Task<List<ExcelErrorDto>> CheckData_FileImportKhachHang(FileUpload file)
         {
             List<ExcelErrorDto> lstErr = new();
             try
@@ -493,7 +497,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
 
                 #region Check dữ liệu file
                 // cột C: số điện thoại (cột thứ 3), đọc bắt đàu từ dòng số 3 --> rowCount
-                var errDuplicate = Excel_CheckDuplicateData(worksheet, "C", 3, 3, rowCount);
+                var errDuplicate = Excel_CheckDuplicateData(worksheet, "D", 3, 3, rowCount);
                 if (errDuplicate.Count > 0)
                 {
                     foreach (var item in errDuplicate)
@@ -512,15 +516,17 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 {
                     bool rowEmpty = true;
                     string tenNhomKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
-                    string tenKhachHang = worksheet.Cells[i, 2].Value?.ToString().Trim();
-                    string soDienThoai = worksheet.Cells[i, 3].Value?.ToString().Trim();
-                    string ngaySinh = worksheet.Cells[i, 4].Value?.ToString();
-                    string gioiTinh = worksheet.Cells[i, 5].Value?.ToString();
-                    string diaChi = worksheet.Cells[i, 6].Value?.ToString();
-                    string ghiChu = worksheet.Cells[i, 7].Value?.ToString();
+                    string maKhachHang = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    string tenKhachHang = worksheet.Cells[i, 3].Value?.ToString().Trim();
+                    string soDienThoai = worksheet.Cells[i, 4].Value?.ToString().Trim();
+                    string ngaySinh = worksheet.Cells[i, 5].Value?.ToString();
+                    string gioiTinh = worksheet.Cells[i, 6].Value?.ToString();
+                    string diaChi = worksheet.Cells[i, 7].Value?.ToString();
+                    string ghiChu = worksheet.Cells[i, 8].Value?.ToString();
 
                     // nếu dòng trống: bỏ qua và nhảy sang dòng tiếp theo
                     if (!string.IsNullOrEmpty(tenNhomKhachHang)
+                            || !string.IsNullOrEmpty(maKhachHang)
                             || !string.IsNullOrEmpty(tenKhachHang)
                            || !string.IsNullOrEmpty(soDienThoai)
                            || !string.IsNullOrEmpty(ngaySinh)
@@ -530,6 +536,22 @@ namespace BanHangBeautify.KhachHang.KhachHang
                         rowEmpty = false;
                     }
                     if (rowEmpty) { continue; }
+
+                    if (!string.IsNullOrEmpty(maKhachHang))
+                    {
+                        var exists = await CheckExistMaKhachHang(maKhachHang);
+                        if (exists)
+                        {
+                            lstErr.Add(new ExcelErrorDto
+                            {
+                                RowNumber = i,
+                                TenTruongDuLieu = "Mã khách hàng",
+                                GiaTriDuLieu = maKhachHang,
+                                DienGiai = "Mã khách hàng đã tồn tại",
+                                LoaiErr = 1,
+                            });
+                        }
+                    }
 
                     if (string.IsNullOrEmpty(tenKhachHang))
                     {
@@ -608,11 +630,6 @@ namespace BanHangBeautify.KhachHang.KhachHang
                     LoaiErr = -1,
                 });
             }
-            if (lstErr.Count == 0)
-            {
-                // thực hiện import
-                lstErr = await Execute_ImportDanhMucKhachHang(file);// phải load lại file, vì Excel bị dispose
-            }
             return lstErr;
         }
 
@@ -621,7 +638,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public async Task<List<ExcelErrorDto>> Execute_ImportDanhMucKhachHang(FileUpload file)
+        public async Task<List<ExcelErrorDto>> ImportDanhMucKhachHang(FileUpload file)
         {
             List<ExcelErrorDto> lstErr = new();
             try
@@ -636,15 +653,17 @@ namespace BanHangBeautify.KhachHang.KhachHang
                 {
                     bool rowEmpty = true;
                     string tenNhomKhachHang = worksheet.Cells[i, 1].Value?.ToString().Trim();
-                    string tenKhachHang = worksheet.Cells[i, 2].Value?.ToString().Trim();
-                    string soDienThoai = worksheet.Cells[i, 3].Value?.ToString().Trim();
-                    string ngaySinh = worksheet.Cells[i, 4].Value?.ToString();
-                    string gioiTinh = worksheet.Cells[i, 5].Value?.ToString();
-                    string diaChi = worksheet.Cells[i, 6].Value?.ToString();
-                    string ghiChu = worksheet.Cells[i, 7].Value?.ToString();
+                    string maKhachHang = worksheet.Cells[i, 2].Value?.ToString().Trim();
+                    string tenKhachHang = worksheet.Cells[i, 3].Value?.ToString().Trim();
+                    string soDienThoai = worksheet.Cells[i, 4].Value?.ToString().Trim();
+                    string ngaySinh = worksheet.Cells[i, 5].Value?.ToString();
+                    string gioiTinh = worksheet.Cells[i, 6].Value?.ToString();
+                    string diaChi = worksheet.Cells[i, 7].Value?.ToString();
+                    string ghiChu = worksheet.Cells[i, 8].Value?.ToString();
 
                     if (!string.IsNullOrEmpty(tenNhomKhachHang)
                              || !string.IsNullOrEmpty(tenKhachHang)
+                             || !string.IsNullOrEmpty(maKhachHang)
                             || !string.IsNullOrEmpty(soDienThoai)
                             || !string.IsNullOrEmpty(ngaySinh)
                             || !string.IsNullOrEmpty(diaChi)
@@ -663,6 +682,7 @@ namespace BanHangBeautify.KhachHang.KhachHang
                     ImportExcelKhachHangDto newObj = new()
                     {
                         TenNhomKhachHang = tenNhomKhachHang,
+                        MaKhachHang = maKhachHang,
                         TenKhachHang = tenKhachHang,
                         SoDienThoai = soDienThoai,
                         GioiTinhNam = gioiTinh == "Nam" ? true : false,

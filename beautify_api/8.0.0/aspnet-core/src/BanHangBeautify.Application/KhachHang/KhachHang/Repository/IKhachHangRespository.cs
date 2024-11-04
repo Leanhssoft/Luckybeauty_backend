@@ -11,7 +11,7 @@ namespace BanHangBeautify.KhachHang.KhachHang.Repository
 {
     public interface IKhachHangRespository
     {
-        Task<string> FnGetMaKhachHang(Guid? idChiNhanh, int idLoaiDoiTuong);
+        Task<double> GetMaxNumber_ofMaKhachHang(int idLoaiDoiTuong);
         Task ImportDanhMucKhachHang(int? tenantId, long? userId, ImportExcelKhachHangDto data);
         Task<PagedResultDto<KhachHangView>> GetKhachHang_noBooking(PagedKhachHangResultRequestDto input, int? tenantId);
         Task<PagedResultDto<KhachHangView>> Search(PagedKhachHangResultRequestDto input, int tenantId);
