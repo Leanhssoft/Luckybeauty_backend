@@ -58,7 +58,7 @@ namespace BanHangBeautify.AppCommon
         /// <param name="worksheet"></param>
         /// <param name="colName">Tên cột kiểm tra (A,B,C..)</param>
         /// <param name="indexColumn">Vị trí của cột (1,2,3...)</param>
-        /// <param name="fromRow">Đọc từ dòng</param>
+        /// <param name="fromRow">Đọc từ dòng (start index = 1 same row index excel)</param>
         /// <param name="toRow">Đọc đến dòng</param>
         /// <returns>trả về danh sách bị trùng lặp CommonClass.ExcelErrorDto[] </returns>
         public static List<CommonClass.ExcelErrorDto> Excel_CheckDuplicateData(ExcelWorksheet worksheet, string colName, int indexColumn, int fromRow, int toRow)
