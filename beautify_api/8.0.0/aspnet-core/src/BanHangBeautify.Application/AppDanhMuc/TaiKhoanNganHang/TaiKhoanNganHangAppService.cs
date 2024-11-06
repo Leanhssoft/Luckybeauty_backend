@@ -232,5 +232,10 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang
             }
             return dataAll.FirstOrDefault();
         }
+        public async Task<TaiKhoanNganHangDto> GetBankAccount_byId(Guid idTaiKhoanNganHang)
+        {
+            var backAcc = await _repoBankAcc.GetBankAccount_byId(idTaiKhoanNganHang);
+            return backAcc;
+        }
     }
 }

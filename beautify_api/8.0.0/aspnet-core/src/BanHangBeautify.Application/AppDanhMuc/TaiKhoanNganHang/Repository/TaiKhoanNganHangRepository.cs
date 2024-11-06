@@ -46,5 +46,33 @@ namespace BanHangBeautify.AppDanhMuc.TaiKhoanNganHang.Repository
                 return data;
             }
         }
+        public async Task<TaiKhoanNganHangDto> GetBankAccount_byId(Guid idTaiKhoanNganHang)
+        {
+            var dbContext = GetDbContext();
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))
+            {
+                var data = await (from bank in dbContext.Set<DM_NganHang>()
+                                  join acc in dbContext.Set<DM_TaiKhoanNganHang>()
+                                  on bank.Id equals acc.IdNganHang
+                                  where acc.Id == idTaiKhoanNganHang
+                                  select new TaiKhoanNganHangDto
+                                  {
+                                      Id = acc.Id,
+                                      IdNganHang = acc.IdNganHang,
+                                      IdChiNhanh = acc.IdChiNhanh,
+                                      SoTaiKhoan = acc.SoTaiKhoan,
+                                      TenChuThe = acc.TenChuThe,
+                                      TenNganHang = bank.TenNganHang,
+                                      MaNganHang = bank.MaNganHang,
+                                      TenRutGon = bank.TenRutGon,
+                                      MaPinNganHang = bank.BIN,
+                                      TrangThai = acc.TrangThai,
+                                      GhiChu = acc.GhiChu,
+                                      LogoNganHang = bank.Logo,
+                                      IsDefault = acc.IsDefault
+                                  }).FirstOrDefaultAsync();
+                return data;
+            }
+        }
     }
 }
