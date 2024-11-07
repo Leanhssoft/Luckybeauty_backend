@@ -97,26 +97,29 @@ namespace BanHangBeautify.HoaDon.ChungTu
         }
         public async Task<string> GetMaChungTuNew_fromMaxMaChungTu(double maxMaChungTu, byte idLoaiChungTu)
         {
-            var data = await _loaiChungTuRepository.FirstOrDefaultAsync(x => x.Id == idLoaiChungTu);
-            if (data != null)
+            using (UnitOfWorkManager.Current.DisableFilter(AbpDataFilters.MayHaveTenant))// tắt bộ lọc tenantId
             {
-                string maChungTu = data.MaLoaiChungTu;
-                if (maxMaChungTu < 10)
+                var data = await _loaiChungTuRepository.FirstOrDefaultAsync(x => x.Id == idLoaiChungTu);
+                if (data != null)
                 {
-                    return string.Concat(maChungTu, "00", maxMaChungTu);
+                    string maChungTu = data.MaLoaiChungTu;
+                    if (maxMaChungTu < 10)
+                    {
+                        return string.Concat(maChungTu, "00", maxMaChungTu);
+                    }
+                    else
+                    {
+                        if (maxMaChungTu < 100)
+                        {
+                            return string.Concat(maChungTu, "0", maxMaChungTu);
+                        }
+                    }
+                    return string.Concat(maChungTu, maxMaChungTu);
                 }
                 else
                 {
-                    if (maxMaChungTu < 100)
-                    {
-                        return string.Concat(maChungTu, "0", maxMaChungTu);
-                    }
+                    return string.Empty;
                 }
-                return string.Concat(maChungTu, maxMaChungTu);
-            }
-            else
-            {
-                return string.Empty;
             }
         }
     }

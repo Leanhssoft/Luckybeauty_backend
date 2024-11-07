@@ -1136,6 +1136,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     {
                         Id = Guid.NewGuid(),
                         IdLoaiChungTu = LoaiChungTuConst.DCTGT,
+                        TenantId = AbpSession?.TenantId ?? 1,
                         IdChiNhanh = idChiNhanh,
                         IdKhachHang = idKhachHang,
                         MaHoaDon = maHoaDon,
@@ -1146,6 +1147,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
                         TongTienHangChuaChietKhau = tonDauTGTNew,
                         GhiChuHD = "Import tồn đầu thẻ giá trị",
                         TrangThai = TrangThaiHoaDonConst.HOAN_THANH,
+                        LaHoaDonDauKy = true,
                         CreatorUserId = AbpSession.UserId
                     };
                     lstHD.Add(newObj);
