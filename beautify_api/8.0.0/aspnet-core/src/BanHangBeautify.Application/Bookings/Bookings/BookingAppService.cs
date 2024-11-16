@@ -10,6 +10,7 @@ using BanHangBeautify.Bookings.Bookings.BookingRepository;
 using BanHangBeautify.Bookings.Bookings.Dto;
 using BanHangBeautify.Consts;
 using BanHangBeautify.Data.Entities;
+using BanHangBeautify.DataExporting.Excel.EpPlus;
 using BanHangBeautify.Entities;
 using BanHangBeautify.NhanSu.NhanVien.Dto;
 using BanHangBeautify.NhanSu.NhanVien.Responsitory;
@@ -18,6 +19,8 @@ using BanHangBeautify.NhatKyHoatDong.Dto;
 using BanHangBeautify.Notifications;
 using BanHangBeautify.Roles.Repository;
 using BanHangBeautify.SignalR.Notification;
+using BanHangBeautify.Storage;
+using BanHangBeautify.Users.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.Bookings.Bookings
 {
@@ -42,8 +46,10 @@ namespace BanHangBeautify.Bookings.Bookings
         private readonly INhanSuRepository _nhanSuRepository;
         private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
         private readonly IAppNotifier _appNotifier;
+        private readonly IExcelBase _excelBase;
         IUserRoleRepository _userRoleRepository;
         INhatKyThaoTacAppService _audilogService;
+
         public BookingAppService(
             IRepository<Booking, Guid> repository,
             IBookingRepository bookingRepository,
@@ -55,6 +61,7 @@ namespace BanHangBeautify.Bookings.Bookings
              IRepository<NS_NhanVien, Guid> nhanVienService,
              INhanSuRepository nhanSuRepository,
             IAppNotifier appNotifier,
+              IExcelBase excelBase,
               IUserRoleRepository userRoleRepository,
             INhatKyThaoTacAppService audilogService
             )
@@ -71,6 +78,7 @@ namespace BanHangBeautify.Bookings.Bookings
             _appNotifier = appNotifier;
             _userRoleRepository = userRoleRepository;
             _audilogService = audilogService;
+            _excelBase = excelBase;
         }
 
         private async Task<List<UserIdentifier>> GetUserAdmin(Guid idChiNhanh)
@@ -370,35 +378,12 @@ namespace BanHangBeautify.Bookings.Bookings
             }
             return result;
         }
-        public async Task<List<BookingGetAllItemDto>> GetAll(PagedBookingResultRequestDto input)
+        public async Task<PagedResultDto<BookingInfoDto>> GetAll(PagedBookingResultRequestDto input)
         {
-            List<BookingGetAllItemDto> result = new List<BookingGetAllItemDto>();
-            int tenantId = AbpSession.TenantId ?? 1;
-            DateTime date = input.DateSelected;
-            if (input.TypeView.ToLower() == "week")
-            {
-                DateTime firstDayOfWeek = date.AddDays(DayOfWeek.Monday - date.DayOfWeek);
-                DateTime lastDayOfWeek = date.AddDays(DayOfWeek.Sunday - date.DayOfWeek + 7);
-                DateTime timeFrom = new DateTime(firstDayOfWeek.Year, firstDayOfWeek.Month, firstDayOfWeek.Day, 0, 0, 0);
-                DateTime timeTo = new DateTime(lastDayOfWeek.Year, lastDayOfWeek.Month, lastDayOfWeek.Day, 23, 59, 59);
-                result = await _bookingRepository.GetAllBooking(input, tenantId, timeFrom, timeTo);
-            }
-            else if (input.TypeView.ToLower() == "day")
-            {
-                DateTime timeFrom = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0);
-                DateTime timeTo = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59);
-                result = await _bookingRepository.GetAllBooking(input, tenantId, timeFrom, timeTo);
-            }
-            else
-            {
-                DateTime firstDayOfMonth = new DateTime(date.Year, date.Month, 1, 0, 0, 0);
-                DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1).AddHours(23).AddMinutes(59).AddSeconds(59);
-                result = await _bookingRepository.GetAllBooking(input, tenantId, firstDayOfMonth, lastDayOfMonth);
-            }
-
+            input.TenantId = AbpSession.TenantId ?? 1;
+            PagedResultDto<BookingInfoDto> result = await _bookingRepository.GetAllBooking(input);
             return result;
         }
-
         public async Task<PagedResultDto<BookingDetailOfCustometDto>> GetKhachHang_Booking(BookingRequestDto input)
         {
             input.TenantId = AbpSession.TenantId ?? 1;
@@ -530,6 +515,30 @@ namespace BanHangBeautify.Bookings.Bookings
             nhatKyThaoTacDto.NoiDungChiTiet = "Hủy lịch hẹn " + findBooking.TenKhachHang + " - " + findBooking.SoDienThoai + " Ngày: " + findBooking.BookingDate.ToString("dd/MM/yyyy HH:mm"); ;
             await _audilogService.CreateNhatKyHoatDong(nhatKyThaoTacDto);
             return result;
+        }
+        [HttpPost]
+        public async Task<FileDto> ExportExcel_LichHen(PagedBookingResultRequestDto input)
+        {
+            input.TenantId = AbpSession.TenantId ?? 1;
+            PagedResultDto<BookingInfoDto> data = await _bookingRepository.GetAllBooking(input);
+
+            List<BookingInfoDto> lst = (List<BookingInfoDto>)data.Items;
+            var dtNew = lst.Select(x =>
+            new
+            {
+                x.TenKhachHang,
+                x.SoDienThoai,
+                x.BookingDate,
+                x.StartTime,
+                x.TenDichVu,
+                x.NhanVienThucHien,
+                x.GhiChu,
+                TxtTrangThai = x.TrangThai == TrangThaiBookingConst.DatLich ? "Chờ xác nhận" :
+                        x.TrangThai == TrangThaiBookingConst.DaXacNhan ? "Đã xác nhận" :
+                        x.TrangThai == TrangThaiBookingConst.CheckIn ? "Đang check-in" :
+                        x.TrangThai == TrangThaiBookingConst.HoanThanh ? "Hoàn thành" : "Hủy"
+            }).ToList();
+            return _excelBase.WriteToExcel(@"DanhSachLichHen_", @"DanhSachLichHen_Export_Template.xlsx", dtNew, 4, null, 10);
         }
         private LocalizableMessageNotificationData NewMessageNotification(string mess)
         {

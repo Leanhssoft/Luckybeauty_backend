@@ -6,6 +6,7 @@ using BanHangBeautify.Entities;
 using BanHangBeautify.EntityFrameworkCore;
 using BanHangBeautify.EntityFrameworkCore.Repositories;
 using BanHangBeautify.KhachHang.KhachHang.Dto;
+using BanHangBeautify.Users.Dto;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -27,16 +28,27 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
             var code = (await command.ExecuteScalarAsync()).ToString();
             return code;
         }
-        public async Task<List<BookingGetAllItemDto>> GetAllBooking(PagedBookingResultRequestDto input, int tenantId, DateTime timeFrom, DateTime timeTo)
+        public async Task<PagedResultDto<BookingInfoDto>> GetAllBooking(PagedBookingResultRequestDto input)
         {
+            string idChiNhanh = string.Empty, trangThais = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanh = string.Join(",", input.IdChiNhanhs);
+            } 
+            if (input.TrangThais != null && input.TrangThais.Count > 0)
+            {
+                trangThais = string.Join(",", input.TrangThais);
+            }
             using (var cmd = CreateCommand("prc_booking_getAll"))
             {
-                cmd.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                cmd.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                cmd.Parameters.Add(new SqlParameter("@IdNhanVien", input.IdNhanVien));
-                cmd.Parameters.Add(new SqlParameter("@IdDichVu", input.IdDichVu));
-                cmd.Parameters.Add(new SqlParameter("@TimeFrom", timeFrom));
-                cmd.Parameters.Add(new SqlParameter("@TimeTo", timeTo));
+                cmd.Parameters.Add(new SqlParameter("@TenantId", input.TenantId));
+                cmd.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanh));
+                cmd.Parameters.Add(new SqlParameter("@TextSearch", input.TextSearch));
+                cmd.Parameters.Add(new SqlParameter("@TimeFrom", input.FromDate));
+                cmd.Parameters.Add(new SqlParameter("@TimeTo", input.ToDate));
+                cmd.Parameters.Add(new SqlParameter("@TrangThais", trangThais));
+                cmd.Parameters.Add(new SqlParameter("@CurrentPage", input.CurrentPage));
+                cmd.Parameters.Add(new SqlParameter("@PageSize", input.PageSize));
                 using (var dataReader = await cmd.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -46,12 +58,16 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
 
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
-                        var data = ObjectHelper.FillCollection<BookingGetAllItemDto>(ds.Tables[0]);
-                        return data;
+                        var data = ObjectHelper.FillCollection<BookingInfoDto>(ds.Tables[0]);
+                        return new PagedResultDto<BookingInfoDto>()
+                        {
+                            TotalCount = int.Parse(ds.Tables[0].Rows[0]["TotalRow"].ToString()),
+                            Items = data
+                        };
                     }
                 }
             }
-            return new List<BookingGetAllItemDto>();
+            return new PagedResultDto<BookingInfoDto>();
         }
         public async Task<PagedResultDto<BookingDetailDto>> GetKhachHang_Booking(BookingRequestDto input)
         {
@@ -132,6 +148,6 @@ namespace BanHangBeautify.Bookings.Bookings.BookingRepository
                 }
             }
             return new BookingInfoDto();
-        }
+        } 
     }
 }
