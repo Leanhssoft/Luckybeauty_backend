@@ -1,4 +1,5 @@
 ﻿using BanHangBeautify.HangHoa.HangHoa.Dto;
+using BanHangBeautify.KhachHang.KhachHang.Dto;
 using System;
 using System.Collections.Generic;
 
@@ -17,18 +18,18 @@ namespace BanHangBeautify.Bookings.Bookings.Dto
         public string DayOfWeek { get; set; }
         public DateTime BookingDate { get; set; }
     }
-    public class BookingInfoDto
+    public class BookingInfoDto: CustomerBasicDto
     {
         public Guid Id { get; set; }
+        public Guid? IdNhanVien { get; set; }
         public string BookingCode { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public string AvatarKhachHang { set; get; }
-        public string TenKhachHang { get; set; }
-        public string SoDienThoai { get; set; }
         public string TenDichVu { get; set; }
         public decimal DonGia { get; set; }
         public string NhanVienThucHien { get; set; }
+        public string TenChucVu { get; set; }//chucvu cua nhanvien
         public string GhiChu { get; set; }
         public string Color { get; set; }
         public int TrangThai { set; get; }
