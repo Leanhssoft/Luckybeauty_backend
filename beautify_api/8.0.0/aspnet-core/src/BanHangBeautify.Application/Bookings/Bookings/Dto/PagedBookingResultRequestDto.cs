@@ -3,11 +3,8 @@ using static BanHangBeautify.AppCommon.CommonClass;
 
 namespace BanHangBeautify.Bookings.Bookings.Dto
 {
-    public class PagedBookingResultRequestDto
+    public class PagedBookingResultRequestDto : ParamSearch
     {
-        public Guid IdChiNhanh { get; set; }
-        public DateTime DateSelected { get; set; }
-        public string TypeView { get; set; }
         public Guid? IdNhanVien { get; set; }
         public Guid? IdDichVu { get; set; }
     }
