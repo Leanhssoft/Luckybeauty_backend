@@ -1,15 +1,14 @@
-﻿using System;
+﻿using BanHangBeautify.KhachHang.KhachHang.Dto;
+using System;
 
 namespace BanHangBeautify.AppDashboard.Dto
 {
-    public class DanhSachLichHen
+    public class DanhSachLichHen : CustomerBasicDto
     {
-        public string Avatar { get; set; }
-        public string TenKhachHang { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public decimal TongTien { get; set; }
-        public string DichVu { get; set; }
+        public double? GiaBan { get; set; }
+        public string TenHangHoa { get; set; }
         public string TrangThai { get; set; }
     }
 }

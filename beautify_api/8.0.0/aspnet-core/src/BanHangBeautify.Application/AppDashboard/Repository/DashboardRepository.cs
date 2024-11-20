@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
+
 namespace BanHangBeautify.AppDashboard.Repository
 {
     public class DashboardRepository : SPARepositoryBase, IDashboardRepository
@@ -17,17 +18,19 @@ namespace BanHangBeautify.AppDashboard.Repository
         {
         }
 
-        public async Task<ThongKeSoLuong> ThongKeThongTin(DashboardFilterDto input, int tenantId, long? userId)
+        public async Task<ThongKeSoLuong> ThongKeThongTin(CommonClass.ParamSearch input)
         {
+            string idChiNhanhs= string.Empty;
+            if(input.IdChiNhanhs!=null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
             using (var command = CreateCommand("prc_dashboard_thongKeSoLuong"))
             {
-                DateTime timeFrom = DateTime.Parse(input.ThoiGianTu);
-                DateTime timeTo = DateTime.Parse(input.ThoiGianDen);
-                command.Parameters.Add(new SqlParameter("@UserId", userId));
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                command.Parameters.Add(new SqlParameter("@ThoiGianTu", timeFrom));
-                command.Parameters.Add(new SqlParameter("@ThoiGianDen", timeTo));
+                command.Parameters.Add(new SqlParameter("@TenantId", input?.TenantId));
+                command.Parameters.Add(new SqlParameter("@ThoiGianTu", input?.FromDate ?? DateTime.Now));
+                command.Parameters.Add(new SqlParameter("@ThoiGianDen", input?.ToDate ?? DateTime.Now));
+                command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -38,24 +41,28 @@ namespace BanHangBeautify.AppDashboard.Repository
                     if (ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
                     {
                         var data = ObjectHelper.FillObject<ThongKeSoLuong>(ds.Tables[0].Rows[0]);
-                        data.TongDoanhThu = decimal.Parse(string.IsNullOrEmpty(ds.Tables[0].Rows[0]["TongDoanhThu"].ToString()) ? "0" : ds.Tables[0].Rows[0]["TongDoanhThu"].ToString());
                         return data;
                     }
                 }
                 return new ThongKeSoLuong();
             }
         }
-        public async Task<List<DanhSachLichHen>> DanhSachLichHen(DashboardFilterDto input, int tenantId, long? userId)
+        public async Task<List<DanhSachLichHen>> DanhSachLichHen(CommonClass.ParamSearch input)
         {
+            string idChiNhanhs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
             using (var command = CreateCommand("prc_dashboard_danhSachLichHen"))
             {
-                DateTime timeFrom = DateTime.Parse(input.ThoiGianTu);
-                DateTime timeTo = DateTime.Parse(input.ThoiGianDen);
-                command.Parameters.Add(new SqlParameter("@UserId", userId));
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                command.Parameters.Add(new SqlParameter("@ThoiGianTu", timeFrom));
-                command.Parameters.Add(new SqlParameter("@ThoiGianDen", timeTo));
+                command.Parameters.Add(new SqlParameter("@UserId", input.IdUserLogin));
+                command.Parameters.Add(new SqlParameter("@TenantId", input?.TenantId));
+                command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
+                command.Parameters.Add(new SqlParameter("@ThoiGianTu", input?.FromDate?? DateTime.Now));
+                command.Parameters.Add(new SqlParameter("@ThoiGianDen", input?.ToDate ?? DateTime.Now));
+                command.Parameters.Add(new SqlParameter("@CurrentPage", input?.CurrentPage ?? 1));
+                command.Parameters.Add(new SqlParameter("@PageSize", input?.PageSize ?? 3));// dashborad: get top 3
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -72,12 +79,17 @@ namespace BanHangBeautify.AppDashboard.Repository
                 return new List<DanhSachLichHen>();
             }
         }
-        public async Task<List<ThongKeLichHen>> ThongKeLichHen(Guid idChiNhanh, int tenantId)
+        public async Task<List<ThongKeLichHen>> ThongKeLichHen(CommonClass.ParamSearch input)
         {
+            string idChiNhanhs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
             using (var command = CreateCommand("prc_dashboard_thongKeLichHen"))
             {
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
+                command.Parameters.Add(new SqlParameter("@TenantId", input?.TenantId));
+                command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -94,12 +106,17 @@ namespace BanHangBeautify.AppDashboard.Repository
                 return new List<ThongKeLichHen>();
             }
         }
-        public async Task<List<ThongKeDoanhThu>> ThongKeDoanhThu(Guid idChiNhanh, int tenantId)
+        public async Task<List<ThongKeDoanhThu>> ThongKeDoanhThu(CommonClass.ParamSearch input)
         {
+            string idChiNhanhs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
             using (var command = CreateCommand("prc_dashboard_thongKeDoanhThu"))
             {
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanh));
+                command.Parameters.Add(new SqlParameter("@TenantId", input?.TenantId));
+                command.Parameters.Add(new SqlParameter("@IdChiNhanhs", idChiNhanhs));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };
@@ -116,17 +133,20 @@ namespace BanHangBeautify.AppDashboard.Repository
                 return new List<ThongKeDoanhThu>();
             }
         }
-        public async Task<List<HotService>> DanhSachDichVuHot(DashboardFilterDto input, int tenantId, long? userId)
+        public async Task<List<HotService>> DanhSachDichVuHot(CommonClass.ParamSearch input)
         {
+            string idChiNhanhs = string.Empty;
+            if (input.IdChiNhanhs != null && input.IdChiNhanhs.Count > 0)
+            {
+                idChiNhanhs = string.Join(",", input.IdChiNhanhs);
+            }
             using (var command = CreateCommand("prc_dashboard_hotService"))
             {
-                DateTime timeFrom = DateTime.Parse(input.ThoiGianTu);
-                DateTime timeTo = DateTime.Parse(input.ThoiGianDen);
-                command.Parameters.Add(new SqlParameter("@UserId", userId));
-                command.Parameters.Add(new SqlParameter("@TenantId", tenantId));
-                command.Parameters.Add(new SqlParameter("@IdChiNhanh", input.IdChiNhanh));
-                command.Parameters.Add(new SqlParameter("@ThoiGianTu", timeFrom));
-                command.Parameters.Add(new SqlParameter("@ThoiGianDen", timeTo));
+                command.Parameters.Add(new SqlParameter("@UserId", input.IdUserLogin));
+                command.Parameters.Add(new SqlParameter("@TenantId", input?.TenantId));
+                command.Parameters.Add(new SqlParameter("@IdChiNhanh", idChiNhanhs));
+                command.Parameters.Add(new SqlParameter("@ThoiGianTu", input?.FromDate ?? DateTime.Now));
+                command.Parameters.Add(new SqlParameter("@ThoiGianDen", input?.ToDate ?? DateTime.Now));
                 using (var dataReader = await command.ExecuteReaderAsync())
                 {
                     string[] array = { "Data" };

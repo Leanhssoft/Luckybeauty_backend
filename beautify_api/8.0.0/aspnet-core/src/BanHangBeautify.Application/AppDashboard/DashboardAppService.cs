@@ -4,6 +4,7 @@ using BanHangBeautify.AppDashboard.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BanHangBeautify.AppCommon;
 
 namespace BanHangBeautify.AppDashboard
 {
@@ -19,28 +20,33 @@ namespace BanHangBeautify.AppDashboard
         }
 
 
-        public async Task<ThongKeSoLuong> ThongKeSoLuong(DashboardFilterDto input)
+        public async Task<ThongKeSoLuong> ThongKeSoLuong(CommonClass.ParamSearch input)
         {
-            return await _dashboardRepository.ThongKeThongTin(input, AbpSession.TenantId ?? 1, AbpSession.UserId);
+            input.TenantId = AbpSession.TenantId ?? 1;
+            input.IdUserLogin = AbpSession.UserId;
+            return await _dashboardRepository.ThongKeThongTin(input);
         }
-        public async Task<List<DanhSachLichHen>> DanhSachLichHen(DashboardFilterDto input)
+        public async Task<List<DanhSachLichHen>> DanhSachLichHen(CommonClass.ParamSearch input)
         {
-            DateTime now = DateTime.Now;
-            input.ThoiGianTu = new DateTime(now.Year, now.Month, now.Day, 0, 0, 1).ToString("yyyy-MM-dd HH:mm:ss");
-            input.ThoiGianDen = new DateTime(now.Year, now.Month, now.Day, 23, 59, 59).ToString("yyyy-MM-dd HH:mm:ss");
-            return await _dashboardRepository.DanhSachLichHen(input, AbpSession.TenantId ?? 1, AbpSession.UserId);
+            input.TenantId = AbpSession.TenantId ?? 1;
+            input.IdUserLogin = AbpSession.UserId;
+            return await _dashboardRepository.DanhSachLichHen(input);
         }
-        public async Task<List<ThongKeLichHen>> ThongKeLichHen(DashboardFilterDto input)
+        public async Task<List<ThongKeLichHen>> ThongKeLichHen(CommonClass.ParamSearch input)
         {
-            return await _dashboardRepository.ThongKeLichHen(input.IdChiNhanh, AbpSession.TenantId ?? 1);
+            input.TenantId = AbpSession.TenantId ?? 1;
+            input.IdUserLogin = AbpSession.UserId;
+            return await _dashboardRepository.ThongKeLichHen(input);
         }
-        public async Task<List<ThongKeDoanhThu>> ThongKeDoanhThu(DashboardFilterDto input)
+        public async Task<List<ThongKeDoanhThu>> ThongKeDoanhThu(CommonClass.ParamSearch input)
         {
-            return await _dashboardRepository.ThongKeDoanhThu(input.IdChiNhanh, AbpSession.TenantId ?? 1);
+            input.TenantId = AbpSession.TenantId ?? 1;
+            return await _dashboardRepository.ThongKeDoanhThu(input);
         }
-        public async Task<List<HotService>> ThongKeHotService(DashboardFilterDto input)
+        public async Task<List<HotService>> ThongKeHotService(CommonClass.ParamSearch input)
         {
-            return await _dashboardRepository.DanhSachDichVuHot(input, AbpSession.TenantId ?? 1, AbpSession.UserId);
+            input.TenantId = AbpSession.TenantId ?? 1;
+            return await _dashboardRepository.DanhSachDichVuHot(input);
         }
     }
 }
