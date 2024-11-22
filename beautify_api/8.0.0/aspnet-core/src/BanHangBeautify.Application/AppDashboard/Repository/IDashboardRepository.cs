@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BanHangBeautify.AppCommon;
+using Abp.Application.Services.Dto;
 
 namespace BanHangBeautify.AppDashboard.Repository
 {
@@ -12,6 +13,6 @@ namespace BanHangBeautify.AppDashboard.Repository
         Task<List<ThongKeLichHen>> ThongKeLichHen(CommonClass.ParamSearch input);
         Task<List<ThongKeDoanhThu>> ThongKeDoanhThu(CommonClass.ParamSearch input);
         Task<List<HotService>> DanhSachDichVuHot(CommonClass.ParamSearch input);
-        Task<List<DanhSachLichHen>> DanhSachLichHen(CommonClass.ParamSearch input);
+        Task<PagedResultDto<DanhSachLichHen>> DanhSachLichHen(CommonClass.ParamSearch input);
     }
 }

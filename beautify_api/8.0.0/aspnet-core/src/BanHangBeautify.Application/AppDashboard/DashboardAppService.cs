@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using BanHangBeautify.AppCommon;
+using Abp.Application.Services.Dto;
 
 namespace BanHangBeautify.AppDashboard
 {
@@ -26,7 +27,7 @@ namespace BanHangBeautify.AppDashboard
             input.IdUserLogin = AbpSession.UserId;
             return await _dashboardRepository.ThongKeThongTin(input);
         }
-        public async Task<List<DanhSachLichHen>> DanhSachLichHen(CommonClass.ParamSearch input)
+        public async Task<PagedResultDto<DanhSachLichHen>> DanhSachLichHen(CommonClass.ParamSearch input)
         {
             input.TenantId = AbpSession.TenantId ?? 1;
             input.IdUserLogin = AbpSession.UserId;
