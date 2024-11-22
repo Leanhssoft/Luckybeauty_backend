@@ -2,10 +2,8 @@
 {
     public class HotService
     {
-        public string TenDichVu { get; set; }
-        public float TongDoanhThu { get; set; }
-
-        public string Color { get; set; }
-        public float PhanTram { get; set; }
+        public string MaHangHoa { get; set; }
+        public string TenHangHoa { get; set; }
+        public double? GiaTri { get; set; }
     }
 }
