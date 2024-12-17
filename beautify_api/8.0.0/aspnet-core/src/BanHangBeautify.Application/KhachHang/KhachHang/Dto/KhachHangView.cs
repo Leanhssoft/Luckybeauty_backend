@@ -21,5 +21,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public int? SoLanCheckIn { get; set; }
         public int? TrangThaiCheckIn { get; set; }
         public string ZOAUserId { get; set; }
+        public DateTime CreationTime {  get; set; }
     }
 }

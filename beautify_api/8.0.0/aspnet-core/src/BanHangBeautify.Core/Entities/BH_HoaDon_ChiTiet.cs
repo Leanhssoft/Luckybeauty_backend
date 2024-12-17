@@ -22,6 +22,8 @@ namespace BanHangBeautify.Entities
         public BH_HoaDon_ChiTiet ChiTietHoaDonParent { get; set; }
         public double? SoLuong { get; set; } = 0;
         public double? DonGiaTruocCK { get; set; } = 0;
+        public double? giaVon { get; set; } = 0;
+
         public double? ThanhTienTruocCK { get; set; } = 0;
         public double? PTChietKhau { get; set; } = 0;
         public double? TienChietKhau { get; set; } = 0;

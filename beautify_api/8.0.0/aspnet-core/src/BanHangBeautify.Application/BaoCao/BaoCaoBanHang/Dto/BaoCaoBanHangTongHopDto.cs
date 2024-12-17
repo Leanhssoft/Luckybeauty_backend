@@ -12,6 +12,10 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Dto
         public double? SumTienChietKhau { get; set; }
         public double? SumThanhTienTruocCK { get; set; }
         public double? SumThanhTienSauCK { get; set; }
+        public double? SumGiaVon { get; set; }
+        public double? SumLoiNhuan { get; set; }
+
+
     }
     public class BaoCaoBanHangTongHopDto : BaoCaoBanHang_SumFooterDto
     {
@@ -22,5 +26,6 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Dto
         public double? TienChietKhau { get; set; }
         public double? ThanhTienTruocCK { get; set; }
         public double? ThanhTienSauCK { get; set; }
+        public double? giaVon {  get; set; }
     }
 }

@@ -27,6 +27,7 @@ namespace BanHangBeautify.HoaDon.HoaDonChiTiet.Dto
         public double? TonLuyKe { get; set; } = 0;
         public string GhiChu { get; set; } = string.Empty;
         public int TrangThai { get; set; } = 1;// 0.Xóa, 1.Chưa xóa
+        public double? giaVon {  get; set; } = 0;
         public List<NhanVienThucHienDto> nhanVienThucHien { get; set; }
     }
 }

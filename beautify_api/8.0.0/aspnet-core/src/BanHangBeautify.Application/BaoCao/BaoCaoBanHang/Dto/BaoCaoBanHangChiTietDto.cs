@@ -20,5 +20,7 @@ namespace BanHangBeautify.BaoCao.BaoCaoBanHang.Dto
         public double? ThanhTienTruocCK { get; set; }
         public double? TienChietKhau { get; set; }
         public double? ThanhTienSauCK { get; set; }
+        public double? giaVon { get; set; }
+
     }
 }

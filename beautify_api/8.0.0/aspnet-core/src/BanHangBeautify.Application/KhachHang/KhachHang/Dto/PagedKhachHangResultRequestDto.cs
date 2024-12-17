@@ -18,5 +18,6 @@ namespace BanHangBeautify.KhachHang.KhachHang.Dto
         public DateTime? TimeFrom { get; set; }
         public DateTime? TimeTo { get; set; }
         public int? IsUserZalo { get; set; }
+        //public DateTime ngayTao { get; set; }
     }
 }

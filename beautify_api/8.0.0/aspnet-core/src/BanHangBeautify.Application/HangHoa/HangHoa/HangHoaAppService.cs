@@ -182,6 +182,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     objDVT.TenDonViTinh = item.TenDonViTinh;
                     objDVT.TyLeChuyenDoi = item.TyLeChuyenDoi;
                     objDVT.GiaBan = item.GiaBan;
+                    objDVT.GiaVon = item.GiaVon;
                     await _dmDonViQuiDoi.UpdateAsync(objDVT);
                 }
                 else
@@ -595,6 +596,8 @@ namespace BanHangBeautify.HangHoa.HangHoa
                     //string loaiHang = worksheet.Cells[i, 4].Value?.ToString().Trim();
                     string giaban = worksheet.Cells[i, 4].Value?.ToString();
                     double giaBanNew = !string.IsNullOrEmpty(giaban) ? double.Parse(giaban) : 0;
+                    string giaVon = worksheet.Cells[i, 4].Value?.ToString();
+                    double giaVonNew = !string.IsNullOrEmpty(giaVon) ? double.Parse(giaVon) : 0;
                     string sophutThucHien = worksheet.Cells[i, 5].Value?.ToString();
                     float sophutThucHienNew = !string.IsNullOrEmpty(sophutThucHien) ? float.Parse(sophutThucHien) : 0;
 
@@ -603,6 +606,8 @@ namespace BanHangBeautify.HangHoa.HangHoa
                         || !string.IsNullOrEmpty(tenHangHoa)
                         //|| !string.IsNullOrEmpty(loaiHang)
                         || !string.IsNullOrEmpty(giaban)
+                        || !string.IsNullOrEmpty(giaVon)
+
                         || !string.IsNullOrEmpty(sophutThucHien)
                            )
                     {
@@ -617,6 +622,7 @@ namespace BanHangBeautify.HangHoa.HangHoa
                         IdLoaiHangHoa = 2,
                         //IdLoaiHangHoa = loaiHang == "HH" ? 1 : loaiHang == "DV" ? 2 : 3,
                         GiaBan = giaBanNew,
+                        GiaVon = giaVonNew,
                         SoPhutThucHien = sophutThucHienNew,
                         GhiChu = worksheet.Cells[i, 6].Value?.ToString().Trim(),
                     };

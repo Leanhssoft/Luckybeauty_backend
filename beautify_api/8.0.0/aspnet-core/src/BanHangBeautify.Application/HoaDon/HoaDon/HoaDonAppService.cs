@@ -44,6 +44,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
     {
         private readonly IRepository<BH_HoaDon, Guid> _hoaDonRepository;
         private readonly IRepository<BH_HoaDon_ChiTiet, Guid> _hoaDonChiTietRepository;
+        private readonly IRepository<DM_DonViQuiDoi, Guid> _donViQuiDoiRepository;
         private readonly IRepository<BH_HoaDon_Anh, Guid> _hoaDonAnhRepository;
         private readonly IRepository<BH_NhanVienThucHien, Guid> _nvThucHien;
         private readonly NhanVienThucHienAppService _nvthService;
@@ -57,6 +58,7 @@ namespace BanHangBeautify.HoaDon.HoaDon
         public HoaDonAppService(
             IRepository<BH_HoaDon, Guid> hoaDonRepository,
             IRepository<BH_HoaDon_ChiTiet, Guid> hoaDonChiTietRepository,
+            IRepository<DM_DonViQuiDoi, Guid> donViQuiDoiRepository,
             IRepository<BH_HoaDon_Anh, Guid> hoaDonAnhRepository,
             IRepository<BH_NhanVienThucHien, Guid> nvThucHien,
             NhanVienThucHienAppService nvthService,
@@ -79,6 +81,8 @@ namespace BanHangBeautify.HoaDon.HoaDon
             _hangHoaAppService = hangHoaAppService;
             _invoiceHubContext = invoiceHubContext;
             _loaiChungTuService = loaiChungTuService;
+            _donViQuiDoiRepository = donViQuiDoiRepository; 
+
         }
 
         [HttpPost]
@@ -136,7 +140,9 @@ namespace BanHangBeautify.HoaDon.HoaDon
                     ctNew.CreatorUserId = AbpSession.UserId;
                     ctNew.CreationTime = DateTime.Now;
                     lstCTHoaDon.Add(ctNew);
-
+                    //lấy giá vốn mặc từ bằng(tốt hơn là lấy giá vốn từ dto)
+                    var donViQuiDoi = await _donViQuiDoiRepository.FirstOrDefaultAsync(x => x.Id == item.IdDonViQuyDoi);
+                    ctNew.giaVon = donViQuiDoi.GiaVon;
                     if (item.nhanVienThucHien != null)
                     {
                         foreach (var nvth in item.nhanVienThucHien)

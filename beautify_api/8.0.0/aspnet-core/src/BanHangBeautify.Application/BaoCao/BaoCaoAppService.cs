@@ -112,6 +112,7 @@ namespace BanHangBeautify.BaoCao
                 x.TenHangHoa,
                 x.SoLuong,
                 x.DonGiaTruocCK,
+                x.giaVon,
                 x.ThanhTienTruocCK,
                 x.TienChietKhau,
                 x.ThanhTienSauCK,
@@ -130,6 +131,7 @@ namespace BanHangBeautify.BaoCao
                 x.TenHangHoa,
                 x.SoLuong,
                 x.ThanhTienTruocCK,
+                x.giaVon,
                 x.TienChietKhau,
                 x.ThanhTienSauCK,
             }).ToList();

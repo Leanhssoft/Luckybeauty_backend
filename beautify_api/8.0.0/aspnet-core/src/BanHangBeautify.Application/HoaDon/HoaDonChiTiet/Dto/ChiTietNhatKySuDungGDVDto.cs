@@ -29,5 +29,7 @@ namespace BanHangBeautify.HoaDon.HoaDonChiTiet.Dto
         public double? SoLuongSD { get; set; }
         public double? GiaTriSuDung { get; set; } // soluongSD * dongia sauCK
         public string NVThucHiens { get; set; }
+        public Guid? IdNhanVien {  get; set; }
+        public string TenNhanVien { get; set; }
     }
 }

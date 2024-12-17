@@ -18,6 +18,7 @@ namespace BanHangBeautify.HangHoa.HangHoa.Dto
         public int TrangThai { get; set; }
         public int IdLoaiHangHoa { get; set; }
         public double? GiaBan { get; set; }
+        public double? GiaVon { get; set; }
         public string MoTa { get; set; }
         public string Image { get; set; }
         public string TenLoaiHangHoa { get; set; }

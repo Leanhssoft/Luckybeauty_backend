@@ -108,17 +108,18 @@ namespace BanHangBeautify.BaoCao.Exporting
                     ws.Cells[startRow, 3].Value = ConvertHelper.ToString(item.MaHangHoa);
                     ws.Cells[startRow, 4].Value = ConvertHelper.ToString(item.TenNhomHang);
                     ws.Cells[startRow, 5].Value = ConvertHelper.ToString(item.ThanhTienTruocCK);
-                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.SoLuong);
-                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.ThanhTienSauCK);
+                    ws.Cells[startRow, 6].Value = ConvertHelper.ToString(item.giaVon);
+                    ws.Cells[startRow, 7].Value = ConvertHelper.ToString(item.SoLuong);
+                    ws.Cells[startRow, 8].Value = ConvertHelper.ToString(item.ThanhTienSauCK);
                     startRow++;
                     stt++;
                 }
                 if (input.Count > 0)
                 {
-                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-                    ws.Cells[firstRow, 1, startRow - 1, 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    ws.Cells[firstRow, 1, startRow - 1, 8].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 }
             }
             catch (Exception ex)
